@@ -1,0 +1,22 @@
+<?php
+$this->headMeta ()->appendHttpEquiv ( 'Content-Type', 'text/html;charset=utf-8' );
+$this->headTitle ()->setSeparator ( ' - ' );
+$this->headTitle ( 'Guardian' );
+echo $this->doctype ();
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<?php echo $this->headMeta (); ?>
+	<?php echo $this->headTitle (); ?>
+	
+	<?php $this->headLink()->appendStylesheet('css/screen.css', 'screen, projection'); ?>
+	<?php $this->headLink()->appendStylesheet('css/ie.css', 'screen, projection', 'IE');?>
+	<?php $this->headLink()->appendStylesheet('css/print.css', 'print'); ?>
+	<?php $this->headLink()->appendStylesheet('css/global.css'); ?>
+		
+	<?php echo $this->headLink()?>
+</head>
+
+<body>
+	<div class="container">

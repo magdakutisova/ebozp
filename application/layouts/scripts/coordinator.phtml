@@ -1,0 +1,19 @@
+<?php echo $this->render('header.phtml') ?>
+
+<h1><?php echo $this->escape ( $this->title ); ?></h1>
+
+<div class="push-1 span-4 navigation">
+	<ul>
+		<li>tady</li>
+		<li>bude</li>
+		<li>menu</li>
+		<li>koordinátora</li>
+	</ul>
+</div>
+
+<div class="push-1 span-4 main-content">
+	<p>tady bude hlavní obsah</p>
+	<?php echo $this->layout()->content; ?>
+</div>
+
+<?php echo $this->render('footer.phtml')?>
