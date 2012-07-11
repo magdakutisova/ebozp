@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configdata>
+	<nav>
+		<client>
+			<label>Klient</label>
+			<route>clientList</route>
+			<pages>
+				<choose>
+					<label>Vyber ze seznamu</label>
+					<route>clientList</route>
+				</choose>
+				<search>
+					<label>Hledej</label>
+					<route>clientSearch</route>
+				</search>
+				<new>
+					<label>Založ nového klienta</label>
+					<route>clientNew</route>
+				</new>
+			</pages>
+		</client>
+	</nav>
+</configdata>

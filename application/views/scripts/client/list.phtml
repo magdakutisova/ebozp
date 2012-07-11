@@ -1,0 +1,9 @@
+<div class="box">Různé filtry - název, BT, KOO, město/obec, naposledy otevřené</div>
+<div class="box">
+	<ul>
+	<?php foreach($this->clients as $client) : ?>
+		<li><?php echo $client->company_name;?></li>
+	<?php endforeach; ?>
+	</ul>	
+	
+</div>
