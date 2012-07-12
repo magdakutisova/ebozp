@@ -8,8 +8,8 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     protected $_referenceMap = array(
     	'Client' => array(
     		'columns' => 'client_id',
-    		'refTableClass' => 'Client',
-    		'refColumns' => 'id'
+    		'refTableClass' => 'Application_Model_DbTable_Client',
+    		'refColumns' => 'id',
     		),
     	);
 
@@ -22,9 +22,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     	return $row->toArray();
     }
     
-    public function addSubsidiary($subsidiaryAddress, $contactPerson, $phone, $email,
-    	$supervisionFrequency, $clientId, $private, $hq){
+    public function addSubsidiary($subsidiaryName, $subsidiaryAddress, $contactPerson,
+    	$phone, $email, $supervisionFrequency, $clientId, $private, $hq){
     		$data = array(
+    			'subsidiary_name' => $subsidiaryName,	
     			'subsidiary_address' => $subsidiaryAddress,
     			'contact_person' => $contactPerson,
     			'phone' => $phone,
@@ -37,9 +38,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     		$this->insert($data);
     	}
     	
-    public function updateSubsidiary($id, $subsidiaryAddress, $contactPerson, $phone,
-    	$email, $supervisionFrequency, $clientId, $private, $hq){
+    public function updateSubsidiary($id, $subsidiaryName, $subsidiaryAddress,
+    	$contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq){
     		$data = array(
+    			'subsidiary_name' => $subsidiaryName,
     			'subsidiary_address' => $subsidiaryAddress,
     			'contact_person' => $contactPerson,
     			'phone' => $phone,

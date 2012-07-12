@@ -4,7 +4,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'client';
-    
+    protected $_rowClass = 'Application_Model_DbTable_Row_ClientRow';
+    //TODO loader pro tabulky
     public function getClient($id){
     	$id = (int)$id;
     	$row = $this->fetchRow('id = ' . $id);
@@ -49,6 +50,6 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     public function deleteClient($id){
     	$this->delete('id = ' . (int)$id);
     }
-
+    
 }
 

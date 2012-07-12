@@ -8,6 +8,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->doctype( 'XHTML1_STRICT' );
 	}
 	
+	protected function _initAutoload() {
+        Zend_Loader::loadClass("Zend_Loader_Autoloader");
+        $loader = Zend_Loader_Autoloader::getInstance();
+        $loader->setFallbackAutoloader(true);
+        
+        return $loader;
+    }
+    
 	protected function _initNavigation(){
 		$this->bootstrap('view');
 		$view = $this->getResource('view');
@@ -15,6 +23,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$navigation = new Zend_Navigation($config);
 		$view->navigation($navigation);
+	}
+	
+	protected function _initTranslator(){
+		$translator = new Zend_Translate(
+			array(
+				'adapter' => 'array',
+				'content' => APPLICATION_PATH . '/../resources/languages',
+				'locale' => 'cs',
+			)
+		);
+		Zend_Validate_Abstract::setDefaultTranslator($translator);
 	}
 	
 	protected function _initRouter(array $options = array()){
