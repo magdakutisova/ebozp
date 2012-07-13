@@ -9,13 +9,13 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     	'Client' => array(
     		'columns' => 'client_id',
     		'refTableClass' => 'Application_Model_DbTable_Client',
-    		'refColumns' => 'id',
+    		'refColumns' => 'id_client',
     		),
     	);
 
     public function getSubsidiary($id){
     	$id = (int)$id;
-    	$row = $this->fetchRow('id = ' . $id);
+    	$row = $this->fetchRow('id_subsidiary = ' . $id);
     	if (!$row){
     		throw new Exception("Pobočka $id nebyla nalezena.");
     	}
@@ -51,11 +51,11 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     			'private' => $private,
     			'hq' => $hq,
     		);
-    		$this->update($data, 'id = ' . (int)$id);
+    		$this->update($data, 'id_subsidiary = ' . (int)$id);
     	}
     	
     public function deleteSubsidiary($id){
-    	$this->delete('id = ' . (int)$id);
+    	$this->delete('id_subsidiary = ' . (int)$id);
     }
 
 }

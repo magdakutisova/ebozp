@@ -10,10 +10,10 @@ echo $this->doctype ();
 	<?php echo $this->headMeta (); ?>
 	<?php echo $this->headTitle (); ?>
 	
-	<?php $this->headLink()->appendStylesheet('css/screen.css', 'screen, projection'); ?>
-	<?php $this->headLink()->appendStylesheet('css/ie.css', 'screen, projection', 'IE');?>
-	<?php $this->headLink()->appendStylesheet('css/print.css', 'print'); ?>
-	<?php $this->headLink()->appendStylesheet('css/global.css'); ?>
+	<?php $this->headLink()->appendStylesheet($this->baseUrl('css/screen.css'), 'screen, projection'); ?>
+	<?php $this->headLink()->appendStylesheet($this->baseUrl('css/ie.css'), 'screen, projection', 'IE');?>
+	<?php $this->headLink()->appendStylesheet($this->baseUrl('css/print.css'), 'print'); ?>
+	<?php $this->headLink()->appendStylesheet($this->baseUrl('css/global.css'), 'screen, projection'); ?>
 		
 	<?php echo $this->headLink()?>
 </head>

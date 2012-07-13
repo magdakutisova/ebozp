@@ -15,6 +15,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
         
         return $loader;
     }
+   
+    protected function _initSession(){
+    	Zend_Session::start(true);
+    	new Zend_Session_Namespace();
+    }
     
 	protected function _initNavigation(){
 		$this->bootstrap('view');
@@ -67,6 +72,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			new Zend_Controller_Router_Route('novy-klient',
 											 array('controller' => 'client',
 											 	   'action' => 'new'))
+		);
+		
+		$router->addRoute(
+			'clientAdmin',
+			new Zend_Controller_Router_Route('klienti/:clientId',
+											 array('controller' => 'client',
+											 	   'action' => 'admin'))
+		);
+		
+		$router->addRoute(
+			'clientEdit',
+			new Zend_Controller_Router_Route('klienti/:clientId/edit',
+											array('controller' => 'client',
+													'action' => 'edit'))
 		);
 	}
 

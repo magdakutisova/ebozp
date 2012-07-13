@@ -3,7 +3,11 @@
 <div class="box">
 	
 	<?php foreach($this->clients as $client) : ?>
-		<p class="bold"><?php echo $client->company_name;?></p>
+		<p class="bold">
+			<a href="<?php echo $this->url(array('clientId' => $client->id_client), 'clientAdmin')?>">
+				<?php echo $client->company_name;?>
+			</a>
+		</p>
 		<?php $subsidiaries = $client->getSubsidiaries();
 		$rowCount = count($subsidiaries);
 		if ($rowCount > 0) {?>

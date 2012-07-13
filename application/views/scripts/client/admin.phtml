@@ -1,0 +1,33 @@
+<h2>Administrace klienta</h2>
+<p><span class="bold">Název klienta: </span><?php echo $this->companyName;?></p>
+<table>
+	<tr>
+		<td colspan=3><a href="#">ADMINISTRACE PŘÍSTUPOVÝCH PRÁV</a></td>
+	</tr>
+	<tr>
+		<td colspan=3><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
+	</tr>
+	<tr>
+		<td><a href="#">PŘIDAT PRACOVIŠTĚ</a></td>
+		<td><a href="#">EDITACE</a></td>
+		<td><a href="#">UPLOAD</a></td>
+	</tr>
+	<tr>
+		<td><a href="#">PŘIDAT PRACOVNÍ POZICE</a></td>
+		<td><a href="#">EDITACE</a></td>
+		<td><a href="#">UPLOAD</a></td>
+	</tr>
+	<tr>
+		<td><a href="#">PŘIDAT ODPOVĚDNÉ OSOBY</a></td>
+		<td colspan=2><a href="#">EDITACE</a></td>
+	</tr>
+	<tr>
+		<td><a href="#">PŘIDAT POBOČKU</a></td>
+		<td colspan=2><a href="#">EDITACE</a></td>
+	</tr>
+</table>
+<h3>Provést audit</h3>
+<ul>
+	<li><a href="#">Systémový audit</a></li>
+	<li><a href="#">Kontrola pracovišť</a></li>
+</ul>

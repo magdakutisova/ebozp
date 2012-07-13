@@ -1,15 +1,20 @@
 @CHARSET "UTF-8";
 
+/*General*/
 .bold{
 	font-weight: bold;
 }
+.message{
+	background: #b7ceec; padding: 10px
+}
 
+/*Formulare*/
 textarea{
 	height: 50px;
 }
-
 input[type=text]{
 	width: 200px;
 }
-
-.message	{ background: #b7ceec; padding: 10px}
+label.optional{
+	font-weight: normal;
+}

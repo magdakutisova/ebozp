@@ -2,7 +2,6 @@
 
 class Application_Form_Client extends Zend_Form
 {
-//TODO české hlášky ve formuláři
     public function init()
     {
         $this->setName('client');
@@ -28,18 +27,22 @@ class Application_Form_Client extends Zend_Form
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
         
-        $this->addElement('hidden', 'id', array(
+        $this->addElement('hidden', 'id_client', array(
         	'filters' => array('Int'),
         ));
         
-        $this->addElement('text', 'companyName', array(
+        $this->addElement('hidden', 'id_subsidiary', array(
+        	'filters' => array('Int'),
+        ));
+        
+        $this->addElement('text', 'company_name', array(
         	'label' => 'Název organizace',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'headquartersAddress', array(
+        $this->addElement('text', 'headquarters_address', array(
         	'label' => 'Adresa sídla',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
@@ -53,7 +56,7 @@ class Application_Form_Client extends Zend_Form
             'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'companyNumber', array(
+        $this->addElement('text', 'company_number', array(
         	'label' => 'IČO',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
@@ -61,7 +64,7 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'taxNumber', array(
+        $this->addElement('text', 'tax_number', array(
         	'label' => 'DIČ',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
@@ -69,7 +72,7 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'invoiceAddress', array(
+        $this->addElement('text', 'invoice_address', array(
         	'label' => 'Fakturační adresa',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
@@ -81,7 +84,7 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'contactPerson', array(
+        $this->addElement('text', 'contact_person', array(
         	'label' => 'Jméno a příjmení',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
