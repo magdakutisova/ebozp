@@ -89,7 +89,7 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('textArea', 'private', array(
+        $this->addElement('textarea', 'private', array(
         	'label' => 'Soukromá poznámka',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),

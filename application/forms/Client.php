@@ -49,7 +49,7 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('textArea', 'business', array(
+        $this->addElement('textarea', 'business', array(
         	'label' => 'Činnost organizace (stručný popis)',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
@@ -106,7 +106,7 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('textArea', 'private', array(
+        $this->addElement('textarea', 'private', array(
         	'label' => 'Soukromá poznámka',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
