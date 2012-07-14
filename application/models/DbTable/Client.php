@@ -20,11 +20,10 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
      * Vrací číslo právě vloženého řádku pro potřeby vložení pobočky ihned po vložení
      * klienta.
      */
-    public function addClient($companyName, $invoiceAddress, $companyNumber, $taxNumber,
+    public function addClient($companyName, $companyNumber, $taxNumber,
     	$headquartersAddress, $business, $private){
     		$data = array(
     			'company_name' => $companyName,
-    			'invoice_address' => $invoiceAddress,
     			'company_number' => $companyNumber,
     			'tax_number' => $taxNumber,
     			'headquarters_address' => $headquartersAddress,
@@ -34,11 +33,10 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     		return $this->insert($data);
     }
     	
-    public function updateClient($id, $companyName, $invoiceAddress, $companyNumber,
+    public function updateClient($id, $companyName, $companyNumber,
     	$taxNumber, $headquartersAddress, $business, $private){
     		$data = array(
     			'company_name' => $companyName,
-    			'invoice_address' => $invoiceAddress,
     			'company_number' => $companyNumber,
     			'tax_number' => $taxNumber,
     			'headquarters_address' => $headquartersAddress,
@@ -67,11 +65,19 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     }
     
 	public function getCompanyNumber($clientId){
-    	$ico = $this->fetchAll($this->select()
+    	$companyNumber = $this->fetchAll($this->select()
     		->from('client')
     		->columns('company_number')
     		->where('id_client = ?', $clientId));
-    	return $ico->current()->company_number;
+    	return $companyNumber->current()->company_number;
+    }
+    
+	public function getCompanyName($clientId){
+    	$companyName = $this->fetchAll($this->select()
+    		->from('client')
+    		->columns('company_name')
+    		->where('id_client = ?', $clientId));
+    	return $companyName->current()->company_name;
     }
     
     public function getHeadquarters($clientId){

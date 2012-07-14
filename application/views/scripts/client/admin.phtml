@@ -1,4 +1,3 @@
-<h2>Administrace klienta</h2>
 <p><span class="bold">Název klienta: </span><?php echo $this->companyName;?></p>
 <table>
 	<tr>
@@ -22,7 +21,7 @@
 		<td colspan=2><a href="#">EDITACE</a></td>
 	</tr>
 	<tr>
-		<td><a href="#">PŘIDAT POBOČKU</a></td>
+		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'subsidiaryNew') ?>">PŘIDAT POBOČKU</a></td>
 		<td colspan=2><a href="#">EDITACE</a></td>
 	</tr>
 </table>

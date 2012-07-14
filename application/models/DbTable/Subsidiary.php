@@ -22,11 +22,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     	return $row->toArray();
     }
     
-    public function addSubsidiary($subsidiaryName, $subsidiaryAddress, $contactPerson,
-    	$phone, $email, $supervisionFrequency, $clientId, $private, $hq){
+    public function addSubsidiary($subsidiaryName, $subsidiaryAddress, $invoiceAddress, 
+    	$contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq){
     		$data = array(
     			'subsidiary_name' => $subsidiaryName,	
     			'subsidiary_address' => $subsidiaryAddress,
+    			'invoice_address' => $invoiceAddress,
     			'contact_person' => $contactPerson,
     			'phone' => $phone,
     			'email' => $email,
@@ -39,10 +40,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     	}
     	
     public function updateSubsidiary($id, $subsidiaryName, $subsidiaryAddress,
-    	$contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq){
+    	$invoiceAddress, $contactPerson, $phone, $email, $supervisionFrequency,
+    	$clientId, $private, $hq){
     		$data = array(
     			'subsidiary_name' => $subsidiaryName,
     			'subsidiary_address' => $subsidiaryAddress,
+    			'invoice_address' => $invoiceAddress,
     			'contact_person' => $contactPerson,
     			'phone' => $phone,
     			'email' => $email,

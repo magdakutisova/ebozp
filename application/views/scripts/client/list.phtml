@@ -1,4 +1,3 @@
-<h2>Výběr klienta</h2>
 <div class="box">Různé filtry - název, BT, KOO, město/obec, naposledy otevřené</div>
 <div class="box">
 	
@@ -14,7 +13,7 @@
 		<ul>
 			<?php foreach($subsidiaries as $subsidiary) :
 				if(!$subsidiary->hq) {?>
-				<li><?php echo $subsidiary->subsidiary_name; ?></li>
+				<li><?php echo '<em>' . $subsidiary->subsidiary_name . '</em> , ' . $subsidiary->subsidiary_address; ?></li>
 				<?php }?>	
 				<?php endforeach; } ?>
 				</ul>

@@ -21,12 +21,15 @@ class ClientController extends Zend_Controller_Action
 
     public function listAction()
     {
+    	$this->view->subtitle = 'Výběr klienta';
         $clients = new Application_Model_DbTable_Client();
         $this->view->clients = $clients->fetchAll();
     }
 
     public function newAction()
     {
+    	$this->view->subtitle = 'Nový klient';
+    	
         $form = new Application_Form_Client();
         $form->save->setLabel('Přidat');
         $this->view->form = $form;
@@ -62,16 +65,16 @@ class ClientController extends Zend_Controller_Action
         		}
         		
         		//přidání klienta
-        		$clientId = $clients->addClient($companyName, $invoiceAddress, $companyNumber,
+        		$clientId = $clients->addClient($companyName, $companyNumber,
         			$taxNumber, $headquartersAddress, $business, $private);
         		
         		//přidání pobočky
         		$subsidiaries = new Application_Model_DbTable_Subsidiary();
-        		$subsidiaries->addSubsidiary($companyName, $headquartersAddress, $contactPerson,
-        			$phone, $email, null, $clientId, $private, true);
+        		$subsidiaries->addSubsidiary($companyName, $headquartersAddress, $invoiceAddress,
+        			$contactPerson, $phone, $email, null, $clientId, $private, true);
         		        		
         		//TODO zápis do bezpečnostního deníku
-        		$this->_helper->FlashMessenger('Klient ' . $companyName . ' přidán');
+        		$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> přidán');
         		$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'clientAdmin');
         	}
         	else {
@@ -83,6 +86,8 @@ class ClientController extends Zend_Controller_Action
 
     public function adminAction()
     {
+    	$this->view->subtitle = 'Administrace klienta';
+    	
 		$clientId = $this->_getParam('clientId');
 		
 		$clients = new Application_Model_DbTable_Client();
@@ -94,6 +99,8 @@ class ClientController extends Zend_Controller_Action
 
     public function editAction()
     {
+    	$this->view->subtitle = 'Editace základních údajů klienta';
+    	
     	$form = new Application_Form_Client();
         $form->save->setLabel('Uložit');
         $this->view->form = $form;
@@ -127,16 +134,17 @@ class ClientController extends Zend_Controller_Action
         		}
         		
         		//update klienta
-        		$clients->updateClient($clientId, $companyName, $invoiceAddress, $companyNumber,
+        		$clients->updateClient($clientId, $companyName, $companyNumber,
         			$taxNumber, $headquartersAddress, $business, $private);
         		
         		//update pobočky
         		$subsidiaries = new Application_Model_DbTable_Subsidiary();
-        		$subsidiaries->updateSubsidiary($subsidiaryId, $companyName, $headquartersAddress, $contactPerson,
-        			$phone, $email, null, $clientId, $private, true);
+        		$subsidiaries->updateSubsidiary($subsidiaryId, $companyName,
+        			$headquartersAddress, $invoiceAddress, $contactPerson, $phone,
+        			$email, null, $clientId, $private, true);
         		        		
         		//TODO zápis do bezpečnostního deníku
-        		$this->_helper->FlashMessenger('Klient ' . $companyName . ' upraven');
+        		$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> upraven');
         		$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'clientAdmin');
         	}
 

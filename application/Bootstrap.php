@@ -87,6 +87,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 											array('controller' => 'client',
 													'action' => 'edit'))
 		);
+		
+		$router->addRoute(
+			'subsidiaryNew',
+			new Zend_Controller_Router_Route('klienti/:clientId/nova-pobocka',
+											array('controller' => 'subsidiary',
+													'action' => 'new'))
+		);
 	}
 
 }

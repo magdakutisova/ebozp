@@ -23,9 +23,14 @@
           <actionMethod actionName="admin"/>
           <actionMethod actionName="edit"/>
         </controllerFile>
+        <controllerFile controllerName="Subsidiary">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="new"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="Client"/>
+        <formFile formName="Subsidiary"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -68,6 +73,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Client">
             <viewScriptFile forActionName="edit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Subsidiary">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Subsidiary">
+            <viewScriptFile forActionName="new"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
