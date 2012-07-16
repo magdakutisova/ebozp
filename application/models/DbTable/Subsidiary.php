@@ -60,6 +60,22 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract
     public function deleteSubsidiary($id){
     	$this->delete('id_subsidiary = ' . (int)$id);
     }
+    
+    public function getSubsidiaries($clientId){
+    	$select = $this->select()
+    		->from('subsidiary')
+    		->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_address'))
+    		->where('client_id = ?', $clientId)
+    		->where('hq = 0');
+		$results = $this->fetchAll($select);
+		$subsidiares = array();
+		foreach ($results as $result) :
+			$key = $result->id_subsidiary;
+			$subsidiary = $result->subsidiary_name . ' - ' . $result->subsidiary_address;
+			$subsidiaries[$key] = $subsidiary;
+		endforeach;
+		return $subsidiaries;
+    }
 
 }
 

@@ -18,3 +18,7 @@ input[type=text]{
 label.optional{
 	font-weight: normal;
 }
+
+.modal{
+	width: 250px;
+}

@@ -96,6 +96,11 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('checkbox', 'other', array(
+        	'label' => 'Přidat další pobočky?',
+        	'decorators' => $elementDecorator,
+        ));
+        
         $this->addElement('submit', 'save', array(
         	'decorators' => $elementDecorator2,
         ));
