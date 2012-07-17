@@ -9,7 +9,7 @@ class Application_Form_SubsidiaryList extends Zend_Form
         
         $this->setDecorators(array(
         	'FormElements',
-        	array('HtmlTag', array('tag' => 'table', 'class' => 'modal')),
+        	array('HtmlTag', array('tag' => 'table')),
         	'Form',
         ));
         

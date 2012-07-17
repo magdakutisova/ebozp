@@ -95,6 +95,21 @@ class ClientController extends Zend_Controller_Action
 		
 		$this->view->companyName = $client['company_name'];
 		$this->view->clientId = $clientId;
+		
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
+		
+		$form = new Application_Form_SubsidiaryList ();
+		$form->subsidiary->setMultiOptions ( $formContent );
+		$this->view->form = $form;
+		
+		if ($this->getRequest ()->isPost ()) {
+			$formData = $this->getRequest ()->getPost ();
+			if ($form->isValid ( $formData )) {
+				$subsidiary = $this->getRequest()->getParam('subsidiary');
+				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary), 'subsidiaryEdit' );
+			}
+		}
     }
 
     public function editAction()

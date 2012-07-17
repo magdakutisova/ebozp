@@ -1,7 +1,5 @@
 $(function(){
-	$(document).ready(function(){
-		$("a").click(function(){
-			alert("hello");
-		});
+	$(".edit-link").click(function(){
+		$("#pobocky").toggleClass("hidden");
 	});
 });

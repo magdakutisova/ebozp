@@ -8,6 +8,10 @@
 	background: #b7ceec; padding: 10px
 }
 
+.hidden{
+	display: none;
+}
+
 /*Formulare*/
 textarea{
 	height: 50px;
@@ -17,8 +21,4 @@ input[type=text]{
 }
 label.optional{
 	font-weight: normal;
-}
-
-.modal{
-	width: 250px;
 }
