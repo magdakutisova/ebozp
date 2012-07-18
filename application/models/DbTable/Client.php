@@ -21,12 +21,14 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
      * klienta.
      */
     public function addClient($companyName, $companyNumber, $taxNumber,
-    	$headquartersAddress, $business, $private){
+    	$headquartersStreet, $headquartersCode, $headquartersTown, $business, $private){
     		$data = array(
     			'company_name' => $companyName,
     			'company_number' => $companyNumber,
     			'tax_number' => $taxNumber,
-    			'headquarters_address' => $headquartersAddress,
+    			'headquarters_street' => $headquartersStreet,
+    			'headquarters_code' => $headquartersCode,
+    			'headquarters_town' => $headquartersTown,
     			'business' => $business,
     			'private' => $private,
     		);
@@ -34,12 +36,14 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     }
     	
     public function updateClient($id, $companyName, $companyNumber,
-    	$taxNumber, $headquartersAddress, $business, $private){
+    	$taxNumber, $headquartersStreet, $headquartersCode, $headquartersTown,  $business, $private){
     		$data = array(
     			'company_name' => $companyName,
     			'company_number' => $companyNumber,
     			'tax_number' => $taxNumber,
-    			'headquarters_address' => $headquartersAddress,
+    			'headquarters_street' => $headquartersStreet,
+    			'headquarters_code' => $headquartersCode,
+    			'headquarters_town' => $headquartersTown,
     			'business' => $business,
     			'private' => $private,
     		);
@@ -47,7 +51,19 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     }
     	
     public function deleteClient($id){
-    	$this->delete('id_client = ' . (int)$id);
+    	$client = $this->fetchRow('id_client = ' . $id);
+    	$client->deleted = 1;
+		$client->save();
+		$subsidiaries = $client->getAllSubsidiaries();
+		foreach ($subsidiaries as $subsidiary){
+			$subsidiary->deleted = 1;
+			$subsidiary->save();
+		}
+    }
+    
+    public function getClients(){
+    	$select = $this->select()->where('deleted = 0')->order('company_name');
+    	return $this->fetchAll($select);
     }
     
     /******
@@ -57,6 +73,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     	$ico = $this->fetchAll($this->select()
     		->from('client')
     		->columns('company_number')
+    		->where('deleted = 0')
     		->where('company_number = ?', $companyNumber));
     	if(count($ico) != 0){
     		return true;

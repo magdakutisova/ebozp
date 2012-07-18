@@ -1,5 +1,10 @@
-<div class="box">Různé filtry - název, BT, KOO, město/obec, naposledy otevřené</div>
 <div class="box">
+	<h3>Filtrování</h3>
+	<a href="<?php echo $this->url(array(), 'clientList')?>">Podle názvu</a> | <a href="#">Podle bezpečnostního technika</a> | <a href="#">Podle
+		koordinátora</a> | <a href="#">Podle obce</a> | <a href="#">Naposledy otevřené</a>
+</div>
+
+<div class="box" id="filtered">
 	
 	<?php foreach($this->clients as $client) : ?>
 		<p class="bold">
@@ -11,10 +16,8 @@
 		$rowCount = count($subsidiaries);
 		if ($rowCount > 0) {?>
 		<ul>
-			<?php foreach($subsidiaries as $subsidiary) :
-				if(!$subsidiary->hq) {?>
-				<li><?php echo '<em>' . $subsidiary->subsidiary_name . '</em>, ' . $subsidiary->subsidiary_address; ?></li>
-				<?php }?>	
+			<?php foreach($subsidiaries as $subsidiary) :?>
+				<li><?php echo '<em>' . $subsidiary->subsidiary_name . '</em>, ' . $subsidiary->subsidiary_town; ?></li>
 				<?php endforeach; } ?>
 				</ul>
 	<?php endforeach; ?>

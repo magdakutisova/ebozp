@@ -40,15 +40,57 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'subsidiary_address', array(
-        	'label' => 'Adresa sídla',
+         $this->addElement('hidden', 'subsidiary', array(
+        	'label' => 'Adresa pobočky',
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'subsidiary_street', array(
+        	'label' => 'Ulice a č. p.',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'invoice_address', array(
+        $this->addElement('text', 'subsidiary_code', array(
+        	'label' => 'PSČ',
+        	'required' => true,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
+        		new Zend_Validate_PostCode('cs_CZ')),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'subsidiary_town', array(
+        	'label' => 'Obec',
+        	'required' => true,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
+         $this->addElement('hidden', 'invoice', array(
         	'label' => 'Fakturační adresa',
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_street', array(
+        	'label' => 'Ulice a č. p.',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_code', array(
+        	'label' => 'PSČ',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
+        		new Zend_Validate_PostCode('cs_CZ')),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_town', array(
+        	'label' => 'Obec',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
 	<nav>
+		<home>
+			<label>Domů</label>
+			<route>coordinator</route>
+		</home>
 		<client>
 			<label>Klient</label>
 			<route>clientList</route>

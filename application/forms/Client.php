@@ -42,8 +42,29 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('text', 'headquarters_address', array(
+        $this->addElement('hidden', 'headquarters', array(
         	'label' => 'Adresa sídla',
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'headquarters_street', array(
+        	'label' => 'Ulice a č. p.',
+        	'required' => true,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'headquarters_code', array(
+        	'label' => 'PSČ',
+        	'required' => true,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
+        		new Zend_Validate_PostCode('cs_CZ')),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'headquarters_town', array(
+        	'label' => 'Obec',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
@@ -71,14 +92,7 @@ class Application_Form_Client extends Zend_Form
         	'validators' => array(new Zend_Validate_StringLength(array('max => 15'))),
         	'decorators' => $elementDecorator,
         ));
-        
-        $this->addElement('text', 'invoice_address', array(
-        	'label' => 'Fakturační adresa',
-        	'required' => false,
-        	'filters' => array('StripTags', 'StringTrim'),
-        	'decorators' => $elementDecorator,
-        ));
-        
+               
         $this->addElement('hidden', 'contact', array(
         	'label' => 'Kontaktní osoba pro BOZP a PO',
         	'decorators' => $elementDecorator,

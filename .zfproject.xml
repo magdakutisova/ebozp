@@ -22,12 +22,15 @@
           <actionMethod actionName="new"/>
           <actionMethod actionName="admin"/>
           <actionMethod actionName="edit"/>
+          <actionMethod actionName="delete"/>
+          <actionMethod actionName="town"/>
         </controllerFile>
         <controllerFile controllerName="Subsidiary">
           <actionMethod actionName="index"/>
           <actionMethod actionName="new"/>
           <actionMethod actionName="list"/>
           <actionMethod actionName="edit"/>
+          <actionMethod actionName="delete"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -45,6 +48,7 @@
         <dbTableDirectory>
           <dbTableFile dbTableName="Client"/>
           <dbTableFile dbTableName="Subsidiary"/>
+          <dbTableFile dbTableName="Diary"/>
         </dbTableDirectory>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
@@ -88,6 +92,15 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Subsidiary">
             <viewScriptFile forActionName="edit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Client">
+            <viewScriptFile forActionName="delete"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Subsidiary">
+            <viewScriptFile forActionName="delete"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Client">
+            <viewScriptFile forActionName="town"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

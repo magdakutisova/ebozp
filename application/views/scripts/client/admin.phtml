@@ -1,10 +1,17 @@
+<?php if ($this->deleted){ ?>
+
+	<p>Klient <em><?php echo $this->companyName ?></em> neexistuje. Pravděpodobně byl smazán.</p>
+	
+<?php } else {?>
+
 <p><span class="bold">Název klienta: </span><?php echo $this->companyName;?></p>
 <table>
 	<tr>
 		<td colspan=3><a href="#">ADMINISTRACE PŘÍSTUPOVÝCH PRÁV</a></td>
 	</tr>
 	<tr>
-		<td colspan=3><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
+		<td colspan=2><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
+		<td><a href="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" onclick="return confirm('Opravdu chcete klienta smazat?')">SMAZAT KLIENTA</a></td>
 	</tr>
 	<tr>
 		<td><a href="#">PŘIDAT PRACOVIŠTĚ</a></td>
@@ -22,12 +29,14 @@
 	</tr>
 	<tr>
 		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'subsidiaryNew') ?>">PŘIDAT POBOČKU</a></td>
-		<td colspan=2><a class="edit-link">EDITACE</a></td>
+		<td colspan=2><a class="edit-link">EDITOVAT/SMAZAT</a></td>
 	</tr>
 </table>
 
 <div id="pobocky" class="hidden">
-	<?php echo $this->form; ?>
+	<?php if ($this->form != null){
+		echo $this->form;
+	} ?>
 </div>
 
 <h3>Provést audit</h3>
@@ -35,3 +44,5 @@
 	<li><a href="#">Systémový audit</a></li>
 	<li><a href="#">Kontrola pracovišť</a></li>
 </ul>
+
+<?php } ?>

@@ -12,6 +12,15 @@
 	display: none;
 }
 
+.diary{
+	height: 200px;
+	overflow: auto;
+}
+
+.diary-message{
+	margin: 0; padding: 0;
+}
+
 /*Formulare*/
 textarea{
 	height: 50px;

@@ -89,6 +89,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'clientDelete',
+			new Zend_Controller_Router_Route('klienti/:clientId/smazat',
+											array('controller' => 'client',
+													'action' => 'delete'))
+		);
+		
+		$router->addRoute(
 			'subsidiaryNew',
 			new Zend_Controller_Router_Route('klienti/:clientId/nova-pobocka',
 											array('controller' => 'subsidiary',
@@ -104,9 +111,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'subsidiaryEdit',
-			new Zend_Controller_Router_Route('klienti/:clientId/pobocky/:subsidiary',
+			new Zend_Controller_Router_Route('klienti/:clientId/pobocky/:subsidiary/editovat',
 											array('controller' => 'subsidiary',
 													'action' => 'edit'))
+		);
+		
+		$router->addRoute(
+			'subsidiaryDelete',
+			new Zend_Controller_Router_Route('klienti/:clientId/pobocky/:subsidiary/smazat',
+											array('controller' => 'subsidiary',
+													'action' => 'delete'))
 		);
 	}
 
