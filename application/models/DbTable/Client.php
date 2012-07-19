@@ -66,6 +66,11 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     	return $this->fetchAll($select);
     }
     
+	public function getLastOpen(){
+    	$select = $this->select()->where('deleted = 0')->order('open DESC');
+    	return $this->fetchAll($select);
+    }
+       
     /******
      * @returns bool existuje ICO
      */
@@ -106,6 +111,12 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     	$select->setIntegrityCheck(false);
     	$headquarters = $this->fetchAll($select);
     	return $headquarters->current()->toArray();
+    }
+    
+    public function openClient($clientId){
+    	$client = $this->fetchRow('id_client = ' . $clientId);
+    	$client->open = new Zend_Db_Expr('NOW()');
+    	$client->save();
     }
     
 }

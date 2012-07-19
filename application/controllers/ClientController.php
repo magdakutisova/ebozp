@@ -1,33 +1,53 @@
 <?php
 
-class ClientController extends Zend_Controller_Action
-{
-
-    public function init()
-    {
+class ClientController extends Zend_Controller_Action {
+	
+	public function init() {
 		$this->view->title = 'Správa klientů';
 		$this->view->headTitle ( $this->view->title );
-    }
-
-    public function indexAction()
-    {
+		
+		if ($this->getRequest ()->isXmlHttpRequest ()) {
+			$this->_helper->layout->disableLayout ();
+			$this->_helper->viewRenderer->setNoRender ( true );
+		}
+		
+		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
+		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
+	}
+	
+	public function indexAction() {
 		// action body
-    }
-
-    public function searchAction()
-    {
+	}
+	
+	public function searchAction() {
 		// action body
-    }
-
-    public function listAction()
-    {
+	}
+	
+	public function listAction() {
 		$this->view->subtitle = 'Výběr klienta';
-		$clients = new Application_Model_DbTable_Client ();
-		$this->view->clients = $clients->getClients();
-    }
-
-    public function newAction()
-    {
+		
+		$mode = $this->_getParam ( 'mode' );
+		
+		if ($mode == '' || $mode == 'nazev') {
+			$clients = new Application_Model_DbTable_Client ();
+			$this->view->clients = $clients->getClients ();
+			$this->renderScript ( 'client/list.phtml' );
+		} else if ($mode == 'bt') {
+			$this->renderScript ( 'client/technician.phtml' );
+		} else if ($mode == 'koo') {
+			$this->renderScript ( 'client/coordinator.phtml' );
+		} else if ($mode == 'obec') {
+			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+			$this->view->subsidiaries = $subsidiaries->getByTown ();
+			$this->renderScript ( 'client/town.phtml' );
+		} else if ($mode == 'naposledy') {
+			$clients = new Application_Model_DbTable_Client ();
+			$this->view->clients = $clients->getLastOpen ();
+			$this->renderScript ( 'client/list.phtml' );
+		}
+	}
+	
+	public function newAction() {
 		$this->view->subtitle = 'Nový klient';
 		
 		$form = new Application_Form_Client ();
@@ -89,19 +109,23 @@ class ClientController extends Zend_Controller_Action
 			}
 		}
 	
-    }
-
-    public function adminAction()
-    {
+	}
+	
+	public function adminAction() {
 		$this->view->subtitle = 'Administrace klienta';
 		
 		$clientId = $this->_getParam ( 'clientId' );
 		
 		$clients = new Application_Model_DbTable_Client ();
+		$clients->openClient ( $clientId );
 		$client = $clients->getClient ( $clientId );
 		
+		if ($client ['deleted']) {
+			throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
+		}
+		
 		$this->view->companyName = $client ['company_name'];
-		$this->view->deleted = $client['deleted'];
+		//$this->view->deleted = $client['deleted'];
 		$this->view->clientId = $clientId;
 		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -116,20 +140,19 @@ class ClientController extends Zend_Controller_Action
 				$formData = $this->getRequest ()->getPost ();
 				if ($form->isValid ( $formData )) {
 					$subsidiary = $this->getRequest ()->getParam ( 'subsidiary' );
-					if(isSet($formData['edit'])){
+					if (isSet ( $formData ['edit'] )) {
 						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryEdit' );
 					}
-					if(isSet($formData['delete'])){
+					if (isSet ( $formData ['delete'] )) {
 						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryDelete' );
 					}
 				}
 			}
 		}
 	
-    }
-
-    public function editAction()
-    {
+	}
+	
+	public function editAction() {
 		$this->view->subtitle = 'Editace základních údajů klienta';
 		
 		$form = new Application_Form_Client ();
@@ -192,37 +215,43 @@ class ClientController extends Zend_Controller_Action
 			} else {
 				$clientId = $this->_getParam ( 'clientId' );
 				$clients = new Application_Model_DbTable_Client ();
+				
+				$client = $clients->getClient ( $clientId );
+				
+				if ($client ['deleted']) {
+					throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
+				}
+				
 				$form->populate ( $clients->getHeadquarters ( $clientId ) );
 			}
 		}
-    }
-
-    public function deleteAction()
-    {
-		$clientId = $this->_getParam ( 'clientId' );
-		
-		$clients = new Application_Model_DbTable_Client ();
-		$client = $clients->getHeadquarters($clientId);
-		$companyName = $client['company_name'];
-		$subsidiaryId = $client['id_subsidiary'];
-		$clients->deleteClient ( $clientId );
-		
-		//TODO dát k zápisu uživatele				
-		
-		$diary = new Application_Model_DbTable_Diary ();
-		$username = 'admin';
-		$diary->addMessage ( $username . ' smazal klienta ' . $companyName . ".", $subsidiaryId, $username );
-		
-		$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> smazán' );
-		$this->_helper->redirector->gotoRoute ( array (), 'clientList' );
+	}
 	
-    }
+	public function deleteAction() {
+		if ($this->getRequest ()->getMethod () == 'POST') {
+			$clientId = $this->_getParam ( 'clientId' );
+			
+			$clients = new Application_Model_DbTable_Client ();
+			$client = $clients->getHeadquarters ( $clientId );
+			$companyName = $client ['company_name'];
+			$subsidiaryId = $client ['id_subsidiary'];
+			$clients->deleteClient ( $clientId );
+			
+			//TODO dát k zápisu uživatele				
+			
 
-    public function townAction()
-    {
-        // action body
-    }
-
+			$diary = new Application_Model_DbTable_Diary ();
+			$username = 'admin';
+			$diary->addMessage ( $username . ' smazal klienta ' . $companyName . ".", $subsidiaryId, $username );
+			
+			$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> smazán' );
+			$this->_helper->redirector->gotoRoute ( array (), 'clientList' );
+		
+		} else {
+			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání klienta.', 500 );
+		}
+	
+	}
 
 }
 

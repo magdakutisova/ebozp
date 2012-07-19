@@ -41,6 +41,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		Zend_Validate_Abstract::setDefaultTranslator($translator);
 	}
 	
+	protected function _initSearch(){
+		$indexPath = APPLICATION_PATH . '/../data/searchindex';
+		$index = Zend_Search_Lucene::create($indexPath);
+		
+	}
+	
 	protected function _initRouter(array $options = array()){
 		$this->bootstrap('FrontController');
 		$frontController = $this->getResource('FrontController');
@@ -61,6 +67,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'clientFilter',
+			new Zend_Controller_Router_Route('klienti/:mode',
+											 array('controller' => 'client',
+											 	   'action' => 'list'))
+		);
+		
+		$router->addRoute(
 			'clientSearch',
 			new Zend_Controller_Router_Route('hledej-klienta',
 											 array('controller' => 'client',
@@ -76,49 +89,49 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'clientAdmin',
-			new Zend_Controller_Router_Route('klienti/:clientId',
+			new Zend_Controller_Router_Route('klient/:clientId',
 											 array('controller' => 'client',
 											 	   'action' => 'admin'))
 		);
 		
 		$router->addRoute(
 			'clientEdit',
-			new Zend_Controller_Router_Route('klienti/:clientId/edit',
+			new Zend_Controller_Router_Route('klient/:clientId/edit',
 											array('controller' => 'client',
 													'action' => 'edit'))
 		);
 		
 		$router->addRoute(
 			'clientDelete',
-			new Zend_Controller_Router_Route('klienti/:clientId/smazat',
+			new Zend_Controller_Router_Route('klient/:clientId/smazat',
 											array('controller' => 'client',
 													'action' => 'delete'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryNew',
-			new Zend_Controller_Router_Route('klienti/:clientId/nova-pobocka',
+			new Zend_Controller_Router_Route('klient/:clientId/nova-pobocka',
 											array('controller' => 'subsidiary',
 													'action' => 'new'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryList',
-			new Zend_Controller_Router_Route('klienti/:clientId/pobocky',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocky',
 											array('controller' => 'subsidiary',
 													'action' => 'list'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryEdit',
-			new Zend_Controller_Router_Route('klienti/:clientId/pobocky/:subsidiary/editovat',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocky/:subsidiary/editovat',
 											array('controller' => 'subsidiary',
 													'action' => 'edit'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryDelete',
-			new Zend_Controller_Router_Route('klienti/:clientId/pobocky/:subsidiary/smazat',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocky/:subsidiary/smazat',
 											array('controller' => 'subsidiary',
 													'action' => 'delete'))
 		);

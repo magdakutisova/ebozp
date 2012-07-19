@@ -1,4 +1,25 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>Client</b> and script/action name <b>town</b></p>
+<?php echo $this->filters()?>
+
+<div class="box" id="filtered">
+
+	<?php $town = $this->subsidiaries['0']['subsidiary_town']; ?>
+	<p class="bold"><?php echo $town; ?></p>
+	<ul>
+	<?php foreach ($this->subsidiaries as $subsidiary) :
+		if ($town != $subsidiary->subsidiary_town){?>
+			</ul>
+			<p class="bold"><?php echo $subsidiary->subsidiary_town; ?></p>
+			<?php $town = $subsidiary->subsidiary_town; ?>
+			<ul>
+		<?php } 
+		if ($subsidiary->hq) {?>
+			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->client_id), 'clientAdmin');?>">
+				<?php echo $subsidiary->subsidiary_name . ' (centrála)'?>
+			</a></li>
+		<?php }
+		else {?>
+			<li><?php echo $subsidiary->subsidiary_name?></li>
+		<?php }
+		endforeach; ?>
+	</ul>
 </div>

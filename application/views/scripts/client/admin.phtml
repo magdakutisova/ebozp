@@ -11,7 +11,7 @@
 	</tr>
 	<tr>
 		<td colspan=2><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
-		<td><a href="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" onclick="return confirm('Opravdu chcete klienta smazat?')">SMAZAT KLIENTA</a></td>
+		<td></td>
 	</tr>
 	<tr>
 		<td><a href="#">PŘIDAT PRACOVIŠTĚ</a></td>
@@ -32,6 +32,8 @@
 		<td colspan=2><a class="edit-link">EDITOVAT/SMAZAT</a></td>
 	</tr>
 </table>
+
+<form id="smazat" action="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" method="post"><input class="anchor" type="submit" value="SMAZAT KLIENTA" onclick="return confirm('Opravdu chcete klienta smazat?')"/></form>
 
 <div id="pobocky" class="hidden">
 	<?php if ($this->form != null){

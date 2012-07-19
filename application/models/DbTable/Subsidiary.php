@@ -65,6 +65,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		$subsidiary->save();
 	}
 	
+	/**
+	 * Pro plnění selectu poboček.
+	 * @param int $clientId
+	 */
 	public function getSubsidiaries($clientId) {
 		$select = $this->select ()
 			->from ( 'subsidiary' )
@@ -83,8 +87,17 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			;
 			return $subsidiaries;
 		} else {
-	return 0;
-}
+			return 0;
+		}
+	}
+	
+	public function getByTown(){
+		$select = $this->select()
+			->from('subsidiary')
+			->columns (array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq'))
+			->where('deleted = 0')
+			->order('subsidiary_town');
+		return $this->fetchAll($select);
 	}
 
 }
