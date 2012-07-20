@@ -32,16 +32,22 @@
           <actionMethod actionName="edit"/>
           <actionMethod actionName="delete"/>
         </controllerFile>
+<<<<<<< HEAD
         <controllerFile controllerName="Search">
           <actionMethod actionName="index"/>
           <actionMethod actionName="search"/>
         </controllerFile>
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="Client"/>
         <formFile formName="Subsidiary"/>
         <formFile formName="SubsidiaryList"/>
+<<<<<<< HEAD
         <formFile formName="Search"/>
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -107,12 +113,15 @@
           <viewControllerScriptsDirectory forControllerName="Client">
             <viewScriptFile forActionName="town"/>
           </viewControllerScriptsDirectory>
+<<<<<<< HEAD
           <viewControllerScriptsDirectory forControllerName="Search">
             <viewScriptFile forActionName="index"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Search">
             <viewScriptFile forActionName="search"/>
           </viewControllerScriptsDirectory>
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>

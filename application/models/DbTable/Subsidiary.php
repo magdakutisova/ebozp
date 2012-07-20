@@ -15,6 +15,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $row->toArray ();
 	}
 	
+<<<<<<< HEAD
 	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq) {
 		$data = array ('subsidiary_name' => $subsidiaryName, 'subsidiary_street' => $subsidiaryStreet, 'subsidiary_code' => $subsidiaryCode, 'subsidiary_town' => $subsidiaryTown, 'invoice_street' => $invoiceStreet, 'invoice_code' => $invoiceCode, 'invoice_town' => $invoiceTown, 'contact_person' => $contactPerson, 'phone' => $phone, 'email' => $email, 'supervision_frequency' => $supervisionFrequency, 'client_id' => $clientId, 'private' => $private, 'hq' => $hq );
 		$subsidiaryId = $this->insert ( $data );
@@ -46,13 +47,62 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq) {
 		$data = array ('subsidiary_name' => $subsidiaryName, 'subsidiary_street' => $subsidiaryStreet, 'subsidiary_code' => $subsidiaryCode, 'subsidiary_town' => $subsidiaryTown, 'invoice_street' => $invoiceStreet, 'invoice_code' => $invoiceCode, 'invoice_town' => $invoiceTown, 'contact_person' => $contactPerson, 'phone' => $phone, 'email' => $email, 'supervision_frequency' => $supervisionFrequency, 'client_id' => $clientId, 'private' => $private, 'hq' => $hq );
+=======
+	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown,
+		$invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency,
+		$clientId, $private, $hq) {
+			$data = array (
+				'subsidiary_name' => $subsidiaryName,
+				'subsidiary_street' => $subsidiaryStreet,
+				'subsidiary_code' => $subsidiaryCode,
+				'subsidiary_town' => $subsidiaryTown,
+				'invoice_street' => $invoiceStreet,
+				'invoice_code' => $invoiceCode,
+				'invoice_town' => $invoiceTown,
+				'contact_person' => $contactPerson,
+				'phone' => $phone,
+				'email' => $email,
+				'supervision_frequency' => $supervisionFrequency,
+				'client_id' => $clientId,
+				'private' => $private,
+				'hq' => $hq
+			);
+		return $this->insert ( $data );
+	}
+	
+	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode,
+		$subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email,
+		$supervisionFrequency, $clientId, $private, $hq) {
+			$data = array (
+				'subsidiary_name' => $subsidiaryName,
+				'subsidiary_street' => $subsidiaryStreet,
+				'subsidiary_code' => $subsidiaryCode,
+				'subsidiary_town' => $subsidiaryTown,
+				'invoice_street' => $invoiceStreet,
+				'invoice_code' => $invoiceCode,
+				'invoice_town' => $invoiceTown,
+				'contact_person' => $contactPerson,
+				'phone' => $phone,
+				'email' => $email,
+				'supervision_frequency' => $supervisionFrequency,
+				'client_id' => $clientId,
+				'private' => $private,
+				'hq' => $hq
+			);
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 		$this->update ( $data, 'id_subsidiary = ' . ( int ) $id );
 	}
 	
 	public function deleteSubsidiary($id) {
+<<<<<<< HEAD
 		$subsidiary = $this->fetchRow ( 'id_subsidiary = ' . $id );
 		$subsidiary->deleted = 1;
 		$subsidiary->save ();
+=======
+		$subsidiary = $this->fetchRow('id_subsidiary = ' . $id);
+		$subsidiary->deleted = 1;
+		$subsidiary->save();
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	}
 	
 	/**
@@ -60,7 +110,16 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	 * @param int $clientId
 	 */
 	public function getSubsidiaries($clientId) {
+<<<<<<< HEAD
 		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+=======
+		$select = $this->select ()
+			->from ( 'subsidiary' )
+			->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )
+			->where ( 'client_id = ?', $clientId )
+			->where ( 'hq = 0' )
+			->where('deleted = 0');
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 		$results = $this->fetchAll ( $select );
 		if (count ( $results ) > 0) {
 			$subsidiares = array ();
@@ -76,6 +135,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		}
 	}
 	
+<<<<<<< HEAD
 	public function getSubsidiariesSearch() {
 		$select = $this->select ()->from ( 'subsidiary' )->where ( 'deleted = 0' )->where ( 'hq = 0' );
 		return $this->fetchAll ( $select );
@@ -84,6 +144,15 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	public function getByTown() {
 		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq' ) )->where ( 'deleted = 0' )->order ( 'subsidiary_town' );
 		return $this->fetchAll ( $select );
+=======
+	public function getByTown(){
+		$select = $this->select()
+			->from('subsidiary')
+			->columns (array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq'))
+			->where('deleted = 0')
+			->order('subsidiary_town');
+		return $this->fetchAll($select);
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	}
 
 }

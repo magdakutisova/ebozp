@@ -15,7 +15,11 @@
 				</choose>
 				<search>
 					<label>Hledej</label>
+<<<<<<< HEAD
 					<route>search</route>
+=======
+					<route>clientSearch</route>
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 				</search>
 				<new>
 					<label>Založ nového klienta</label>

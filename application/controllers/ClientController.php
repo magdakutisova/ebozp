@@ -19,6 +19,13 @@ class ClientController extends Zend_Controller_Action {
 		// action body
 	}
 	
+<<<<<<< HEAD
+=======
+	public function searchAction() {
+		// action body
+	}
+	
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	public function listAction() {
 		$this->view->subtitle = 'Výběr klienta';
 		

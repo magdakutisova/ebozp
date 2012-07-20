@@ -32,6 +32,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     			'business' => $business,
     			'private' => $private,
     		);
+<<<<<<< HEAD
     		$clientId = $this->insert($data);
     		
     		//indexace pro vyhledávání
@@ -54,6 +55,9 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
 			$index->optimize();
     		
     		return $clientId;
+=======
+    		return $this->insert($data);
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
     }
     	
     public function updateClient($id, $companyName, $companyNumber,
@@ -69,6 +73,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
     			'private' => $private,
     		);
     		$this->update($data, 'id_client = ' . (int)$id);
+<<<<<<< HEAD
     		
     		//indexace pro vyhledávání
     		try{
@@ -97,6 +102,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract
 			$index->addDocument ( $document );
 			$index->commit();
 			$index->optimize();
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
     }
     	
     public function deleteClient($id){

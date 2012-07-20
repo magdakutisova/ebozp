@@ -21,10 +21,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     	new Zend_Session_Namespace();
     }
     
+<<<<<<< HEAD
     protected function _initSearch(){
     	Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8_CaseInsensitive());
     }
     
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	protected function _initNavigation(){
 		$this->bootstrap('view');
 		$view = $this->getResource('view');
@@ -45,6 +48,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		Zend_Validate_Abstract::setDefaultTranslator($translator);
 	}
 	
+<<<<<<< HEAD
+=======
+	protected function _initSearch(){
+		$indexPath = APPLICATION_PATH . '/../data/searchindex';
+		$index = Zend_Search_Lucene::create($indexPath);
+		
+	}
+	
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	protected function _initRouter(array $options = array()){
 		$this->bootstrap('FrontController');
 		$frontController = $this->getResource('FrontController');
@@ -72,6 +84,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+<<<<<<< HEAD
+=======
+			'clientSearch',
+			new Zend_Controller_Router_Route('hledej-klienta',
+											 array('controller' => 'client',
+											 	   'action' => 'search'))
+		);
+		
+		$router->addRoute(
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 			'clientNew',
 			new Zend_Controller_Router_Route('novy-klient',
 											 array('controller' => 'client',
@@ -126,6 +148,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 											array('controller' => 'subsidiary',
 													'action' => 'delete'))
 		);
+<<<<<<< HEAD
 		
 		$router->addRoute(
 			'searchIndex',
@@ -141,6 +164,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 												'action' => 'search'))
 		);
 		
+=======
+>>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	}
 
 }
