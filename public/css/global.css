@@ -17,11 +17,8 @@
 	overflow: auto;
 }
 
-<<<<<<< HEAD
+
 .diary-message, .no-margin{
-=======
-.diary-message{
->>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
 	margin: 0; padding: 0;
 }
 
@@ -30,13 +27,12 @@ a {
 }
 
 h3{
-<<<<<<< HEAD
+
 	margin: 20px 0 5px 0;
 }
 
 h4{
-=======
->>>>>>> 5e236ec5c17f1229f8db9ed583672c5c27891941
+
 	margin: 15px 0 5px 0;
 }
 
