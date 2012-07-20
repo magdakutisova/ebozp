@@ -1,0 +1,45 @@
+@CHARSET "UTF-8";
+
+/*General*/
+.bold{
+	font-weight: bold;
+}
+.message{
+	background: #b7ceec; padding: 10px
+}
+
+.hidden{
+	display: none;
+}
+
+.diary{
+	height: 200px;
+	overflow: auto;
+}
+
+.diary-message, .no-margin{
+	margin: 0; padding: 0;
+}
+
+a {
+	cursor: pointer;
+}
+
+h3{
+	margin: 20px 0 5px 0;
+}
+
+h4{
+	margin: 15px 0 5px 0;
+}
+
+/*Formulare*/
+textarea{
+	height: 50px;
+}
+input[type=text]{
+	width: 200px;
+}
+label.optional{
+	font-weight: normal;
+}

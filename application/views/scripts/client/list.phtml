@@ -1,0 +1,22 @@
+<?php echo $this->filters()?>
+
+<div class="box" id="filtered">
+	
+	<?php foreach($this->clients as $client) : ?>
+		<p class="bold">
+			<a href="<?php echo $this->url(array('clientId' => $client->id_client), 'clientAdmin')?>">
+				<?php echo $client->company_name;?>
+			</a>
+		</p>
+		<?php $subsidiaries = $client->getSubsidiaries();
+		$rowCount = count($subsidiaries);
+		if ($rowCount > 0) {?>
+		<ul>
+			<?php foreach($subsidiaries as $subsidiary) :?>
+				<li><?php echo '<em>' . $subsidiary->subsidiary_name . '</em>, ' . $subsidiary->subsidiary_town; ?></li>
+				<?php endforeach; } ?>
+				</ul>
+	<?php endforeach; ?>
+		
+	
+</div>

@@ -1,0 +1,15 @@
+<?php echo $this->render('header.phtml') ?>
+
+<h1 class="prepend-top"><?php echo "Guardian"; ?></h1>
+
+<div class="span-5 border navigation">
+		<?php echo $this->navigation()->menu(); ?>
+</div>
+
+<div class="push-1 span-19 main-content">
+	<?php echo $this->messages(); ?>
+	<h2><?php echo $this->subtitle; ?></h2>
+	<?php echo $this->layout()->content; ?>
+</div>
+
+<?php echo $this->render('footer.phtml')?>

@@ -1,0 +1,34 @@
+<div class="box"><?php echo $this->form; ?></div>
+
+<?php if ($this->post){?>
+<div class="box">
+<h3>Výsledky vyhledávání</h3>
+
+<p>Počet nalezených záznamů: <?php echo count($this->clients) + count($this->subsidiaries); ?></p>
+
+
+<?php if (count($this->clients) > 0){?>
+
+	<h3>Klienti</h3>
+	<?php foreach ($this->clients as $client):?>
+		<h4><a href="<?php echo $this->url(array('clientId' => $client['clientId']), 'clientAdmin') ?>"><?php echo $client['companyName'] ?></a></h4>
+		<p class="no-margin"><span class="bold">Adresa: </span><?php echo $client['headquartersStreet'] . ', ' . $client['headquartersTown'] ?></p>	
+	<?php endforeach;?>
+	
+<?php }?>
+
+<?php if (count($this->subsidiaries) > 0){?>
+
+	<h3>Pobočky</h3>
+	<?php foreach ($this->subsidiaries as $subsidiary):?>
+		<h4><?php echo $subsidiary['subsidiaryName'] ?></h4>
+		<p class="no-margin"><span class="bold">Adresa pobočky: </span><?php echo $subsidiary['subsidiaryStreet'] . ', ' . $subsidiary['subsidiaryTown'] ?></p>
+		<?php if($subsidiary['invoiceStreet'] != null) { ?>
+			<p class="no-margin"><span class="bold">Fakturační adresa: </span><?php echo $subsidiary['invoiceStreet'] . ', ' . $subsidiary['invoiceTown'] ?></p>
+		<?php }?>	
+	<?php endforeach;?>
+	
+<?php }?>
+
+</div>
+<?php }?>
