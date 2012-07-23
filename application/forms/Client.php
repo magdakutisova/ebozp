@@ -92,6 +92,20 @@ class Application_Form_Client extends Zend_Form
         	'validators' => array(new Zend_Validate_StringLength(array('max => 15'))),
         	'decorators' => $elementDecorator,
         ));
+        
+        $this->addElement('select', 'insurance_company', array(
+        	'label' => 'Pojišťovna',
+        	'required' => true,
+        	'decorators' => $elementDecorator,
+        	'multiOptions' => array('Kooperativa', 'Česká pojišťovna'),
+        ));
+        
+        $this->addElement('text', 'doctor', array(
+        	'label' => 'Poskytovatel pracovnělékařské péče',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
                
         $this->addElement('hidden', 'contact', array(
         	'label' => 'Kontaktní osoba pro BOZP a PO',

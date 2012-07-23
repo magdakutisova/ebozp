@@ -48,6 +48,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
 				$supervisionFrequency = $form->getValue ( 'supervision_frequency' );
+				$doctor = $form->getValue('doctor');
 				$private = $form->getValue ( 'private' );
 				
 				if ($subsidiaryName == null) {
@@ -55,7 +56,10 @@ class SubsidiaryController extends Zend_Controller_Action {
 				}
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, 0 );
+				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiaryName, $subsidiaryStreet,
+					$subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown,
+					$contactPerson, $phone, $email, $supervisionFrequency, $doctor,
+					$clientId, $private, 0 );
 				
 				//TODO dát k zápisu uživatele, odkaz na pobočku
 				
@@ -99,15 +103,19 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
 				$supervisionFrequency = $form->getValue ( 'supervision_frequency' );
+				$doctor = $form->getValue('doctor');
 				$private = $form->getValue ( 'private' );
-				//TODO upravit pobočky tak, aby šlo pak filtrovat podle města - dohodnout se podle kterého atd.
+				
 				if ($subsidiaryName == null) {
 					$clients = new Application_Model_DbTable_Client ();
 					$subsidiaryName = $clients->getCompanyName ( $clientId );
 				}
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiaryId, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, 0 );
+				$subsidiaries->updateSubsidiary ( $subsidiaryId, $subsidiaryName, $subsidiaryStreet,
+					$subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown,
+					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
+					0 );
 				
 				//TODO dát k zápisu uživatele, odkaz na pobočku
 				
@@ -133,27 +141,27 @@ class SubsidiaryController extends Zend_Controller_Action {
 	
 	public function deleteAction() {
 		if ($this->getRequest ()->getMethod () == 'POST') {
-		$clientId = $this->_getParam ( 'clientId' );
-		$subsidiaryId = $this->_getParam ( 'subsidiary' );
-		
-		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-		
-		$subsidiary = $subsidiaries->getSubsidiary ( $subsidiaryId );
-		$subsidiaryName = $subsidiary ['subsidiary_name'];
-		$subsidiaryTown = $subsidiary ['subsidiary_town'];
-		
-		$subsidiaries->deleteSubsidiary ( $subsidiaryId );
-		
-		//TODO dát k zápisu uživatele				
-		
+			$clientId = $this->_getParam ( 'clientId' );
+			$subsidiaryId = $this->_getParam ( 'subsidiary' );
+			
+			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+			
+			$subsidiary = $subsidiaries->getSubsidiary ( $subsidiaryId );
+			$subsidiaryName = $subsidiary ['subsidiary_name'];
+			$subsidiaryTown = $subsidiary ['subsidiary_town'];
+			
+			$subsidiaries->deleteSubsidiary ( $subsidiaryId );
+			
+			//TODO dát k zápisu uživatele				
+			
 
-		$diary = new Application_Model_DbTable_Diary ();
-		$username = 'admin';
-		$diary->addMessage ( $username . ' smazal pobočku ' . $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId . '.', $username );
-		
-		$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
-		$this->_helper->redirector->gotoRoute ( array (array ('clientId' => $clientId ), 'clientAdmin' ) );}
-		else{
+			$diary = new Application_Model_DbTable_Diary ();
+			$username = 'admin';
+			$diary->addMessage ( $username . ' smazal pobočku ' . $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId . '.', $username );
+			
+			$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
+			$this->_helper->redirector->gotoRoute (array ('clientId' => $clientId ), 'clientAdmin' );
+		} else {
 			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání pobočky.', 500 );
 		}
 	}

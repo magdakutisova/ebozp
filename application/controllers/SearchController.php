@@ -15,7 +15,7 @@ class SearchController extends Zend_Controller_Action
     	
 		$clients = new Application_Model_DbTable_Client ();
 		$clientData = $clients->getClients ();
-		$index = Zend_Search_Lucene::create ( Zend_Controller_Front::getInstance ()->getBaseUrl () . '/searchIndex' );
+		$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
 		
 		
 		$message = '';
@@ -23,6 +23,7 @@ class SearchController extends Zend_Controller_Action
 		if (sizeOf ( $clientData ) > 0) {			
 			foreach ( $clientData as $client ) {
 				$document = new Zend_Search_Lucene_Document ();
+				$document->addField(Zend_Search_Lucene_Field::keyword('companyNumber', $client['company_number'], 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client ['id_client'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client ['company_name'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client ['headquarters_street'], 'utf-8' ) );
@@ -40,7 +41,7 @@ class SearchController extends Zend_Controller_Action
 		if (sizeOf ( $subsidiaryData ) > 0) {
 			foreach ( $subsidiaryData as $subsidiary ) {
 				$document = new Zend_Search_Lucene_Document ();
-				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'subsidiaryId', $subsidiary ['id_subsidiary'], 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary ['id_subsidiary'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary ['subsidiary_name'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary ['subsidiary_street'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary ['subsidiary_town'], 'utf-8' ) );
@@ -55,7 +56,7 @@ class SearchController extends Zend_Controller_Action
 		}
 		$index->commit();
 		$index->optimize();
-		$message .= 'Naindexováno dokumentů' . $index->count();
+		$message .= 'Indexováno dokumentů: ' . $index->count();
 		$this->view->message = $message;
 		$this->_helper->redirector->gotoRoute ( array (), 'search' );
     }
@@ -76,7 +77,7 @@ class SearchController extends Zend_Controller_Action
 				$query = $form->getValue('query');
 				$message = "";
 				try{
-					$index = Zend_Search_Lucene::open(Zend_Controller_Front::getInstance ()->getBaseUrl () . '/searchIndex');
+					$index = Zend_Search_Lucene::open(APPLICATION_PATH . '/searchIndex');
 				}
 				catch (Zend_Search_Lucene_Exception $e){
 					$this->$this->_helper->redirector->gotoRoute ( array (), 'searchIndex' );
@@ -93,6 +94,7 @@ class SearchController extends Zend_Controller_Action
 					
 					foreach($results as $result){
 						if($result->type == 'client'){
+							$clients[$countC]['companyNumber'] = $result->companyNumber;
 							$clients[$countC]['clientId'] = $result->clientId;
 							$clients[$countC]['companyName'] = $result->companyName;
 							$clients[$countC]['headquartersStreet'] = $result->headquartersStreet;

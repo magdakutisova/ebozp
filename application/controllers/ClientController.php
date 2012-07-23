@@ -71,6 +71,8 @@ class ClientController extends Zend_Controller_Action {
 				$headquartersCode = $form->getValue ( 'headquarters_code' );
 				$headquartersTown = $form->getValue ( 'headquarters_town' );
 				$business = $form->getValue ( 'business' );
+				$insuranceCompany = $form->getValue ('insurance_company');
+				$doctor = $form->getValue('doctor');
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
@@ -86,11 +88,15 @@ class ClientController extends Zend_Controller_Action {
 				}
 				
 				//přidání klienta
-				$clientId = $clients->addClient ( $companyName, $companyNumber, $taxNumber, $headquartersStreet, $headquartersCode, $headquartersTown, $business, $private );
+				$clientId = $clients->addClient ( $companyName, $companyNumber, $taxNumber,
+					$headquartersStreet, $headquartersCode, $headquartersTown, $business,
+					$insuranceCompany, $private );
 				
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $companyName, $headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, null, $clientId, $private, true );
+				$subsidiaryId = $subsidiaries->addSubsidiary ( $companyName, $headquartersStreet,
+					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
+					$contactPerson, $phone, $email, null, $doctor, $clientId, $private, true );
 				
 				//TODO dát k zápisu uživatele
 				
@@ -122,7 +128,6 @@ class ClientController extends Zend_Controller_Action {
 		}
 		
 		$this->view->companyName = $client ['company_name'];
-		//$this->view->deleted = $client['deleted'];
 		$this->view->clientId = $clientId;
 		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -141,7 +146,8 @@ class ClientController extends Zend_Controller_Action {
 						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryEdit' );
 					}
 					if (isSet ( $formData ['delete'] )) {
-						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryDelete' );
+						//jen forward kvůli metodě POST
+						$this->_forward ( 'delete', 'subsidiary' );
 					}
 				}
 			}
@@ -173,6 +179,8 @@ class ClientController extends Zend_Controller_Action {
 				$headquartersCode = $form->getValue ( 'headquarters_code' );
 				$headquartersTown = $form->getValue ( 'headquarters_town' );
 				$business = $form->getValue ( 'business' );
+				$insuranceCompany = $form->getValue ('insurance_company');
+				$doctor = $form->getValue('doctor');
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
@@ -188,11 +196,15 @@ class ClientController extends Zend_Controller_Action {
 				}
 				
 				//update klienta
-				$clients->updateClient ( $clientId, $companyName, $companyNumber, $taxNumber, $headquartersStreet, $headquartersCode, $headquartersTown, $business, $private );
+				$clients->updateClient ( $clientId, $companyName, $companyNumber, $taxNumber,
+					$headquartersStreet, $headquartersCode, $headquartersTown, $business,
+					$insuranceCompany, $private );
 				
 				//update pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiaryId, $companyName, $headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, null, $clientId, $private, true );
+				$subsidiaries->updateSubsidiary ( $subsidiaryId, $companyName, $headquartersStreet,
+					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
+					$contactPerson, $phone, $email, null, $doctor, $clientId, $private, true );
 				
 				//TODO dát k zápisu uživatele				
 				

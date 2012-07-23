@@ -42,6 +42,7 @@ class Application_Form_SubsidiaryList extends Zend_Form
         	'label' => 'Smazat',
         	'attribs' => array('onClick' => 'return confirm("Opravdu chcete pobočku smazat?")'),
         	'decorators' => $elementDecorator2,
+        	'method' => 'post',
         ));
     }
 

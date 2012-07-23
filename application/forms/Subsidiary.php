@@ -131,6 +131,13 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('text', 'doctor', array(
+        	'label' => 'Poskytovatel pracovnělékařské péče',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
         $this->addElement('textarea', 'private', array(
         	'label' => 'Soukromá poznámka',
         	'required' => false,

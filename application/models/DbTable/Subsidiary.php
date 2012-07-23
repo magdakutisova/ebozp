@@ -15,20 +15,37 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $row->toArray ();
 	}
 	
-	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq) {
-		$data = array ('subsidiary_name' => $subsidiaryName, 'subsidiary_street' => $subsidiaryStreet, 'subsidiary_code' => $subsidiaryCode, 'subsidiary_town' => $subsidiaryTown, 'invoice_street' => $invoiceStreet, 'invoice_code' => $invoiceCode, 'invoice_town' => $invoiceTown, 'contact_person' => $contactPerson, 'phone' => $phone, 'email' => $email, 'supervision_frequency' => $supervisionFrequency, 'client_id' => $clientId, 'private' => $private, 'hq' => $hq );
+	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown,
+		$invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency,
+		$doctor, $clientId, $private, $hq) {
+		$data = array (
+			'subsidiary_name' => $subsidiaryName,
+			'subsidiary_street' => $subsidiaryStreet,
+			'subsidiary_code' => $subsidiaryCode,
+			'subsidiary_town' => $subsidiaryTown,
+			'invoice_street' => $invoiceStreet,
+			'invoice_code' => $invoiceCode,
+			'invoice_town' => $invoiceTown,
+			'contact_person' => $contactPerson,
+			'phone' => $phone,
+			'email' => $email,
+			'supervision_frequency' => $supervisionFrequency,
+			'doctor' => $doctor,
+			'client_id' => $clientId,
+			'private' => $private,
+			'hq' => $hq );
 		$subsidiaryId = $this->insert ( $data );
 		
 		if ($hq == 0) {
 			//indexace pro vyhledávání
 			try {
-				$index = Zend_Search_Lucene::open ( Zend_Controller_Front::getInstance ()->getBaseUrl () . '/searchIndex' );
+				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
 			} catch ( Zend_Search_Lucene_Exception $e ) {
-				$index = Zend_Search_Lucene::create ( Zend_Controller_Front::getInstance ()->getBaseUrl () . '/searchIndex' );
+				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
 			}
 			
 			$document = new Zend_Search_Lucene_Document ();
-			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'subsidiaryId', $subsidiaryId, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiaryId, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiaryName, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiaryStreet, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiaryTown, 'utf-8' ) );
@@ -44,19 +61,85 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $subsidiaryId;
 	}
 	
-	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency, $clientId, $private, $hq) {
-		$data = array ('subsidiary_name' => $subsidiaryName, 'subsidiary_street' => $subsidiaryStreet, 'subsidiary_code' => $subsidiaryCode, 'subsidiary_town' => $subsidiaryTown, 'invoice_street' => $invoiceStreet, 'invoice_code' => $invoiceCode, 'invoice_town' => $invoiceTown, 'contact_person' => $contactPerson, 'phone' => $phone, 'email' => $email, 'supervision_frequency' => $supervisionFrequency, 'client_id' => $clientId, 'private' => $private, 'hq' => $hq );
+	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode,
+		$subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email,
+		$supervisionFrequency, $doctor, $clientId, $private, $hq) {
+		$data = array (
+			'subsidiary_name' => $subsidiaryName,
+			'subsidiary_street' => $subsidiaryStreet,
+			'subsidiary_code' => $subsidiaryCode,
+			'subsidiary_town' => $subsidiaryTown,
+			'invoice_street' => $invoiceStreet,
+			'invoice_code' => $invoiceCode,
+			'invoice_town' => $invoiceTown,
+			'contact_person' => $contactPerson,
+			'phone' => $phone,
+			'email' => $email,
+			'supervision_frequency' => $supervisionFrequency,
+			'doctor' => $doctor,
+			'client_id' => $clientId,
+			'private' => $private,
+			'hq' => $hq );
 		$this->update ( $data, 'id_subsidiary = ' . ( int ) $id );
+		
+		if ($hq == 0) {
+			//indexace pro vyhledávání
+			try {
+				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
+			} catch ( Zend_Search_Lucene_Exception $e ) {
+				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+			}
+			
+			$hits = $index->find ( 'subsidiaryId: ' . $id );
+			
+			foreach ( $hits as $hit ) :
+				$index->delete ( $hit->id );
+			endforeach
+			;
+			
+			$document = new Zend_Search_Lucene_Document ();
+			$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $id, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiaryName, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiaryStreet, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiaryTown, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceStreet', $invoiceStreet, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceTown', $invoiceTown, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $clientId, 'utf-8' ) );
+			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
+			
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
+		}
 	}
 	
 	public function deleteSubsidiary($id) {
 		$subsidiary = $this->fetchRow ( 'id_subsidiary = ' . $id );
 		$subsidiary->deleted = 1;
 		$subsidiary->save ();
+		
+		if ($subsidiary->hq == 0) {
+			//indexace pro vyhledávání
+			try {
+				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
+			} catch ( Zend_Search_Lucene_Exception $e ) {
+				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+			}
+			
+			$hits = $index->find ( 'subsidiaryId: ' . $id );
+			
+			foreach ( $hits as $hit ) :
+				$index->delete ( $hit->id );
+			endforeach
+			;
+			
+			$index->commit ();
+			$index->optimize ();
+		}
 	}
-	 
+	
 	/**
-	 * Pro plnění selectu poboček.
+	 * Pro rozbalovací seznam poboček.
 	 * @param int $clientId
 	 */
 	public function getSubsidiaries($clientId) {
