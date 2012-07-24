@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configdata>
+	<nav>
+		<test>
+			<label>Domů</label>
+			<route>coordinator</route>
+		</test>
+	</nav>
+</configdata>

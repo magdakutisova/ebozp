@@ -4,7 +4,7 @@
 	
 	<?php foreach($this->clients as $client) : ?>
 		<p class="bold">
-			<a href="<?php echo $this->url(array('clientId' => $client->id_client), 'clientAdmin')?>">
+			<a href="<?php echo $this->url(array('clientId' => $client->id_client), 'clientIndex')?>">
 				<?php echo $client->company_name;?>
 			</a>
 		</p>

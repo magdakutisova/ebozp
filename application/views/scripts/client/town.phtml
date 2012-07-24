@@ -13,7 +13,7 @@
 			<ul>
 		<?php } 
 		if ($subsidiary->hq) {?>
-			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->client_id), 'clientAdmin');?>">
+			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->client_id), 'clientIndex');?>">
 				<?php echo $subsidiary->subsidiary_name . ' (centrála)'?>
 			</a></li>
 		<?php }

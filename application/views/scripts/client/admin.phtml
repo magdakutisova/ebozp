@@ -5,6 +5,7 @@
 <?php } else {?>
 
 <p><span class="bold">Název klienta: </span><?php echo $this->companyName;?></p>
+<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientIndex') ?>">Zpět na kartu klienta</a><br/><br/>
 <table>
 	<tr>
 		<td colspan=3><a href="#">ADMINISTRACE PŘÍSTUPOVÝCH PRÁV</a></td>

@@ -68,7 +68,7 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-         $this->addElement('hidden', 'invoice', array(
+        $this->addElement('hidden', 'invoice', array(
         	'label' => 'Fakturační adresa',
         	'decorators' => $elementDecorator,
         ));

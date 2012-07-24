@@ -48,6 +48,17 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     	$select = $this->select()->from('diary')->order('date DESC');
     	return $this->fetchAll($select);
     }
+    
+    public function getDiaryByClient($id){
+    	$select = $this->select()
+    		->from('diary')	
+    		->columns(array('date', 'message'))	
+    		->join('subsidiary', 'subsidiary.id_subsidiary = diary.subsidiary_id')
+    		->where('client_id = ?', $id)
+  			->order('date DESC');
+    	$select->setIntegrityCheck(false);
+    	return $this->fetchAll($select);
+    }
 
 }
 

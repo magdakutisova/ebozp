@@ -15,9 +15,7 @@
 				</choose>
 				<search>
 					<label>Hledej</label>
-
 					<route>search</route>
-
 				</search>
 				<new>
 					<label>Založ nového klienta</label>

@@ -12,8 +12,8 @@
 	display: none;
 }
 
-.diary{
-	height: 200px;
+.overflow{
+	height: 150px;
 	overflow: auto;
 }
 

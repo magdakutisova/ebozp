@@ -24,6 +24,7 @@
           <actionMethod actionName="edit"/>
           <actionMethod actionName="delete"/>
           <actionMethod actionName="town"/>
+          <actionMethod actionName="navrh"/>
         </controllerFile>
         <controllerFile controllerName="Subsidiary">
           <actionMethod actionName="index"/>
@@ -112,6 +113,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Search">
             <viewScriptFile forActionName="search"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Client">
+            <viewScriptFile forActionName="navrh"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

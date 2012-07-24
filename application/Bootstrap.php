@@ -29,8 +29,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('view');
 		$view = $this->getResource('view');
 		$config = new Zend_Config_Xml(APPLICATION_PATH . '/configs/navigation.xml', 'nav');
-		
+		$clientConfig = new Zend_Config_Xml(APPLICATION_PATH . '/configs/clientNavigation.xml', 'nav');
 		$navigation = new Zend_Navigation($config);
+		$clientNavigation = new Zend_Navigation($clientConfig);
+		Zend_Registry::set('ClientNavigation', $clientNavigation);
 		$view->navigation($navigation);
 	}
 	
@@ -80,9 +82,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'clientAdmin',
-			new Zend_Controller_Router_Route('klient/:clientId',
+			new Zend_Controller_Router_Route('klient/:clientId/admin',
 											 array('controller' => 'client',
 											 	   'action' => 'admin'))
+		);
+		
+		$router->addRoute(
+			'clientIndex',
+			new Zend_Controller_Router_Route('klient/:clientId',
+											 array('controller' => 'client',
+											 	   'action' => 'index'))
 		);
 		
 		$router->addRoute(
@@ -139,6 +148,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			new Zend_Controller_Router_Route('vyhledavani',
 											array('controller' => 'search',
 												'action' => 'search'))
+		);
+		
+		$router->addRoute(
+			'clientNavrh',
+			new Zend_Controller_Router_Route('klient/:clientId/navrh',
+											array('controller' => 'client',
+												'action' => 'navrh'))
 		);
 		
 	}

@@ -1,8 +1,10 @@
 <?php
 
-class ClientController extends Zend_Controller_Action {
-	
-	public function init() {
+class ClientController extends Zend_Controller_Action
+{
+
+    public function init()
+    {
 		$this->view->title = 'Správa klientů';
 		$this->view->headTitle ( $this->view->title );
 		
@@ -13,14 +15,30 @@ class ClientController extends Zend_Controller_Action {
 		
 		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
 		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
-	}
-	
-	public function indexAction() {
-		// action body
-	}
-	
+    }
 
-	public function listAction() {
+    public function indexAction()
+    {
+		
+		$this->_helper->layout()->setLayout('clientLayout');
+		
+		$clients = new Application_Model_DbTable_Client();
+		$clientId = $this->_getParam ( 'clientId' );
+		
+		$client = $clients->getHeadquarters($clientId);
+		
+		$this->view->subtitle = $client['company_name'];
+		$this->view->client = $client;
+		
+		$diary = new Application_Model_DbTable_Diary();
+
+		$this->view->records = $diary->getDiaryByClient($clientId);
+		
+		//TODO filtrovat záznamy v deníku dle uživatele
+    }
+
+    public function listAction()
+    {
 		$this->view->subtitle = 'Výběr klienta';
 		
 		$mode = $this->_getParam ( 'mode' );
@@ -42,9 +60,10 @@ class ClientController extends Zend_Controller_Action {
 			$this->view->clients = $clients->getLastOpen ();
 			$this->renderScript ( 'client/list.phtml' );
 		}
-	}
-	
-	public function newAction() {
+    }
+
+    public function newAction()
+    {
 		$this->view->subtitle = 'Nový klient';
 		
 		$form = new Application_Form_Client ();
@@ -71,7 +90,9 @@ class ClientController extends Zend_Controller_Action {
 				$headquartersCode = $form->getValue ( 'headquarters_code' );
 				$headquartersTown = $form->getValue ( 'headquarters_town' );
 				$business = $form->getValue ( 'business' );
-				$insuranceCompany = $form->getValue ('insurance_company');
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
+				$supervisionFrequency = $form->getValue('supervision_frequency');
 				$doctor = $form->getValue('doctor');
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
@@ -96,14 +117,15 @@ class ClientController extends Zend_Controller_Action {
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaryId = $subsidiaries->addSubsidiary ( $companyName, $headquartersStreet,
 					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, null, $doctor, $clientId, $private, true );
+					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
+					true );
 				
 				//TODO dát k zápisu uživatele
 				
 
 				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' přidal nového klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientAdmin' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
+				$diary->addMessage ( $username . ' přidal nového klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientIndex' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> přidán' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -112,17 +134,21 @@ class ClientController extends Zend_Controller_Action {
 			}
 		}
 	
-	}
-	
-	public function adminAction() {
+    }
+
+    public function adminAction()
+    {
 		$this->view->subtitle = 'Administrace klienta';
 		
 		$clientId = $this->_getParam ( 'clientId' );
 		
 		$clients = new Application_Model_DbTable_Client ();
 		$clients->openClient ( $clientId );
-		$client = $clients->getClient ( $clientId );
+		$client = $clients->getHeadquarters ( $clientId );
+		$this->view->client = $client;
 		
+		$this->_helper->layout()->setLayout('clientLayout');
+			
 		if ($client ['deleted']) {
 			throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
 		}
@@ -153,10 +179,20 @@ class ClientController extends Zend_Controller_Action {
 			}
 		}
 	
-	}
-	
-	public function editAction() {
+    }
+
+    public function editAction()
+    {
 		$this->view->subtitle = 'Editace základních údajů klienta';
+		
+		$clientId = $this->_getParam ( 'clientId' );
+		
+		$clients = new Application_Model_DbTable_Client ();
+		$clients->openClient ( $clientId );
+		$client = $clients->getHeadquarters ( $clientId );
+		$this->view->client = $client;
+		
+		$this->_helper->layout()->setLayout('clientLayout');
 		
 		$form = new Application_Form_Client ();
 		$form->save->setLabel ( 'Uložit' );
@@ -179,7 +215,9 @@ class ClientController extends Zend_Controller_Action {
 				$headquartersCode = $form->getValue ( 'headquarters_code' );
 				$headquartersTown = $form->getValue ( 'headquarters_town' );
 				$business = $form->getValue ( 'business' );
-				$insuranceCompany = $form->getValue ('insurance_company');
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
+				$supervisionFrequency = $form->getValue('supervision_frequency');
 				$doctor = $form->getValue('doctor');
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
@@ -204,14 +242,15 @@ class ClientController extends Zend_Controller_Action {
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaries->updateSubsidiary ( $subsidiaryId, $companyName, $headquartersStreet,
 					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, null, $doctor, $clientId, $private, true );
+					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
+					true );
 				
 				//TODO dát k zápisu uživatele				
 				
 
 				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' upravil klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientAdmin' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
+				$diary->addMessage ( $username . ' upravil klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientIndex' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> upraven' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -221,12 +260,7 @@ class ClientController extends Zend_Controller_Action {
 			if (isset ( $defaultNamespace->formData )) {
 				$form->populate ( $defaultNamespace->formData );
 				unset ( $defaultNamespace->formData );
-			} else {
-				$clientId = $this->_getParam ( 'clientId' );
-				$clients = new Application_Model_DbTable_Client ();
-				
-				$client = $clients->getClient ( $clientId );
-				
+			} else {								
 				if ($client ['deleted']) {
 					throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
 				}
@@ -234,9 +268,10 @@ class ClientController extends Zend_Controller_Action {
 				$form->populate ( $clients->getHeadquarters ( $clientId ) );
 			}
 		}
-	}
-	
-	public function deleteAction() {
+    }
+
+    public function deleteAction()
+    {
 		if ($this->getRequest ()->getMethod () == 'POST') {
 			$clientId = $this->_getParam ( 'clientId' );
 			
@@ -260,9 +295,27 @@ class ClientController extends Zend_Controller_Action {
 			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání klienta.', 500 );
 		}
 	
-	}
+    }
+
+    public function navrhAction()
+    {
+        $clients = new Application_Model_DbTable_Client();
+		$clientId = $this->_getParam ( 'clientId' );
+		
+		$client = $clients->getHeadquarters($clientId);
+		
+		$this->view->subtitle = $client['company_name'];
+		$this->view->client = $client;
+		
+		$diary = new Application_Model_DbTable_Diary();
+
+		$this->view->records = $diary->getDiaryByClient($clientId);
+    }
+
 
 }
+
+
 
 
 

@@ -1,9 +1,12 @@
 <?php
 class Zend_View_Helper_Diary extends Zend_View_Helper_Abstract{
 	
+	public function setView(Zend_View_Interface $view) {
+        $this->view = $view;
+    }
+	
 	public function diary(){
-		$diary = new Application_Model_DbTable_Diary();
-		$messages = $diary->getDiary();
+		$messages = $this->view->records;
 		$content = '';
 		if (count($messages) > 0){
 			foreach ($messages as $message){

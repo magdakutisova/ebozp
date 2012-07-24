@@ -11,7 +11,8 @@ class CoordinatorController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        // action body
+        $diary = new Application_Model_DbTable_Diary();
+		$this->view->records = $diary->getDiary();
     }
 
 

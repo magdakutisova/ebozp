@@ -93,11 +93,47 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('hidden', 'invoice', array(
+        	'label' => 'Fakturační adresa',
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_street', array(
+        	'label' => 'Ulice a č. p.',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_code', array(
+        	'label' => 'PSČ',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
+        		new Zend_Validate_PostCode('cs_CZ')),
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'invoice_town', array(
+        	'label' => 'Obec',
+        	'required' => false,
+        	'filters' => array('StripTags', 'StringTrim'),
+        	'decorators' => $elementDecorator,
+        ));
+        
         $this->addElement('select', 'insurance_company', array(
         	'label' => 'Pojišťovna',
         	'required' => true,
         	'decorators' => $elementDecorator,
         	'multiOptions' => array('Kooperativa', 'Česká pojišťovna'),
+        ));
+        
+        $this->addElement('text', 'supervision_frequency', array(
+        	'label' => 'Četnost dohlídek za rok',
+        	'required' => false,
+        	'filters' => array('Int', 'StripTags', 'StringTrim'),
+        	'validators' => array('Digits'),
+        	'decorators' => $elementDecorator,
         ));
         
         $this->addElement('text', 'doctor', array(

@@ -1,0 +1,24 @@
+<?php echo $this->render('header.phtml') ?>
+
+<h1 class="prepend-top"><?php echo "Guardian"; ?></h1>
+
+<div class="span-7 border navigation">
+	<div class="box overflow">
+		<?php echo $this->client();?>
+	</div>
+
+	<div class="box">
+		<a href="<?php echo $this->url(array('clientId' => $this->client['id_client']), 'clientAdmin')?>">Edituj</a> | <a href="#">Vyber pobočku</a>
+	</div>
+
+	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>
+	<?php echo $this->navigation()->menu()->renderMenu($clientNav); ?>
+</div>
+
+<div class="push-1 span-17 main-content">
+	<?php echo $this->messages(); ?>
+	<h2><?php echo $this->subtitle; ?></h2>
+	<?php echo $this->layout()->content; ?>
+</div>
+
+<?php echo $this->render('footer.phtml')?>
