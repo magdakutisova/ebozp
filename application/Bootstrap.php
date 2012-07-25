@@ -9,11 +9,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 	
 	protected function _initAutoload() {
-        Zend_Loader::loadClass("Zend_Loader_Autoloader");
         $loader = Zend_Loader_Autoloader::getInstance();
-        $loader->setFallbackAutoloader(true);
-        
-        return $loader;
+        $loader->registerNamespace('My_');
     }
     
     protected function _initSession(){
@@ -148,6 +145,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			new Zend_Controller_Router_Route('vyhledavani',
 											array('controller' => 'search',
 												'action' => 'search'))
+		);
+		
+		$router->addRoute(
+			'userRegister',
+			new Zend_Controller_Router_Route('registrace',
+											array('controller' => 'user',
+												'action' => 'register'))
 		);
 		
 	}

@@ -12,7 +12,11 @@
 	</div>
 
 <div class="box clear hidden" id="pobocky">
-	<?php echo $this->form;?>
+	<?php if($this->form != null){
+		echo $this->form;
+	} else{
+		echo '<p>Tento klient nemá žádné pobočky.</p>';
+	}?>
 </div>
 
 <div class="box tasks clear">

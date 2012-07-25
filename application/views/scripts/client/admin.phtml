@@ -38,9 +38,11 @@
 <form id="smazat" action="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" method="post"><input class="anchor" type="submit" value="SMAZAT KLIENTA" onclick="return confirm('Opravdu chcete klienta smazat?')"/></form>
 
 <div id="pobocky" class="hidden">
-	<?php if ($this->form != null){
+	<?php if($this->form != null){
 		echo $this->form;
-	} ?>
+	} else{
+		echo '<p>Tento klient nemá žádné pobočky.</p>';
+	}?>
 </div>
 
 <h3>Provést audit</h3>
