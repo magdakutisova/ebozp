@@ -4,6 +4,7 @@
 .bold{
 	font-weight: bold;
 }
+
 .message{
 	background: #b7ceec; padding: 10px
 }
@@ -17,9 +18,23 @@
 	overflow: auto;
 }
 
-
 .diary-message, .no-margin{
 	margin: 0; padding: 0;
+}
+
+#informations{
+	margin-top: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 30px;
+}
+
+.floating-box{
+	margin-left: 20px;
+	margin-right: 0px;
+	margin-bottom: 15px;
+	padding: 15px;
+	background:#e5eCf9;
 }
 
 a {
@@ -27,12 +42,10 @@ a {
 }
 
 h3{
-
 	margin: 20px 0 5px 0;
 }
 
 h4{
-
 	margin: 15px 0 5px 0;
 }
 

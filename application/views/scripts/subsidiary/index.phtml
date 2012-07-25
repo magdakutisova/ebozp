@@ -1,4 +1,36 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>Subsidiary</b> and script/action name <b>index</b></p>
+<h3>
+	Pobočka: <?php echo $this->subsidiary['subsidiary_name'];?>
+</h3>
+
+<div class="box overflow span-12" id="informations">
+		<?php echo $this->subsidiary();?>
+	</div>
+
+<div class="span-5 floating-box"><h3>Hodnota rizika pobočky</h3>
+<p>*****</p></div>
+
+<div class="span-5 floating-box">
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client['id_client'], 'subsidiary' => $this->subsidiary['id_subsidiary']), 'subsidiaryEdit')?>">Edituj pobočku</a> | 
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client['id_client']), 'clientIndex')?>">Karta klienta</a>
+	</div>
+
+<div class="box clear hidden" id="pobocky">
+	<?php echo $this->form;?>
+</div>
+
+<div class="box tasks clear">
+	<h3>Osobní úkoly</h3>
+	<p>neshody nebo lhůty, u kterých je zadáno jméno - přiděluje KOO popřípadě KL, Při auditu se vyplní pouze G7 nebo KL.</p>
+</div>
+
+<div class="box">
+	<h3>Bezpečnostní deník</h3>
+	<p>dodělat okno pro psaní zpráv a odesílání souborů</p>
+	<div class="diary"><?php echo $this->diary();?></div>
+</div>
+
+<div class="box deadlines">
+	<h3>Termíny a lhůty</h3>
+	<p>NESHODY a LHŮTNÍKY nastavené je filtrování podle termínu. Celkový přehled o blížících se a propadlých termínech. Možnost hypertext se prokliknout na kartu KL, kterém neshoda nebo lhůta náleží.
+	</p>
 </div>

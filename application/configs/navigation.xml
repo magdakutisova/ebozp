@@ -3,7 +3,7 @@
 	<nav>
 		<home>
 			<label>Domů</label>
-			<route>coordinator</route>
+			<route>home</route>
 		</home>
 		<client>
 			<label>Klient</label>

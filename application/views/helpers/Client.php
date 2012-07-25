@@ -8,9 +8,7 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 	public function client(){
 		$client = $this->view->client;
 		$content = '';
-		//$content .= '<h3 class="no-margin">'
-			//. $client['company_name']
-			//. '</h3><p class="bold"></p>';
+
 		if($client['invoice_street']){
 			$content .= '<p class="no-margin"><span class="bold">Fakturační adresa: </span>'
 				. $client['invoice_street']
@@ -53,7 +51,7 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 		$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
 			. $client['insurance_company']
 			. '</p>';
-		//TODO odpovědní zaměstnanci 
+		//TODO odpovědní zaměstnanci a soukromá poznámka
 
 		return $content;
 	}

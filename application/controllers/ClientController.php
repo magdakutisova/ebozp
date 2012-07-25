@@ -8,6 +8,8 @@ class ClientController extends Zend_Controller_Action
 		$this->view->title = 'Správa klientů';
 		$this->view->headTitle ( $this->view->title );
 		
+		$this->_helper->layout()->setLayout('clientLayout');
+		
 		if ($this->getRequest ()->isXmlHttpRequest ()) {
 			$this->_helper->layout->disableLayout ();
 			$this->_helper->viewRenderer->setNoRender ( true );
@@ -19,12 +21,11 @@ class ClientController extends Zend_Controller_Action
 
     public function indexAction()
     {
-		
-		$this->_helper->layout()->setLayout('clientLayout');
-		
 		$clients = new Application_Model_DbTable_Client();
 		$clientId = $this->_getParam ( 'clientId' );
-		
+			
+		$clients->openClient ( $clientId );
+			
 		$client = $clients->getHeadquarters($clientId);
 		
 		$this->view->subtitle = $client['company_name'];
@@ -34,12 +35,31 @@ class ClientController extends Zend_Controller_Action
 
 		$this->view->records = $diary->getDiaryByClient($clientId);
 		
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
+		
+		if ($formContent != 0) {
+			$form = new Application_Form_SubsidiaryList ();
+			$form->subsidiary->setMultiOptions ( $formContent );
+			$this->view->form = $form;
+			
+			if ($this->getRequest ()->isPost ()) {
+				$formData = $this->getRequest ()->getPost ();
+				if ($form->isValid ( $formData )) {
+					$subsidiary = $this->getRequest ()->getParam ( 'subsidiary' );
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
+				}
+			}
+		}
+		
 		//TODO filtrovat záznamy v deníku dle uživatele
     }
 
     public function listAction()
     {
 		$this->view->subtitle = 'Výběr klienta';
+		
+		$this->_helper->layout()->setLayout('layout');
 		
 		$mode = $this->_getParam ( 'mode' );
 		
@@ -65,6 +85,8 @@ class ClientController extends Zend_Controller_Action
     public function newAction()
     {
 		$this->view->subtitle = 'Nový klient';
+		
+		$this->_helper->layout()->setLayout('layout');
 		
 		$form = new Application_Form_Client ();
 		$form->save->setLabel ( 'Přidat' );
@@ -143,15 +165,9 @@ class ClientController extends Zend_Controller_Action
 		$clientId = $this->_getParam ( 'clientId' );
 		
 		$clients = new Application_Model_DbTable_Client ();
-		$clients->openClient ( $clientId );
-		$client = $clients->getHeadquarters ( $clientId );
-		$this->view->client = $client;
 		
-		$this->_helper->layout()->setLayout('clientLayout');
-			
-		if ($client ['deleted']) {
-			throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
-		}
+		$clients->openClient ( $clientId );
+		$client = $clients->getClient ( $clientId );
 		
 		$this->view->companyName = $client ['company_name'];
 		$this->view->clientId = $clientId;
@@ -178,22 +194,16 @@ class ClientController extends Zend_Controller_Action
 				}
 			}
 		}
+		
+		$defaultNamespace = new Zend_Session_Namespace();
+		$defaultNamespace->referer = $this->_request->getPathInfo();
 	
     }
 
     public function editAction()
     {
 		$this->view->subtitle = 'Editace základních údajů klienta';
-		
-		$clientId = $this->_getParam ( 'clientId' );
-		
-		$clients = new Application_Model_DbTable_Client ();
-		$clients->openClient ( $clientId );
-		$client = $clients->getHeadquarters ( $clientId );
-		$this->view->client = $client;
-		
-		$this->_helper->layout()->setLayout('clientLayout');
-		
+					
 		$form = new Application_Form_Client ();
 		$form->save->setLabel ( 'Uložit' );
 		$this->view->form = $form;
@@ -260,10 +270,9 @@ class ClientController extends Zend_Controller_Action
 			if (isset ( $defaultNamespace->formData )) {
 				$form->populate ( $defaultNamespace->formData );
 				unset ( $defaultNamespace->formData );
-			} else {								
-				if ($client ['deleted']) {
-					throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
-				}
+			} else {
+				$clientId = $this->_getParam('clientId');
+				$clients = new Application_Model_DbTable_Client();
 				
 				$form->populate ( $clients->getHeadquarters ( $clientId ) );
 			}
@@ -296,22 +305,6 @@ class ClientController extends Zend_Controller_Action
 		}
 	
     }
-
-    public function navrhAction()
-    {
-        $clients = new Application_Model_DbTable_Client();
-		$clientId = $this->_getParam ( 'clientId' );
-		
-		$client = $clients->getHeadquarters($clientId);
-		
-		$this->view->subtitle = $client['company_name'];
-		$this->view->client = $client;
-		
-		$diary = new Application_Model_DbTable_Diary();
-
-		$this->view->records = $diary->getDiaryByClient($clientId);
-    }
-
 
 }
 

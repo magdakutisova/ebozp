@@ -9,10 +9,11 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	public function getSubsidiary($id) {
 		$id = ( int ) $id;
 		$row = $this->fetchRow ( 'id_subsidiary = ' . $id );
-		if (! $row) {
+		$subsidiary = $row->toArray();
+		if (! $row || $subsidiary['deleted']) {
 			throw new Exception ( "Pobočka $id nebyla nalezena." );
 		}
-		return $row->toArray ();
+		return $subsidiary;
 	}
 	
 	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown,
@@ -64,6 +65,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode,
 		$subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email,
 		$supervisionFrequency, $doctor, $clientId, $private, $hq) {
+			$this->getSubsidiary($id);
 		$data = array (
 			'subsidiary_name' => $subsidiaryName,
 			'subsidiary_street' => $subsidiaryStreet,
@@ -114,6 +116,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	}
 	
 	public function deleteSubsidiary($id) {
+		$this->getSubsidiary($id);
 		$subsidiary = $this->fetchRow ( 'id_subsidiary = ' . $id );
 		$subsidiary->deleted = 1;
 		$subsidiary->save ();

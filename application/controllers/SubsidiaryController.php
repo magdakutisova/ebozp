@@ -5,9 +5,33 @@ class SubsidiaryController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->title = 'Správa poboček';
 		$this->view->headTitle ( $this->view->title );
+		$this->_helper->layout()->setLayout('clientLayout');
 	}
 	
 	public function indexAction() {
+		$clients = new Application_Model_DbTable_Client();
+		$clientId = $this->_getParam ( 'clientId' );
+			
+		$clients->openClient ( $clientId );
+		
+		$client = $clients->getClient($clientId);
+		
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		
+		$subsidiaryId = $this->_getParam('subsidiary');
+		$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
+		
+		$this->view->subtitle = $client['company_name'];
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		
+		$diary = new Application_Model_DbTable_Diary();
+
+		$this->view->records = $diary->getDiaryBySubsidiary($subsidiaryId);
+		
+		$defaultNamespace = new Zend_Session_Namespace();
+		$defaultNamespace->referer = $this->_request->getPathInfo();		
 	}
 	
 	public function newAction() {
@@ -22,10 +46,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$clients = new Application_Model_DbTable_Client ();
 		
 		$client = $clients->getClient ( $clientId );
-		
-		if ($client ['deleted']) {
-			throw new Zend_Controller_Action_Exception ( 'Klient neexistuje.', 404 );
-		}
 		
 		// naplnění formuláře daty ze session, pokud existují
 		$defaultNamespace = new Zend_Session_Namespace ();
@@ -61,12 +81,12 @@ class SubsidiaryController extends Zend_Controller_Action {
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor,
 					$clientId, $private, 0 );
 				
-				//TODO dát k zápisu uživatele, odkaz na pobočku
+				//TODO dát k zápisu uživatele
 				
 
 				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' přidal pobočku ' . $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId, $username );
+				$diary->addMessage ( $username . ' přidal novou pobočku <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex' ) . '">' . $subsidiaryName . ', ' . $subsidiaryTown . '</a>', $subsidiaryId, $username );
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> přidána' );
 				if ($form->getElement ( 'other' )->isChecked ()) {
@@ -80,7 +100,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 	
 	public function editAction() {
 		$this->view->subtitle = 'Editace pobočky';
-		
+			
 		$form = new Application_Form_Subsidiary ();
 		$form->save->setLabel ( 'Uložit' );
 		$form->removeElement ( 'other' );
@@ -117,24 +137,30 @@ class SubsidiaryController extends Zend_Controller_Action {
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
 					0 );
 				
-				//TODO dát k zápisu uživatele, odkaz na pobočku
+				//TODO dát k zápisu uživatele
 				
 
 				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' upravil pobočku ' . $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId, $username );
+				$diary->addMessage ( $username . ' upravil pobočku <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex' ) . '">' . $subsidiaryName . ', ' . $subsidiaryTown . '</a>', $subsidiaryId, $username );
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> upravena' );
-				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+				
+				$defaultNamespace = new Zend_Session_Namespace();
+				if (isset($defaultNamespace->referer)){
+					$path = $defaultNamespace->referer;
+					unset($defaultNamespace->referer);
+					$this->_redirect($path);
+				}
+				else{
+					
+				}
+				//$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
 			}
 		} else {
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 			$subsidiary = $subsidiaries->getSubsidiary ( $subsidiaryId );
-			
-			if ($subsidiary ['deleted']) {
-				throw new Zend_Controller_Action_Exception ( 'Pobočka neexistuje.', 404 );
-			}
-			
+					
 			$form->populate ( $subsidiary );
 		}
 	}

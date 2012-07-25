@@ -18,7 +18,7 @@
 			</a></li>
 		<?php }
 		else {?>
-			<li><?php echo $subsidiary->subsidiary_name?></li>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->client_id, 'subsidiary' => $subsidiary->id_subsidiary), 'subsidiaryIndex') . '">' . $subsidiary->subsidiary_name . '</a>'?></li>
 		<?php }
 		endforeach; ?>
 	</ul>

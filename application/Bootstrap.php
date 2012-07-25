@@ -53,10 +53,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$router = $frontController->getRouter();
 		
 		$router->addRoute(
-			'coordinator',
-			new Zend_Controller_Router_Route('koordinator',
-											 array('controller' => 'coordinator',
-											 	   'action' => 'index'))
+			'home',
+			new Zend_Controller_Router_Route('domu',
+											 array('controller' => 'index',
+											 	   'action' => 'home'))
 		);
 		
 		$router->addRoute(
@@ -116,22 +116,22 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
-			'subsidiaryList',
-			new Zend_Controller_Router_Route('klient/:clientId/pobocky',
+			'subsidiaryIndex',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary',
 											array('controller' => 'subsidiary',
-													'action' => 'list'))
+													'action' => 'index'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryEdit',
-			new Zend_Controller_Router_Route('klient/:clientId/pobocky/:subsidiary/editovat',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary/editovat',
 											array('controller' => 'subsidiary',
 													'action' => 'edit'))
 		);
 		
 		$router->addRoute(
 			'subsidiaryDelete',
-			new Zend_Controller_Router_Route('klient/:clientId/pobocky/:subsidiary/smazat',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary/smazat',
 											array('controller' => 'subsidiary',
 													'action' => 'delete'))
 		);
@@ -148,13 +148,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			new Zend_Controller_Router_Route('vyhledavani',
 											array('controller' => 'search',
 												'action' => 'search'))
-		);
-		
-		$router->addRoute(
-			'clientNavrh',
-			new Zend_Controller_Router_Route('klient/:clientId/navrh',
-											array('controller' => 'client',
-												'action' => 'navrh'))
 		);
 		
 	}

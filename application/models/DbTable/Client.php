@@ -6,14 +6,17 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	protected $_rowClass = 'Application_Model_DbTable_Row_ClientRow';
 	//TODO loader pro tabulky
 	
-
+	/************************************************************
+	 * Zároveň slouží ke zjištění, zda klient nebyl vymazán.
+	 */
 	public function getClient($id) {
 		$id = ( int ) $id;
 		$row = $this->fetchRow ( 'id_client = ' . $id );
-		if (! $row) {
+		$client = $row->toArray();
+		if (! $row || $client['deleted']) {
 			throw new Exception ( "Klient $id nebyl nalezen." );
 		}
-		return $row->toArray ();
+		return $client;
 	}
 	
 	/**************************
@@ -58,6 +61,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	
 	public function updateClient($id, $companyName, $companyNumber, $taxNumber, $headquartersStreet,
 		$headquartersCode, $headquartersTown, $business, $insuranceCompany, $private) {
+		$this->getClient($id);
 		$data = array (
 			'company_name' => $companyName,
 			'company_number' => $companyNumber,
@@ -98,6 +102,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	public function deleteClient($id) {
+		$this->getClient($id);
 		$client = $this->fetchRow ( 'id_client = ' . $id );
 		$client->deleted = 1;
 		$client->save ();
@@ -162,16 +167,19 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	public function getCompanyNumber($clientId) {
+		$this->getClient($clientId);
 		$companyNumber = $this->fetchAll ( $this->select ()->from ( 'client' )->columns ( 'company_number' )->where ( 'id_client = ?', $clientId ) );
 		return $companyNumber->current ()->company_number;
 	}
 	
 	public function getCompanyName($clientId) {
+		$this->getClient($clientId);
 		$companyName = $this->fetchAll ( $this->select ()->from ( 'client' )->columns ( 'company_name' )->where ( 'id_client = ?', $clientId ) );
 		return $companyName->current ()->company_name;
 	}
 	
 	public function getHeadquarters($clientId) {
+		$this->getClient($clientId);
 		$select = $this->select ()->from ( 'client' )->join ( 'subsidiary', 'client.id_client = subsidiary.client_id' )->where ( 'client.id_client = ?', $clientId )->where ( 'hq = 1' );
 		$select->setIntegrityCheck ( false );
 		$headquarters = $this->fetchAll ( $select );
@@ -179,6 +187,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	public function openClient($clientId) {
+		$this->getClient($clientId);
 		$client = $this->fetchRow ( 'id_client = ' . $clientId );
 		$client->open = new Zend_Db_Expr ( 'NOW()' );
 		$client->save ();

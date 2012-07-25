@@ -33,17 +33,16 @@ class Application_Form_SubsidiaryList extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('submit', 'edit', array(
-        	'label' => 'Editovat',
+        $this->addElement('submit', 'submit', array(
         	'decorators' => $elementDecorator2,
         ));
         
-        $this->addElement('submit', 'delete', array(
-        	'label' => 'Smazat',
-        	'attribs' => array('onClick' => 'return confirm("Opravdu chcete pobočku smazat?")'),
-        	'decorators' => $elementDecorator2,
-        	'method' => 'post',
-        ));
+        //$this->addElement('submit', 'delete', array(
+        	//'label' => 'Smazat',
+        	//'attribs' => array('onClick' => 'return confirm("Opravdu chcete pobočku smazat?")'),
+        	//'decorators' => $elementDecorator2,
+        	//'method' => 'post',
+        //));
     }
 
 
