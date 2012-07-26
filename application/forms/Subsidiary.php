@@ -6,6 +6,7 @@ class Application_Form_Subsidiary extends Zend_Form
     public function init()
     {
         $this->setName('subsidiary');
+        $this->setMethod('post');
         
         //TODO refaktoring dekorátorů
         $this->setDecorators(array(

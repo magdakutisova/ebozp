@@ -1,7 +1,8 @@
 <?php echo $this->render('header.phtml') ?>
 
-<h1 class="prepend-top"><?php echo "Guardian"; ?></h1>
+<h1 class="span-19 pull-3 border"><?php echo "Guardian"; ?></h1></div>
 
+<div class="clear">
 <div class="span-5 border navigation">
 		<?php echo $this->navigation()->menu(); ?>
 </div>
@@ -11,5 +12,5 @@
 	<h2><?php echo $this->subtitle; ?></h2>
 	<?php echo $this->layout()->content; ?>
 </div>
-
+</div>
 <?php echo $this->render('footer.phtml')?>

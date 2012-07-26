@@ -5,6 +5,7 @@ class Application_Form_Register extends Zend_Form{
 	public function init(){
 		
 		$this->setName('register');
+		$this->setMethod('post');
 		
 		$this->setDecorators(array(
         	'FormElements',
@@ -30,8 +31,11 @@ class Application_Form_Register extends Zend_Form{
        	$this->addElement('text', 'username', array(
        		'label' => 'Uživatelské jméno',
        		'required' => true,
-       		'filters' => array('StripTags', 'StringTrim'),
-       		'validators' => array('Alnum'),
+       		'filters' => array('StripTags', 'StringTrim', 'StringtoLower'),
+       		'validators' => array(
+       			'Alnum',
+       			array('StringLength', false, array(0,50)),
+       		),
        		'decorators' => $elementDecorator,
        	));
        	
@@ -39,11 +43,26 @@ class Application_Form_Register extends Zend_Form{
        		'label' => 'Heslo',
        		'required' => true,
        		'filters' => array('StripTags', 'StringTrim'),
-       		'validators' => array('Alnum'),
+       		'validators' => array(
+       			'Alnum',
+       			array('StringLength', false, array(0,50)),
+       		),
+       		'decorators' => $elementDecorator,
+       	));
+       	
+       	$this->addElement('password', 'confirmPassword', array(
+       		'label' => 'Heslo znovu',
+       		'required' => true,
+       		'filters' => array('StripTags', 'StringTrim'),
+       		'validators' => array(
+       			'Alnum',
+       			array('Identical', false, array('token' => 'password')),
+       			array('StringLength', false, array(0,50)),
+       		),
        		'decorators' => $elementDecorator,
        	));
        	      	
-       	$this->addElement('select', 'roles', array(
+       	$this->addElement('select', 'role', array(
        		'label' => 'Práva',
        		'multiOptions' => My_Role::getRoles(),
        		'decorators' => $elementDecorator,

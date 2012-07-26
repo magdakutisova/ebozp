@@ -5,6 +5,7 @@ class Application_Form_Client extends Zend_Form
     public function init()
     {
         $this->setName('client');
+        $this->setMethod('post');
         
         $this->setDecorators(array(
         	'FormElements',

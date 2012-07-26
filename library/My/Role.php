@@ -15,5 +15,11 @@ class My_Role{
 	
 	public static function getRoles(){
 		return self::$roles;
-	}		
+	}
+	
+	public static function getRoleName($role){
+		if (isset(self::$roles[$role])){
+			return self::$roles[$role];
+		}		
+	}
 }

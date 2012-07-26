@@ -50,10 +50,31 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$router = $frontController->getRouter();
 		
 		$router->addRoute(
+			'userLogin',
+			new Zend_Controller_Router_Route('/',
+											 array('controller' => 'user',
+											 	   'action' => 'login'))
+		);
+		
+		$router->addRoute(
 			'home',
 			new Zend_Controller_Router_Route('domu',
 											 array('controller' => 'index',
 											 	   'action' => 'home'))
+		);
+		
+		$router->addRoute(
+			'userRegister',
+			new Zend_Controller_Router_Route('registrace',
+											array('controller' => 'user',
+												'action' => 'register'))
+		);
+		
+		$router->addRoute(
+			'userLogout',
+			new Zend_Controller_Router_Route('odhlaseni',
+											array('controller' => 'user',
+												'action' => 'logout'))
 		);
 		
 		$router->addRoute(
@@ -147,12 +168,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 												'action' => 'search'))
 		);
 		
-		$router->addRoute(
-			'userRegister',
-			new Zend_Controller_Router_Route('registrace',
-											array('controller' => 'user',
-												'action' => 'register'))
-		);
+		
 		
 	}
 
