@@ -103,6 +103,7 @@ class ClientController extends Zend_Controller_Action
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
 				$companyName = $form->getValue ( 'company_name' );
+				$invoiceAddress = $form->getValue('invoice_address');
 				$invoiceStreet = $form->getValue ( 'invoice_street' );
 				$invoiceCode = $form->getValue ( 'invoice_code' );
 				$invoiceTown = $form->getValue ( 'invoice_town' );
@@ -120,6 +121,12 @@ class ClientController extends Zend_Controller_Action
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
 				$private = $form->getValue ( 'private' );
+				
+				if($invoiceAddress){
+					$invoiceStreet = $headquartersStreet;
+					$invoiceTown = $headquartersTown;
+					$invoiceCode = $headquartersCode;
+				}
 				
 				$clients = new Application_Model_DbTable_Client ();
 				
@@ -141,13 +148,9 @@ class ClientController extends Zend_Controller_Action
 					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
 					true );
-				
-				//TODO dát k zápisu uživatele
-				
 
-				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' přidal nového klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientIndex' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
+				$this->_helper->diaryRecord($username, 'přidal nového klienta', array('clientId' => $clientId), 'clientAdmin', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> přidán' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -216,6 +219,7 @@ class ClientController extends Zend_Controller_Action
 				$clientId = $form->getValue ( 'id_client' );
 				$subsidiaryId = $form->getValue ( 'id_subsidiary' );
 				$companyName = $form->getValue ( 'company_name' );
+				$invoiceAddress = $form->getValue('invoice_address');
 				$invoiceStreet = $form->getValue ( 'invoice_street' );
 				$invoiceCode = $form->getValue ( 'invoice_code' );
 				$invoiceTown = $form->getValue ( 'invoice_town' );
@@ -233,6 +237,12 @@ class ClientController extends Zend_Controller_Action
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
 				$private = $form->getValue ( 'private' );
+				
+				if($invoiceAddress){
+					$invoiceStreet = $headquartersStreet;
+					$invoiceTown = $headquartersTown;
+					$invoiceCode = $headquartersCode;
+				}
 				
 				$clients = new Application_Model_DbTable_Client ();
 				
@@ -255,12 +265,8 @@ class ClientController extends Zend_Controller_Action
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
 					true );
 				
-				//TODO dát k zápisu uživatele				
-				
-
-				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' upravil klienta <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId ), 'clientIndex' ) . '">' . $companyName . "</a>.", $subsidiaryId, $username );
+				$this->_helper->diaryRecord($username, 'upravil klienta', array('clientId' => $clientId), 'clientAdmin', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> upraven' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -290,12 +296,8 @@ class ClientController extends Zend_Controller_Action
 			$subsidiaryId = $client ['id_subsidiary'];
 			$clients->deleteClient ( $clientId );
 			
-			//TODO dát k zápisu uživatele				
-			
-
-			$diary = new Application_Model_DbTable_Diary ();
 			$username = 'admin';
-			$diary->addMessage ( $username . ' smazal klienta ' . $companyName . ".", $subsidiaryId, $username );
+			$this->_helper->diaryRecord($username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> smazán' );
 			$this->_helper->redirector->gotoRoute ( array (), 'clientList' );

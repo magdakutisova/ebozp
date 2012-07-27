@@ -1,7 +1,5 @@
 <?php echo $this->render('header.phtml') ?>
 
-<h1 class="prepend-top"><?php echo "Guardian"; ?></h1>
-
 <div class="span-5 border navigation">
 	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>
 	<?php echo $this->navigation()->menu()->renderMenu($clientNav); ?>

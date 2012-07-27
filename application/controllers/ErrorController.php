@@ -54,6 +54,13 @@ class ErrorController extends Zend_Controller_Action
         return $log;
     }
 
+    public function deniedAction()
+    {
+        $this->view->message = 'Nemáte právo přistupovat na tuto stránku.';
+    }
+
 
 }
+
+
 

@@ -44,4 +44,18 @@ $(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/naposledy/ #filtered");
 	});
+	
+	$("#invoice_address").click(function(){
+		var checkbox = $(this);
+		if (checkbox.is(':checked')){
+			$("#invoice_street").attr('disabled', true).val('');
+			$("#invoice_code").attr('disabled', true).val('');
+			$("#invoice_town").attr('disabled', true).val('');
+		}
+		else {
+			$("#invoice_street").removeAttr('disabled');
+			$("#invoice_code").removeAttr('disabled');
+			$("#invoice_town").removeAttr('disabled');
+		}
+	});
 });

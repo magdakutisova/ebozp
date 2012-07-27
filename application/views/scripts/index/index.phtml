@@ -1,2 +1,14 @@
-<p>Tady bude přihlašovací formulář</p>
-<a href="<?php echo $this->url(array(), 'userRegister');?>">Vytvořit uživatele</a>
+	<div class="box tasks">
+		<h2>Osobní úkoly</h2>
+		<p>neshody nebo lhůty, u kterých je zadáno jméno - přiděluje KOO popřípadě KL, Při auditu se vyplní pouze G7 nebo KL.</p>
+	</div>
+	<div class="box">
+		<h2>Bezpečnostní deník</h2>
+		<p>dodělat okno pro psaní zpráv a odesílání souborů</p>
+		<div class="overflow"><?php echo $this->diary();?></div>
+	</div>
+	<div class="box deadlines">
+		<h2>Termíny a lhůty</h2>
+		<p>NESHODY a LHŮTNÍKY nastavené je filtrování podle termínu. Celkový přehled o blížících se a propadlých termínech. Možnost hypertext se prokliknout na kartu KL, kterém neshoda nebo lhůta náleží.
+		</p>
+	</div>

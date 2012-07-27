@@ -11,11 +11,6 @@ class IndexController extends Zend_Controller_Action
 
     public function indexAction()
     {
-       	
-    }
-
-    public function homeAction()
-    {
         $diary = new Application_Model_DbTable_Diary();
 		$this->view->records = $diary->getDiary();
     }

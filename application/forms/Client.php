@@ -99,6 +99,12 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('checkbox', 'invoice_address', array(
+        	'label' => 'Stejná jako adresa sídla',
+        	'required' => false,
+        	'decorators' => $elementDecorator,
+        ));
+        
         $this->addElement('text', 'invoice_street', array(
         	'label' => 'Ulice a č. p.',
         	'required' => false,

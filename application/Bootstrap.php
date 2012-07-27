@@ -11,6 +11,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initAutoload() {
         $loader = Zend_Loader_Autoloader::getInstance();
         $loader->registerNamespace('My_');
+        Zend_Controller_Action_HelperBroker::addPrefix('My_Controller_Helper');
     }
     
     protected function _initSession(){
@@ -44,6 +45,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		Zend_Validate_Abstract::setDefaultTranslator($translator);
 	}
 	
+	protected function _initAcl(){
+		$acl = new My_Controller_Helper_Acl();
+		$fc = Zend_Controller_Front::getInstance();
+		$fc->registerPlugin(new My_Plugin_Acl($acl));
+	}
+	
 	protected function _initRouter(array $options = array()){
 		$this->bootstrap('FrontController');
 		$frontController = $this->getResource('FrontController');
@@ -51,16 +58,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'userLogin',
-			new Zend_Controller_Router_Route('/',
+			new Zend_Controller_Router_Route('prihlaseni',
 											 array('controller' => 'user',
 											 	   'action' => 'login'))
 		);
 		
 		$router->addRoute(
 			'home',
-			new Zend_Controller_Router_Route('domu',
+			new Zend_Controller_Router_Route('/',
 											 array('controller' => 'index',
-											 	   'action' => 'home'))
+											 	   'action' => 'index'))
 		);
 		
 		$router->addRoute(

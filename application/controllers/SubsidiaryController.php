@@ -81,12 +81,8 @@ class SubsidiaryController extends Zend_Controller_Action {
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor,
 					$clientId, $private, 0 );
 				
-				//TODO dát k zápisu uživatele
-				
-
-				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' přidal novou pobočku <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex' ) . '">' . $subsidiaryName . ', ' . $subsidiaryTown . '</a>', $subsidiaryId, $username );
+				$this->_helper->diaryRecord($username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> přidána' );
 				if ($form->getElement ( 'other' )->isChecked ()) {
@@ -137,12 +133,8 @@ class SubsidiaryController extends Zend_Controller_Action {
 					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
 					0 );
 				
-				//TODO dát k zápisu uživatele
-				
-
-				$diary = new Application_Model_DbTable_Diary ();
 				$username = 'admin';
-				$diary->addMessage ( $username . ' upravil pobočku <a href="' . $this->_helper->url->url ( array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex' ) . '">' . $subsidiaryName . ', ' . $subsidiaryTown . '</a>', $subsidiaryId, $username );
+				$this->_helper->diaryRecord($username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> upravena' );
 				
@@ -178,12 +170,8 @@ class SubsidiaryController extends Zend_Controller_Action {
 			
 			$subsidiaries->deleteSubsidiary ( $subsidiaryId );
 			
-			//TODO dát k zápisu uživatele				
-			
-
-			$diary = new Application_Model_DbTable_Diary ();
 			$username = 'admin';
-			$diary->addMessage ( $username . ' smazal pobočku ' . $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId . '.', $username );
+			$this->_helper->diaryRecord($username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
 			$this->_helper->redirector->gotoRoute (array ('clientId' => $clientId ), 'clientAdmin' );
