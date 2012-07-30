@@ -1,12 +1,10 @@
 <?php
 
-class Application_Form_SubsidiaryList extends Zend_Form
-{
-
-    public function init()
-    {
-        $this->setName('subsidiaryList');
-        
+class Application_Form_Select extends Zend_Form{
+	
+	public function init(){    
+		$this->setMethod('post');
+		
         $this->setDecorators(array(
         	'FormElements',
         	array('HtmlTag', array('tag' => 'table')),
@@ -27,24 +25,14 @@ class Application_Form_SubsidiaryList extends Zend_Form
        		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
-        
-        $this->addElement('select', 'subsidiary', array(
-        	'label' => 'Vyberte pobočku:',
+       	
+       	$this->addElement('select', 'select', array(
         	'decorators' => $elementDecorator,
         ));
         
         $this->addElement('submit', 'submit', array(
         	'decorators' => $elementDecorator2,
         ));
-        
-        //$this->addElement('submit', 'delete', array(
-        	//'label' => 'Smazat',
-        	//'attribs' => array('onClick' => 'return confirm("Opravdu chcete pobočku smazat?")'),
-        	//'decorators' => $elementDecorator2,
-        	//'method' => 'post',
-        //));
-    }
-
-
+	}
+	
 }
-

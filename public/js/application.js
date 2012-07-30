@@ -45,6 +45,21 @@ $(function(){
 		$("#filtered").load("./klienti/naposledy/ #filtered");
 	});
 	
+	$(".register").click(function(){
+		$.get($(this).attr("action"));
+		$("#user-content").load("./administrace-uzivatelu/vytvorit/ #user-content");
+	});
+	
+	$(".rights").click(function(){
+		$.get($(this).attr("action"));
+		$("#user-content").load("./administrace-uzivatelu/prava/ #user-content");
+	});
+	
+	$(".delete").click(function(){
+		$.get($(this).attr("action"));
+		$("#user-content").load("./administrace-uzivatelu/smazat/ #user-content");
+	});
+	
 	$("#invoice_address").click(function(){
 		var checkbox = $(this);
 		if (checkbox.is(':checked')){

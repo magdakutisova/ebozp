@@ -47,5 +47,29 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 		$this->delete('id_user = ' . (int) $userId);
 	}
     
+	public function getUsernames(){
+		$select = $this->select()->from('user')->columns(array('id_user', 'username'));
+		$results = $this->fetchAll($select);
+		if (count ( $results ) > 0) {
+			$usernames = array ();
+			foreach ( $results as $result ) :
+				$key = $result->id_user;
+				$username = $result->username;
+				$usernames [$key] = $username;
+			endforeach
+			;
+			return $usernames;
+		} else {
+			return 0;
+		}
+	}
+	
+	public function updatePassword($username, $password, $salt){
+		$user = $this->fetchRow('username = "' . $username . '"');
+		$user->password = $password;
+		$user->salt = $salt;
+		$user->save();
+	}
+	
 }
 

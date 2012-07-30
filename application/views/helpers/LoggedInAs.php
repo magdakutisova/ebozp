@@ -8,12 +8,14 @@ class Zend_View_Helper_LoggedInAs extends Zend_View_Helper_Abstract{
 			$role = $auth->getIdentity()->role;
 			$rolename = My_Role::getRoleName($role);
 			
+			$passwordUrl = $this->view->url(array(), 'userPassword');
 			$logoutUrl = $this->view->url(array(), 'userLogout');
 			
 			return '<p class="no-margin"><span class="bold">Přihlášen: </span>' . $username
 				. '</p><p class="no-margin"><span class="bold">Práva: </span>' . $rolename
-				. '</p><p class="no-margin"><a href="' . $logoutUrl
-				. '">Odhlásit se</a>';
+				. '</p><p class="no-margin"><a href="' . $passwordUrl
+				. '">Změna hesla</a></p><p class="no-margin"><a href="' . $logoutUrl
+				. '">Odhlásit se</a></p>';
 		}
 		
 		$request = Zend_Controller_Front::getInstance()->getRequest();

@@ -1,5 +1,6 @@
 <?php echo $this->render('header.phtml') ?>
 
+<div class="clear">
 <div class="span-5 border navigation">
 	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>
 	<?php echo $this->navigation()->menu()->renderMenu($clientNav); ?>
@@ -9,6 +10,7 @@
 	<?php echo $this->messages(); ?>
 	<h2><?php echo $this->subtitle; ?></h2>
 	<?php echo $this->layout()->content; ?>
+</div>
 </div>
 
 <?php echo $this->render('footer.phtml')?>

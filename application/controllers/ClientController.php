@@ -2,6 +2,9 @@
 
 class ClientController extends Zend_Controller_Action
 {
+	private $_acl;
+	private $_username;
+	private $_role;
 
     public function init()
     {
@@ -17,6 +20,13 @@ class ClientController extends Zend_Controller_Action
 		
 		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
 		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
+		
+		$this->_acl = new My_Controller_Helper_Acl();
+		
+		if(Zend_Auth::getInstance()->hasIdentity()){
+			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
+			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
+		}
     }
 
     public function indexAction()
@@ -39,17 +49,22 @@ class ClientController extends Zend_Controller_Action
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
 		if ($formContent != 0) {
-			$form = new Application_Form_SubsidiaryList ();
-			$form->subsidiary->setMultiOptions ( $formContent );
+			$form = new Application_Form_Select ();
+			$form->select->setMultiOptions ( $formContent );
+			$form->select->setLabel('Vyberte pobočku:');
 			$this->view->form = $form;
 			
 			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
 				if ($form->isValid ( $formData )) {
-					$subsidiary = $this->getRequest ()->getParam ( 'subsidiary' );
+					$subsidiary = $this->getRequest ()->getParam ( 'select' );
 					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
 				}
 			}
+		}
+    	else{
+			$form = "<p>Klient nemá žádné pobočky.</p>";
+			$this->view->form = $form;
 		}
 		
 		//TODO filtrovat záznamy v deníku dle uživatele
@@ -62,23 +77,28 @@ class ClientController extends Zend_Controller_Action
 		$this->_helper->layout()->setLayout('layout');
 		
 		$mode = $this->_getParam ( 'mode' );
-		
-		if ($mode == '' || $mode == 'nazev') {
-			$clients = new Application_Model_DbTable_Client ();
-			$this->view->clients = $clients->getClients ();
-			$this->renderScript ( 'client/list.phtml' );
-		} else if ($mode == 'bt') {
-			$this->renderScript ( 'client/technician.phtml' );
-		} else if ($mode == 'koo') {
-			$this->renderScript ( 'client/coordinator.phtml' );
-		} else if ($mode == 'obec') {
-			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-			$this->view->subsidiaries = $subsidiaries->getByTown ();
-			$this->renderScript ( 'client/town.phtml' );
-		} else if ($mode == 'naposledy') {
-			$clients = new Application_Model_DbTable_Client ();
-			$this->view->clients = $clients->getLastOpen ();
-			$this->renderScript ( 'client/list.phtml' );
+			
+		switch($mode){
+			case "bt":
+				$this->renderScript ( 'client/technician.phtml' );
+				break;
+			case "koo":
+				$this->renderScript ( 'client/coordinator.phtml' );
+				break;
+			case "obec":
+				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+				$this->view->subsidiaries = $subsidiaries->getByTown ();
+				$this->renderScript ( 'client/town.phtml' );
+				break;
+			case "naposledy":
+				$clients = new Application_Model_DbTable_Client ();
+				$this->view->clients = $clients->getLastOpen ();
+				$this->renderScript ( 'client/list.phtml' );
+				break;
+			default:
+				$clients = new Application_Model_DbTable_Client ();
+				$this->view->clients = $clients->getClients ();
+				$this->renderScript ( 'client/list.phtml' );
 		}
     }
 
@@ -150,7 +170,7 @@ class ClientController extends Zend_Controller_Action
 					true );
 
 				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'přidal nového klienta', array('clientId' => $clientId), 'clientAdmin', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> přidán' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -175,18 +195,21 @@ class ClientController extends Zend_Controller_Action
 		$this->view->companyName = $client ['company_name'];
 		$this->view->clientId = $clientId;
 		
+		$this->view->canDeleteClient = $this->_acl->isAllowed($this->_role, 'client', 'delete');
+		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
 		if ($formContent != 0) {
-			$form = new Application_Form_SubsidiaryList ();
-			$form->subsidiary->setMultiOptions ( $formContent );
+			$form = new Application_Form_Select ();
+			$form->select->setMultiOptions ( $formContent );
+			$form->select->setLabel('Vyberte pobočku:');
 			$this->view->form = $form;
 			
 			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
 				if ($form->isValid ( $formData )) {
-					$subsidiary = $this->getRequest ()->getParam ( 'subsidiary' );
+					$subsidiary = $this->getRequest ()->getParam ( 'select' );
 					if (isSet ( $formData ['edit'] )) {
 						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryEdit' );
 					}
@@ -196,6 +219,10 @@ class ClientController extends Zend_Controller_Action
 					}
 				}
 			}
+		}
+		else{
+			$form = "<p>Klient nemá žádné pobočky.</p>";
+			$this->view->form = $form;
 		}
 		
 		$defaultNamespace = new Zend_Session_Namespace();
@@ -266,7 +293,7 @@ class ClientController extends Zend_Controller_Action
 					true );
 				
 				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'upravil klienta', array('clientId' => $clientId), 'clientAdmin', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($username, 'upravil klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> upraven' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );

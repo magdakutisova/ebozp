@@ -31,6 +31,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$navigation = new Zend_Navigation($config);
 		$clientNavigation = new Zend_Navigation($clientConfig);
 		Zend_Registry::set('ClientNavigation', $clientNavigation);
+		$auth = Zend_Auth::getInstance();
+		$role = "5";
+		if ($auth->hasIdentity()){
+			$role = $auth->getIdentity()->role;
+		}
+		$view->navigation()->setAcl(new My_Controller_Helper_Acl())->setRole($role);
 		$view->navigation($navigation);
 	}
 	
@@ -72,9 +78,30 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'userRegister',
-			new Zend_Controller_Router_Route('registrace',
+			new Zend_Controller_Router_Route('administrace-uzivatelu',
 											array('controller' => 'user',
 												'action' => 'register'))
+		);
+		
+		$router->addRoute(
+			'userRights',
+			new Zend_Controller_Router_Route('administrace-uzivatelu/prava',
+											array('controller' => 'user',
+												'action' => 'rights'))
+		);
+		
+		$router->addRoute(
+			'userDelete',
+			new Zend_Controller_Router_Route('administrace-uzivatelu/smazat',
+											array('controller' => 'user',
+												'action' => 'delete'))
+		);
+		
+		$router->addRoute(
+			'userPassword',
+			new Zend_Controller_Router_Route('zmena-hesla',
+											array('controller' => 'user',
+												'action' => 'password'))
 		);
 		
 		$router->addRoute(

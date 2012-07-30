@@ -8,9 +8,6 @@
 <a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientIndex') ?>">Zpět na kartu klienta</a><br/><br/>
 <table>
 	<tr>
-		<td colspan=4><a href="#">ADMINISTRACE PŘÍSTUPOVÝCH PRÁV</a></td>
-	</tr>
-	<tr>
 		<td colspan=4><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
 	</tr>
 	<tr>
@@ -34,15 +31,12 @@
 		<td></td>
 	</tr>
 </table>
-
+<?php if ($this->canDeleteClient){ ?>
 <form id="smazat" action="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" method="post"><input class="anchor" type="submit" value="SMAZAT KLIENTA" onclick="return confirm('Opravdu chcete klienta smazat?')"/></form>
+<?php }?>
 
 <div id="pobocky" class="hidden">
-	<?php if($this->form != null){
-		echo $this->form;
-	} else{
-		echo '<p>Tento klient nemá žádné pobočky.</p>';
-	}?>
+		<?php echo $this->form; ?>
 </div>
 
 <h3>Provést audit</h3>

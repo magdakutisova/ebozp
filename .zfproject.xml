@@ -45,6 +45,7 @@
           <actionMethod actionName="register"/>
           <actionMethod actionName="login"/>
           <actionMethod actionName="logout"/>
+          <actionMethod actionName="password"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -53,6 +54,7 @@
         <formFile formName="SubsidiaryList"/>
         <formFile formName="Search"/>
         <formFile formName="Login"/>
+        <formFile formName="Password"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -145,6 +147,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Error">
             <viewScriptFile forActionName="denied"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="User">
+            <viewScriptFile forActionName="password"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

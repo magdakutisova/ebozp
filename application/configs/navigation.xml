@@ -8,20 +8,33 @@
 		<client>
 			<label>Klient</label>
 			<route>clientList</route>
+			<resource>client</resource>
+			<privilege>list</privilege>
 			<pages>
 				<choose>
 					<label>Vyber ze seznamu</label>
 					<route>clientList</route>
+					<resource>client</resource>
+					<privilege>list</privilege>
 				</choose>
 				<search>
 					<label>Hledej</label>
 					<route>search</route>
+					<resource>search</resource>
 				</search>
 				<new>
 					<label>Založ nového klienta</label>
 					<route>clientNew</route>
+					<resource>client</resource>
+					<privilege>new</privilege>
 				</new>
 			</pages>
 		</client>
+		<userAdmin>
+			<label>Administrace uživatelů</label>
+			<route>userRegister</route>
+			<resource>user</resource>
+			<privilege>register</privilege>
+		</userAdmin>
 	</nav>
 </configdata>

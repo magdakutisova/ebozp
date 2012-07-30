@@ -16,8 +16,8 @@ class UserController extends Zend_Controller_Action
 
     public function registerAction()
     {
-		$this->view->subtitle = 'Registrace';
-		
+    	$this->view->subtitle = 'Administrace uživatelů';
+    	
 		$form = new Application_Form_Register ();
 		$this->view->form = $form;
 		
@@ -29,26 +29,63 @@ class UserController extends Zend_Controller_Action
 				$confirmPassword = $form->getValue ( 'confirmPassword' );							
 				$role = $form->getValue ( 'role' );	
 				
-				//if ($password == $confirmPassword) {
-					$users = new Application_Model_DbTable_User ();
-					$user = $users->getByUsername ( $username );
-					if ($user == null) {
-						$salt = $this->generateSalt ();
-						$password = $this->encrypt ( $password, $salt );
-						$salt = base64_encode($salt);
-						$users->addUser ( $username, $password, $salt, $role );
-						$this->_helper->FlashMessenger ( 'Uživatel <strong>' . $username . '</strong> vytvořen' );
-						$this->_helper->redirector->gotoRoute ( array (), 'home' );
-					} else {
-						$this->_helper->FlashMessenger ( 'Uživatel s tímto uživatelským jménem již existuje, zvolte prosím jiné.' );
-						$this->_helper->redirector->gotoRoute(array(), 'userRegister');
-					}
-				//} else {
-					//$this->_helper->FlashMessenger ( 'Hesla se neshodují.' );
-					//$this->_helper->redirector->gotoRoute(array(), 'userRegister');
-				//}
+				$users = new Application_Model_DbTable_User ();
+				$user = $users->getByUsername ( $username );
+				if ($user == null) {
+					$salt = $this->generateSalt ();
+					$password = $this->encrypt ( $password, $salt );
+					$salt = base64_encode($salt);
+					$users->addUser ( $username, $password, $salt, $role );
+					$this->_helper->FlashMessenger ( 'Uživatel <strong>' . $username . '</strong> vytvořen' );
+					$this->_helper->redirector->gotoRoute ( array (), 'home' );
+				} else {
+					$this->_helper->FlashMessenger ( 'Uživatel s tímto uživatelským jménem již existuje, zvolte prosím jiné.' );
+					$this->_helper->redirector->gotoRoute(array(), 'userAdmin');
+				}
 			}
 		}
+    }
+
+    public function rightsAction()
+    {
+    	$this->view->subtitle = 'Administrace uživatelů';
+    }
+
+    public function deleteAction()
+    {
+    	$this->view->subtitle = 'Administrace uživatelů';
+    	
+    	$users = new Application_Model_DbTable_User();
+    	$formContent = $users->getUsernames();
+    	
+    	if ($formContent != 0){
+    		$form = new Application_Form_Select ();
+			$form->select->setMultiOptions ( $formContent );
+			$form->select->setLabel('Vyberte uživatele:');
+			$form->submit->setLabel('Smazat');
+			$form->submit->setAttrib('onClick', 'return confirm("Opravdu chcete uživatele smazat?")');
+			$this->view->form = $form;
+			   	
+    		$this->renderScript ( 'user/delete.phtml' );
+    		
+    		if ($this->getRequest ()->isPost ()) {
+				$formData = $this->getRequest ()->getPost ();
+				if ($form->isValid($formData)){
+					if ($this->getRequest ()->getMethod () == 'POST') {
+						$userId = $this->getRequest ()->getParam ( 'select' );
+						$users->deleteUser($userId);
+						$this->_helper->FlashMessenger('Uživatel byl smazán.');
+						$this->_helper->redirector->gotoRoute(array(), 'userDelete');
+					} else {
+						throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání klienta.', 500 );
+					}
+				}
+    		}
+    	}
+    	else{
+    		$form = '<p>Neexistují žádní uživatelé, kontaktujte podporu.</p>';
+    		$this->view->form = $form;
+    	}
     }
 
     private function generateSalt()
@@ -126,8 +163,43 @@ class UserController extends Zend_Controller_Action
         $this->_helper->redirector->gotoRoute(array(), 'userLogin');
     }
 
+    public function passwordAction()
+    {
+    	$this->view->subtitle = 'Změna hesla';
+        $form = new Application_Form_Password();
+        $this->view->form = $form;
+        
+        if ($this->getRequest()->isPost()){
+        	$formData = $this->getRequest()->getPost();
+        	if ($form->isValid($formData)){
+        		$username = Zend_Auth::getInstance()->getIdentity()->username;
+        		$oldPass = $form->getValue('oldPassword');
+        		$newPass = $form->getValue('newPassword');
+        		
+        		$users = new Application_Model_DbTable_User();
+    			$user = $users->getByUsername($username);
+    			$salt = base64_decode($user['salt']);
+    			$password = $this->encrypt($oldPass, $salt);
+    			$dbPass = $user['password'];
 
+    			if ($password == $dbPass){
+        			$salt = $this->generateSalt();
+        			$password = $this->encrypt($newPass, $salt);
+        			$salt = base64_encode($salt);
+        			$users->updatePassword ( $username, $password, $salt);
+					$this->_helper->FlashMessenger ( 'Heslo změněno.' );
+					$this->_helper->redirector->gotoRoute ( array (), 'home' );
+        		}
+        		else{
+        			$this->_helper->FlashMessenger ( 'Zadal(a) jste špatné původní heslo.' );
+					$this->_helper->redirector->gotoRoute ( array (), 'userPassword' );
+        		}
+        	}
+        }
+    }
 }
+
+
 
 
 
