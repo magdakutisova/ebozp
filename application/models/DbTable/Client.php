@@ -24,7 +24,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	 * klienta.
 	 */
 	public function addClient($companyName, $companyNumber, $taxNumber, $headquartersStreet,
-		$headquartersCode, $headquartersTown, $business, $insuranceCompany, $private) {
+		$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $business,
+		$insuranceCompany, $private) {
 		$data = array (
 			'company_name' => $companyName,
 			'company_number' => $companyNumber,
@@ -32,6 +33,9 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			'headquarters_street' => $headquartersStreet,
 			'headquarters_code' => $headquartersCode,
 			'headquarters_town' => $headquartersTown,
+			'invoice_street' => $invoiceStreet,
+			'invoice_code' => $invoiceCode,
+			'invoice_town' => $invoiceTown,
 			'business' => $business,
 			'insurance_company' => $insuranceCompany,
 			'private' => $private );
@@ -50,6 +54,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $companyName, 'utf-8' ) );
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $headquartersStreet, 'utf-8' ) );
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $headquartersTown, 'utf-8' ) );
+		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $invoiceStreet), 'utf-8');
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $invoiceTown, 'utf-8'));
 		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
 		
 		$index->addDocument ( $document );
@@ -60,7 +66,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	public function updateClient($id, $companyName, $companyNumber, $taxNumber, $headquartersStreet,
-		$headquartersCode, $headquartersTown, $business, $insuranceCompany, $private) {
+		$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $business,
+		$insuranceCompany, $private) {
 		$this->getClient($id);
 		$data = array (
 			'company_name' => $companyName,
@@ -69,6 +76,9 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			'headquarters_street' => $headquartersStreet,
 			'headquarters_code' => $headquartersCode,
 			'headquarters_town' => $headquartersTown,
+			'invoice_street' => $invoiceStreet,
+			'invoice_code' => $invoiceCode,
+			'invoice_town' => $invoiceTown,
 			'business' => $business,
 			'insurance_company' => $insuranceCompany,
 			'private' => $private );
@@ -94,6 +104,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $companyName, 'utf-8' ) );
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $headquartersStreet, 'utf-8' ) );
 		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $headquartersTown, 'utf-8' ) );
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceStreet', $invoiceStreet, 'utf-8'));
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $invoiceStreet, $invoiceTown, 'utf-8'));
 		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
 		
 		$index->addDocument ( $document );

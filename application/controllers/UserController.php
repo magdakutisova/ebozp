@@ -37,7 +37,7 @@ class UserController extends Zend_Controller_Action
 					$salt = base64_encode($salt);
 					$users->addUser ( $username, $password, $salt, $role );
 					$this->_helper->FlashMessenger ( 'Uživatel <strong>' . $username . '</strong> vytvořen' );
-					$this->_helper->redirector->gotoRoute ( array (), 'home' );
+					$this->_helper->redirector->gotoRoute ( array (), 'userRegister' );
 				} else {
 					$this->_helper->FlashMessenger ( 'Uživatel s tímto uživatelským jménem již existuje, zvolte prosím jiné.' );
 					$this->_helper->redirector->gotoRoute(array(), 'userAdmin');

@@ -1,11 +1,16 @@
 <?php
 
 class SubsidiaryController extends Zend_Controller_Action {
+	private $_username;
 	
 	public function init() {
 		$this->view->title = 'Správa poboček';
 		$this->view->headTitle ( $this->view->title );
 		$this->_helper->layout()->setLayout('clientLayout');
+		
+		if(Zend_Auth::getInstance()->hasIdentity()){
+			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
+		}
 	}
 	
 	public function indexAction() {
@@ -61,9 +66,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$subsidiaryStreet = $form->getValue ( 'subsidiary_street' );
 				$subsidiaryCode = $form->getValue ( 'subsidiary_code' );
 				$subsidiaryTown = $form->getValue ( 'subsidiary_town' );
-				$invoiceStreet = $form->getValue ( 'invoice_street' );
-				$invoiceCode = $form->getValue ( 'invoice_code' );
-				$invoiceTown = $form->getValue ( 'invoice_town' );
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
@@ -77,12 +79,10 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiaryName, $subsidiaryStreet,
-					$subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, $supervisionFrequency, $doctor,
-					$clientId, $private, 0 );
+					$subsidiaryCode, $subsidiaryTown, $contactPerson, $phone, $email,
+					$supervisionFrequency, $doctor,	$clientId, $private, 0 );
 				
-				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> přidána' );
 				if ($form->getElement ( 'other' )->isChecked ()) {
@@ -112,9 +112,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$subsidiaryStreet = $form->getValue ( 'subsidiary_street' );
 				$subsidiaryCode = $form->getValue ( 'subsidiary_code' );
 				$subsidiaryTown = $form->getValue ( 'subsidiary_town' );
-				$invoiceStreet = $form->getValue ( 'invoice_street' );
-				$invoiceCode = $form->getValue ( 'invoice_code' );
-				$invoiceTown = $form->getValue ( 'invoice_town' );
 				$contactPerson = $form->getValue ( 'contact_person' );
 				$phone = $form->getValue ( 'phone' );
 				$email = $form->getValue ( 'email' );
@@ -129,12 +126,10 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaries->updateSubsidiary ( $subsidiaryId, $subsidiaryName, $subsidiaryStreet,
-					$subsidiaryCode, $subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
-					0 );
-				
-				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+					$subsidiaryCode, $subsidiaryTown, $contactPerson, $phone, $email,
+					$supervisionFrequency, $doctor, $clientId, $private, 0 );
+
+				$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> upravena' );
 				
@@ -170,8 +165,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 			
 			$subsidiaries->deleteSubsidiary ( $subsidiaryId );
 			
-			$username = 'admin';
-			$this->_helper->diaryRecord($username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+			$this->_helper->diaryRecord($this->_username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
 			$this->_helper->redirector->gotoRoute (array ('clientId' => $clientId ), 'clientAdmin' );

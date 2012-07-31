@@ -48,7 +48,7 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 	}
     
 	public function getUsernames(){
-		$select = $this->select()->from('user')->columns(array('id_user', 'username'));
+		$select = $this->select()->from('user')->columns(array('id_user', 'username'))->order('username ASC');
 		$results = $this->fetchAll($select);
 		if (count ( $results ) > 0) {
 			$usernames = array ();

@@ -17,16 +17,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	}
 	
 	public function addSubsidiary($subsidiaryName, $subsidiaryStreet, $subsidiaryCode, $subsidiaryTown,
-		$invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email, $supervisionFrequency,
-		$doctor, $clientId, $private, $hq) {
+		$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private, $hq) {
 		$data = array (
 			'subsidiary_name' => $subsidiaryName,
 			'subsidiary_street' => $subsidiaryStreet,
 			'subsidiary_code' => $subsidiaryCode,
 			'subsidiary_town' => $subsidiaryTown,
-			'invoice_street' => $invoiceStreet,
-			'invoice_code' => $invoiceCode,
-			'invoice_town' => $invoiceTown,
 			'contact_person' => $contactPerson,
 			'phone' => $phone,
 			'email' => $email,
@@ -50,8 +46,6 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiaryName, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiaryStreet, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiaryTown, 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceStreet', $invoiceStreet, 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceTown', $invoiceTown, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $clientId, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
 			
@@ -63,17 +57,14 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	}
 	
 	public function updateSubsidiary($id, $subsidiaryName, $subsidiaryStreet, $subsidiaryCode,
-		$subsidiaryTown, $invoiceStreet, $invoiceCode, $invoiceTown, $contactPerson, $phone, $email,
-		$supervisionFrequency, $doctor, $clientId, $private, $hq) {
-			$this->getSubsidiary($id);
+		$subsidiaryTown, $contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId,
+		$private, $hq) {
+		$this->getSubsidiary($id);
 		$data = array (
 			'subsidiary_name' => $subsidiaryName,
 			'subsidiary_street' => $subsidiaryStreet,
 			'subsidiary_code' => $subsidiaryCode,
 			'subsidiary_town' => $subsidiaryTown,
-			'invoice_street' => $invoiceStreet,
-			'invoice_code' => $invoiceCode,
-			'invoice_town' => $invoiceTown,
 			'contact_person' => $contactPerson,
 			'phone' => $phone,
 			'email' => $email,
@@ -104,8 +95,6 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiaryName, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiaryStreet, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiaryTown, 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceStreet', $invoiceStreet, 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceTown', $invoiceTown, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $clientId, 'utf-8' ) );
 			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
 			

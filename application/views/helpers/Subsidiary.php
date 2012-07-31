@@ -16,14 +16,6 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 			. ', ' . $subsidiary['subsidiary_town']
 			. '</p>';
 		
-		if($subsidiary['invoice_street']){
-			$content .= '<p class="no-margin"><span class="bold">Fakturační adresa: </span>'
-				. $subsidiary['invoice_street']
-				. ', ' . $subsidiary['invoice_code']
-				. ', ' . $subsidiary['invoice_town']
-				. '</p>';
-		}
-		
 		$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
 			. $subsidiary['contact_person'] . ', telefon: '
 			. $subsidiary['phone'] . ', e-mail: '

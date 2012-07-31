@@ -69,34 +69,6 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('hidden', 'invoice', array(
-        	'label' => 'Fakturační adresa',
-        	'decorators' => $elementDecorator,
-        ));
-        
-        $this->addElement('text', 'invoice_street', array(
-        	'label' => 'Ulice a č. p.',
-        	'required' => false,
-        	'filters' => array('StripTags', 'StringTrim'),
-        	'decorators' => $elementDecorator,
-        ));
-        
-        $this->addElement('text', 'invoice_code', array(
-        	'label' => 'PSČ',
-        	'required' => false,
-        	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
-        		new Zend_Validate_PostCode('cs_CZ')),
-        	'decorators' => $elementDecorator,
-        ));
-        
-        $this->addElement('text', 'invoice_town', array(
-        	'label' => 'Obec',
-        	'required' => false,
-        	'filters' => array('StripTags', 'StringTrim'),
-        	'decorators' => $elementDecorator,
-        ));
-        
         $this->addElement('hidden', 'contact', array(
         	'label' => 'Kontaktní osoba pro BOZP a PO',
         	'decorators' => $elementDecorator,

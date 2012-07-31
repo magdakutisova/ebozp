@@ -12,7 +12,10 @@
 	<h3>Klienti</h3>
 	<?php foreach ($this->clients as $client):?>
 		<h4><a href="<?php echo $this->url(array('clientId' => $client['clientId']), 'clientIndex') ?>"><?php echo $client['companyName'] ?></a></h4>
-		<p class="no-margin"><span class="bold">Adresa: </span><?php echo $client['headquartersStreet'] . ', ' . $client['headquartersTown'] ?></p>	
+		<p class="no-margin"><span class="bold">Adresa: </span><?php echo $client['headquartersStreet'] . ', ' . $client['headquartersTown'] ?></p>
+		<?php if($client['invoiceStreet'] != null) { ?>
+			<p class="no-margin"><span class="bold">Fakturační adresa: </span><?php echo $client['invoiceStreet'] . ', ' . $client['invoiceTown'] ?></p>
+		<?php }?>	
 	<?php endforeach;?>
 	
 <?php }?>
@@ -22,10 +25,7 @@
 	<h3>Pobočky</h3>
 	<?php foreach ($this->subsidiaries as $subsidiary):?>
 		<h4><a href="<?php echo $this->url(array('clientId' => $subsidiary['clientId'], 'subsidiary' => $subsidiary['subsidiaryId']), 'subsidiaryIndex') ?>"><?php echo $subsidiary['subsidiaryName'] ?></a></h4>
-		<p class="no-margin"><span class="bold">Adresa pobočky: </span><?php echo $subsidiary['subsidiaryStreet'] . ', ' . $subsidiary['subsidiaryTown'] ?></p>
-		<?php if($subsidiary['invoiceStreet'] != null) { ?>
-			<p class="no-margin"><span class="bold">Fakturační adresa: </span><?php echo $subsidiary['invoiceStreet'] . ', ' . $subsidiary['invoiceTown'] ?></p>
-		<?php }?>	
+		<p class="no-margin"><span class="bold">Adresa pobočky: </span><?php echo $subsidiary['subsidiaryStreet'] . ', ' . $subsidiary['subsidiaryTown'] ?></p>	
 	<?php endforeach;?>
 	
 <?php }?>

@@ -28,6 +28,8 @@ class SearchController extends Zend_Controller_Action
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client ['company_name'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client ['headquarters_street'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client ['headquarters_town'], 'utf-8' ) );
+				$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client['invoice_street'], 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client['invoice_town'], 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
 				$message .= "Indexován klient: " . $client ['company_name'] . "<br />";
 				$index->addDocument ( $document );
@@ -45,8 +47,6 @@ class SearchController extends Zend_Controller_Action
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary ['subsidiary_name'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary ['subsidiary_street'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary ['subsidiary_town'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceStreet', $subsidiary ['invoice_street'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'invoiceTown', $subsidiary ['invoice_town'], 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed('clientId', $subsidiary['client_id'], 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
 				$message .= "Indexována pobočka: " . $subsidiary ['subsidiary_name'] . "<br />";
@@ -54,6 +54,7 @@ class SearchController extends Zend_Controller_Action
 			}
 			
 		}
+		
 		$index->commit();
 		$index->optimize();
 		$message .= 'Indexováno dokumentů: ' . $index->count();
@@ -99,6 +100,8 @@ class SearchController extends Zend_Controller_Action
 							$clients[$countC]['companyName'] = $result->companyName;
 							$clients[$countC]['headquartersStreet'] = $result->headquartersStreet;
 							$clients[$countC]['headquartersTown'] = $result->headquartersTown;
+							$clients[$countC]['invoiceStreet'] = $result->invoiceStreet;
+							$clients[$countC]['invoiceTown'] = $result->invoiceTown;
 							$countC++;
 						}
 						if($result->type == 'subsidiary'){
@@ -106,8 +109,6 @@ class SearchController extends Zend_Controller_Action
 							$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
 							$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;
 							$subsidiaries[$countS]['subsidiaryTown'] = $result->subsidiaryTown;
-							$subsidiaries[$countS]['invoiceStreet'] = $result->invoiceStreet;
-							$subsidiaries[$countS]['invoiceTown'] = $result->invoiceTown;
 							$subsidiaries[$countS]['clientId'] = $result->clientId;
 							$countS++;
 						}

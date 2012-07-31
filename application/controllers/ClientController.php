@@ -123,6 +123,7 @@ class ClientController extends Zend_Controller_Action
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
 				$companyName = $form->getValue ( 'company_name' );
+				//checkbox zda je adresa fakturační stejná jako adresa sídla
 				$invoiceAddress = $form->getValue('invoice_address');
 				$invoiceStreet = $form->getValue ( 'invoice_street' );
 				$invoiceCode = $form->getValue ( 'invoice_code' );
@@ -159,18 +160,16 @@ class ClientController extends Zend_Controller_Action
 				
 				//přidání klienta
 				$clientId = $clients->addClient ( $companyName, $companyNumber, $taxNumber,
-					$headquartersStreet, $headquartersCode, $headquartersTown, $business,
-					$insuranceCompany, $private );
+					$headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet,
+					$invoiceCode, $invoiceTown, $business, $insuranceCompany, $private );
 				
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaryId = $subsidiaries->addSubsidiary ( $companyName, $headquartersStreet,
-					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
-					true );
+					$headquartersCode, $headquartersTown, $contactPerson, $phone, $email,
+					$supervisionFrequency, $doctor, $clientId, $private, true );
 
-				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> přidán' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -282,18 +281,16 @@ class ClientController extends Zend_Controller_Action
 				
 				//update klienta
 				$clients->updateClient ( $clientId, $companyName, $companyNumber, $taxNumber,
-					$headquartersStreet, $headquartersCode, $headquartersTown, $business,
-					$insuranceCompany, $private );
+					$headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet,
+					$invoiceCode, $invoiceTown, $business, $insuranceCompany, $private );
 				
 				//update pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaries->updateSubsidiary ( $subsidiaryId, $companyName, $headquartersStreet,
-					$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown,
-					$contactPerson, $phone, $email, $supervisionFrequency, $doctor, $clientId, $private,
-					true );
+					$headquartersCode, $headquartersTown, $contactPerson, $phone, $email,
+					$supervisionFrequency, $doctor, $clientId, $private, true );
 				
-				$username = 'admin';
-				$this->_helper->diaryRecord($username, 'upravil klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> upraven' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
@@ -323,8 +320,7 @@ class ClientController extends Zend_Controller_Action
 			$subsidiaryId = $client ['id_subsidiary'];
 			$clients->deleteClient ( $clientId );
 			
-			$username = 'admin';
-			$this->_helper->diaryRecord($username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
+			$this->_helper->diaryRecord($this->_username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> smazán' );
 			$this->_helper->redirector->gotoRoute ( array (), 'clientList' );
