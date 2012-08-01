@@ -29,11 +29,11 @@ class Application_Form_Client extends Zend_Form
        	);
         
         $this->addElement('hidden', 'id_client', array(
-        	'filters' => array('Int'),
+        
         ));
         
         $this->addElement('hidden', 'id_subsidiary', array(
-        	'filters' => array('Int'),
+        	
         ));
         
         $this->addElement('text', 'company_name', array(

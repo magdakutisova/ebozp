@@ -27,10 +27,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$subsidiaryId = $this->_getParam('subsidiary');
 		$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
 		
-		$this->view->subtitle = $client['company_name'];
+		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		
+		//TODO
 		$diary = new Application_Model_DbTable_Diary();
 
 		$this->view->records = $diary->getDiaryBySubsidiary($subsidiaryId);
@@ -62,29 +63,21 @@ class SubsidiaryController extends Zend_Controller_Action {
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
-				$subsidiaryName = $form->getValue ( 'subsidiary_name' );
-				$subsidiaryStreet = $form->getValue ( 'subsidiary_street' );
-				$subsidiaryCode = $form->getValue ( 'subsidiary_code' );
-				$subsidiaryTown = $form->getValue ( 'subsidiary_town' );
-				$contactPerson = $form->getValue ( 'contact_person' );
-				$phone = $form->getValue ( 'phone' );
-				$email = $form->getValue ( 'email' );
-				$supervisionFrequency = $form->getValue ( 'supervision_frequency' );
-				$doctor = $form->getValue('doctor');
-				$private = $form->getValue ( 'private' );
+				$subsidiary = new Application_Model_Subsidiary($formData);
 				
-				if ($subsidiaryName == null) {
-					$subsidiaryName = $clients->getCompanyName ( $clientId );
+				if ($subsidiary->getSubsidiaryName() == null) {
+					$subsidiary->setSubsidiaryName($clients->getCompanyName ( $clientId ));
 				}
 				
+				$subsidiary->setClientId($clientId);
+				$subsidiary->setHq(0);
+				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiaryName, $subsidiaryStreet,
-					$subsidiaryCode, $subsidiaryTown, $contactPerson, $phone, $email,
-					$supervisionFrequency, $doctor,	$clientId, $private, 0 );
+				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
 				
-				$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
 				
-				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> přidána' );
+				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> přidána' );
 				if ($form->getElement ( 'other' )->isChecked ()) {
 					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'subsidiaryNew' );
 				} else {
@@ -108,30 +101,22 @@ class SubsidiaryController extends Zend_Controller_Action {
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
-				$subsidiaryName = $form->getValue ( 'subsidiary_name' );
-				$subsidiaryStreet = $form->getValue ( 'subsidiary_street' );
-				$subsidiaryCode = $form->getValue ( 'subsidiary_code' );
-				$subsidiaryTown = $form->getValue ( 'subsidiary_town' );
-				$contactPerson = $form->getValue ( 'contact_person' );
-				$phone = $form->getValue ( 'phone' );
-				$email = $form->getValue ( 'email' );
-				$supervisionFrequency = $form->getValue ( 'supervision_frequency' );
-				$doctor = $form->getValue('doctor');
-				$private = $form->getValue ( 'private' );
+				$subsidiary = new Application_Model_Subsidiary($formData);
 				
-				if ($subsidiaryName == null) {
+				if ($subsidiary->getSubsidiaryName() == null) {
 					$clients = new Application_Model_DbTable_Client ();
-					$subsidiaryName = $clients->getCompanyName ( $clientId );
+					$subsidiary->setSubsidiaryName($clients->getCompanyName ( $clientId ));
 				}
 				
-				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiaryId, $subsidiaryName, $subsidiaryStreet,
-					$subsidiaryCode, $subsidiaryTown, $contactPerson, $phone, $email,
-					$supervisionFrequency, $doctor, $clientId, $private, 0 );
-
-				$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+				$subsidiary->setHq(0);
+				$subsidiary->setClientId($clientId);
 				
-				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> upravena' );
+				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+				$subsidiaries->updateSubsidiary ( $subsidiary, true);
+
+				$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+				
+				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> upravena' );
 				
 				$defaultNamespace = new Zend_Session_Namespace();
 				if (isset($defaultNamespace->referer)){
@@ -140,28 +125,28 @@ class SubsidiaryController extends Zend_Controller_Action {
 					$this->_redirect($path);
 				}
 				else{
-					
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
 				}
-				//$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
 			}
 		} else {
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 			$subsidiary = $subsidiaries->getSubsidiary ( $subsidiaryId );
 					
-			$form->populate ( $subsidiary );
+			$form->populate ( $subsidiary->toArray() );
 		}
 	}
 	
 	public function deleteAction() {
 		if ($this->getRequest ()->getMethod () == 'POST') {
 			$clientId = $this->_getParam ( 'clientId' );
-			$subsidiaryId = $this->_getParam ( 'subsidiary' );
+			$subsidiaryId = $this->_getParam ( 'select' );			
 			
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 			
 			$subsidiary = $subsidiaries->getSubsidiary ( $subsidiaryId );
-			$subsidiaryName = $subsidiary ['subsidiary_name'];
-			$subsidiaryTown = $subsidiary ['subsidiary_town'];
+			$subsidiaryName = $subsidiary->getSubsidiaryName();
+			$subsidiaryTown = $subsidiary->getSubsidiaryTown();
+			
 			
 			$subsidiaries->deleteSubsidiary ( $subsidiaryId );
 			

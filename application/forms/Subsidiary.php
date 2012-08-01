@@ -31,7 +31,7 @@ class Application_Form_Subsidiary extends Zend_Form
        	);
        	       
         $this->addElement('hidden', 'id_subsidiary', array(
-        	'filters' => array('Int'),
+        	
         ));
         
         $this->addElement('text', 'subsidiary_name', array(

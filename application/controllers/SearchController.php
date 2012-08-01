@@ -23,15 +23,15 @@ class SearchController extends Zend_Controller_Action
 		if (sizeOf ( $clientData ) > 0) {			
 			foreach ( $clientData as $client ) {
 				$document = new Zend_Search_Lucene_Document ();
-				$document->addField(Zend_Search_Lucene_Field::keyword('companyNumber', $client['company_number'], 'utf-8'));
-				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client ['id_client'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client ['company_name'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client ['headquarters_street'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client ['headquarters_town'], 'utf-8' ) );
-				$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client['invoice_street'], 'utf-8'));
-				$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client['invoice_town'], 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::keyword('companyNumber', $client->getCompanyNumber(), 'utf-8'));
+				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
+				$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet(), 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
-				$message .= "Indexován klient: " . $client ['company_name'] . "<br />";
+				$message .= "Indexován klient: " . $client->getCompanyName() . "<br />";
 				$index->addDocument ( $document );
 			}
 			
@@ -43,13 +43,13 @@ class SearchController extends Zend_Controller_Action
 		if (sizeOf ( $subsidiaryData ) > 0) {
 			foreach ( $subsidiaryData as $subsidiary ) {
 				$document = new Zend_Search_Lucene_Document ();
-				$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary ['id_subsidiary'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary ['subsidiary_name'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary ['subsidiary_street'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary ['subsidiary_town'], 'utf-8' ) );
-				$document->addField ( Zend_Search_Lucene_Field::unIndexed('clientId', $subsidiary['client_id'], 'utf-8'));
+				$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary->getIdSubsidiary(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary->getSubsidiaryName(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
+				$document->addField ( Zend_Search_Lucene_Field::unIndexed('clientId', $subsidiary->getClientId(), 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
-				$message .= "Indexována pobočka: " . $subsidiary ['subsidiary_name'] . "<br />";
+				$message .= "Indexována pobočka: " . $subsidiary->getSubsidiaryName() . "<br />";
 				$index->addDocument ( $document );
 			}
 			

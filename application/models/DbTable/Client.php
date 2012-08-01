@@ -16,29 +16,15 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		if (! $row || $client['deleted']) {
 			throw new Exception ( "Klient $id nebyl nalezen." );
 		}
-		return $client;
+		return new Application_Model_Client($client);
 	}
 	
 	/**************************
 	 * Vrací číslo právě vloženého řádku pro potřeby vložení pobočky ihned po vložení
 	 * klienta.
 	 */
-	public function addClient($companyName, $companyNumber, $taxNumber, $headquartersStreet,
-		$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $business,
-		$insuranceCompany, $private) {
-		$data = array (
-			'company_name' => $companyName,
-			'company_number' => $companyNumber,
-			'tax_number' => $taxNumber,
-			'headquarters_street' => $headquartersStreet,
-			'headquarters_code' => $headquartersCode,
-			'headquarters_town' => $headquartersTown,
-			'invoice_street' => $invoiceStreet,
-			'invoice_code' => $invoiceCode,
-			'invoice_town' => $invoiceTown,
-			'business' => $business,
-			'insurance_company' => $insuranceCompany,
-			'private' => $private );
+	public function addClient(Application_Model_Client $client) {
+		$data = $client->toArray();
 		$clientId = $this->insert ( $data );
 		
 		//indexace pro vyhledávání
@@ -49,13 +35,13 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		}
 		
 		$document = new Zend_Search_Lucene_Document ();
-		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $companyNumber, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $clientId, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $companyName, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $headquartersStreet, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $headquartersTown, 'utf-8' ) );
-		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $invoiceStreet), 'utf-8');
-		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $invoiceTown, 'utf-8'));
+		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $client->getCompanyNumber(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
+		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet()), 'utf-8');
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
 		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
 		
 		$index->addDocument ( $document );
@@ -65,24 +51,10 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		return $clientId;
 	}
 	
-	public function updateClient($id, $companyName, $companyNumber, $taxNumber, $headquartersStreet,
-		$headquartersCode, $headquartersTown, $invoiceStreet, $invoiceCode, $invoiceTown, $business,
-		$insuranceCompany, $private) {
-		$this->getClient($id);
-		$data = array (
-			'company_name' => $companyName,
-			'company_number' => $companyNumber,
-			'tax_number' => $taxNumber,
-			'headquarters_street' => $headquartersStreet,
-			'headquarters_code' => $headquartersCode,
-			'headquarters_town' => $headquartersTown,
-			'invoice_street' => $invoiceStreet,
-			'invoice_code' => $invoiceCode,
-			'invoice_town' => $invoiceTown,
-			'business' => $business,
-			'insurance_company' => $insuranceCompany,
-			'private' => $private );
-		$this->update ( $data, 'id_client = ' . ( int ) $id );
+	public function updateClient(Application_Model_Client $client) {
+		$this->getClient($client->getIdClient());
+		$data = $client->toArray();
+		$this->update ( $data, 'id_client = ' . $client->getIdClient() );
 		
 		//indexace pro vyhledávání
 		try {
@@ -91,7 +63,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
 		}
 		
-		$hits = $index->find ( 'companyNumber: ' . $companyNumber );
+		$hits = $index->find ( 'companyNumber: ' . $client->getCompanyNumber() );
 		
 		foreach ( $hits as $hit ) :
 			$index->delete ( $hit->id );
@@ -99,13 +71,13 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		;
 		
 		$document = new Zend_Search_Lucene_Document ();
-		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $companyNumber, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $id, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $companyName, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $headquartersStreet, 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $headquartersTown, 'utf-8' ) );
-		$document->addField(Zend_Search_Lucene_Field::text('invoiceStreet', $invoiceStreet, 'utf-8'));
-		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $invoiceStreet, $invoiceTown, 'utf-8'));
+		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $client->getCompanyNumber(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
+		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet()), 'utf-8');
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
 		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
 		
 		$index->addDocument ( $document );
@@ -159,12 +131,14 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	
 	public function getClients() {
 		$select = $this->select ()->where ( 'deleted = 0' )->order ( 'company_name' );
-		return $this->fetchAll ( $select );
+		$result =  $this->fetchAll ( $select );
+		return $this->process($result);
 	}
 	
 	public function getLastOpen() {
 		$select = $this->select ()->where ( 'deleted = 0' )->order ( 'open DESC' );
-		return $this->fetchAll ( $select );
+		$result = $this->fetchAll ( $select );
+		return $this->process($result);
 	}
 	
 	/******
@@ -190,19 +164,41 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		return $companyName->current ()->company_name;
 	}
 	
-	public function getHeadquarters($clientId) {
-		$this->getClient($clientId);
-		$select = $this->select ()->from ( 'client' )->join ( 'subsidiary', 'client.id_client = subsidiary.client_id' )->where ( 'client.id_client = ?', $clientId )->where ( 'hq = 1' );
-		$select->setIntegrityCheck ( false );
-		$headquarters = $this->fetchAll ( $select );
-		return $headquarters->current ()->toArray ();
-	}
-	
 	public function openClient($clientId) {
 		$this->getClient($clientId);
 		$client = $this->fetchRow ( 'id_client = ' . $clientId );
 		$client->open = new Zend_Db_Expr ( 'NOW()' );
 		$client->save ();
+	}
+	
+	public function getSubsidiaries($clientId){
+		$client = $this->fetchRow('id_client = ' . $clientId);
+		$select = $client->select()->where('deleted = 0')->where('hq = 0');
+		$subsidiaries = $client->findDependentRowset('Application_Model_DbTable_Subsidiary', 'Client', $select);
+		if (count($subsidiaries)){
+			$results = array();
+			foreach ($subsidiaries as $subsidiary){
+				$results[] = $subsidiary['id_subsidiary'];
+			}
+			return $results;
+		}
+		return 0;
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$clients = array();
+			foreach($result as $client){
+				$client = $result->current();
+				$clients[] = $this->processClient($client);
+			}
+			return $clients;
+		}
+	}
+	
+	private function processClient($client){
+		$data = $client->toArray();
+		return new Application_Model_Client($data);
 	}
 
 }

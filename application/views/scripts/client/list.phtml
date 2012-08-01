@@ -2,18 +2,21 @@
 
 <div class="box" id="filtered">
 	
-	<?php foreach($this->clients as $client) : ?>
+	<?php $subDb = new Application_Model_DbTable_Subsidiary(); 
+	//Zend_Debug::dump($this->clients);
+	//die();
+	foreach($this->clients as $client) : ?>
 		<p class="bold">
-			<a href="<?php echo $this->url(array('clientId' => $client->id_client), 'clientIndex')?>">
-				<?php echo $client->company_name;?>
+			<a href="<?php echo $this->url(array('clientId' => $client->getIdClient()), 'clientIndex')?>">
+				<?php echo $client->getCompanyName();?>
 			</a>
 		</p>
 		<?php $subsidiaries = $client->getSubsidiaries();
-		$rowCount = count($subsidiaries);
-		if ($rowCount > 0) {?>
+		if ($subsidiaries != 0) {?>
 		<ul>
-			<?php foreach($subsidiaries as $subsidiary) :?>
-				<li><?php echo '<a href="' . $this->url(array('clientId' => $client->id_client, 'subsidiary' => $subsidiary->id_subsidiary), 'subsidiaryIndex') . '">' . $subsidiary->subsidiary_name . '</a>, ' . $subsidiary->subsidiary_town; ?></li>
+			<?php foreach($subsidiaries as $subsidiaryId) :
+				$subsidiary = $subDb->getSubsidiary($subsidiaryId);?>
+				<li><?php echo '<a href="' . $this->url(array('clientId' => $client->getIdClient(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . '</a>, ' . $subsidiary->getSubsidiaryTown(); ?></li>
 				<?php endforeach; } ?>
 				</ul>
 	<?php endforeach; ?>

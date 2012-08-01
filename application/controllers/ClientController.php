@@ -32,20 +32,24 @@ class ClientController extends Zend_Controller_Action
     public function indexAction()
     {
 		$clients = new Application_Model_DbTable_Client();
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
 		$clientId = $this->_getParam ( 'clientId' );
 			
+		//TODO openclient
 		$clients->openClient ( $clientId );
 			
-		$client = $clients->getHeadquarters($clientId);
+		$client = $clients->getClient($clientId);
+		$subsidiary = $subsidiaries->getHeadquarters($clientId);
 		
-		$this->view->subtitle = $client['company_name'];
+		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
 		
+		//TODO
 		$diary = new Application_Model_DbTable_Diary();
-
+		//TODO
 		$this->view->records = $diary->getDiaryByClient($clientId);
 		
-    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
 		if ($formContent != 0) {
@@ -92,12 +96,20 @@ class ClientController extends Zend_Controller_Action
 				break;
 			case "naposledy":
 				$clients = new Application_Model_DbTable_Client ();
-				$this->view->clients = $clients->getLastOpen ();
+				$results = $clients->getLastOpen();
+				foreach($results as $client){
+					$client->setSubsidiaries($clients->getSubsidiaries($client->getIdClient()));
+				}
+				$this->view->clients = $results;
 				$this->renderScript ( 'client/list.phtml' );
 				break;
 			default:
 				$clients = new Application_Model_DbTable_Client ();
-				$this->view->clients = $clients->getClients ();
+				$results = $clients->getClients();
+				foreach($results as $client){
+					$client->setSubsidiaries($clients->getSubsidiaries($client->getIdClient()));
+				}
+				$this->view->clients = $results;
 				$this->renderScript ( 'client/list.phtml' );
 		}
     }
@@ -122,56 +134,64 @@ class ClientController extends Zend_Controller_Action
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
-				$companyName = $form->getValue ( 'company_name' );
+				$client = new Application_Model_Client($formData);
+				$subsidiary = new Application_Model_Subsidiary($formData);
+//				$companyName = $form->getValue ( 'company_name' );
 				//checkbox zda je adresa fakturační stejná jako adresa sídla
 				$invoiceAddress = $form->getValue('invoice_address');
-				$invoiceStreet = $form->getValue ( 'invoice_street' );
-				$invoiceCode = $form->getValue ( 'invoice_code' );
-				$invoiceTown = $form->getValue ( 'invoice_town' );
-				$companyNumber = $form->getValue ( 'company_number' );
-				$taxNumber = $form->getValue ( 'tax_number' );
-				$headquartersStreet = $form->getValue ( 'headquarters_street' );
-				$headquartersCode = $form->getValue ( 'headquarters_code' );
-				$headquartersTown = $form->getValue ( 'headquarters_town' );
-				$business = $form->getValue ( 'business' );
-				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
-				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
-				$supervisionFrequency = $form->getValue('supervision_frequency');
-				$doctor = $form->getValue('doctor');
-				$contactPerson = $form->getValue ( 'contact_person' );
-				$phone = $form->getValue ( 'phone' );
-				$email = $form->getValue ( 'email' );
-				$private = $form->getValue ( 'private' );
+//				$invoiceStreet = $form->getValue ( 'invoice_street' );
+//				$invoiceCode = $form->getValue ( 'invoice_code' );
+//				$invoiceTown = $form->getValue ( 'invoice_town' );
+//				$companyNumber = $form->getValue ( 'company_number' );
+//				$taxNumber = $form->getValue ( 'tax_number' );
+//				$headquartersStreet = $form->getValue ( 'headquarters_street' );
+//				$headquartersCode = $form->getValue ( 'headquarters_code' );
+//				$headquartersTown = $form->getValue ( 'headquarters_town' );
+//				$business = $form->getValue ( 'business' );
+//				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+//				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
+//				$supervisionFrequency = $form->getValue('supervision_frequency');
+//				$doctor = $form->getValue('doctor');
+//				$contactPerson = $form->getValue ( 'contact_person' );
+//				$phone = $form->getValue ( 'phone' );
+//				$email = $form->getValue ( 'email' );
+//				$private = $form->getValue ( 'private' );
 				
 				if($invoiceAddress){
-					$invoiceStreet = $headquartersStreet;
-					$invoiceTown = $headquartersTown;
-					$invoiceCode = $headquartersCode;
+					$client->setInvoiceStreet($client->getHeadquartersStreet());
+					$client->setInvoiceCode($client->getHeadquartersCode());
+					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
 				
+				//$client->setDeleted(0);
+							
 				$clients = new Application_Model_DbTable_Client ();
 				
 				//kontrola IČO
-				if ($clients->existsCompanyNumber ( $companyNumber )) {
+				if ($clients->existsCompanyNumber ( $client->getCompanyNumber() )) {
 					$defaultNamespace->formData = $formData;
 					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 					$this->_helper->redirector->gotoRoute ( array (), 'clientNew' );
 				}
 				
 				//přidání klienta
-				$clientId = $clients->addClient ( $companyName, $companyNumber, $taxNumber,
-					$headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet,
-					$invoiceCode, $invoiceTown, $business, $insuranceCompany, $private );
+				$clientId = $clients->addClient ( $client);
+					
+				$subsidiary->setSubsidiaryName($client->getCompanyName());
+				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
+				$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
+				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
+				$subsidiary->setClientId($clientId);
+				$subsidiary->setHq(true);
+				$subsidiary->setDeleted(0);
 				
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $companyName, $headquartersStreet,
-					$headquartersCode, $headquartersTown, $contactPerson, $phone, $email,
-					$supervisionFrequency, $doctor, $clientId, $private, true );
+				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
 
-				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
 				
-				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> přidán' );
+				$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> přidán' );
 				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
 			} else {
 				$form->populate ( $formData );
@@ -191,7 +211,7 @@ class ClientController extends Zend_Controller_Action
 		$clients->openClient ( $clientId );
 		$client = $clients->getClient ( $clientId );
 		
-		$this->view->companyName = $client ['company_name'];
+		$this->view->companyName = $client->getCompanyName();
 		$this->view->clientId = $clientId;
 		
 		$this->view->canDeleteClient = $this->_acl->isAllowed($this->_role, 'client', 'delete');
@@ -242,58 +262,43 @@ class ClientController extends Zend_Controller_Action
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
-				$clientId = $form->getValue ( 'id_client' );
-				$subsidiaryId = $form->getValue ( 'id_subsidiary' );
-				$companyName = $form->getValue ( 'company_name' );
+				$client = new Application_Model_Client($formData);
+				$subsidiary = new Application_Model_Subsidiary($formData);
 				$invoiceAddress = $form->getValue('invoice_address');
-				$invoiceStreet = $form->getValue ( 'invoice_street' );
-				$invoiceCode = $form->getValue ( 'invoice_code' );
-				$invoiceTown = $form->getValue ( 'invoice_town' );
-				$companyNumber = $form->getValue ( 'company_number' );
-				$taxNumber = $form->getValue ( 'tax_number' );
-				$headquartersStreet = $form->getValue ( 'headquarters_street' );
-				$headquartersCode = $form->getValue ( 'headquarters_code' );
-				$headquartersTown = $form->getValue ( 'headquarters_town' );
-				$business = $form->getValue ( 'business' );
-				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
-				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
-				$supervisionFrequency = $form->getValue('supervision_frequency');
-				$doctor = $form->getValue('doctor');
-				$contactPerson = $form->getValue ( 'contact_person' );
-				$phone = $form->getValue ( 'phone' );
-				$email = $form->getValue ( 'email' );
-				$private = $form->getValue ( 'private' );
-				
+								
 				if($invoiceAddress){
-					$invoiceStreet = $headquartersStreet;
-					$invoiceTown = $headquartersTown;
-					$invoiceCode = $headquartersCode;
+					$client->setInvoiceStreet($client->getHeadquartersStreet());
+					$client->setInvoiceTown($client->getInvoiceTown());
+					$client->setInvoiceCode($client->getInvoiceCode());
 				}
 				
 				$clients = new Application_Model_DbTable_Client ();
 				
 				//kontrola IČO
-				if ($clients->existsCompanyNumber ( $companyNumber ) && ($clients->getCompanyNumber ( $clientId ) != $companyNumber)) {
+				if ($clients->existsCompanyNumber ( $client->getCompanyNumber()) && ($clients->getCompanyNumber ( $client->getIdClient() ) != $client->getCompanyNumber())) {
 					$defaultNamespace->formData = $formData;
 					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 					$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
 				}
 				
 				//update klienta
-				$clients->updateClient ( $clientId, $companyName, $companyNumber, $taxNumber,
-					$headquartersStreet, $headquartersCode, $headquartersTown, $invoiceStreet,
-					$invoiceCode, $invoiceTown, $business, $insuranceCompany, $private );
+				$clients->updateClient ( $client, true);
+				
+				$subsidiary->setSubsidiaryName($client->getCompanyName());
+				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
+				$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
+				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
+				$subsidiary->setClientId($client->getIdClient());
+				$subsidiary->setHq(true);
 				
 				//update pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiaryId, $companyName, $headquartersStreet,
-					$headquartersCode, $headquartersTown, $contactPerson, $phone, $email,
-					$supervisionFrequency, $doctor, $clientId, $private, true );
+				$subsidiaries->updateSubsidiary ( $subsidiary, true);
 				
-				$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $clientId), 'clientIndex', $companyName, $subsidiaryId);
+				$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
 				
-				$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> upraven' );
-				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+				$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> upraven' );
+				$this->_helper->redirector->gotoRoute ( array ('clientId' => $client->getIdClient() ), 'clientAdmin' );
 			}
 		
 		} else {
@@ -303,8 +308,19 @@ class ClientController extends Zend_Controller_Action
 			} else {
 				$clientId = $this->_getParam('clientId');
 				$clients = new Application_Model_DbTable_Client();
+				$subsidiaries = new Application_Model_DbTable_Subsidiary();
+				$client = $clients->getClient($clientId);
+				$subsidiary = $subsidiaries->getHeadquarters($clientId);
 				
-				$form->populate ( $clients->getHeadquarters ( $clientId ) );
+				$data = $client->toArray();
+				$data['id_subsidiary'] = $subsidiary->getIdSubsidiary();
+				$data['supervision_frequency'] = $subsidiary->getSupervisionFrequency();
+				$data['doctor'] = $subsidiary->getDoctor();
+				$data['contact_person'] = $subsidiary->getContactPerson();
+				$data['phone'] = $subsidiary->getPhone();
+				$data['email'] = $subsidiary->getEmail();
+				
+				$form->populate ( $data );
 			}
 		}
     }
@@ -315,10 +331,13 @@ class ClientController extends Zend_Controller_Action
 			$clientId = $this->_getParam ( 'clientId' );
 			
 			$clients = new Application_Model_DbTable_Client ();
-			$client = $clients->getHeadquarters ( $clientId );
-			$companyName = $client ['company_name'];
-			$subsidiaryId = $client ['id_subsidiary'];
+			$client = $clients->getClient ( $clientId );
+			$subsidiaries = new Application_Model_DbTable_Subsidiary();
+			$subsidiary = $subsidiaries->getHeadquarters($clientId);
+			$companyName = $client->getCompanyName();
+			$subsidiaryId = $subsidiary->getIdSubsidiary;
 			$clients->deleteClient ( $clientId );
+			$subsidiaries->deleteSubsidiary($subsidiaryId);
 			
 			$this->_helper->diaryRecord($this->_username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
 			

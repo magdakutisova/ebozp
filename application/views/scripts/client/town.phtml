@@ -2,23 +2,23 @@
 
 <div class="box" id="filtered">
 
-	<?php $town = $this->subsidiaries['0']['subsidiary_town']; ?>
+	<?php $town = $this->subsidiaries['0']->getSubsidiaryTown(); ?>
 	<p class="bold"><?php echo $town; ?></p>
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
-		if ($town != $subsidiary->subsidiary_town){?>
+		if ($town != $subsidiary->getSubsidiaryTown()){?>
 			</ul>
-			<p class="bold"><?php echo $subsidiary->subsidiary_town; ?></p>
-			<?php $town = $subsidiary->subsidiary_town; ?>
+			<p class="bold"><?php echo $subsidiary->getSubsidiaryTown(); ?></p>
+			<?php $town = $subsidiary->getSubsidiaryTown(); ?>
 			<ul>
 		<?php } 
-		if ($subsidiary->hq) {?>
-			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->client_id), 'clientIndex');?>">
-				<?php echo $subsidiary->subsidiary_name . ' (centrála)'?>
+		if ($subsidiary->getHq()) {?>
+			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId()), 'clientIndex');?>">
+				<?php echo $subsidiary->getSubsidiaryName() . ' (centrála)'?>
 			</a></li>
 		<?php }
 		else {?>
-			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->client_id, 'subsidiary' => $subsidiary->id_subsidiary), 'subsidiaryIndex') . '">' . $subsidiary->subsidiary_name . '</a>'?></li>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . '</a>'?></li>
 		<?php }
 		endforeach; ?>
 	</ul>

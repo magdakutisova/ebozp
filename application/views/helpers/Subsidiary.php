@@ -11,24 +11,24 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 		$content = '';
 		
 		$content .= '<p class="no-margin"><span class="bold">Adresa pobočky: </span>'
-			. $subsidiary['subsidiary_street']
-			. ', ' . $subsidiary['subsidiary_code']
-			. ', ' . $subsidiary['subsidiary_town']
+			. $subsidiary->getSubsidiaryStreet()
+			. ', ' . $subsidiary->getSubsidiaryCode()
+			. ', ' . $subsidiary->getSubsidiaryTown()
 			. '</p>';
 		
 		$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
-			. $subsidiary['contact_person'] . ', telefon: '
-			. $subsidiary['phone'] . ', e-mail: '
-			. $subsidiary['email'] . '</p>';
+			. $subsidiary->getContactPerson() . ', telefon: '
+			. $subsidiary->getPhone() . ', e-mail: '
+			. $subsidiary->getEmail() . '</p>';
 		
-		if($subsidiary['supervision_frequency']){
+		if($subsidiary->getSupervisionFrequency()){
 			$content .= '<p class="no-margin"><span class="bold">Četnost dohlídek: </span>'
-				. $subsidiary['supervision_frequency']
+				. $subsidiary->getSupervisionFrequency()
 				. '</p>';
 		}
-		if ($subsidiary['doctor']){
+		if ($subsidiary->getDoctor()){
 			$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
-				. $subsidiary['doctor']
+				. $subsidiary->getDoctor()
 				. '</p>';
 		}
 		//TODO odpovědní zaměstnanci a soukromá poznámka

@@ -7,49 +7,50 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 	
 	public function client(){
 		$client = $this->view->client;
+		$subsidiary = $this->view->subsidiary;
 		$content = '';
 
-		if($client['invoice_street']){
+		if($client->getInvoiceStreet()){
 			$content .= '<p class="no-margin"><span class="bold">Fakturační adresa: </span>'
-				. $client['invoice_street']
-				. ', ' . $client['invoice_code']
-				. ', ' . $client['invoice_town']
+				. $client->getInvoiceStreet()
+				. ', ' . $client->getInvoiceCode()
+				. ', ' . $client->getInvoiceTown()
 				. '</p>';
 		}
 		$content .= '<p class="no-margin"><span class="bold">IČO: </span>'
-			. $client['company_number']
+			. $client->getCompanyNumber()
 			. '</p>';
-		if ($client['tax_number']){
+		if ($client->getTaxNumber()){
 			$content .= '<p class="no-margin"><span class="bold">DIČ: </span>'
-				. $client['tax_number']
+				. $client->getTaxNumber()
 				. '</p>';
 		}
 		$content .= '<p class="no-margin"><span class="bold">Adresa sídla organizace: </span>'
-			. $client['headquarters_street']
-			. ', ' . $client['headquarters_code']
-			. ', ' . $client['headquarters_town']
+			. $client->getHeadquartersStreet()
+			. ', ' . $client->getHeadquartersCode()
+			. ', ' . $client->getHeadquartersTown()
 			. '</p><p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
-			. $client['contact_person'] . ', telefon: '
-			. $client['phone'] . ', e-mail: '
-			. $client['email'] . '</p>';
-		if ($client['business']){
+			. $subsidiary->getContactPerson() . ', telefon: '
+			. $subsidiary->getPhone() . ', e-mail: '
+			. $subsidiary->getEmail() . '</p>';
+		if ($client->getBusiness()){
 			$content .= '<p class="no-margin"><span class="bold">Činnost klienta: </span>'
-				. $client['business']
+				. $client->getBusiness()
 				. '</p>';
 		}
 		//TODO technik 
-		if($client['supervision_frequency']){
+		if($subsidiary->getSupervisionFrequency()){
 			$content .= '<p class="no-margin"><span class="bold">Četnost dohlídek: </span>'
-				. $client['supervision_frequency']
+				. $subsidiary->getSupervisionFrequency()
 				. '</p>';
 		}
-		if ($client['doctor']){
+		if ($subsidiary->getDoctor()){
 			$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
-				. $client['doctor']
+				. $subsidiary->getDoctor()
 				. '</p>';
 		}
 		$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
-			. $client['insurance_company']
+			. $client->getInsuranceCompany()
 			. '</p>';
 		//TODO odpovědní zaměstnanci a soukromá poznámka
 
