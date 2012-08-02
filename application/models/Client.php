@@ -14,8 +14,6 @@ class Application_Model_Client{
 	protected $business;
 	protected $insuranceCompany;
 	protected $private;
-	protected $deleted;
-	protected $open;
 	protected $subsidiaries;
 	
 	public function __construct ($options = array()){
@@ -206,34 +204,6 @@ class Application_Model_Client{
 	}
 
 	/**
-	 * @return the $deleted
-	 */
-	public function getDeleted() {
-		return $this->deleted;
-	}
-
-	/**
-	 * @param $deleted the $deleted to set
-	 */
-	public function setDeleted($deleted) {
-		$this->deleted = $deleted;
-	}
-
-	/**
-	 * @return the $open
-	 */
-	public function getOpen() {
-		return $this->open;
-	}
-
-	/**
-	 * @param $open the $open to set
-	 */
-	public function setOpen($open) {
-		$this->open = $open;
-	}
-
-	/**
 	 * @return the $subsidiaries
 	 */
 	public function getSubsidiaries() {
@@ -261,8 +231,6 @@ class Application_Model_Client{
 		$this->business = isset($data['business']) ? $data['business'] : null;
 		$this->insuranceCompany = isset($data['insurance_company']) ? $data['insurance_company'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
-		//$this->deleted = isset($data['deleted']) ? $data['deleted'] : null;
-		//$this->open = isset($data['open']) ? $data['open'] : null;
 		
 		return $this;
 	}
@@ -284,9 +252,7 @@ class Application_Model_Client{
 		$data['business'] = $this->business;
 		$data['insurance_company'] = $this->insuranceCompany;
 		$data['private'] = $this->private;
-		//$data['deleted'] = $this->deleted;
-		//$data['open'] = $this->open;
-
+		
 		return $data;
 	}
 	

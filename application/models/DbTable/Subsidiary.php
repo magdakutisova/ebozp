@@ -8,10 +8,9 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 	public function getSubsidiary($id) {
 		$id = ( int ) $id;
-		//Zend_Debug::dump($id);
+
 		$row = $this->fetchRow ( 'id_subsidiary = ' . $id );
-		//Zend_Debug::dump($row);
-		//die();
+
 		$subsidiary = $row->toArray();
 		if (! $row || $subsidiary['deleted']) {
 			throw new Exception ( "Pobočka $id nebyla nalezena." );

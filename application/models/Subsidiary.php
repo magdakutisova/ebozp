@@ -1,5 +1,5 @@
 <?php
-class Application_Model_Subsidiary{
+class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Application_Model_UserOwnedInterface{
 	
 	private $idSubsidiary;
 	private $subsidiaryName;
@@ -14,7 +14,7 @@ class Application_Model_Subsidiary{
 	private $clientId;
 	private $private;
 	private $hq;
-	private $deleted;
+	private $allowed;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -212,10 +212,17 @@ class Application_Model_Subsidiary{
 	}
 
 	/**
-	 * @param $deleted the $deleted to set
+	 * @return the $allowed
 	 */
-	public function setDeleted($deleted) {
-		$this->deleted = $deleted;
+	public function getAllowed() {
+		return $this->allowed;
+	}
+
+	/**
+	 * @param $allowed the $allowed to set
+	 */
+	public function setAllowed($allowed) {
+		$this->allowed = $allowed;
 	}
 
 	public function populate(array $data){
@@ -232,7 +239,6 @@ class Application_Model_Subsidiary{
 		$this->clientId = isset($data['client_id']) ? $data['client_id'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
 		$this->hq = isset($data['hq']) ? $data['hq'] : null;
-		//$this->deleted = isset($data['deleted']) ? $data['deleted'] : null;
 		
 		return $this;
 	}
@@ -254,9 +260,22 @@ class Application_Model_Subsidiary{
 		$data['client_id'] = $this->clientId;
 		$data['private'] = $this->private;
 		$data['hq'] = $this->hq;
-		//$data['deleted'] = $this->deleted;
 		
 		return $data;
 	}
+/**
+	 * 
+	 */
+	public function getResourceId() {
+		return 'subs';
+	}
+/**
+	 * @param Application_Model_User $user
+	 */
+	public function isOwnedByUser(Application_Model_User $user) {
+		return $user->hasSubsidiary($this);
+	}
+
+
 	
 }

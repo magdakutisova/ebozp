@@ -5,6 +5,7 @@ class ClientController extends Zend_Controller_Action
 	private $_acl;
 	private $_username;
 	private $_role;
+	private $_user;
 
     public function init()
     {
@@ -27,6 +28,7 @@ class ClientController extends Zend_Controller_Action
 			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
 		}
+		
     }
 
     public function indexAction()
@@ -45,9 +47,7 @@ class ClientController extends Zend_Controller_Action
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		
-		//TODO
 		$diary = new Application_Model_DbTable_Diary();
-		//TODO
 		$this->view->records = $diary->getDiaryByClient($clientId);
 		
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
@@ -90,8 +90,17 @@ class ClientController extends Zend_Controller_Action
 				$this->renderScript ( 'client/coordinator.phtml' );
 				break;
 			case "obec":
-				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$this->view->subsidiaries = $subsidiaries->getByTown ();
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+
+				$subsidiaries = $subsidiariesDb->getByTown ();
+				$users = new Application_Model_DbTable_User();
+				$user = $users->getByUsername($this->_username);
+
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
+				}
+				
+				$this->view->subsidiaries = $subsidiaries;
 				$this->renderScript ( 'client/town.phtml' );
 				break;
 			case "naposledy":

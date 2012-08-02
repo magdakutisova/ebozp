@@ -68,6 +68,7 @@
           <dbTableFile dbTableName="Subsidiary"/>
           <dbTableFile dbTableName="Diary"/>
           <dbTableFile dbTableName="User"/>
+          <dbTableFile dbTableName="UserHasSubsidiary"/>
         </dbTableDirectory>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>

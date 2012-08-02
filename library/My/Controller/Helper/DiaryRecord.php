@@ -2,9 +2,11 @@
 class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abstract{
 	
 	private $diary;
+	private $diaryDb;
 	
 	public function __construct(){
-		$this->diary = new Application_Model_DbTable_Diary();
+		$this->diary = new Application_Model_Diary();
+		$this->diaryDb = new Application_Model_DbTable_Diary();
 	}
 	
 	public function direct($who, $what, $urlParams, $route, $anchor, $subsidiary){
@@ -20,7 +22,10 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
 				 . $anchor . '</a>.';
 		}		
 		
-		$this->diary->addMessage($message, $subsidiary, $who);
+		$this->diary->setMessage($message);
+		$this->diary->setSubsidiaryId($subsidiary);
+		$this->diary->setAuthor($who);
+		$this->diaryDb->addMessage($this->diary);
 	}
 	
 }

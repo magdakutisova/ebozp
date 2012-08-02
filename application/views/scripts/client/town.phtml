@@ -6,12 +6,13 @@
 	<p class="bold"><?php echo $town; ?></p>
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
+	if($subsidiary->getAllowed()){
 		if ($town != $subsidiary->getSubsidiaryTown()){?>
 			</ul>
 			<p class="bold"><?php echo $subsidiary->getSubsidiaryTown(); ?></p>
 			<?php $town = $subsidiary->getSubsidiaryTown(); ?>
 			<ul>
-		<?php } 
+		<?php }
 		if ($subsidiary->getHq()) {?>
 			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId()), 'clientIndex');?>">
 				<?php echo $subsidiary->getSubsidiaryName() . ' (centrála)'?>
@@ -20,6 +21,7 @@
 		else {?>
 			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . '</a>'?></li>
 		<?php }
+	}
 		endforeach; ?>
 	</ul>
 </div>

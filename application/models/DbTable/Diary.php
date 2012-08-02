@@ -19,25 +19,17 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     	if (!row){
     		throw new Exception("Záznam č. $id neexistuje");
     	}
-    	return $row->toArray();
+    	return new Application_Model_Diary($row->toArray());
     }
     
-    public function addMessage($message, $subsidiaryId, $author){
-    	$data = array(
-    		'message' => $message,
-    		'subsidiary_id' => $subsidiaryId,
-    		'author' => $author,
-    	);
+    public function addMessage($diary){
+    	$data = $diary->toArray();
     	$this->insert($data);
     }
     
-    public function updateMessage($id, $message, $subsidiaryId, $author){
-    	$data = array(
-    		'message' => $message,
-    		'subsidiary_id' => $subsidiaryId,
-    		'author' => $author,
-    	);
-    	$this->update($data, 'id_diary = ' . (int)$id);
+    public function updateMessage($diary){
+    	$data = $diary->toArray();
+    	$this->update($data, 'id_diary = ' . $diary->getIdDiary());
     }
     
     public function deleteMessage($id){
@@ -46,7 +38,8 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     
     public function getDiary(){
     	$select = $this->select()->from('diary')->order('date DESC');
-    	return $this->fetchAll($select);
+    	$result = $this->fetchAll($select);
+    	return $this->process($result);
     }
     
     public function getDiaryByClient($id){
@@ -57,7 +50,8 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     		->where('client_id = ?', $id)
   			->order('date DESC');
     	$select->setIntegrityCheck(false);
-    	return $this->fetchAll($select);
+    	$result = $this->fetchAll($select);
+    	return $this->process($result);
     }
     
 	public function getDiaryBySubsidiary($id){
@@ -66,7 +60,24 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     		->columns(array('date', 'message'))	
     		->where('subsidiary_id = ?', $id)
   			->order('date DESC');
-    	return $this->fetchAll($select);
+    	$result = $this->fetchAll($select);
+    	return $this->process($result);
+    }
+    
+    private function process($result){
+    	if ($result->count()){
+			$diary = array();
+			foreach($result as $record){
+				$record = $result->current();
+				$diary[] = $this->processRecord($record);
+			}
+			return $diary;
+		}
+    }
+    
+    private function processRecord($record){
+    	$data = $record->toArray();
+		return new Application_Model_Diary($data);
     }
 
 }

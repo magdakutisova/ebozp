@@ -9,6 +9,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('subsidiary'));
 		$this->add(new Zend_Acl_Resource('user'));
 		$this->add(new Zend_Acl_Resource('error'));
+		$this->add(new Zend_Acl_Resource('subs'));
 		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
@@ -28,11 +29,11 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'client', 'new');
 		$this->deny($client, 'client', 'delete');
 		$this->deny($client, 'user', array('register', 'rights', 'delete'));
+		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 
 		$this->allow($admin);
 		
-		//TODO pobočky by mohly jít řešit jako články k editaci
 	}
 	
 }

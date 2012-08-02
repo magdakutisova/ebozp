@@ -24,23 +24,22 @@ class UserController extends Zend_Controller_Action
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {
-				$username = $form->getValue ( 'username' );
-				$password = $form->getValue ( 'password' );
-				$confirmPassword = $form->getValue ( 'confirmPassword' );							
-				$role = $form->getValue ( 'role' );	
+				$user = new Application_Model_User($formData);
 				
 				$users = new Application_Model_DbTable_User ();
-				$user = $users->getByUsername ( $username );
-				if ($user == null) {
+				$existingUser = $users->getByUsername ( $user->getUsername() );
+				if ($existingUser == null) {
 					$salt = $this->generateSalt ();
-					$password = $this->encrypt ( $password, $salt );
+					$password = $this->encrypt ( $user->getPassword(), $salt );
 					$salt = base64_encode($salt);
-					$users->addUser ( $username, $password, $salt, $role );
-					$this->_helper->FlashMessenger ( 'Uživatel <strong>' . $username . '</strong> vytvořen' );
+					$user->setPassword($password);
+					$user->setSalt($salt);
+					$users->addUser ( $user );
+					$this->_helper->FlashMessenger ( 'Uživatel <strong>' . $user->getUsername() . '</strong> vytvořen' );
 					$this->_helper->redirector->gotoRoute ( array (), 'userRegister' );
 				} else {
 					$this->_helper->FlashMessenger ( 'Uživatel s tímto uživatelským jménem již existuje, zvolte prosím jiné.' );
-					$this->_helper->redirector->gotoRoute(array(), 'userAdmin');
+					$this->_helper->redirector->gotoRoute(array(), 'userRegister');
 				}
 			}
 		}
@@ -126,7 +125,7 @@ class UserController extends Zend_Controller_Action
     	$users = new Application_Model_DbTable_User();
     	$user = $users->getByUsername($values['username']);
     	$password = $values['password'];
-    	$salt = base64_decode($user['salt']);
+    	$salt = base64_decode($user->getSalt());
     	$password = $this->encrypt($password, $salt);
     	
     	$adapter = $this->_getAuthAdapter();
@@ -178,9 +177,9 @@ class UserController extends Zend_Controller_Action
         		
         		$users = new Application_Model_DbTable_User();
     			$user = $users->getByUsername($username);
-    			$salt = base64_decode($user['salt']);
+    			$salt = base64_decode($user->getSalt());
     			$password = $this->encrypt($oldPass, $salt);
-    			$dbPass = $user['password'];
+    			$dbPass = $user->getPassword();
 
     			if ($password == $dbPass){
         			$salt = $this->generateSalt();

@@ -8,11 +8,11 @@ class Zend_View_Helper_Diary extends Zend_View_Helper_Abstract{
 	public function diary(){
 		$messages = $this->view->records;
 		$content = '';
-		if (count($messages) > 0){
+		if ($messages != 0){
 			foreach ($messages as $message){
 				$content .= '<p class="diary-message">'
-					. '<span class="bold">' . $message->date . '</span> '
-					. $message->message . '</p>';
+					. '<span class="bold">' . $message->getDate() . '</span> '
+					. $message->getMessage() . '</p>';
 			}
 		}
 		else{

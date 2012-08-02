@@ -11,7 +11,7 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
     	if (!$row){
     		throw new Exception("Uživatel $userId nebyl nalezen.");
     	}
-    	return $row->toArray();
+    	return $this->wrapUpUser($row);
     }
     
     public function getByUsername($username){
@@ -19,34 +19,27 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
     	if(!$row){
     		return null;
     	}
-    	return $row->toArray();
+    	return $this->wrapUpUser($row);
     }
 
-	public function addUser($username, $password, $salt, $role){
-		$data = array(
-			'username' => $username,
-			'password' => $password,
-			'salt' => $salt,
-			'role' => $role,
-		);
+	public function addUser($user){
+		$data = $user->toArray();
 		$userId = $this->insert($data);
 		return $userId;
 	}
 	
-	public function updateUser($userId, $username, $password, $salt, $role){
-		$data = array(
-			'username' => $username,
-			'password' => $password,
-			'salt' => $salt,
-			'role' => $role,
-		);
-		$this->update($data, 'id_user = ' . (int) $userId);
+	public function updateUser($user){
+		$data = $user->toArray();
+		$this->update($data, 'id_user = ' . $user->getIdUser());
 	}
 	
 	public function deleteUser($userId){
 		$this->delete('id_user = ' . (int) $userId);
 	}
     
+	/****************************
+	 * Vrací seznam uživatelských jmen pro combobox.
+	 */
 	public function getUsernames(){
 		$select = $this->select()->from('user')->columns(array('id_user', 'username'))->order('username ASC');
 		$results = $this->fetchAll($select);
@@ -69,6 +62,17 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 		$user->password = $password;
 		$user->salt = $salt;
 		$user->save();
+	}
+	
+	private function wrapUpUser(Zend_Db_Table_Row $user){
+		$subsidiaries = $user->findDependentRowset('Application_Model_DbTable_UserHasSubsidiary');
+		
+		$data = $user->toArray();
+		$data['user_subsidiaries'] = array();
+		foreach($subsidiaries as $subsidiary){
+			$data['user_subsidiaries'][] = $subsidiary->id_subsidiary;
+		}
+		return new Application_Model_User($data);
 	}
 	
 }
