@@ -10,7 +10,6 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
-			Zend_Debug::dump($options);
 			$this->populate($options);
 		}
 	}
@@ -124,6 +123,7 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		if($subsidiary instanceOf Application_Model_Subsidiary){
 			$subsidiary = $subsidiary->getIdSubsidiary();
 		}
+		
 		return in_array($subsidiary, $this->getUserSubsidiaries());
 	}
 	

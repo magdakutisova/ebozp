@@ -25,7 +25,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		
 		$this->allow($guest, array('user', 'error'));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete'));
-		$this->allow($client);
+		$this->allow($client, array('index', 'client', 'search', 'subsidiary', 'user', 'error'));
 		$this->deny($client, 'client', 'new');
 		$this->deny($client, 'client', 'delete');
 		$this->deny($client, 'user', array('register', 'rights', 'delete'));
