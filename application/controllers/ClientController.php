@@ -95,7 +95,8 @@ class ClientController extends Zend_Controller_Action
 				$subsidiaries = $subsidiariesDb->getByTown ();
 				$users = new Application_Model_DbTable_User();
 				$user = $users->getByUsername($this->_username);
-
+				
+				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
 					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
 				}
@@ -104,22 +105,35 @@ class ClientController extends Zend_Controller_Action
 				$this->renderScript ( 'client/town.phtml' );
 				break;
 			case "naposledy":
-				$clients = new Application_Model_DbTable_Client ();
-				$results = $clients->getLastOpen();
-				foreach($results as $client){
-					$client->setSubsidiaries($clients->getSubsidiaries($client->getIdClient()));
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+
+				$subsidiaries = $subsidiariesDb->getLastOpen ();
+				$users = new Application_Model_DbTable_User();
+				$user = $users->getByUsername($this->_username);
+				
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
 				}
-				$this->view->clients = $results;
+				
+				$this->view->subsidiaries = $subsidiaries;
 				$this->renderScript ( 'client/list.phtml' );
 				break;
-			default:
-				$clients = new Application_Model_DbTable_Client ();
-				$results = $clients->getClients();
-				foreach($results as $client){
-					$client->setSubsidiaries($clients->getSubsidiaries($client->getIdClient()));
+			default:				
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+
+				$subsidiaries = $subsidiariesDb->getByClient ();
+				$users = new Application_Model_DbTable_User();
+				$user = $users->getByUsername($this->_username);
+				
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
 				}
-				$this->view->clients = $results;
+				
+				$this->view->subsidiaries = $subsidiaries;
 				$this->renderScript ( 'client/list.phtml' );
+				break;
 		}
     }
 

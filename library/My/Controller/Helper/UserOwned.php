@@ -15,7 +15,7 @@ class My_Controller_Helper_UserOwned implements Zend_Acl_Assert_Interface{
 		if(!$auth->hasIdentity()){
 			return false;
 		}
-		//$user = new Application_Model_User($auth->getIdentity());
+
 		return $resource->isOwnedByUser($role);
 	}
 

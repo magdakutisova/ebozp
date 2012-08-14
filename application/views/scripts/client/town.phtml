@@ -2,15 +2,14 @@
 
 <div class="box" id="filtered">
 
-	<?php $town = $this->subsidiaries['0']->getSubsidiaryTown(); ?>
-	<p class="bold"><?php echo $town; ?></p>
+	<?php $town = ""; ?>
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getAllowed()){
 		if ($town != $subsidiary->getSubsidiaryTown()){?>
 			</ul>
-			<p class="bold"><?php echo $subsidiary->getSubsidiaryTown(); ?></p>
 			<?php $town = $subsidiary->getSubsidiaryTown(); ?>
+			<p class="bold"><?php echo $town; ?></p>
 			<ul>
 		<?php }
 		if ($subsidiary->getHq()) {?>

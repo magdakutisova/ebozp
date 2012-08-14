@@ -144,6 +144,20 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	public function getByClient(){
+		$select = $this->select()->from('subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))->where('subsidiary.deleted = 0')->order(array('client.company_name', 'hq DESC'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
+	public function getLastOpen(){
+		$select = $this->select()->from('subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))->where('subsidiary.deleted = 0')->order(array('client.open DESC', 'hq DESC'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	private function process($result){
 	if ($result->count()){
 			$subsidiaries = array();
