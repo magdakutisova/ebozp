@@ -86,6 +86,14 @@ class SearchController extends Zend_Controller_Action
 				
 				$results = $index->find($query);
 				$message = "K vyhledávání indexováno " . $index->count() . " položek.";
+				
+				$acl = new My_Controller_Helper_Acl();
+				if(Zend_Auth::getInstance()->hasIdentity()){
+					$username = Zend_Auth::getInstance()->getIdentity()->username;
+				}
+				$users = new Application_Model_DbTable_User();
+				$user = $users->getByUsername($username);
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
 
 				if($results){
 					$countC = 0;
@@ -95,6 +103,9 @@ class SearchController extends Zend_Controller_Action
 					
 					foreach($results as $result){
 						if($result->type == 'client'){
+							if(!$acl->isAllowed($user, $subsidiariesDb->getHeadquarters($result->clientId))){
+								continue;
+							}
 							$clients[$countC]['companyNumber'] = $result->companyNumber;
 							$clients[$countC]['clientId'] = $result->clientId;
 							$clients[$countC]['companyName'] = $result->companyName;
@@ -105,6 +116,9 @@ class SearchController extends Zend_Controller_Action
 							$countC++;
 						}
 						if($result->type == 'subsidiary'){
+							if(!$acl->isAllowed($user, $subsidiariesDb->getSubsidiary($result->subsidiaryId))){
+								continue;
+							}
 							$subsidiaries[$countS]['subsidiaryId'] = $result->subsidiaryId;
 							$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
 							$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;

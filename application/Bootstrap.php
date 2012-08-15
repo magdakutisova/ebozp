@@ -85,9 +85,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'userRights',
-			new Zend_Controller_Router_Route('administrace-uzivatelu/prava',
+			new Zend_Controller_Router_Route('administrace-uzivatelu/pridat-prava',
 											array('controller' => 'user',
 												'action' => 'rights'))
+		);
+		
+		$router->addRoute(
+			'userRevoke',
+			new Zend_Controller_Router_Route('administrace-uzivatelu/odebrat-prava',
+											array('controller' => 'user',
+												'action' => 'revoke'))
 		);
 		
 		$router->addRoute(

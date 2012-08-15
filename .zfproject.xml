@@ -46,6 +46,7 @@
           <actionMethod actionName="login"/>
           <actionMethod actionName="logout"/>
           <actionMethod actionName="password"/>
+          <actionMethod actionName="revoke"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -55,6 +56,7 @@
         <formFile formName="Search"/>
         <formFile formName="Login"/>
         <formFile formName="Password"/>
+        <formFile formName="Rights"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -151,6 +153,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="User">
             <viewScriptFile forActionName="password"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="User">
+            <viewScriptFile forActionName="revoke"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

@@ -6,13 +6,17 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 	protected $_referenceMap = array ('Client' => array ('columns' => 'client_id', 'refTableClass' => 'Application_Model_DbTable_Client', 'refColumns' => 'id_client' ) );
 	
-	public function getSubsidiary($id) {
+	public function getSubsidiary($id, $every = false) {
 		$id = ( int ) $id;
 
 		$row = $this->fetchRow ( 'id_subsidiary = ' . $id );
-
+		
+		if (! $row ) {
+			throw new Exception ( "Pobočka $id nebyla nalezena." );
+		}
+		
 		$subsidiary = $row->toArray();
-		if (! $row || $subsidiary['deleted']) {
+		if ($subsidiary['deleted'] && !$every) {
 			throw new Exception ( "Pobočka $id nebyla nalezena." );
 		}
 		return new Application_Model_Subsidiary($subsidiary);
@@ -109,14 +113,23 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	 * Vrací pole pro rozbalovací seznam poboček.
 	 * @param int $clientId
 	 */
-	public function getSubsidiaries($clientId) {
-		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+	public function getSubsidiaries($clientId = 0) {
+		if ($clientId != 0){
+			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+		}
+		else{
+			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array('client.company_name', 'hq DESC'));
+			$select->setIntegrityCheck(false);
+		}
 		$results = $this->fetchAll ( $select );
 		if (count ( $results ) > 0) {
 			$subsidiares = array ();
 			foreach ( $results as $result ) :
 				$key = $result->id_subsidiary;
 				$subsidiary = $result->subsidiary_name . ' - ' . $result->subsidiary_town;
+				if($result->hq){
+					$subsidiary .= ' (centrála)';
+				}
 				$subsidiaries [$key] = $subsidiary;
 			endforeach
 			;

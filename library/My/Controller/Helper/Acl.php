@@ -24,11 +24,11 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->addRole(new Zend_Acl_Role($admin));
 		
 		$this->allow($guest, array('user', 'error'));
-		$this->deny($guest, 'user', array('register', 'rights', 'delete'));
+		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->allow($client, array('index', 'client', 'search', 'subsidiary', 'user', 'error'));
 		$this->deny($client, 'client', 'new');
 		$this->deny($client, 'client', 'delete');
-		$this->deny($client, 'user', array('register', 'rights', 'delete'));
+		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 

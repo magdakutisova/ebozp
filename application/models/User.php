@@ -88,6 +88,9 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		return $this->getRole();
 	}
 
+	/**********************************************************************
+	 * Nastaví atributy třídy z pole. User_subsidiaries se plní funkcí wrap_up_user v modelu tabulky user.
+	 */
 	public function populate(array $data){
 		
 		$this->idUser = isSet($data['id_user']) ? $data['id_user'] : null;
@@ -131,6 +134,9 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		return $this->userSubsidiaries;
 	}
 	
+	/***************
+	 * Přidá k uživateli ID poboček z pole poboček. Volá se z populate.
+	 */
 	public function addSubsidiaryToUser($subsidiary){
 		if(is_array($subsidiary)){
 			foreach($subsidiary as $sub){

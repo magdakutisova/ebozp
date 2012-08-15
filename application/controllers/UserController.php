@@ -42,12 +42,38 @@ class UserController extends Zend_Controller_Action
 					$this->_helper->redirector->gotoRoute(array(), 'userRegister');
 				}
 			}
-		}
+		}	
     }
 
     public function rightsAction()
     {
     	$this->view->subtitle = 'Administrace uživatelů';
+    	$form = new Application_Form_Rights();
+    	$this->view->form = $form;
+    	
+    	$form2 = new Application_Form_Select();
+    	$users = new Application_Model_DbTable_User();
+    	$userList = $users->getUsernames();
+    	$form2->select->setMultiOptions($userList);
+    	$form2->select->setLabel('Vyberte uživatele:');
+    	$form2->submit->setLabel('Vybrat');
+    	$this->view->form2 = $form2;
+    	
+    	if ($this->getRequest()->isPost()){
+    		$formData = $this->getRequest()->getPost();
+    		if ($form->isValid($formData)){
+    			$users = $formData['users']['userCheckboxes'];
+    			$subsidiaries = $formData['subsidiaries']['subsidiaryCheckboxes'];
+   				$userSubsidiaries = new Application_Model_DbTable_UserHasSubsidiary();
+   				foreach($users as $user){
+   					foreach($subsidiaries as $subsidiary){
+   						$userSubsidiaries->addRelation($user, $subsidiary);
+    				}
+    			}
+    			$this->_helper->flashMessenger('Práva úspěšně přidělena.');
+    			$this->_helper->redirector->gotoRoute(array(), 'userRights');
+    		}    		
+    	}	
     }
 
     public function deleteAction()
@@ -194,9 +220,18 @@ class UserController extends Zend_Controller_Action
 					$this->_helper->redirector->gotoRoute ( array (), 'userPassword' );
         		}
         	}
-        }
+        }   
     }
+
+    public function revokeAction()
+    {
+        // action body
+    }
+
+
 }
+
+
 
 
 

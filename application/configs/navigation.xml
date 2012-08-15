@@ -32,9 +32,9 @@
 		</client>
 		<userAdmin>
 			<label>Administrace uživatelů</label>
-			<route>userRegister</route>
+			<route>userRights</route>
 			<resource>user</resource>
-			<privilege>register</privilege>
+			<privilege>rights</privilege>
 		</userAdmin>
 	</nav>
 </configdata>

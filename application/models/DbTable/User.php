@@ -41,7 +41,7 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 	 * Vrací seznam uživatelských jmen pro combobox.
 	 */
 	public function getUsernames(){
-		$select = $this->select()->from('user')->columns(array('id_user', 'username'))->order('username ASC');
+		$select = $this->select()->from('user')->columns(array('id_user', 'username'))->where('role != 1')->order('username ASC');
 		$results = $this->fetchAll($select);
 		if (count ( $results ) > 0) {
 			$usernames = array ();
@@ -64,6 +64,9 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 		$user->save();
 	}
 	
+	/********************************************************
+	 * Přidává k uživateli pole ID poboček.
+	 */
 	private function wrapUpUser(Zend_Db_Table_Row $user){
 		$subsidiaries = $user->findDependentRowset('Application_Model_DbTable_UserHasSubsidiary');
 		

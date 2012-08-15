@@ -29,6 +29,23 @@ class ClientController extends Zend_Controller_Action
 			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
 		}
 		
+		//do index, admin, edit action může jen když má přístup k pobočce/centrále
+		$action = $this->getRequest()->getActionName();
+		$users = new Application_Model_DbTable_User();
+		$user = $users->getByUsername($this->_username);
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		$acl = new My_Controller_Helper_Acl();
+		
+		if ($action == 'index' || $action == 'admin' || $action == 'edit'){
+			if(!$acl->isAllowed($user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+				$this->_helper->redirector('denied', 'error');
+			}
+		}
+		
+		//do list action může vždy - neošetřuje se
+		//new, delete action je ošetřena jinde
+		
     }
 
     public function indexAction()

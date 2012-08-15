@@ -9,6 +9,13 @@
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
+		if($allowed){ ?>
+		</ul>
+		<p class="bold">
+			<a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName; ?></a>
+		</p>
+		<ul>
+		<?php }
 		$companyName = $subsidiary->getSubsidiaryName();
 		$clientId = $subsidiary->getClientId();
 		$allowed = $subsidiary->getAllowed();
@@ -21,7 +28,8 @@
 			<p class="bold">
 			<?php if($allowed){?><a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php }?>
 				<?php echo $companyName;?>
-			<?php if($allowed){?></a><?php }?>
+			<?php if($allowed){?></a><?php
+				$allowed = ''; }?>
 			</p>
 			<ul>
 		<?php } ?>

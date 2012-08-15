@@ -17,6 +17,16 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			'refColumns' => array('id_user'),
 		),
 	);
+	
+	public function addRelation($userId, $subsidiaryId){
+		try {
+			$data['id_user'] = $userId;
+			$data['id_subsidiary'] = $subsidiaryId;
+			$this->insert($data);
+		} catch (Exception $e) {
+			//ignorace když se přidávají práva tam co už přidaná jsou
+		}
+	}
     
 }
 

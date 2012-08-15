@@ -59,3 +59,16 @@ input[type=text]{
 label.optional{
 	font-weight: normal;
 }
+
+#users-label, #subsidiaries-label{
+	display:none;
+}
+
+fieldset dl dd label{
+	font-weight: normal;
+}
+
+fieldset dd{
+	height: 200px;
+	overflow: auto;
+}

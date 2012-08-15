@@ -11,6 +11,28 @@ class SubsidiaryController extends Zend_Controller_Action {
 		if(Zend_Auth::getInstance()->hasIdentity()){
 			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 		}
+		
+		$action = $this->getRequest()->getActionName();
+		$users = new Application_Model_DbTable_User();
+		$user = $users->getByUsername($this->_username);
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		$acl = new My_Controller_Helper_Acl();
+
+		//do index a edit action může jen když má přístup k pobočce
+		if ($action == 'index' || $action == 'edit'){
+			$subsidiary = $subsidiaries->getSubsidiary($this->_getParam('subsidiary'));
+			if(!$acl->isAllowed($user, $subsidiary)){
+				$this->_helper->redirector('denied', 'error');
+			}
+		}
+		
+		//do new a delete action může jen když má přístup k centrále
+		if ($action == 'new' || $action == 'delete'){
+			if(!$acl->isAllowed($user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+				$this->_helper->redirector('denied', 'error');
+			}
+		}
 	}
 	
 	public function indexAction() {
