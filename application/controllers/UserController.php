@@ -51,14 +51,6 @@ class UserController extends Zend_Controller_Action
     	$form = new Application_Form_Rights();
     	$this->view->form = $form;
     	
-    	$form2 = new Application_Form_Select();
-    	$users = new Application_Model_DbTable_User();
-    	$userList = $users->getUsernames();
-    	$form2->select->setMultiOptions($userList);
-    	$form2->select->setLabel('Vyberte uživatele:');
-    	$form2->submit->setLabel('Vybrat');
-    	$this->view->form2 = $form2;
-    	
     	if ($this->getRequest()->isPost()){
     		$formData = $this->getRequest()->getPost();
     		if ($form->isValid($formData)){
@@ -225,7 +217,50 @@ class UserController extends Zend_Controller_Action
 
     public function revokeAction()
     {
-        // action body
+        $this->view->subtitle = 'Administrace uživatelů';
+    	$form = new Application_Form_Select();
+    	$users = new Application_Model_DbTable_User();
+    	$userList = $users->getUsernames();
+    	$form->select->setMultiOptions($userList);
+    	$form->select->setLabel('Vyberte uživatele:');
+    	$form->submit->setLabel('Vybrat');
+    	$this->view->form = $form;
+    	
+    	if ($this->getRequest()->isPost()){
+    		$formData = $this->getRequest()->getPost();
+    		if (array_key_exists('submit', $formData)){
+    			if ($form->isValid($formData)){
+    				$userId = $formData['select'];
+    				
+    				$subsidiaries = new Application_Model_DbTable_Subsidiary();
+    				$subsidiaryList = $subsidiaries->getSubsidiaries(0, $userId);
+    				
+    				$form2 = new Application_Form_RightsSubsidiaries();
+    				if($subsidiaryList != 0){
+    					$form2->subsidiaries->setMultiOptions($subsidiaryList);
+    					$form2->userId->setValue($userId);
+    				}
+    				else{
+    					$form2 = "Uživatel nemá přiděleny žádné pobočky.";
+    				}
+    				$this->view->form2 = $form2;
+
+    			}
+    		}
+    		if (array_key_exists('revoke', $formData)){
+    			if($form->isValid($formData)){
+    				$userId = $formData['userId'];
+    				$subsidiaries = $formData['subsidiaries'];
+    				
+    				$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+    				foreach ($subsidiaries as $subsidiary){
+    					$userSubs->removeRelation($userId, $subsidiary);
+    				}
+    				$this->_helper->flashMessenger("Práva byla odebrána.");
+    				$this->_helper->redirector->gotoRoute(array(), 'userRevoke');
+    			}
+    		}
+    	}
     }
 
 

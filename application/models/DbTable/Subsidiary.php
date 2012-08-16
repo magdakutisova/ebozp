@@ -110,12 +110,16 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	}
 	
 	/**
-	 * Vrací pole pro rozbalovací seznam poboček.
+	 * Vrací pole pro různé seznamy poboček.
 	 * @param int $clientId
 	 */
-	public function getSubsidiaries($clientId = 0) {
+	public function getSubsidiaries($clientId = 0, $userId = 0) {
 		if ($clientId != 0){
 			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+		}
+		elseif($userId != 0){
+			$select = $this->select()->from('subsidiary')->join('user_has_subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('user_has_subsidiary.id_user = ?', $userId)->where ( 'subsidiary.deleted = 0' )->order(array('client.company_name', 'hq DESC'));
+			$select->setIntegrityCheck(false);
 		}
 		else{
 			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array('client.company_name', 'hq DESC'));

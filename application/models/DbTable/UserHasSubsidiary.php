@@ -24,8 +24,15 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			$data['id_subsidiary'] = $subsidiaryId;
 			$this->insert($data);
 		} catch (Exception $e) {
-			//ignorace když se přidávají práva tam co už přidaná jsou
+			//ignorace když se přidávají práva tam, co už přidaná jsou
 		}
+	}
+	
+	public function removeRelation($userId, $subsidiaryId){
+		$this->delete(array(
+			'id_user = ?' => $userId,
+			'id_subsidiary = ?' => $subsidiaryId,
+		));
 	}
     
 }
