@@ -4,7 +4,6 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	
 	protected $_name = 'client';
 	protected $_rowClass = 'Application_Model_DbTable_Row_ClientRow';
-	//TODO loader pro tabulky
 	
 	/************************************************************
 	 * Zároveň slouží ke zjištění, zda klient nebyl vymazán.

@@ -55,6 +55,23 @@ class SearchController extends Zend_Controller_Action
 			
 		}
 		
+		$diary = new Application_Model_DbTable_Diary();
+		$diaryData = $diary->getDiary();
+		
+		if (sizeOf($diaryData) > 0){
+			foreach($diaryData as $record){
+				$document = new Zend_Search_Lucene_Document();
+				$document->addField(Zend_Search_Lucene_Field::unIndexed('diaryId', $record->getIdDiary(), 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::unIndexed('date', $record->getDate(), 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::text('message', $record->getMessage(), 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::unIndexed('subsidiaryId', $record->getSubsidiaryId(), 'utf-8'));
+				$document->addField(Zend_Search_Lucene_Field::unIndexed('author', $record->getAuthor(), 'utf-8'));
+				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'diary', 'utf-8' ) );
+				$message .= "Indexován záznam deníku. <br/>";
+				$index->addDocument($document);
+			}
+		}
+		
 		$index->commit();
 		$index->optimize();
 		$message .= 'Indexováno dokumentů: ' . $index->count();

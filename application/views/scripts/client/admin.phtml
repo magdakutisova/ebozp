@@ -25,9 +25,19 @@
 		<td colspan=3><a href="#">EDITACE</a></td>
 	</tr>
 	<tr>
-		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'subsidiaryNew') ?>">PŘIDAT POBOČKU</a></td>
+		<td>
+			<?php if ($this->canAddSubsidiary){?>
+			<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'subsidiaryNew') ?>">PŘIDAT POBOČKU</a>
+			<?php } else {?>
+			POBOČKY
+			<?php }?>
+		</td>
 		<td><a class="edit-link">EDITACE</a></td>
-		<td><a class="delete-link">SMAZAT</a></td>
+		<td>
+			<?php if ($this->canDeleteSubsidiary){?>
+			<a class="delete-link">SMAZAT</a>
+			<?php }?>
+		</td>
 		<td></td>
 	</tr>
 </table>

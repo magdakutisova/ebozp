@@ -29,8 +29,10 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'client', 'new');
 		$this->deny($client, 'client', 'delete');
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
+		$this->deny($client, 'subsidiary', array('new', 'delete'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($coordinator, 'client', array('new', 'delete'));
+		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 
 		$this->allow($admin);
 		

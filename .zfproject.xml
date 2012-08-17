@@ -58,6 +58,7 @@
         <formFile formName="Password"/>
         <formFile formName="Rights"/>
         <formFile formName="RightsSubsidiaries"/>
+        <formFile formName="Diary"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>

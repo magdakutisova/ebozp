@@ -54,7 +54,6 @@ class ClientController extends Zend_Controller_Action
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
 		$clientId = $this->_getParam ( 'clientId' );
 			
-		//TODO openclient
 		$clients->openClient ( $clientId );
 			
 		$client = $clients->getClient($clientId);
@@ -64,12 +63,31 @@ class ClientController extends Zend_Controller_Action
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		
+		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
-		$this->view->records = $diary->getDiaryByClient($clientId);
+		$messages = $diary->getDiaryByClient($clientId);
 		
+    	if ($this->getRequest()->isPost() && in_array('Filtrovat', $this->getRequest()->getPost())){
+    		$formData = $this->getRequest()->getPost();	
+    		$this->_helper->diaryFiltering($messages, $formData['users'], $formData['subsidiaries']);
+    	}
+    	else{
+    		$this->_helper->diaryFiltering($messages, 0, 0);
+    	}
+    	
+    	$this->view->formSearch = new Application_Form_Search();
+		
+		//výběr poboček
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
-		
-		if ($formContent != 0) {
+		$users = new Application_Model_DbTable_User();
+		$user = $users->getByUsername($this->_username);
+		foreach ($formContent as $key => $subsidiary){
+			if (!$this->_acl->isAllowed($user, $subsidiaries->getSubsidiary($key))){
+				unset($formContent[$key]);
+			}
+		}
+
+		if (count($formContent) != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
@@ -77,18 +95,18 @@ class ClientController extends Zend_Controller_Action
 			
 			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
-				if ($form->isValid ( $formData )) {
+				if (in_array('Zobrazit', $formData) && $form->isValid ( $formData )) {
 					$subsidiary = $this->getRequest ()->getParam ( 'select' );
 					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
 				}
 			}
 		}
     	else{
-			$form = "<p>Klient nemá žádné pobočky.</p>";
+			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->form = $form;
 		}
 		
-		//TODO filtrovat záznamy v deníku dle uživatele
+		
     }
 
     public function listAction()
@@ -255,11 +273,21 @@ class ClientController extends Zend_Controller_Action
 		$this->view->clientId = $clientId;
 		
 		$this->view->canDeleteClient = $this->_acl->isAllowed($this->_role, 'client', 'delete');
+		$this->view->canAddSubsidiary = $this->_acl->isAllowed($this->_role, 'subsidiary', 'new');
+		$this->view->canDeleteSubsidiary = $this->_acl->isAllowed($this->_role, 'subsidiary', 'delete');
 		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
-		if ($formContent != 0) {
+		$users = new Application_Model_DbTable_User();
+		$user = $users->getByUsername($this->_username);
+		foreach ($formContent as $key => $subsidiary){
+			if (!$this->_acl->isAllowed($user, $subsidiaries->getSubsidiary($key))){
+				unset($formContent[$key]);
+			}
+		}
+
+		if (count($formContent) != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
@@ -280,7 +308,7 @@ class ClientController extends Zend_Controller_Action
 			}
 		}
 		else{
-			$form = "<p>Klient nemá žádné pobočky.</p>";
+			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->form = $form;
 		}
 		

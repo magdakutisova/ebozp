@@ -53,10 +53,18 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		
-		//TODO
 		$diary = new Application_Model_DbTable_Diary();
-
-		$this->view->records = $diary->getDiaryBySubsidiary($subsidiaryId);
+		$messages = $diary->getDiaryBySubsidiary($subsidiaryId);
+		
+		if ($this->getRequest()->isPost() && in_array('Filtrovat', $this->getRequest()->getPost())){
+    		$formData = $this->getRequest()->getPost();	
+    		$this->_helper->diaryFiltering($messages, $formData['users'], 0, true);
+    	}
+    	else{
+    		$this->_helper->diaryFiltering($messages, 0, 0, true);
+    	}
+    	
+    	$this->view->formSearch = new Application_Form_Search();
 		
 		$defaultNamespace = new Zend_Session_Namespace();
 		$defaultNamespace->referer = $this->_request->getPathInfo();		

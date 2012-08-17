@@ -22,19 +22,38 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     	return new Application_Model_Diary($row->toArray());
     }
     
-    public function addMessage($diary){
-    	$data = $diary->toArray();
+    public function addMessage($record){
+    	$data = $record->toArray();
     	$this->insert($data);
+    	
+    	//indexace pro vyhledávání
+		try {
+			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
+		} catch ( Zend_Search_Lucene_Exception $e ) {
+			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+		}
+		
+		$document = new Zend_Search_Lucene_Document();
+		$document->addField(Zend_Search_Lucene_Field::unIndexed('diaryId', $record->getIdDiary(), 'utf-8'));
+		$document->addField(Zend_Search_Lucene_Field::unIndexed('date', $record->getDate(), 'utf-8'));
+		$document->addField(Zend_Search_Lucene_Field::text('message', $record->getMessage(), 'utf-8'));
+		$document->addField(Zend_Search_Lucene_Field::unIndexed('subsidiaryId', $record->getSubsidiaryId(), 'utf-8'));
+		$document->addField(Zend_Search_Lucene_Field::unIndexed('author', $record->getAuthor(), 'utf-8'));
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'diary', 'utf-8' ) );
+		$index->addDocument($document);
+		
+		$index->commit ();
+		$index->optimize ();
     }
     
-    public function updateMessage($diary){
-    	$data = $diary->toArray();
-    	$this->update($data, 'id_diary = ' . $diary->getIdDiary());
-    }
+    //public function updateMessage($diary){
+    	//$data = $diary->toArray();
+    	//$this->update($data, 'id_diary = ' . $diary->getIdDiary());
+    //}
     
-    public function deleteMessage($id){
-    	$this->delete('id_diary = ' . (int)$id);
-    }
+    //public function deleteMessage($id){
+    	//$this->delete('id_diary = ' . (int)$id);
+    //}
     
     public function getDiary(){
     	$select = $this->select()->from('diary')->order('date DESC');

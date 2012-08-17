@@ -24,6 +24,7 @@ class Application_Model_DbTable_User extends Zend_Db_Table_Abstract
 
 	public function addUser($user){
 		$data = $user->toArray();
+		unset($data['user_subsidiaries']);
 		$userId = $this->insert($data);
 		return $userId;
 	}

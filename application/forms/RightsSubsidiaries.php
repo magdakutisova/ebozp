@@ -9,7 +9,7 @@ class Application_Form_RightsSubsidiaries extends Zend_Form
         
         $this->addElement('hidden', 'userId', array());
         
-        $this->addElement('multicheckbox', 'subsidiaries', array(
+        $this->addElement('multiCheckbox', 'subsidiaries', array(
         	'label' => 'Vyberte pobočky',
         	'required' => false,
         ));

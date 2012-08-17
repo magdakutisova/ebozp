@@ -101,8 +101,9 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		
 		$this->userSubsidiaries = array();
 		$subsidiaries = isSet($data['user_subsidiaries']) ? $data['user_subsidiaries'] : null;
-		$this->addSubsidiaryToUser($subsidiaries);
-
+		if ($subsidiaries != null){
+			$this->addSubsidiaryToUser($subsidiaries);
+		}
 		return $this;
 	}
 	

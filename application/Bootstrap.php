@@ -51,6 +51,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		Zend_Validate_Abstract::setDefaultTranslator($translator);
 	}
 	
+	protected function _initLocale(){
+		$locale = new Zend_Locale('cs_CZ');
+		Zend_Registry::set('Zend_Locale', $locale);
+	}
+	
 	protected function _initAcl(){
 		$acl = new My_Controller_Helper_Acl();
 		$fc = Zend_Controller_Front::getInstance();

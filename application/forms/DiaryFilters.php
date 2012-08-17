@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_Search extends Zend_Form
+class Application_Form_DiaryFilters extends Zend_Form
 {
 
     public function init()
@@ -16,7 +16,8 @@ class Application_Form_Search extends Zend_Form
 		$elementDecorator = array(
     		'ViewHelper',
     		array('Errors'),
-    		//array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+    		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+    		array('Label', array('tag' => 'td')),
     		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
 		);    	
 		
@@ -27,17 +28,19 @@ class Application_Form_Search extends Zend_Form
     		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
 		);
     	
-    	$this->setName('search');
-        
-        $this->addElement('text', 'query', array(
-        	'filters' => array('StripTags', 'StringTrim'),
+        $this->addElement('select', 'users', array(
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('submit', 'search', array(
-        	'label' => 'Hledat',
+        $this->addElement('select', 'subsidiaries', array(
+        	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('submit', 'filter', array(
+        	'label' => 'Filtrovat',
         	'decorators' => $elementDecorator2,
         ));
+        
     }
 
 
