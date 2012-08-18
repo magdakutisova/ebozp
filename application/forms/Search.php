@@ -8,7 +8,7 @@ class Application_Form_Search extends Zend_Form
     	// form decorators
 		$this->setDecorators(array(
     		'FormElements',
-    		array('HtmlTag',array('tag' => 'table')),
+    		array('HtmlTag',array('tag' => 'div')),
     		'Form'
 		));
 
@@ -16,21 +16,20 @@ class Application_Form_Search extends Zend_Form
 		$elementDecorator = array(
     		'ViewHelper',
     		array('Errors'),
-    		//array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
-    		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
+    		array(array('row' => 'HtmlTag'), array('tag' => 'span')),
 		);    	
 		
 		$elementDecorator2 = array(
 			'ViewHelper',
     		array('Errors'),
-    		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
-    		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
+    		array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
+    		array(array('row' => 'HtmlTag'), array('tag' => 'span')),
 		);
     	
     	$this->setName('search');
         
         $this->addElement('text', 'query', array(
-        	'filters' => array('StripTags', 'StringTrim'),
+        	'filters' => array('StripTags', 'StringTrim', new Zend_Filter_StringToLower('UTF-8')),
         	'decorators' => $elementDecorator,
         ));
         

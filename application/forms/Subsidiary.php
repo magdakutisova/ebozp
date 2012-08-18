@@ -111,12 +111,19 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
-        $this->addElement('textarea', 'private', array(
-        	'label' => 'Soukromá poznámka',
-        	'required' => false,
-        	'filters' => array('StripTags', 'StringTrim'),
-        	'decorators' => $elementDecorator,
-        ));
+     	$username = Zend_Auth::getInstance()->getIdentity()->username;
+        $users = new Application_Model_DbTable_User();
+        $user = $users->getByUsername($username);
+        $acl = new My_Controller_Helper_Acl();
+        
+        if($acl->isAllowed($user, 'private')){
+        	$this->addElement('textarea', 'private', array(
+        		'label' => 'Soukromá poznámka',
+        		'required' => false,
+        		'filters' => array('StripTags', 'StringTrim'),
+        		'decorators' => $elementDecorator,
+        	));
+        }
         
         $this->addElement('checkbox', 'other', array(
         	'label' => 'Přidat další pobočky?',

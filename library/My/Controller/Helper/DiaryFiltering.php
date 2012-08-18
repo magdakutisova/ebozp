@@ -2,12 +2,22 @@
 class My_Controller_Helper_DiaryFiltering extends Zend_Controller_Action_Helper_Abstract{
 	
 	private $view;
+	private $controllerName;
+	private $currentClient;
+	private $currentSubsidiary;
 	
 	public function __construct(){
 		$this->view = Zend_Layout::getMvcInstance()->getView();
+		$this->controllerName = Zend_Controller_Front::getInstance()->getRequest()->getControllerName();
+		if($this->controllerName == 'client'){
+			$this->currentClient = Zend_Controller_Front::getInstance()->getRequest()->getParam('clientId');
+		}
+		if($this->controllerName == 'subsidiary'){
+			$this->currentSubsidiary = Zend_Controller_Front::getInstance()->getRequest()->getParam('subsidiary');
+		}
 	}
 	
-	public function direct($messages, $userFilter, $subsidiaryFilter, $subs = false){
+	public function direct($messages, $userFilter, $subsidiaryFilter){
 		
 		//vyfiltrovat zprávy podle práv
 		//vybrat z nich uživatele
@@ -26,7 +36,13 @@ class My_Controller_Helper_DiaryFiltering extends Zend_Controller_Action_Helper_
 		$subsidiaryList[0] = '--Všechny pobočky--';
 		
 		foreach ($messages as $key => $message){
+			if($this->controllerName == 'subsidiary' && $message->getSubsidiaryId() != $this->currentSubsidiary){
+				unset($messages[$key]);
+			}
 			$subsidiary = $subsidiariesDb->getSubsidiary($message->getSubsidiaryId(), true);
+			if($this->controllerName == 'client' && $subsidiary->getClientId() != $this->currentClient){
+				unset($messages[$key]);
+			}
 			if(!$acl->isAllowed($user, $subsidiary)){
 				unset($messages[$key]);
 				continue;
@@ -51,7 +67,7 @@ class My_Controller_Helper_DiaryFiltering extends Zend_Controller_Action_Helper_
 		$form = new Application_Form_DiaryFilters();
 		$form->users->setMultiOptions($userList);
 		$form->users->setValue(array($userFilter));
-		if($subs){
+		if($this->controllerName == 'subsidiary'){
 			$form->removeElement('subsidiaries');
 		}
 		else{

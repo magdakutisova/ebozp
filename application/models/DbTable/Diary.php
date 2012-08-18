@@ -24,7 +24,8 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     
     public function addMessage($record){
     	$data = $record->toArray();
-    	$this->insert($data);
+    	$inserted = $this->insert($data);
+    	$record = $this->getMessage($inserted);
     	
     	//indexace pro vyhledávání
 		try {

@@ -2,6 +2,8 @@
 
 class SubsidiaryController extends Zend_Controller_Action {
 	private $_username;
+	private $_user;
+	private $_acl;
 	
 	public function init() {
 		$this->view->title = 'Správa poboček';
@@ -14,22 +16,22 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
-		$user = $users->getByUsername($this->_username);
+		$this->_user = $users->getByUsername($this->_username);
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
 		
-		$acl = new My_Controller_Helper_Acl();
+		$this->_acl = new My_Controller_Helper_Acl();
 
 		//do index a edit action může jen když má přístup k pobočce
 		if ($action == 'index' || $action == 'edit'){
 			$subsidiary = $subsidiaries->getSubsidiary($this->_getParam('subsidiary'));
-			if(!$acl->isAllowed($user, $subsidiary)){
+			if(!$this->_acl->isAllowed($this->_user, $subsidiary)){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
 		
 		//do new a delete action může jen když má přístup k centrále
 		if ($action == 'new' || $action == 'delete'){
-			if(!$acl->isAllowed($user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
@@ -52,6 +54,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
+		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
 		$diary = new Application_Model_DbTable_Diary();
 		$messages = $diary->getDiaryBySubsidiary($subsidiaryId);
@@ -64,7 +67,15 @@ class SubsidiaryController extends Zend_Controller_Action {
     		$this->_helper->diaryFiltering($messages, 0, 0, true);
     	}
     	
-    	$this->view->formSearch = new Application_Form_Search();
+		$formSearch = new Application_Form_Search();
+    	$this->view->formSearch = $formSearch;
+    	if ($this->getRequest()->isPost() && in_array('Hledat', $this->getRequest()->getPost())){
+    		$formData = $this->getRequest()->getPost();
+    		if($formSearch->isValid($formData)){
+    			$query = $formSearch->getValue('query');
+    			$this->_helper->diarySearch($query);
+    		}
+    	}
 		
 		$defaultNamespace = new Zend_Session_Namespace();
 		$defaultNamespace->referer = $this->_request->getPathInfo();		

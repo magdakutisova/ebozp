@@ -31,7 +31,12 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 				. $subsidiary->getDoctor()
 				. '</p>';
 		}
-		//TODO odpovědní zaměstnanci a soukromá poznámka
+		//TODO odpovědní zaměstnanci
+		if($subsidiary->getPrivate() && $this->view->canViewPrivate){
+			$content .= '<p class="no-margin"><span class="bold">Soukromá poznámka: </span>'
+				. $subsidiary->getPrivate()
+				. '</p>';
+		}
 
 		return $content;
 	}

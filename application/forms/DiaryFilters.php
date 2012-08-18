@@ -8,7 +8,7 @@ class Application_Form_DiaryFilters extends Zend_Form
     	// form decorators
 		$this->setDecorators(array(
     		'FormElements',
-    		array('HtmlTag',array('tag' => 'table')),
+    		array('HtmlTag',array('tag' => 'div')),
     		'Form'
 		));
 
@@ -16,16 +16,14 @@ class Application_Form_DiaryFilters extends Zend_Form
 		$elementDecorator = array(
     		'ViewHelper',
     		array('Errors'),
-    		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
-    		array('Label', array('tag' => 'td')),
-    		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
+    		array(array('row' => 'HtmlTag'), array('tag' => 'span')),
 		);    	
 		
 		$elementDecorator2 = array(
 			'ViewHelper',
     		array('Errors'),
-    		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
-    		array(array('row' => 'HtmlTag'), array('tag' => 'td')),
+    		array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
+    		array(array('row' => 'HtmlTag'), array('tag' => 'span')),
 		);
     	
         $this->addElement('select', 'users', array(

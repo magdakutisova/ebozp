@@ -52,7 +52,12 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 		$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
 			. $client->getInsuranceCompany()
 			. '</p>';
-		//TODO odpovědní zaměstnanci a soukromá poznámka
+		//TODO odpovědní zaměstnanci
+		if($client->getPrivate() && $this->view->canViewPrivate){
+			$content .= '<p class="no-margin"><span class="bold">Soukromá poznámka: </span>'
+				. $client->getPrivate()
+				. '</p>';
+		}
 
 		return $content;
 	}

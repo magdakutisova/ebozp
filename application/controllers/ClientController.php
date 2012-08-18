@@ -32,16 +32,16 @@ class ClientController extends Zend_Controller_Action
 		//do index, admin, edit action může jen když má přístup k pobočce/centrále
 		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
-		$user = $users->getByUsername($this->_username);
+		$this->_user = $users->getByUsername($this->_username);
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
 		
-		$acl = new My_Controller_Helper_Acl();
-		
 		if ($action == 'index' || $action == 'admin' || $action == 'edit'){
-			if(!$acl->isAllowed($user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
+		
+		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
 		//do list action může vždy - neošetřuje se
 		//new, delete action je ošetřena jinde
@@ -75,14 +75,20 @@ class ClientController extends Zend_Controller_Action
     		$this->_helper->diaryFiltering($messages, 0, 0);
     	}
     	
-    	$this->view->formSearch = new Application_Form_Search();
+    	$formSearch = new Application_Form_Search();
+    	$this->view->formSearch = $formSearch;
+    	if ($this->getRequest()->isPost() && in_array('Hledat', $this->getRequest()->getPost())){
+    		$formData = $this->getRequest()->getPost();
+    		if($formSearch->isValid($formData)){
+    			$query = $formSearch->getValue('query');
+    			$this->_helper->diarySearch($query);
+    		}
+    	}
 		
 		//výběr poboček
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
-		$users = new Application_Model_DbTable_User();
-		$user = $users->getByUsername($this->_username);
 		foreach ($formContent as $key => $subsidiary){
-			if (!$this->_acl->isAllowed($user, $subsidiaries->getSubsidiary($key))){
+			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
 				unset($formContent[$key]);
 			}
 		}
@@ -128,12 +134,10 @@ class ClientController extends Zend_Controller_Action
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
 				$subsidiaries = $subsidiariesDb->getByTown ();
-				$users = new Application_Model_DbTable_User();
-				$user = $users->getByUsername($this->_username);
 				
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
-					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
 				}
 				
 				$this->view->subsidiaries = $subsidiaries;
@@ -143,12 +147,10 @@ class ClientController extends Zend_Controller_Action
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
 				$subsidiaries = $subsidiariesDb->getLastOpen ();
-				$users = new Application_Model_DbTable_User();
-				$user = $users->getByUsername($this->_username);
 				
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
-					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
 				}
 				
 				$this->view->subsidiaries = $subsidiaries;
@@ -158,12 +160,10 @@ class ClientController extends Zend_Controller_Action
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
 				$subsidiaries = $subsidiariesDb->getByClient ();
-				$users = new Application_Model_DbTable_User();
-				$user = $users->getByUsername($this->_username);
 				
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
-					$subsidiary->setAllowed($this->_acl->isAllowed($user, $subsidiary));
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
 				}
 				
 				$this->view->subsidiaries = $subsidiaries;
@@ -206,7 +206,7 @@ class ClientController extends Zend_Controller_Action
 //				$headquartersCode = $form->getValue ( 'headquarters_code' );
 //				$headquartersTown = $form->getValue ( 'headquarters_town' );
 //				$business = $form->getValue ( 'business' );
-//				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 //				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
 //				$supervisionFrequency = $form->getValue('supervision_frequency');
 //				$doctor = $form->getValue('doctor');
@@ -220,6 +220,7 @@ class ClientController extends Zend_Controller_Action
 					$client->setInvoiceCode($client->getHeadquartersCode());
 					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
+				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
 				//$client->setDeleted(0);
 							
@@ -279,10 +280,8 @@ class ClientController extends Zend_Controller_Action
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
-		$users = new Application_Model_DbTable_User();
-		$user = $users->getByUsername($this->_username);
 		foreach ($formContent as $key => $subsidiary){
-			if (!$this->_acl->isAllowed($user, $subsidiaries->getSubsidiary($key))){
+			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
 				unset($formContent[$key]);
 			}
 		}
@@ -339,6 +338,8 @@ class ClientController extends Zend_Controller_Action
 					$client->setInvoiceTown($client->getInvoiceTown());
 					$client->setInvoiceCode($client->getInvoiceCode());
 				}
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
 				$clients = new Application_Model_DbTable_Client ();
 				
