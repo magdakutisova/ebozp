@@ -71,13 +71,16 @@ class ClientController extends Zend_Controller_Action
 		
 		//výběr poboček
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
-		foreach ($formContent as $key => $subsidiary){
-			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
-				unset($formContent[$key]);
+		
+    	if ($formContent != 0){
+			foreach ($formContent as $key => $subsidiary){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+					unset($formContent[$key]);
+				}
 			}
-		}
-
-		if (count($formContent) != 0) {
+    	}
+		
+		if ($formContent != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
@@ -240,7 +243,7 @@ class ClientController extends Zend_Controller_Action
 				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 				$subsidiary->setClientId($clientId);
 				$subsidiary->setHq(true);
-				$subsidiary->setDeleted(0);
+				//$subsidiary->setDeleted(0);
 				
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -249,7 +252,7 @@ class ClientController extends Zend_Controller_Action
 				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
 				
 				$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> přidán' );
-				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientIndex' );
 			} else {
 				$form->populate ( $formData );
 			}
@@ -278,13 +281,15 @@ class ClientController extends Zend_Controller_Action
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
-		foreach ($formContent as $key => $subsidiary){
-			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
-				unset($formContent[$key]);
+		if ($formContent != 0){
+			foreach ($formContent as $key => $subsidiary){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+					unset($formContent[$key]);
+				}
 			}
 		}
 
-		if (count($formContent) != 0) {
+		if ($formContent != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
@@ -402,9 +407,9 @@ class ClientController extends Zend_Controller_Action
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();
 			$subsidiary = $subsidiaries->getHeadquarters($clientId);
 			$companyName = $client->getCompanyName();
-			$subsidiaryId = $subsidiary->getIdSubsidiary;
+			$subsidiaryId = $subsidiary->getIdSubsidiary();
 			$clients->deleteClient ( $clientId );
-			$subsidiaries->deleteSubsidiary($subsidiaryId);
+			//$subsidiaries->deleteSubsidiary($subsidiaryId);
 			
 			$this->_helper->diaryRecord($this->_username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
 			

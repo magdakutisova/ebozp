@@ -34,7 +34,7 @@ class Application_Form_DiaryMessages extends Zend_Form
         	'decorators' => $inlineDecoratorTree,
         ));
         
-        $this->addElement('textArea', 'message', array(
+        $this->addElement('textarea', 'message', array(
         	'filters' => array('StripTags'),
         	'required' => true,
         	'decorators' => $inlineDecorator,

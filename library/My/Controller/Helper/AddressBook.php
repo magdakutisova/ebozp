@@ -27,6 +27,7 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 		$users = new Application_Model_DbTable_User();
 		$user = $users->getByUsername($username);
 		$acl = new My_Controller_Helper_Acl();
+		$parentNode = "";
 		
 		foreach ($subsidiaries as $subsidiary){
 			if(($this->controllerName == 'client' && $this->currentClient != $subsidiary->getClientId())
@@ -41,7 +42,6 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 				else{
 					$addressBook['0']['title'] = "Vybrat vše";
 					$addressBook['0']['children'] = array();
-					$parentNode = "";
 		
 					if($subsidiary->getHq()){
 						$parentNode = $subsidiary->getIdSubsidiary();
@@ -52,9 +52,8 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['children'] = array();
 					}
 				}
-			}
+			}	
 		}
-		
 		return $addressBook;
 	}	
 	

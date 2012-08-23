@@ -146,3 +146,62 @@ Stack trace:
 2012-08-22T20:22:50+02:00 INFO (6): Uživatel ales přihlášen.
 2012-08-22T23:54:08+02:00 INFO (6): Uživatel odhlášen.
 2012-08-22T23:54:16+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:20:35+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:22:07+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:22:57+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:22:57+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:23:09+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:23:10+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:24:12+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:25:05+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:26:51+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:45:43+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:45:48+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T16:47:08+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T16:47:13+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T17:08:58+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T17:09:04+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T19:05:08+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T19:07:20+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T19:09:29+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T19:11:27+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T20:59:40+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T20:59:49+02:00 INFO (6): Uživatel klient přihlášen.
+2012-08-23T21:16:20+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:16:29+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:16:59+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:17:11+02:00 INFO (6): Uživatel klient přihlášen.
+2012-08-23T21:19:18+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:19:24+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:34:17+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:35:09+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:37:26+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:37:40+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:39:06+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:39:15+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:40:03+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:40:43+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:41:18+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:41:41+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:48:46+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:48:48+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:50:55+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:51:22+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:51:59+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:52:00+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:58:13+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:58:58+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:58:59+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:59:00+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T21:59:37+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T21:59:39+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T22:01:53+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T22:01:59+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T22:20:32+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T22:20:43+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T22:21:24+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T22:21:39+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T22:21:41+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T22:21:44+02:00 INFO (6): Uživatel admin přihlášen.
+2012-08-23T22:23:03+02:00 INFO (6): Uživatel odhlášen.
+2012-08-23T22:23:06+02:00 INFO (6): Uživatel admin přihlášen.

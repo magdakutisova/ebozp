@@ -7,10 +7,13 @@ class Application_Model_DbTable_Row_ClientRow extends Zend_Db_Table_Row_Abstract
 		return $this->process($result);
 	}
 	
+	/*******************************************************
+	 * Jen pro interní účely, nevrací objekt Subsidiary, vrací Rowset.
+	 */
 	public function getAllSubsidiaries(){
 		$select = $this->select()->where('deleted = 0');
 		$result = $this->findDependentRowset('Application_Model_DbTable_Subsidiary', 'Client', $select);
-		return $this->process($result);
+		return $result;
 	}
 	
 	private function process($result){
