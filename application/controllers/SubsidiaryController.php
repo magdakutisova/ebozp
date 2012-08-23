@@ -45,8 +45,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$client = $clients->getClient($clientId);
 		
-		$subsidiaries = new Application_Model_DbTable_Subsidiary();
-		
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();		
 		
 		$subsidiaryId = $this->_getParam('subsidiary');
 		$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
@@ -56,26 +55,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->subsidiary = $subsidiary;
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
+		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
 		$messages = $diary->getDiaryBySubsidiary($subsidiaryId);
-		
-		if ($this->getRequest()->isPost() && in_array('Filtrovat', $this->getRequest()->getPost())){
-    		$formData = $this->getRequest()->getPost();	
-    		$this->_helper->diaryFiltering($messages, $formData['users'], 0, true);
-    	}
-    	else{
-    		$this->_helper->diaryFiltering($messages, 0, 0, true);
-    	}
-    	
-		$formSearch = new Application_Form_Search();
-    	$this->view->formSearch = $formSearch;
-    	if ($this->getRequest()->isPost() && in_array('Hledat', $this->getRequest()->getPost())){
-    		$formData = $this->getRequest()->getPost();
-    		if($formSearch->isValid($formData)){
-    			$query = $formSearch->getValue('query');
-    			$this->_helper->diarySearch($query);
-    		}
-    	}
+		$this->_helper->diary($messages);
+		$this->_helper->diaryMessages();
 		
 		$defaultNamespace = new Zend_Session_Namespace();
 		$defaultNamespace->referer = $this->_request->getPathInfo();		

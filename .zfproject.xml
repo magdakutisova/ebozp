@@ -59,6 +59,7 @@
         <formFile formName="Rights"/>
         <formFile formName="RightsSubsidiaries"/>
         <formFile formName="Diary"/>
+        <formFile formName="DiaryMessages"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>

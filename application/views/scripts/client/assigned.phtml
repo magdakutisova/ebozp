@@ -1,0 +1,27 @@
+<?php echo $this->filters()?>
+
+<div class="box" id="filtered">
+
+	<?php $assigned = ""; ?>
+	<ul>
+	<?php foreach ($this->subsidiaries as $subs) :
+	$subsidiary = $subs['subsidiary'];
+	if($subsidiary->getAllowed()){
+		if ($assigned != $subs['username']){?>
+			</ul>
+			<?php $assigned = $subs['username']; ?>
+			<p class="bold"><?php echo $assigned; ?></p>
+			<ul>
+		<?php }
+		if ($subsidiary->getHq()) {?>
+			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId()), 'clientIndex');?>">
+				<?php echo $subsidiary->getSubsidiaryName() . ' (centrála)'?>
+			</a></li>
+		<?php }
+		else {?>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . '</a>'?></li>
+		<?php }
+	}
+		endforeach; ?>
+	</ul>
+</div>

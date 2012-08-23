@@ -34,6 +34,25 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			'id_subsidiary = ?' => $subsidiaryId,
 		));
 	}
+	
+	public function getByRole($role){
+		$select = $this->select ()->from ( 'user_has_subsidiary' )->join('user', 'user.id_user = user_has_subsidiary.id_user')->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->where ( 'subsidiary.deleted = 0' )->where('user.role = ?', $role)->order ( array('user.username', 'subsidiary.subsidiary_name'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll ( $select );
+		return $this->processByRole($result);
+	}
+	
+	private function processByRole($result){
+		$processed = array();
+		$i = 0;
+		foreach ($result as $row){
+			$subsidiary = new Application_Model_Subsidiary($row->toArray());
+			$processed[$i]['subsidiary'] = $subsidiary;
+			$processed[$i]['username'] = $row->username;
+			$i++;
+		}
+		return $processed;
+	}
     
 }
 

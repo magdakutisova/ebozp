@@ -19,6 +19,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     	new Zend_Session_Namespace();
     }
     
+    protected function _initLog(){
+    	if ($this->hasPluginResource('log')){
+    		$r = $this->getPluginResource('log');
+    		$log = $r->getLog();
+    		Zend_Registry::set('log', $log);
+    	}
+    }
+    
     protected function _initSearch(){ 
     	Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8_CaseInsensitive());
     }

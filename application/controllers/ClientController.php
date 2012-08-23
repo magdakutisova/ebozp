@@ -66,24 +66,8 @@ class ClientController extends Zend_Controller_Action
 		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
 		$messages = $diary->getDiaryByClient($clientId);
-		
-    	if ($this->getRequest()->isPost() && in_array('Filtrovat', $this->getRequest()->getPost())){
-    		$formData = $this->getRequest()->getPost();	
-    		$this->_helper->diaryFiltering($messages, $formData['users'], $formData['subsidiaries']);
-    	}
-    	else{
-    		$this->_helper->diaryFiltering($messages, 0, 0);
-    	}
-    	
-    	$formSearch = new Application_Form_Search();
-    	$this->view->formSearch = $formSearch;
-    	if ($this->getRequest()->isPost() && in_array('Hledat', $this->getRequest()->getPost())){
-    		$formData = $this->getRequest()->getPost();
-    		if($formSearch->isValid($formData)){
-    			$query = $formSearch->getValue('query');
-    			$this->_helper->diarySearch($query);
-    		}
-    	}
+		$this->_helper->diary($messages);
+		$this->_helper->diaryMessages();
 		
 		//výběr poboček
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
@@ -125,10 +109,24 @@ class ClientController extends Zend_Controller_Action
 			
 		switch($mode){
 			case "bt":
-				$this->renderScript ( 'client/technician.phtml' );
-				break;
 			case "koo":
-				$this->renderScript ( 'client/coordinator.phtml' );
+				$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+				
+				if ($mode == "bt"){
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_TECHNICIAN);
+				}
+				else{
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_COORDINATOR);
+				}
+				
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary['subsidiary']->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary['subsidiary']));
+				}
+				
+				$this->view->subsidiaries = $subsidiaries;
+				
+				$this->renderScript ( 'client/assigned.phtml' );
 				break;
 			case "obec":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();

@@ -127,6 +127,7 @@ class UserController extends Zend_Controller_Action
         	$formData = $this->getRequest()->getPost();
         	if ($form->isValid($formData)){
         		if($this->_process($form->getValues())){
+        			My_FileLogger::info("Uživatel " . $form->getValue('username') . " přihlášen.");
         			$this->_helper->FlashMessenger ( 'Přihlášení bylo úspěšné.' );
         			$this->_helper->redirector->gotoRoute(array(), 'home');
         		}
@@ -176,6 +177,7 @@ class UserController extends Zend_Controller_Action
 
     public function logoutAction()
     {
+    	My_FileLogger::info("Uživatel odhlášen.");
         Zend_Auth::getInstance()->clearIdentity();
         $this->_helper->redirector->gotoRoute(array(), 'userLogin');
     }

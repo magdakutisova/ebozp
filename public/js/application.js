@@ -20,6 +20,10 @@ $(function(){
 		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat?')");
 	});
 	
+	$(".messages-link").click(function(){
+		$("#zpravy").toggleClass("hidden");
+	});
+	
 	$(".list").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/nazev/ #filtered");
@@ -71,6 +75,31 @@ $(function(){
 			$("#invoice_street").removeAttr('disabled');
 			$("#invoice_code").removeAttr('disabled');
 			$("#invoice_town").removeAttr('disabled');
+		}
+	});
+	
+	//checkboxy v adresáři
+	$('form#tree > div > span > ul > li > input').click(function(){
+		//vybrat vše
+		if($(this).attr('id') == 'tree-0'){
+			if($('form#tree input#tree-0').is(':checked')){
+				$('form#tree input').attr('checked', true);
+			}
+			else{
+				$('form#tree input').attr('checked', false);
+			}
+		}
+		//když je klient zaškrtnutý, vybrat pobočky
+		if($(this).is(':checked')){
+			var nodeId = $(this).attr('id');
+			$('input#' + nodeId + ' ~ ul > li > input').attr('checked', true);
+		}
+	});
+	
+	//když cokoli odškrtnu, odškrtnout "vybrat vše"
+	$('form#tree input').click(function(){
+		if(!$(this).is(':checked')){
+			$('form#tree input#tree-0').attr('checked', false);
 		}
 	});
 });

@@ -53,9 +53,6 @@ h4{
 textarea{
 	height: 50px;
 }
-input[type=text]{
-	width: 200px;
-}
 label.optional{
 	font-weight: normal;
 }
@@ -67,7 +64,6 @@ label.optional{
 fieldset dl dd label{
 	font-weight: normal;
 }
-
 fieldset dd{
 	height: 200px;
 	overflow: auto;
@@ -76,3 +72,19 @@ fieldset dd{
 select{
 	max-width: 400px;
 }
+
+form ul{
+	list-style-type: none;
+}
+
+form ul label{
+	font-weight: normal;
+}
+
+/*Formular adresar*/
+label[for=tree]		{float:left;}
+span.tree			{float:left; clear:both;}
+textarea#message	{width: 410px; height: 180px; float: right; margin-top: 0;}
+input[type=text]	{width: 200px;}
+span.tree > ul#tree	{height: 200px; overflow: auto; max-width: 250px;}
+dt#send-label		{clear: both;}

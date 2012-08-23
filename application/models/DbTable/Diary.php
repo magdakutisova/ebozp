@@ -16,7 +16,7 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     public function getMessage($id){
     	$id = (int)$id;
     	$row = $this->fetchRow('id_diary = ' . $id);
-    	if (!row){
+    	if (!$row){
     		throw new Exception("Záznam č. $id neexistuje");
     	}
     	return new Application_Model_Diary($row->toArray());
