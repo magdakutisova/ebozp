@@ -227,15 +227,13 @@ class ClientController extends Zend_Controller_Action
 							
 				$clients = new Application_Model_DbTable_Client ();
 				
-				//kontrola IČO
-				if ($clients->existsCompanyNumber ( $client->getCompanyNumber() )) {
+				//přidání klienta a kontrola IČO
+				$clientId = $clients->addClient ( $client);
+				if (!$clientId) {
 					$defaultNamespace->formData = $formData;
 					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 					$this->_helper->redirector->gotoRoute ( array (), 'clientNew' );
 				}
-				
-				//přidání klienta
-				$clientId = $clients->addClient ( $client);
 					
 				$subsidiary->setSubsidiaryName($client->getCompanyName());
 				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
@@ -346,15 +344,15 @@ class ClientController extends Zend_Controller_Action
 				
 				$clients = new Application_Model_DbTable_Client ();
 				
-				//kontrola IČO
-				if ($clients->existsCompanyNumber ( $client->getCompanyNumber()) && ($clients->getCompanyNumber ( $client->getIdClient() ) != $client->getCompanyNumber())) {
+				//update klienta a kontrola IČO
+				if (!$clients->updateClient ( $client)) {
 					$defaultNamespace->formData = $formData;
 					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 					$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
 				}
 				
 				//update klienta
-				$clients->updateClient ( $client, true);
+				//$clients->updateClient ( $client);
 				
 				$subsidiary->setSubsidiaryName($client->getCompanyName());
 				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());

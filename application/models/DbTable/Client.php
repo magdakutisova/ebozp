@@ -11,77 +11,96 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	public function getClient($id) {
 		$id = ( int ) $id;
 		$row = $this->fetchRow ( 'id_client = ' . $id );
-		$client = $row->toArray();
-		if (! $row || $client['deleted']) {
+		if (! $row ) {
 			throw new Exception ( "Klient $id nebyl nalezen." );
+		}
+		$client = $row->toArray();
+		if( $client['deleted']){
+			throw new Exception("Klient $id byl v minulosti vymazán");
 		}
 		return new Application_Model_Client($client);
 	}
 	
 	/**************************
 	 * Vrací číslo právě vloženého řádku pro potřeby vložení pobočky ihned po vložení
-	 * klienta.
+	 * klienta, nebo false když nebyl vložen.
 	 */
 	public function addClient(Application_Model_Client $client) {
-		$data = $client->toArray();
-		$clientId = $this->insert ( $data );
+		//když ico neexistuje, ulozit, vratit ID
+		$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
+		if(!$companyNumberRow){
+			$data = $client->toArray();
+			$clientId = $this->insert ( $data );
 		
-		//indexace pro vyhledávání
-		try {
-			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-		} catch ( Zend_Search_Lucene_Exception $e ) {
-			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+			//indexace pro vyhledávání
+			$index = $this->getSearchIndex();
+			$document = $this->composeDocument($client);
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
+		
+			return $clientId;
 		}
+		//kdyz ico existuje a klient je smazan, prepsat, vratit ID
+		elseif($companyNumberRow->deleted == "1"){
+			$companyNumber = $companyNumberRow->company_number;
+			$this->delete(array('company_number = ?' => $companyNumber));
+			$data = $client->toArray();
+			$clientId = $this->insert ( $data );
 		
-		$document = new Zend_Search_Lucene_Document ();
-		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $client->getCompanyNumber(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
-		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet()), 'utf-8');
-		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
+			//indexace pro vyhledávání
+			$index = $this->getSearchIndex();
+			$this->removeClientFromSearchIndex($index, $companyNumber);
+			$document = $this->composeDocument($client);
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
 		
-		$index->addDocument ( $document );
-		$index->commit ();
-		$index->optimize ();
-		
-		return $clientId;
+			return $clientId;
+		}
+		//kdyz ico existuje a klient neni smazan, vratit false
+		else {
+			return false;
+		}
 	}
 	
 	public function updateClient(Application_Model_Client $client) {
-		$this->getClient($client->getIdClient());
-		$data = $client->toArray();
-		$this->update ( $data, 'id_client = ' . $client->getIdClient() );
+		$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
+		if(!($companyNumberRow) || $client->getCompanyNumber() == $this->getCompanyNumber($client->getIdClient())){
+			$this->getClient($client->getIdClient());
+			$data = $client->toArray();
+			$this->update ( $data, 'id_client = ' . $client->getIdClient() );
 		
-		//indexace pro vyhledávání
-		try {
-			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-		} catch ( Zend_Search_Lucene_Exception $e ) {
-			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+			//indexace pro vyhledávání
+			$index = $this->getSearchIndex();
+			$companyNumber = $client->getCompanyNumber();
+			$this->removeClientFromSearchIndex($index, $companyNumber);
+			$document = $this->composeDocument($client);
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
+			return true;
 		}
+		elseif ($companyNumberRow->deleted == "1"){
+			$companyNumber = $companyNumberRow->company_number;
+			$this->delete(array('company_number = ?', $companyNumber));
+			$this->getClient($client->getIdClient());
+			$data = $client->toArray();
+			$this->update ( $data, 'id_client = ' . $client->getIdClient() );
 		
-		$hits = $index->find ( 'companyNumber: ' . $client->getCompanyNumber() );
-		
-		foreach ( $hits as $hit ) :
-			$index->delete ( $hit->id );
-		endforeach
-		;
-		
-		$document = new Zend_Search_Lucene_Document ();
-		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $client->getCompanyNumber(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
-		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
-		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet()), 'utf-8');
-		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
-		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
-		
-		$index->addDocument ( $document );
-		$index->commit ();
-		$index->optimize ();
+			//indexace pro vyhledávání
+			$index = $this->getSearchIndex();
+			$companyNumber = $client->getCompanyNumber();
+			$this->removeClientFromSearchIndex($index, $companyNumber);
+			$document = $this->composeDocument($client);
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	
 	public function deleteClient($id) {
@@ -96,33 +115,13 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		}
 		
 		//indexace pro vyhledávání
-		try {
-			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-		} catch ( Zend_Search_Lucene_Exception $e ) {
-			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
-		}
-		
-		//klient
-		$companyNumber = $client->company_number;
-		
-		$hits = $index->find ( 'companyNumber: ' . $companyNumber );
-		
-		foreach ( $hits as $hit ) :
-			$index->delete ( $hit->id );
-		endforeach
-		;
-		
-		//pobočka
+		$index = $this->getSearchIndex();
+		$companyNumber = $client->company_number;		
+		$this->removeClientFromSearchIndex($index, $companyNumber);
 		foreach ( $subsidiaries as $subsidiary ) {			
 			$subsidiaryId = $subsidiary->id_subsidiary;
-			$hits = $index->find ( 'subsidiaryId: ' . $subsidiaryId );
-			
-			foreach ( $hits as $hit ) :
-				$index->delete ( $hit->id );
-			endforeach
-			;
-		}
-		
+			$this->removeSubsidiaryFromSearchIndex($index, $subsidiaryId);
+		}		
 		$index->commit ();
 		$index->optimize ();
 	
@@ -141,12 +140,12 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	/******
-	 * @returns bool existuje ICO
+	 * @returns false když IČO neexistuje, řádek s klientem když IČO existuje
 	 */
 	public function existsCompanyNumber($companyNumber) {
-		$ico = $this->fetchAll ( $this->select ()->from ( 'client' )->columns ( 'company_number' )->where ( 'deleted = 0' )->where ( 'company_number = ?', $companyNumber ) );
+		$ico = $this->fetchAll ( $this->select ()->from ( 'client' )->where ( 'company_number = ?', $companyNumber ) );
 		if (count ( $ico ) != 0) {
-			return true;
+			return $ico->current();
 		}
 		return false;
 	}
@@ -199,6 +198,45 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		$data = $client->toArray();
 		return new Application_Model_Client($data);
 	}
+	
+	private function getSearchIndex(){
+		try {
+			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
+		} catch ( Zend_Search_Lucene_Exception $e ) {
+			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+		}
+		return $index;
+	}
 
+	private function composeDocument($client){
+		$document = new Zend_Search_Lucene_Document ();
+		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'companyNumber', $client->getCompanyNumber(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $client->getIdClient(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'companyName', $client->getCompanyName(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersStreet', $client->getHeadquartersStreet(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'headquartersTown', $client->getHeadquartersTown(), 'utf-8' ) );
+		$document->addField (Zend_Search_Lucene_Field::text('invoiceStreet', $client->getInvoiceStreet()), 'utf-8');
+		$document->addField(Zend_Search_Lucene_Field::text('invoiceTown', $client->getInvoiceTown(), 'utf-8'));
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'client', 'utf-8' ) );
+		return $document;
+	}
+	
+	private function removeClientFromSearchIndex($index, $companyNumber){
+		$hits = $index->find ( 'companyNumber: ' . $companyNumber );
+		
+		foreach ( $hits as $hit ) :
+			$index->delete ( $hit->id );
+		endforeach
+		;
+	}
+	
+	private function removeSubsidiaryFromSearchIndex($index, $subsidiaryId){
+		$hits = $index->find ( 'subsidiaryId: ' . $subsidiaryId );
+			
+		foreach ( $hits as $hit ) :
+			$index->delete ( $hit->id );
+		endforeach
+		;
+	}
 }
 
