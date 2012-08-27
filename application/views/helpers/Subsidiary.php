@@ -19,8 +19,12 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 		$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
 			. $subsidiary->getContactPerson() . ', telefon: '
 			. $subsidiary->getPhone() . ', e-mail: '
-			. $subsidiary->getEmail() . '</p>';
-		
+			. $subsidiary->getEmail() . '</p>';		
+		if ($this->view->technicians){
+			$content .= '<p class="no-margin"><span class="bold">Technik: </span>'
+				. $this->view->technicians
+				. '</p>';
+		}
 		if($subsidiary->getSupervisionFrequency()){
 			$content .= '<p class="no-margin"><span class="bold">Četnost dohlídek: </span>'
 				. $subsidiary->getSupervisionFrequency()

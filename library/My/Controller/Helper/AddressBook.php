@@ -28,6 +28,7 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 		$user = $users->getByUsername($username);
 		$acl = new My_Controller_Helper_Acl();
 		$parentNode = "";
+		$clientId = "";
 		
 		foreach ($subsidiaries as $subsidiary){
 			if(($this->controllerName == 'client' && $this->currentClient != $subsidiary->getClientId())
@@ -45,7 +46,15 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 		
 					if($subsidiary->getHq()){
 						$parentNode = $subsidiary->getIdSubsidiary();
+						$clientId = $subsidiary->getClientId();
 						$addressBook[$parentNode]['title'] = $subsidiary->getSubsidiaryName();
+					}
+					elseif($clientId != $subsidiary->getClientId()){
+						$parentNode = $subsidiary->getIdSubsidiary();
+						$clientId = $subsidiary->getClientId();
+						$addressBook[$parentNode]['title'] = '';
+						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['title'] = $subsidiary->getSubsidiaryName();
+						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['children'] = array();
 					}
 					else{
 						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['title'] = $subsidiary->getSubsidiaryName();

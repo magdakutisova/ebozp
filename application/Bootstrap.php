@@ -209,6 +209,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'workplaceNew',
+			new Zend_Controller_Router_Route('klient/:clientId/nove-pracoviste',
+											array('controller' => 'workplace',
+													'action' => 'new'))
+		);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',

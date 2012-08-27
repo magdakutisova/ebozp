@@ -11,6 +11,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('error'));
 		$this->add(new Zend_Acl_Resource('subs'));
 		$this->add(new Zend_Acl_Resource('private'));
+		$this->add(new Zend_Acl_Resource('workplace'));
 		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
@@ -27,14 +28,16 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($guest, array('user', 'error'));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
 		
-		$this->allow($client, array('index', 'client', 'search', 'subsidiary', 'user', 'error'));
+		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
-		$this->deny($client, 'client', array('new', 'delete'));
+		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
 		$this->deny($client, 'private');
 		
 		$this->allow($technician, 'private');
+		$this->allow($technician, 'client', 'list');
+		$this->allow($technician, 'search');
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));

@@ -55,6 +55,9 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->subsidiary = $subsidiary;
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
+		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
+		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());
+		
 		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
 		$messages = $diary->getDiaryBySubsidiary($subsidiaryId);
@@ -99,6 +102,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
+				
+				if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
+					$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+					$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+				}
 				
 				$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
 				

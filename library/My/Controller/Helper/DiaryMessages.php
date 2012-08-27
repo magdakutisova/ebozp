@@ -28,11 +28,13 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     			$recipients = $formData['tree'];
     			$message = $formData['message'];
     			foreach($recipients as $recipient){
-    				$toSave = new Application_Model_Diary();
-    				$toSave->setMessage('Zpráva od uživatele ' . $username . ': "' . $message . '"');
-    				$toSave->setSubsidiaryId($recipient);
-    				$toSave->setAuthor($username);
-    				$diary->addMessage($toSave);
+    				if ($recipient != 0){
+    					$toSave = new Application_Model_Diary();
+    					$toSave->setMessage('Zpráva od uživatele ' . $username . ': "' . $message . '"');
+    					$toSave->setSubsidiaryId($recipient);
+    					$toSave->setAuthor($username);
+    					$diary->addMessage($toSave);
+    				}
     			}
     			$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
     			$flashMessenger->addMessage('Zpráva odeslána');

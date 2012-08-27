@@ -38,7 +38,11 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 				. $client->getBusiness()
 				. '</p>';
 		}
-		//TODO technik 
+		if ($this->view->technicians){
+			$content .= '<p class="no-margin"><span class="bold">Technik: </span>'
+				. $this->view->technicians
+				. '</p>';
+		}
 		if($subsidiary->getSupervisionFrequency()){
 			$content .= '<p class="no-margin"><span class="bold">Četnost dohlídek: </span>'
 				. $subsidiary->getSupervisionFrequency()

@@ -19,7 +19,6 @@ class Zend_View_Helper_Diary extends Zend_View_Helper_Abstract{
 		if ($content == ''){
 			$content = '<p class="diary-message">Nemáte žádné zprávy v bezpečnostním deníku.</p>';
 		}
-		//TODO jak dlouho uchovávat záznamy v bezpečnostním deníku
 		return $content;
 	}
 	

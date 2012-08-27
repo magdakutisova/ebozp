@@ -4,6 +4,7 @@ class My_View_Helper_FormTreeView extends Zend_View_Helper_FormElement{
 	protected $_info = null;
 	
 	protected function _renderBranch($nodes){
+		
 		$output = '<ul id="' . $this->_info['id'] . '">';
 		$id = $this->_info['id'];
 		
@@ -19,8 +20,13 @@ class My_View_Helper_FormTreeView extends Zend_View_Helper_FormElement{
 			}
 			
 			$output .= '<li>';
-				$output .= '<input ' . $checked . ' value="' . $node_id . '" id="' . $node_control_id . '" name="' . $node_control_name . '" type="checkbox" />';
-				$output .= '<label for="' . $node_control_id . '">' . $node['title'] . '</label>';
+				if($node['title'] != ''){
+					$output .= '<input ' . $checked . ' value="' . $node_id . '" id="' . $node_control_id . '" name="' . $node_control_name . '" type="checkbox" />';
+					$output .= '<label for="' . $node_control_id . '">' . $node['title'] . '</label>';
+				}
+				else{
+					$output .= '<br/>';
+				}
 				if(!empty($node['children'])){
 					$output .= $this->_renderBranch($node['children']);
 				}

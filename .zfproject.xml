@@ -48,6 +48,10 @@
           <actionMethod actionName="password"/>
           <actionMethod actionName="revoke"/>
         </controllerFile>
+        <controllerFile controllerName="Workplace">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="new"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="Client"/>
@@ -159,6 +163,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="User">
             <viewScriptFile forActionName="revoke"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Workplace">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Workplace">
+            <viewScriptFile forActionName="new"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

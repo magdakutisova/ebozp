@@ -9,21 +9,21 @@ class ClientController extends Zend_Controller_Action
 
     public function init()
     {
+    	//globální nastavení view
 		$this->view->title = 'Správa klientů';
-		$this->view->headTitle ( $this->view->title );
-		
+		$this->view->headTitle ( $this->view->title );		
 		$this->_helper->layout()->setLayout('clientLayout');
 		
+		//nastavení pro ajax
 		if ($this->getRequest ()->isXmlHttpRequest ()) {
 			$this->_helper->layout->disableLayout ();
 			$this->_helper->viewRenderer->setNoRender ( true );
-		}
-		
+		}		
 		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
 		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
 		
-		$this->_acl = new My_Controller_Helper_Acl();
-		
+		//nastavení přístupových práv
+		$this->_acl = new My_Controller_Helper_Acl();		
 		if(Zend_Auth::getInstance()->hasIdentity()){
 			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
@@ -33,18 +33,18 @@ class ClientController extends Zend_Controller_Action
 		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
-		$subsidiaries = new Application_Model_DbTable_Subsidiary();
-		
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();		
 		if ($action == 'index' || $action == 'admin' || $action == 'edit'){
 			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
-		
+
+		//zobrazení soukromých poznámek
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
 		//do list action může vždy - neošetřuje se
-		//new, delete action je ošetřena jinde
+		//new, delete action je ošetřena v Acl helperu
 		
     }
 
@@ -62,6 +62,9 @@ class ClientController extends Zend_Controller_Action
 		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
+		
+		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
+		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());
 		
 		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
@@ -246,6 +249,11 @@ class ClientController extends Zend_Controller_Action
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
+				
+				if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
+					$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+					$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+				}
 
 				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
 				

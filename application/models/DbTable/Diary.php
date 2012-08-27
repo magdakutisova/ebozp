@@ -62,6 +62,15 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     	return $this->process($result);
     }
     
+    public function getDiaryLastMonths($count){
+    	$select = $this->select()
+    		->from('diary')
+    		->where('date BETWEEN NOW() - INTERVAL ? MONTH AND NOW()', $count)
+    		->order('date DESC');
+    	$result = $this->fetchAll($select);
+    	return $this->process($result);
+    }
+    
     public function getDiaryByClient($id){
     	$select = $this->select()
     		->from('diary')	

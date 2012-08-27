@@ -42,6 +42,29 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 		return $this->processByRole($result);
 	}
 	
+	/****************************************
+	 * Zatím se používá pro výpis techniků oddělených čárkami.
+	 */
+	public function getByRoleAndSubsidiary($role, $subsidiaryId){
+		$select = $this->select()->from('user_has_subsidiary')->join('user', 'user.id_user = user_has_subsidiary.id_user')->where('user.role = ?', $role)->where('user_has_subsidiary.id_subsidiary = ?', $subsidiaryId);
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		$processed = array();
+		if (count($result) != 0){		
+			foreach($result as $row){
+				$processed[] = $row->username;
+			}
+		}
+		return implode(', ', $processed);
+	}
+	
+	public function getByRoleAndUsername($role, $username){
+		$select = $this->select()->from('user_has_subsidiary')->join('user', 'user.id_user = user_has_subsidiary.id_user')->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->where('user.role = ?', $role)->where('user.username = ?', $username)->order('subsidiary.subsidiary_name');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		return $this->processByRole($result);
+	}
+	
 	private function processByRole($result){
 		$processed = array();
 		$i = 0;
