@@ -24,7 +24,8 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
     	$form = new Application_Form_Workplace();
-    	$form->save->setLabel('Přidat');
+
+    	$form->getSubForm('secondHalf')->save->setLabel('Přidat pracoviště');
     	
     	if(!$this->getRequest()->isPost()){
     		$this->view->form = $form;
@@ -42,9 +43,6 @@ class WorkplaceController extends Zend_Controller_Action
     }
 
 	public function newfactorAction(){
-		//$layout = Zend_Layout::getMvcInstance();
-		//$layout->disableLayout();
-		
 		$ajaxContext = $this->_helper->getHelper('AjaxContext');
 		$ajaxContext->addActionContext('newfactor', 'html')->initContext();
 		
@@ -53,9 +51,16 @@ class WorkplaceController extends Zend_Controller_Action
 		$element = new My_Form_Element_WorkplaceFactor("newFactor$id");
 		
 		$this->view->field = $element->__toString();
-		//My_Debug::dump($element->__toString());
+	}
+	
+	public function newriskAction(){
+		$ajaxContext = $this->_helper->getHelper('AjaxContext');
+		$ajaxContext->addActionContext('newrisk', 'html')->initContext();
+		
+		$id = $this->_getParam('id_risk', null);
+		
+		$element = new My_Form_Element_WorkplaceRisk("newRisk$id");
+		
+		$this->view->field = $element->__toString();
 	}
 }
-
-
-
