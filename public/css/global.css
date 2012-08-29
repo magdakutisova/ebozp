@@ -88,3 +88,6 @@ textarea#message	{width: 410px; height: 180px; float: right; margin-top: 0;}
 input[type=text]	{width: 200px;}
 span.tree > ul#tree	{height: 200px; overflow: auto; max-width: 250px;}
 dt#send-label		{clear: both;}
+
+/*Formular pracoviste*/
+input[id*='factor_']{width: 300px;}

@@ -18,7 +18,8 @@ echo $this->doctype ();
 	
 	<?php $this->headScript()->appendFile($this->baseUrl('js/jquery-1.7.2.min.js'), 'text/javascript');?>
 	<?php $this->headScript()->appendFile($this->baseUrl('js/jquery-ui-1.8.21.custom.min.js'), 'text/javascript');?>
-	<?php $this->headScript()->appendFile($this->baseUrl('js/application.js'), 'text/javascript');?>
+	<?php $this->headScript()->appendFile($this->baseUrl('js/application.js'), 'text/javascript')
+							 ->prependScript('BASE_URL = "' . $this->baseUrl() . '";');?>
 		
 	<?php echo $this->headLink()?>
 	<?php echo $this->headScript()?>

@@ -1,3 +1,5 @@
+var baseUrl = BASE_URL;
+
 $(function(){
 	$(".view-link").click(function(){
 		$("#pobocky").removeClass("hidden");
@@ -102,4 +104,23 @@ $(function(){
 			$('form#tree input#tree-0').attr('checked', false);
 		}
 	});
+	
+	//dynamické přidávání polí do formulářů
+	$("#new_factor").click(function(){
+		ajaxAddField();
+	});
+	
+	function ajaxAddField(){
+		var id = $("#id_factor").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/newfactor/format/html',
+			data: "id_factor=" + id,
+			success: function(newElement){
+				$('#new_factor').parents('tr').before(newElement);
+				$("#id_factor").val(++id);
+				console.log(newElement);
+			}
+		});
+	}
 });
