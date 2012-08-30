@@ -106,38 +106,38 @@ $(function(){
 	});
 	
 	//dynamické přidávání faktorů pracovního prostředí
-	$("#firstHalf-new_factor").click(function(){
+	$("#new_factor").click(function(){
 		ajaxAddFactor();
 	});
 	
 	function ajaxAddFactor(){
-		var id = $("#firstHalf-id_factor").val();
+		var id = $("#id_factor").val();
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/workplace/newfactor/format/html',
-			data: "firstHalf-id_factor=" + id,
+			data: "id_factor=" + id,
 			success: function(newElement){
-				$('#firstHalf-new_factor').parents('tr').before(newElement);
-				$("#firstHalf-id_factor").val(++id);
+				$('#new_factor').parents('tr').before(newElement);
+				$("#id_factor").val(++id);
 				console.log(newElement);
 			}
 		});
 	}
 	
 	//dynamické přidávání hlavních rizik
-	$("#secondHalf-new_risk").click(function(){
+	$("#new_risk").click(function(){
 		ajaxAddRisk();
 	});
 	
 	function ajaxAddRisk(){
-		var id = $("#secondHalf-id_risk").val();
+		var id = $("#id_risk").val();
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/workplace/newrisk/format/html',
-			data: "secondHalf-id_risk" + id,
+			data: "id_risk=" + id,
 			success: function(newElement){
-				$('#secondHalf-new_risk').parents('tr').before(newElement);
-				$("#secondHalf-id_risk").val(++id);
+				$('#new_risk').parents('tr').before(newElement);
+				$("#id_risk").val(++id);
 			}
 		});
 	}

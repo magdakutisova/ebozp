@@ -1,8 +1,7 @@
 <?php
 class My_Form_Decorator_WorkplaceFactor extends Zend_Form_Decorator_Abstract{
 	
-	protected $_format = '<td><label for="%s">%s</label></td><td><input id="%s" name="%s[]" type="%s" value="%s"/></td>';
-	protected $_formatFactor = '<td><input %7$s id="%3$s" name="%4$s[]" type="%5$s" value="%6$s"/></td><td><label for="%1$s">%2$s</label></td>';
+	protected $_format = '<td><label for="%s">%s</label></td><td><input id="%s" name="%s[]" type="%s" value="%s" %s/></td>';
 	
 	public function render($content){
 		$el = $this->getElement();
@@ -27,24 +26,28 @@ class My_Form_Decorator_WorkplaceFactor extends Zend_Form_Decorator_Abstract{
 	}
 	
 	protected function renderFactor($el){
-		$disabled = '';
-		if ($el->getFactorLabel() != ''){
-			$disabled = 'disabled';
+		$otherMarkup = '';
+		if ($el->getFactor() != ''){
+			$otherMarkup = 'readonly="true"';
 		}
-		return $this->renderEl($this->_formatFactor, 'factor', $el->getFactor(), $el, 'text', $disabled);
+		return $this->renderEl($this->_format, 'factor', $el->getFactor(), $el, 'text', $otherMarkup);
 	}
 	
 	protected function renderApplies($el){
-		return $this->renderEl($this->_format, 'applies', $el->getApplies(), $el, 'checkbox');
+		$otherMarkup = '';
+		if ($el->getFactor() == ''){
+			$otherMarkup = 'checked="checked"';
+		}
+		return $this->renderEl($this->_format, 'applies', $el->getApplies(), $el, 'checkbox', $otherMarkup);
 	}
 	
 	protected function renderNote($el){
 		return $this->renderEl($this->_format, 'note', $el->getNote(), $el, 'text');
 	}
 	
-	protected function renderEl($format, $type, $value, $el, $elementType, $disabled = ''){
+	protected function renderEl($format, $type, $value, $el, $elementType, $otherMarkup = ''){
 		$name = $el->getFullyQualifiedName();
-		return sprintf($format, $el->getID($type), $el->getLabel($type), $el->getID($type), $name . '[' . $type . ']', $elementType, $value, $disabled);
+		return sprintf($format, $el->getID($type), $el->getLabel($type), $el->getID($type), $name . '[' . $type . ']', $elementType, $value, $otherMarkup);
 	}
 	
 }

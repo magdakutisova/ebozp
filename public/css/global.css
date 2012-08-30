@@ -90,4 +90,4 @@ span.tree > ul#tree	{height: 200px; overflow: auto; max-width: 250px;}
 dt#send-label		{clear: both;}
 
 /*Formular pracoviste*/
-input[id*='factor_']{width: 300px;}
+input[id*='factor_'], input[id*='risk_'] {width: 300px;}

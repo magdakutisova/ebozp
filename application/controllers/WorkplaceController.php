@@ -24,8 +24,8 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
     	$form = new Application_Form_Workplace();
-
-    	$form->getSubForm('secondHalf')->save->setLabel('Přidat pracoviště');
+    	
+    	$form->save->setLabel('Přidat pracoviště');
     	
     	if(!$this->getRequest()->isPost()){
     		$this->view->form = $form;
@@ -36,9 +36,14 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	if(!$form->isValid($this->getRequest()->getPost())){
     		$this->view->form = $form;
+    		$formData = $this->getRequest()->getPost();
+    		//My_Debug::dump($form->getValues());
+    		//My_Debug::dump($formData);
     		return;
     	}
     	
+    	$formData = $this->getRequest()->getPost();
+    	My_Debug::dump($formData);
     	$this->view->form = $form;
     }
 

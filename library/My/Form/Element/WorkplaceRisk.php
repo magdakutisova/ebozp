@@ -91,11 +91,21 @@ class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setRisk($_risk) {
-		$this->_risk = $_risk;
+		if (is_array($_risk)){
+			$this->_risk = implode(' ', $_risk);
+		}
+		else{
+			$this->_risk = $_risk;
+		}
 	}
 	
 	public function setNote($_note) {
-		$this->_note = $_note;
+		if (is_array($_note)){
+			$this->_note = implode(' ', $_note);
+		}
+		else{
+			$this->_note = $_note;
+		}
 	}
 	
 	public function setValue($values){

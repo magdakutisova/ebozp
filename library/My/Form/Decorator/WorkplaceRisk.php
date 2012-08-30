@@ -1,7 +1,7 @@
 <?php
 class My_Form_Decorator_WorkplaceRisk extends Zend_Form_Decorator_Abstract{
 	
-	protected $_format = '<td><label for="%s">%s</label></td><td><input id="%s" name="%s[]" type="text" value="%s"/></td>';
+	protected $_format = '<td><label for="%s">%s</label></td><td colspan="2"><input id="%s" name="%s[]" type="text" value="%s"/></td>';
 	
 	public function render($content){
 		$el = $this->getElement();

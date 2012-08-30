@@ -4,7 +4,7 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	protected $_factor;
 	protected $_applies;
 	protected $_note;
-	protected $_factorLabel = '';
+	protected $_factorLabel = 'Faktor';
 	protected $_appliesLabel = 'Platí';
 	protected $_noteLabel = 'Poznámka';
 	protected $_factorId;
@@ -141,7 +141,12 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	 * @param $_factor the $_factor to set
 	 */
 	public function setFactor($_factor) {
-		$this->_factor = $_factor;
+		if (is_array($_factor)){
+			$this->_factor = implode(' ', $_factor);
+		}
+		else{
+			$this->_factor = $_factor;
+		}
 	}
 	
 	public function setFactorLabel($_factorLabel){
@@ -152,14 +157,24 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	 * @param $_applies the $_applies to set
 	 */
 	public function setApplies($_applies) {
-		$this->_applies = $_applies;
+		if(is_array($_applies)){
+			$this->_applies = implode(' ', $_applies);
+		}
+		else{
+			$this->_applies = $_applies;
+		}
 	}
 
 	/**
 	 * @param $_description the $_description to set
 	 */
 	public function setNote($_note) {
-		$this->_note = $_note;
+		if(is_array($_note)){
+			$this->_note = implode(' ', $_note);
+		}
+		else{
+			$this->_note = $_note;
+		}
 	}
 
 	public function setValue($values){

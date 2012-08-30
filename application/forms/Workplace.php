@@ -5,19 +5,20 @@ class Application_Form_Workplace extends Zend_Form
 
     public function init()
     {
-        $this->setName('workplace');
+        $this->setName('workplaceFactors');
         $this->setMethod('post');
         $this->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
         
         $view = Zend_Layout::getMvcInstance()->getView();
-        $questionMark = '<img src="' . $view->baseUrl() . '/images/question_mark.png" alt="vysvetlivky"/>';
-
+        
         //dekorátory
        	$elementDecoratorColspan = array(
        		'ViewHelper',
        		array('Errors'),
-       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
-       		array('Label', array('tag' => 'td')),
+       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 4)),
+       		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
+       		array('Label', array()),
+       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
        	
@@ -34,24 +35,21 @@ class Application_Form_Workplace extends Zend_Form
        	);
        	
        	//polovina s faktory
-       	$firstHalf = new Zend_Form_SubForm();
-       	$firstHalf->setName('firstHalf');
-       	$firstHalf->setDecorators(array(
+       	$this->setDecorators(array(
         	'FormElements',
         	array('HtmlTag', array('tag' => 'table')),
         	'Form',
         ));
-       	$firstHalf->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
-       
-       	$firstHalf->addElement('hidden', 'id_workplace', array(
+       	
+       	$this->addElement('hidden', 'id_workplace', array(
        		'decorators' => $elementDecorator,
        	));
        	
-       	$firstHalf->addElement('hidden', 'id_factor', array(
-       		'value' => 17,
+       	$this->addElement('hidden', 'id_factor', array(
+       		'value' => 18,
        	));
        	      	
-       	$firstHalf->addElement('text', 'name', array(
+       	$this->addElement('text', 'name', array(
        		'label' => 'Název pracoviště',
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
@@ -59,7 +57,7 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 1,
        	));
        	
-       	$firstHalf->addElement('textarea', 'description', array(
+       	$this->addElement('textarea', 'description', array(
        		'label' => 'Popis pracoviště (jaké pracovní činnosti se zde vykonávají, technická zařízení a technologie...)',
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
@@ -67,133 +65,116 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 2,
        	));
        	
-       	$firstHalf->addElement('hidden', 'workplaceFactors', array(
-       		'label' => 'Faktory pracovního prostředí:',
+       	$this->addElement('textarea', 'private', array(
+       		'label' => 'Soukromá poznámka',
+       		'required' => false,
+       		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 3,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '1', array(
-       		'factor' => 'Prach',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('hidden', 'workplaceFactors', array(
+       		'label' => 'Faktory pracovního prostředí:',
+       		'decorators' => $elementDecoratorColspan,
        		'order' => 4,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '2', array(
-       		'factor' => 'Chemické látky',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor1', array(
+       		'factor' => 'Prach',
        		'order' => 5,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '3', array(
-       		'factor' => 'Hluk',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor2', array(
+       		'factor' => 'Chemické látky',
        		'order' => 6,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '4', array(
-       		'factor' => 'Vibrace',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor3', array(
+       		'factor' => 'Hluk',
        		'order' => 7,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '5', array(
-       		'factor' => 'Neionizující záření a elektromagnetická pole',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor4', array(
+       		'factor' => 'Vibrace',
        		'order' => 8,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '6', array(
-       		'factor' => 'Fyzická zátěž',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor5', array(
+       		'factor' => 'Neionizující záření a elektromagnetická pole',
        		'order' => 9,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '7', array(
-       		'factor' => 'Pracovní poloha',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor6', array(
+       		'factor' => 'Fyzická zátěž',
        		'order' => 10,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '8', array(
-       		'factor' => 'Zátěž teplem',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor7', array(
+       		'factor' => 'Pracovní poloha',
        		'order' => 11,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '9', array(
-       		'factor' => 'Zátěž chladem',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor8', array(
+       		'factor' => 'Zátěž teplem',
        		'order' => 12,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '10', array(
-       		'factor' => 'Psychická zátěž',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor9', array(
+       		'factor' => 'Zátěž chladem',
        		'order' => 13,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '11', array(
-       		'factor' => 'Zraková zátěž',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor10', array(
+       		'factor' => 'Psychická zátěž',
        		'order' => 14,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '12', array(
-       		'factor' => 'Práce s biologickými činiteli',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor11', array(
+       		'factor' => 'Zraková zátěž',
        		'order' => 15,
        	));
        	
-       	$firstHalf->addElement('workplaceFactor', '13', array(
-       		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
-       		'factorLabel' => $questionMark,
+       	$this->addElement('workplaceFactor', 'factor12', array(
+       		'factor' => 'Práce s biologickými činiteli',
        		'order' => 16,
        	));
        	
-       	$firstHalf->addElement('button', 'new_factor', array(
+       	$this->addElement('workplaceFactor', 'factor13', array(
+       		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
+       		'order' => 17,
+       	));
+       	
+       	$this->addElement('button', 'new_factor', array(
        		'label' => 'Další faktor',
        		'order' => 100,
        		'decorators' => $elementDecorator2,
        	));
        	
-       	//polovina s riziky
-       	$secondHalf = new Zend_Form_SubForm();
-       	$secondHalf->setName('secondHalf');
-       	$secondHalf->setDecorators(array(
-        	'FormElements',
-        	array('HtmlTag', array('tag' => 'table')),
-        	'Form',
-        ));
-        $secondHalf->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
-       	
-		$secondHalf->addElement('hidden', 'id_risk', array(
-       		'value' => 2,
+       	//rizika
+		$this->addElement('hidden', 'id_risk', array(
+       		'value' => 103,
        	));
         
-        $secondHalf->addElement('hidden', 'mainRisks', array(
+        $this->addElement('hidden', 'mainRisks', array(
        		'label' => 'Rizika na pracovišti:',
        		'decorators' => $elementDecoratorColspan,
        		'order' => 101,
        	));
        	
-       	$secondHalf->addElement('workplaceRisk', '1', array(
+       	$this->addElement('workplaceRisk', 'risk102', array(
        		'order' => 102,
        	));
        	
-       	$secondHalf->addElement('button', 'new_risk', array(
+       	$this->addElement('button', 'new_risk', array(
        		'label' => 'Další riziko',
        		'order' => 199,
        		'decorators' => $elementDecorator2,
        	));
        	
-       	$secondHalf->addElement('submit', 'save', array(
+       	$this->addElement('submit', 'save', array(
        		'decorators' => $elementDecorator2,
        		'order' => 200,	
        	));
-       	
-       	$this->addSubForm($firstHalf, 'firstHalf');
-       	$this->addSubForm($secondHalf, 'secondHalf');
     }
 
     public function preValidation(array $data){
@@ -223,9 +204,16 @@ class Application_Form_Workplace extends Zend_Form
     }
     
     public function addNewField($element, $name, $order){
-    	$this->addElement($element, $name, array(
-    		'order' => $order,
-    	));
+    	if($element == 'workplaceFactor'){
+    		$this->addElement($element, $name, array(
+    			'order' => $order,
+    		));
+    	}
+    	if($element == 'workplaceRisk'){
+    		$this->addElement($element, $name, array(
+    			'order' => $order,
+    		));
+    	}
     }
 
 }
