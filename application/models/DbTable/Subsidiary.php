@@ -149,6 +149,9 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	/******************
+	 * Vrátí centrální pobočku klienta.
+	 */
 	public function getHeadquarters($clientId){
 		$select = $this->select()->from('subsidiary')->where('client_id = ?', $clientId)->where('hq = 1');
 		$result = $this->fetchAll($select);

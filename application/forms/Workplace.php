@@ -65,83 +65,91 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 2,
        	));
        	
-       	$this->addElement('textarea', 'private', array(
-       		'label' => 'Soukromá poznámka',
+       	$this->addElement('textarea', 'note', array(
+       		'label' => 'Poznámka',
        		'required' => false,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 3,
        	));
        	
-       	$this->addElement('hidden', 'workplaceFactors', array(
-       		'label' => 'Faktory pracovního prostředí:',
+       	$this->addElement('textarea', 'private', array(
+       		'label' => 'Soukromá poznámka',
+       		'required' => false,
+       		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 4,
        	));
        	
+       	$this->addElement('hidden', 'workplaceFactors', array(
+       		'label' => 'Faktory pracovního prostředí:',
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 5,
+       	));
+       	
        	$this->addElement('workplaceFactor', 'factor1', array(
        		'factor' => 'Prach',
-       		'order' => 5,
+       		'order' => 6,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor2', array(
        		'factor' => 'Chemické látky',
-       		'order' => 6,
+       		'order' => 7,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor3', array(
        		'factor' => 'Hluk',
-       		'order' => 7,
+       		'order' => 8,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor4', array(
        		'factor' => 'Vibrace',
-       		'order' => 8,
+       		'order' => 9,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor5', array(
        		'factor' => 'Neionizující záření a elektromagnetická pole',
-       		'order' => 9,
+       		'order' => 10,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor6', array(
        		'factor' => 'Fyzická zátěž',
-       		'order' => 10,
+       		'order' => 11,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor7', array(
        		'factor' => 'Pracovní poloha',
-       		'order' => 11,
+       		'order' => 12,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor8', array(
        		'factor' => 'Zátěž teplem',
-       		'order' => 12,
+       		'order' => 13,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor9', array(
        		'factor' => 'Zátěž chladem',
-       		'order' => 13,
+       		'order' => 14,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor10', array(
        		'factor' => 'Psychická zátěž',
-       		'order' => 14,
+       		'order' => 15,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor11', array(
        		'factor' => 'Zraková zátěž',
-       		'order' => 15,
+       		'order' => 16,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor12', array(
        		'factor' => 'Práce s biologickými činiteli',
-       		'order' => 16,
+       		'order' => 17,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor13', array(
        		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
-       		'order' => 17,
+       		'order' => 18,
        	));
        	
        	$this->addElement('button', 'new_factor', array(
