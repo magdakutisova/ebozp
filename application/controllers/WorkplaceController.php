@@ -13,11 +13,15 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_helper->layout()->setLayout('clientLayout');
         
         //získání odkazu na pobočku
-        $clientId = $this->getRequest()->getParam('clientId');
-        $subsidiaries = new Application_Model_DbTable_Subsidiary();
-        $this->_subsidiary = $subsidiaries->getHeadquarters($clientId);
-        
-        //nastavit přístupová práva
+        if ($this->getRequest()->getActionName() == 'newfactor' || $this->getRequest()->getActionName() == 'newrisk'){
+        	//nic
+        }
+        else{
+        	$clientId = $this->getRequest()->getParam('clientId');
+        	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+        	$this->_subsidiary = $subsidiaries->getHeadquarters($clientId);
+        	//nastavit přístupová práva
+        }
     }
 
     public function indexAction()
