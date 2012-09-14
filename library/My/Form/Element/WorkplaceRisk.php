@@ -1,19 +1,9 @@
 <?php
 class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 	
+	public $helper = 'workplaceRisk';
 	protected $_risk;
 	protected $_note;
-	protected $_riskLabel = 'Riziko';
-	protected $_noteLabel = 'Popis, poznámka';
-	protected $_riskId;
-	protected $_noteId;
-	
-	public function __construct($spec, $options = null){
-		$this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-		parent::__construct($spec, $options);
-		$this->_riskId = 'risk_' . parent::getId();
-		$this->_noteId = 'note_' . parent::getId();
-	}
 	
 	public function loadDefaultDecorators(){
 		if ($this->loadDefaultDecoratorsIsDisabled()){
@@ -21,48 +11,17 @@ class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 		}
 		$decorators = $this->getDecorators();
 		if (empty($decorators)){
-			$this->addDecorator($this->getDecoratorName())
-				->addDecorator('Errors')
-				->addDecorator('Description', array(
-					'tag' => 'p',
-					'class' => 'description')
-				)
+			$this->addDecorator('ViewHelper')
+				->addDecorator('ErrorsHtmlTag', array(
+					'tag' => 'td',
+				))
 				->addDecorator('HtmlTag', array(
 					'tag' => 'tr',
 					'id' => $this->getName())
-				);
-		}
-	}
-	
-	public function getDecoratorName(){
-		return 'WorkplaceRisk';
-	}
-	
-	public function getLabel($type){
-		if (isset($type)){
-			switch ($type){
-				case 'risk':
-					return $this->getRiskLabel();
-				case 'note':
-					return $this->getNoteLabel();
-			}
-		}
-		else{
-			return parent::getId();
-		}
-	}
-	
-	public function getId($type){
-		if(isset($type)){
-			switch ($type){
-				case 'risk':
-					return $this->getRiskId();
-				case 'note':
-					return $this->getNoteId();
-			}
-		}
-		else{
-			return parent::getId();
+				)
+				->addDecorator('HtmlTag', array(
+					'tag' => 'tr',
+				));
 		}
 	}
 	
@@ -72,22 +31,6 @@ class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 	
 	public function getNote() {
 		return $this->_note;
-	}
-	
-	public function getRiskLabel() {
-		return $this->_riskLabel;
-	}
-	
-	public function getNoteLabel() {
-		return $this->_noteLabel;
-	}
-	
-	public function getRiskId() {
-		return $this->_riskId;
-	}
-	
-	public function getNoteId() {
-		return $this->_noteId;
 	}
 	
 	public function setRisk($_risk) {

@@ -119,7 +119,7 @@ $(function(){
 			success: function(newElement){
 				$('#new_factor').parents('tr').before(newElement);
 				$("#id_factor").val(++id);
-				console.log(newElement);
+				//console.log(newElement);
 			}
 		});
 	}

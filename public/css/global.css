@@ -91,3 +91,4 @@ dt#send-label		{clear: both;}
 
 /*Formular pracoviste*/
 input[id*='factor_'], input[id*='risk_'] {width: 300px;}
+td[id*='-errors']						 {color: red; font-weight: bold;}

@@ -8,6 +8,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->setName('workplaceFactors');
         $this->setMethod('post');
         $this->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
+        $this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
         
         $view = Zend_Layout::getMvcInstance()->getView();
         
@@ -90,66 +91,79 @@ class Application_Form_Workplace extends Zend_Form
        	$this->addElement('workplaceFactor', 'factor1', array(
        		'factor' => 'Prach',
        		'order' => 6,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor2', array(
        		'factor' => 'Chemické látky',
        		'order' => 7,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor3', array(
        		'factor' => 'Hluk',
        		'order' => 8,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor4', array(
        		'factor' => 'Vibrace',
        		'order' => 9,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor5', array(
        		'factor' => 'Neionizující záření a elektromagnetická pole',
        		'order' => 10,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor6', array(
        		'factor' => 'Fyzická zátěž',
        		'order' => 11,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor7', array(
        		'factor' => 'Pracovní poloha',
        		'order' => 12,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor8', array(
        		'factor' => 'Zátěž teplem',
        		'order' => 13,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor9', array(
        		'factor' => 'Zátěž chladem',
        		'order' => 14,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor10', array(
        		'factor' => 'Psychická zátěž',
        		'order' => 15,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor11', array(
        		'factor' => 'Zraková zátěž',
        		'order' => 16,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor12', array(
        		'factor' => 'Práce s biologickými činiteli',
        		'order' => 17,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor13', array(
        		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
        		'order' => 18,
+       		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('button', 'new_factor', array(
@@ -171,6 +185,7 @@ class Application_Form_Workplace extends Zend_Form
        	
        	$this->addElement('workplaceRisk', 'risk102', array(
        		'order' => 102,
+       		'validators' => array(new My_Validate_WorkplaceRisk()),
        	));
        	
        	$this->addElement('button', 'new_risk', array(
@@ -196,31 +211,27 @@ class Application_Form_Workplace extends Zend_Form
     			return $risk;
     		}
     	}
-    	
+    	//Zend_Debug::dump($data);
     	$newFactors = array_filter(array_keys($data), 'findFactors');
     	$newRisks = array_filter(array_keys($data), 'findRisks');
-    	
+
     	foreach($newFactors as $fieldName){
-    		$order = ltrim($fieldName, 'newFactor') + 1;
-    		$this->addNewField('workplaceFactor', $fieldName, $order);
+     		$order = preg_replace('/\D/', '' , $fieldName) + 1;
+     		$this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    		$this->addElement('workplaceFactor', 'newFactor' . strval($order - 1), array(
+    			'order' => $order,
+    			'value' => $data[$fieldName],
+    			'validators' => array(new My_Validate_WorkplaceFactor()),
+    		));
     	}
-    	
+
     	foreach($newRisks as $fieldName){
-    		$order = ltrim($fieldName, 'newRisk') + 1;
-    		$this->addNewField('workplaceRisk', $fieldName, $order);
-    	}
-    }
-    
-    public function addNewField($element, $name, $order){
-    	if($element == 'workplaceFactor'){
-    		$this->addElement($element, $name, array(
-    			'order' => $order,
-    		));
-    	}
-    	if($element == 'workplaceRisk'){
-    		$this->addElement($element, $name, array(
-    			'order' => $order,
-    		));
+   			$order = preg_replace('/\D/', '', $fieldName) + 1;
+   			$this->addElement('workplaceRisk', 'newRisk' . strval($order - 1), array(
+   				'order' => $order,
+   				'value' => $data[$fieldName],
+   				'validators' => array(new My_Validate_WorkplaceRisk()),
+   			));
     	}
     }
 
