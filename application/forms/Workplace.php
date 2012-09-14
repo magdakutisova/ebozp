@@ -47,7 +47,14 @@ class Application_Form_Workplace extends Zend_Form
        	));
        	
        	$this->addElement('hidden', 'id_factor', array(
-       		'value' => 18,
+       		'value' => 20,
+       	));
+       	
+       	$this->addElement('select', 'subsidiary_id', array(
+       		'label' => 'Pobočka',
+       		'required' => true,
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 1,
        	));
        	      	
        	$this->addElement('text', 'name', array(
@@ -55,7 +62,7 @@ class Application_Form_Workplace extends Zend_Form
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 1,
+       		'order' => 2,
        	));
        	
        	$this->addElement('textarea', 'description', array(
@@ -63,7 +70,7 @@ class Application_Form_Workplace extends Zend_Form
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 2,
+       		'order' => 3,
        	));
        	
        	$this->addElement('textarea', 'note', array(
@@ -71,7 +78,7 @@ class Application_Form_Workplace extends Zend_Form
        		'required' => false,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 3,
+       		'order' => 4,
        	));
        	
        	$this->addElement('textarea', 'private', array(
@@ -79,90 +86,90 @@ class Application_Form_Workplace extends Zend_Form
        		'required' => false,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 4,
+       		'order' => 5,
        	));
        	
        	$this->addElement('hidden', 'workplaceFactors', array(
        		'label' => 'Faktory pracovního prostředí:',
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 5,
+       		'order' => 6,
        	));
        	
        	$this->addElement('workplaceFactor', 'factor1', array(
        		'factor' => 'Prach',
-       		'order' => 6,
+       		'order' => 7,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor2', array(
        		'factor' => 'Chemické látky',
-       		'order' => 7,
+       		'order' => 8,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor3', array(
        		'factor' => 'Hluk',
-       		'order' => 8,
+       		'order' => 9,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor4', array(
        		'factor' => 'Vibrace',
-       		'order' => 9,
+       		'order' => 10,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor5', array(
        		'factor' => 'Neionizující záření a elektromagnetická pole',
-       		'order' => 10,
+       		'order' => 11,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor6', array(
        		'factor' => 'Fyzická zátěž',
-       		'order' => 11,
+       		'order' => 12,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor7', array(
        		'factor' => 'Pracovní poloha',
-       		'order' => 12,
+       		'order' => 13,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor8', array(
        		'factor' => 'Zátěž teplem',
-       		'order' => 13,
+       		'order' => 14,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor9', array(
        		'factor' => 'Zátěž chladem',
-       		'order' => 14,
+       		'order' => 15,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor10', array(
        		'factor' => 'Psychická zátěž',
-       		'order' => 15,
+       		'order' => 16,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor11', array(
        		'factor' => 'Zraková zátěž',
-       		'order' => 16,
+       		'order' => 17,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor12', array(
        		'factor' => 'Práce s biologickými činiteli',
-       		'order' => 17,
+       		'order' => 18,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
        	$this->addElement('workplaceFactor', 'factor13', array(
        		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
-       		'order' => 18,
+       		'order' => 19,
        		'validators' => array(new My_Validate_WorkplaceFactor()),
        	));
        	
@@ -194,9 +201,15 @@ class Application_Form_Workplace extends Zend_Form
        		'decorators' => $elementDecorator2,
        	));
        	
+       	$this->addElement('checkbox', 'other', array(
+       		'label' => 'Po uložení vložit další pracoviště',
+       		'order' => 200,
+       		'decorators' => $elementDecoratorColspan,
+       	));
+       	
        	$this->addElement('submit', 'save', array(
        		'decorators' => $elementDecorator2,
-       		'order' => 200,	
+       		'order' => 201,	
        	));
     }
 

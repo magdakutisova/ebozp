@@ -198,26 +198,9 @@ class ClientController extends Zend_Controller_Action
 			if ($form->isValid ( $formData )) {
 				$client = new Application_Model_Client($formData);
 				$subsidiary = new Application_Model_Subsidiary($formData);
-//				$companyName = $form->getValue ( 'company_name' );
 				//checkbox zda je adresa fakturační stejná jako adresa sídla
 				$invoiceAddress = $form->getValue('invoice_address');
-//				$invoiceStreet = $form->getValue ( 'invoice_street' );
-//				$invoiceCode = $form->getValue ( 'invoice_code' );
-//				$invoiceTown = $form->getValue ( 'invoice_town' );
-//				$companyNumber = $form->getValue ( 'company_number' );
-//				$taxNumber = $form->getValue ( 'tax_number' );
-//				$headquartersStreet = $form->getValue ( 'headquarters_street' );
-//				$headquartersCode = $form->getValue ( 'headquarters_code' );
-//				$headquartersTown = $form->getValue ( 'headquarters_town' );
-//				$business = $form->getValue ( 'business' );
 				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
-//				$insuranceCompany = $insuranceCompanyOptions[$form->getValue('insurance_company')];
-//				$supervisionFrequency = $form->getValue('supervision_frequency');
-//				$doctor = $form->getValue('doctor');
-//				$contactPerson = $form->getValue ( 'contact_person' );
-//				$phone = $form->getValue ( 'phone' );
-//				$email = $form->getValue ( 'email' );
-//				$private = $form->getValue ( 'private' );
 				
 				if($invoiceAddress){
 					$client->setInvoiceStreet($client->getHeadquartersStreet());
@@ -225,8 +208,6 @@ class ClientController extends Zend_Controller_Action
 					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
 				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
-				
-				//$client->setDeleted(0);
 							
 				$clients = new Application_Model_DbTable_Client ();
 				
@@ -244,7 +225,6 @@ class ClientController extends Zend_Controller_Action
 				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 				$subsidiary->setClientId($clientId);
 				$subsidiary->setHq(true);
-				//$subsidiary->setDeleted(0);
 				
 				//přidání pobočky
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -293,9 +273,7 @@ class ClientController extends Zend_Controller_Action
 					unset($formContent[$key]);
 				}
 			}
-		}
-
-		if ($formContent != 0) {
+		
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');

@@ -37,11 +37,24 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$form = new Application_Form_Workplace(); 
     	
-    	$form->save->setLabel('Přidat pracoviště');
+    	$form->save->setLabel('Uložit');
+    	
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+		if ($formContent != 0){
+			$form->subsidiary_id->setMultiOptions ( $formContent );
+		}
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
     		$this->view->form = $form;
+    		
+    		// naplnění formuláře daty ze session, pokud existují
+			$defaultNamespace = new Zend_Session_Namespace ();
+			if (isset ( $defaultNamespace->formData )) {
+				$form->populate ( $defaultNamespace->formData );
+				unset ( $defaultNamespace->formData );
+			}
     		return;
     	}
     	
@@ -56,13 +69,14 @@ class WorkplaceController extends Zend_Controller_Action
     		return;
     	}
     	
+    	//zpracování formuláře
+    	$defaultNamespace = new Zend_Session_Namespace();
+    	
     	try{
-	    	//zpracování formuláře
 	    	$formData = $this->getRequest()->getPost();
-	    	
+	    		    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
-	    	$workplace->setSubsidiaryId($this->_subsidiary->getIdSubsidiary());
 	    	$workplaces = new Application_Model_DbTable_Workplace();
 	    	$workplaceId = $workplaces->addWorkplace($workplace);
 	    	
@@ -71,9 +85,7 @@ class WorkplaceController extends Zend_Controller_Action
 			foreach($formData as $key => $value){
 				if(preg_match('/factor\d+/', $key) || preg_match('/newFactor\d+/', $key)){
 					if($value['applies'] == "1"){
-						$factor = new Application_Model_WorkplaceFactor();
-						$factor->setFactor($value['factor']);
-						$factor->setNote($value['note']);
+						$factor = new Application_Model_WorkplaceFactor($value);
 						$factor->setWorkplaceId($workplaceId);
 						$factors->addWorkplaceFactor($factor);
 					}
@@ -84,21 +96,28 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$risks = new Application_Model_DbTable_WorkplaceRisk();
 	    	foreach($formData as $key => $value){
 	    		if(preg_match('/risk\d+/', $key) || preg_match('/newRisk\d+/', $key)){
-	    			$risk = new Application_Model_WorkplaceRisk();
-	    			$risk->setRisk($value['risk']);
-	    			$risk->setNote($value['note']);
+	    			$risk = new Application_Model_WorkplaceRisk($value);
 	    			$risk->setWorkplaceId($workplaceId);
 	    			$risks->addWorkplaceRisk($risk);
 	    		}
 	    	}
 	    	
 	    	//TODO zápis do bezpečnostního deníku
-	    	//TODO redirect
+	    	
+	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
+	    	if ($form->getElement('other')->isChecked){
+	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId), 'workplaceNew' );
+	    	}
+	    	else{
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
+	    	}
     	}
     	catch(Zend_Exception $e){
-    		//TODO redirect
+    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora.' . $e->getMessage());
+    		$defaultNamespace->formData = $formData;
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'workplaceNew');
     	}
-    	$this->view->form = $form;
+    	
     }
 
 	public function newfactorAction(){

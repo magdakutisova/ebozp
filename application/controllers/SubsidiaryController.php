@@ -81,13 +81,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$client = $clients->getClient ( $clientId );
 		
-		// naplnění formuláře daty ze session, pokud existují
-		$defaultNamespace = new Zend_Session_Namespace ();
-		if (isset ( $defaultNamespace->formData )) {
-			$form->populate ( $defaultNamespace->formData );
-			unset ( $defaultNamespace->formData );
-		}
-		
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
 			if ($form->isValid ( $formData )) {

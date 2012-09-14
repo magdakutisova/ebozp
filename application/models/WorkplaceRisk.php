@@ -85,6 +85,8 @@ class Application_Model_WorkplaceRisk{
 		$data['risk'] = $this->risk;
 		$data['note'] = $this->note;
 		$data['workplace_id'] = $this->workplaceId;
+		
+		return $data;
 	}
 	
 }
