@@ -81,13 +81,20 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 4,
        	));
        	
-       	$this->addElement('textarea', 'private', array(
-       		'label' => 'Soukromá poznámka',
-       		'required' => false,
-       		'filters' => array('StringTrim', 'StripTags'),
-       		'decorators' => $elementDecoratorColspan,
-       		'order' => 5,
-       	));
+       	$username = Zend_Auth::getInstance()->getIdentity()->username;
+        $users = new Application_Model_DbTable_User();
+        $user = $users->getByUsername($username);
+        $acl = new My_Controller_Helper_Acl();
+        
+        if($acl->isAllowed($user, 'private')){      	
+       		$this->addElement('textarea', 'private', array(
+       			'label' => 'Soukromá poznámka',
+       			'required' => false,
+       			'filters' => array('StringTrim', 'StripTags'),
+       			'decorators' => $elementDecoratorColspan,
+       			'order' => 5,
+       		));
+        }
        	
        	$this->addElement('hidden', 'workplaceFactors', array(
        		'label' => 'Faktory pracovního prostředí:',

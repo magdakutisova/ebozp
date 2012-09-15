@@ -28,20 +28,8 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		
 		if ($subsidiary->getHq() == 0) {
 			//indexace pro vyhledávání
-			try {
-				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-			} catch ( Zend_Search_Lucene_Exception $e ) {
-				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
-			}
-			
-			$document = new Zend_Search_Lucene_Document ();
-			$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary->getIdSubsidiary(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary->getSubsidiaryName(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $subsidiary->getClientId(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
-			
+			$index = $this->getSearchIndex();			
+			$document = $this->composeDocument($subsidiary);			
 			$index->addDocument ( $document );
 			$index->commit ();
 			$index->optimize ();
@@ -56,27 +44,9 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		
 		if ($subsidiary->getHq() == 0) {
 			//indexace pro vyhledávání
-			try {
-				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-			} catch ( Zend_Search_Lucene_Exception $e ) {
-				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
-			}
-			
-			$hits = $index->find ( 'subsidiaryId: ' . $subsidiary->getIdSubsidiary() );
-			
-			foreach ( $hits as $hit ) :
-				$index->delete ( $hit->id );
-			endforeach
-			;
-			
-			$document = new Zend_Search_Lucene_Document ();
-			$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary->getIdSubsidiary(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary->getSubsidiaryName(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $subsidiary->getClientId(), 'utf-8' ) );
-			$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
-			
+			$index = $this->getSearchIndex();			
+			$this->removeSubsidiaryFromSearchIndex($index, $subsidiary->getIdSubsidiary());			
+			$document = $this->composeDocument($subsidiary);
 			$index->addDocument ( $document );
 			$index->commit ();
 			$index->optimize ();
@@ -89,21 +59,17 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		$subsidiary->deleted = 1;
 		$subsidiary->save ();
 		
+		//smazání závislých pracovišť/FPP/rizik
+		$workplaces = new Application_Model_DbTable_Workplace();
+		$toDelete = $workplaces->getBySubsidiary($id);
+		foreach ($toDelete as $workplace){
+			$workplaces->deleteWorkplace($workplace->getIdWorkplace());
+		}
+		
 		if ($subsidiary->hq == 0) {
 			//indexace pro vyhledávání
-			try {
-				$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
-			} catch ( Zend_Search_Lucene_Exception $e ) {
-				$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
-			}
-			
-			$hits = $index->find ( 'subsidiaryId: ' . $id );
-			
-			foreach ( $hits as $hit ) :
-				$index->delete ( $hit->id );
-			endforeach
-			;
-			
+			$index = $this->getSearchIndex();
+			$this->removeSubsidiaryFromSearchIndex($index, $id);	
 			$index->commit ();
 			$index->optimize ();
 		}
@@ -182,7 +148,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	}
 	
 	private function process($result){
-	if ($result->count()){
+		if ($result->count()){
 			$subsidiaries = array();
 			foreach($result as $subsidiary){
 				$subsidiary = $result->current();
@@ -195,6 +161,35 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	private function processSubsidiary($subsidiary){
 		$data = $subsidiary->toArray();
 		return new Application_Model_Subsidiary($data);
+	}
+	
+	private function getSearchIndex(){
+		try {
+			$index = Zend_Search_Lucene::open ( APPLICATION_PATH . '/searchIndex' );
+		} catch ( Zend_Search_Lucene_Exception $e ) {
+			$index = Zend_Search_Lucene::create ( APPLICATION_PATH . '/searchIndex' );
+		}
+		return $index;
+	}
+	
+	private function composeDocument($subsidiary){
+		$document = new Zend_Search_Lucene_Document ();
+		$document->addField ( Zend_Search_Lucene_Field::keyword ( 'subsidiaryId', $subsidiary->getIdSubsidiary(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryName', $subsidiary->getSubsidiaryName(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'clientId', $subsidiary->getClientId(), 'utf-8' ) );
+		$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
+		return $document;
+	}
+	
+	private function removeSubsidiaryFromSearchIndex($index, $subsidiaryId){
+		$hits = $index->find ( 'subsidiaryId: ' . $subsidiaryId );
+			
+		foreach ( $hits as $hit ) :
+			$index->delete ( $hit->id );
+		endforeach
+		;
 	}
 
 }

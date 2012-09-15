@@ -19,7 +19,7 @@ $(function(){
 		$("#pobocky").removeClass("hidden");
 		$("#submit").val("Smazat");
 		$("#submit").attr("name", "delete");
-		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat?')");
+		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat? Budou smazána i veškerá závislá pracoviště!')");
 	});
 	
 	$(".messages-link").click(function(){

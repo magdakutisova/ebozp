@@ -28,4 +28,28 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		$this->delete('id_workplace = ' . (int)$id);
 	}
 	
+	public function getBySubsidiary($subsidiaryId){
+		$select = $this->select()
+			->from('workplace')
+			->where('subsidiary_id = ?', $subsidiaryId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$workplaces = array();
+			foreach($result as $workplace){
+				$workplace = $result->current();
+				$workplaces[] = $this->processWorkplace($workplace);
+			}
+			return $workplaces;
+		}
+	}
+	
+	private function processWorkplace($workplace){
+		$data = $workplace->toArray();
+		return new Application_Model_Workplace($data);
+	}
+	
 }

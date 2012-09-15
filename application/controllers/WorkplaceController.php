@@ -3,8 +3,11 @@
 class WorkplaceController extends Zend_Controller_Action
 {
 	
-	private $_subsidiary;
+	private $_client;
 	private $_clientId;
+	private $_acl;
+	private $_user;
+	private $_username;
 
     public function init()
     {
@@ -14,16 +17,30 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_helper->layout()->setLayout('clientLayout');
         $this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
         
-        //získání odkazu na pobočku
-        if ($this->getRequest()->getActionName() == 'newfactor' || $this->getRequest()->getActionName() == 'newrisk'){
-        	//nic
-        }
-        else{
+        //získání odkazu na centrálu
+        $action = $this->getRequest()->getActionName();
+        $this->_acl = new My_Controller_Helper_Acl();
+        if ($action != 'newfactor' && $action != 'newrisk'){
         	$this->_clientId = $this->getRequest()->getParam('clientId');
         	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-        	$this->_subsidiary = $subsidiaries->getHeadquarters($this->_clientId);
-        	//nastavit přístupová práva
+        	$this->_client = $subsidiaries->getHeadquarters($this->_clientId);
+        	
+        	//přístupová práva
+        	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
+        	$users = new Application_Model_DbTable_User();
+			$this->_user = $users->getByUsername($this->_username);
+
+			//do new může jen ten, kdo má přístup k centrále
+			if ($action == 'new'){
+				if(!$this->_acl->isAllowed($this->_user, $this->_client)){
+					$this->_helper->redirector('denied', 'error');
+				}
+			}
+			
+			//soukromá poznámka
+			$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
         }
+        
     }
 
     public function indexAction()
@@ -42,6 +59,11 @@ class WorkplaceController extends Zend_Controller_Action
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
 		if ($formContent != 0){
+			foreach ($formContent as $key => $subsidiary){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+					unset($formContent[$key]);
+				}
+			}
 			$form->subsidiary_id->setMultiOptions ( $formContent );
 		}
     	
@@ -105,7 +127,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    	//TODO zápis do bezpečnostního deníku
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
-	    	if ($form->getElement('other')->isChecked){
+	    	if ($form->getElement('other')->isChecked()){
 	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId), 'workplaceNew' );
 	    	}
 	    	else{
