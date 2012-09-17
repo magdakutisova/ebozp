@@ -19,19 +19,20 @@ class PrintController extends Zend_Controller_Action
 
     public function diaryAction()
     {
-        $this->view->subtitle = 'Historie BD';
         $clientId = $this->getRequest()->getParam('clientId');
+        $subsidiaries = new Application_Model_DbTable_Subsidiary();
+        $headSub = $subsidiaries->getHeadquarters($clientId);
+    	$this->view->subtitle = 'Historie BD klienta ' . $headSub->getSubsidiaryName();
         
         $diary = new Application_Model_DbTable_Diary();
         $records = $diary->getDiaryByClient($clientId);
         
         $acl = new My_Controller_Helper_Acl();
-        $subsidiaries = new Application_Model_DbTable_Subsidiary();
         
         $users = new Application_Model_DbTable_User();
         $user = $users->getByUsername(Zend_Auth::getInstance()->getIdentity()->username);
         foreach ($records as $key => $record){
-        	if (!$acl->isAllowed($user, $subsidiaries->getSubsidiary($record->getSubsidiaryId()))){
+        	if (!$acl->isAllowed($user, $subsidiaries->getSubsidiary($record->getSubsidiaryId(), true))){
         		unset($records[$key]);
         	} 
         }
