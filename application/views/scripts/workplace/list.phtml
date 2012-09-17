@@ -1,0 +1,11 @@
+<?php foreach ($this->workplaces as $key => $workplaces){ ?>
+
+	<h3><?php echo $key?></h3>
+	<?php foreach ($workplaces as $workplace){?>
+		<h4><?php echo $workplace->getName();?></h4>
+		<p class="no-margin"><?php echo $workplace->getDescription();?></p>
+		<p><?php echo $workplace->getNote();?></p>
+		<?php if ($this->canViewPrivate){?>
+		<p><?php echo $workplace->getPrivate();?></p>
+	<?php }?>
+<?php }} ?>

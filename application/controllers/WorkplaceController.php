@@ -2,12 +2,12 @@
 
 class WorkplaceController extends Zend_Controller_Action
 {
-	
-	private $_client;
-	private $_clientId;
-	private $_acl;
-	private $_user;
-	private $_username;
+
+    private $_client = null;
+    private $_clientId = null;
+    private $_acl = null;
+    private $_user = null;
+    private $_username = null;
 
     public function init()
     {
@@ -142,7 +142,8 @@ class WorkplaceController extends Zend_Controller_Action
     	
     }
 
-	public function newfactorAction(){
+    public function newfactorAction()
+    {
 		$ajaxContext = $this->_helper->getHelper('AjaxContext');
 		$ajaxContext->addActionContext('newfactor', 'html')->initContext();
 		
@@ -152,9 +153,10 @@ class WorkplaceController extends Zend_Controller_Action
 		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
 		
 		$this->view->field = $element->__toString();
-	}
-	
-	public function newriskAction(){
+    }
+
+    public function newriskAction()
+    {
 		$ajaxContext = $this->_helper->getHelper('AjaxContext');
 		$ajaxContext->addActionContext('newrisk', 'html')->initContext();
 		
@@ -164,5 +166,17 @@ class WorkplaceController extends Zend_Controller_Action
 		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
 		
 		$this->view->field = $element->__toString();
-	}
+    }
+
+    public function listAction()
+    {
+        $this->view->subtitle = "Databáze pracovišť";
+        $clientId = $this->getRequest()->getParam('clientId');
+        $workplacesDb = new Application_Model_DbTable_Workplace();
+        $workplaces = $workplacesDb->getByClient($clientId);
+        $this->view->workplaces = $workplaces;
+    }
+
+
 }
+

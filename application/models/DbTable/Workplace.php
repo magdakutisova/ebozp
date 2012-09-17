@@ -36,6 +36,30 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	/****************************************
+	 * Řazeno podle pobočky.
+	 */
+	public function getByClient($clientId){
+		$select = $this->select()
+			->from('workplace')
+			->join('subsidiary', 'subsidiary.id_subsidiary = workplace.subsidiary_id')
+			->where('subsidiary.client_id = ?', $clientId)
+			->order('subsidiary.subsidiary_name');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if ($result->count()){
+			$workplaces = array();
+			foreach($result as $workplace){
+				$workplace = $result->current();
+				$workplaces[$workplace->subsidiary_name][] = $this->processWorkplace($workplace);
+			}
+			return $workplaces;
+		}
+		else{
+			return null;
+		}
+	}
+	
 	private function process($result){
 		if ($result->count()){
 			$workplaces = array();

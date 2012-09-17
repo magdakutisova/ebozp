@@ -32,20 +32,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     }
     
 	protected function _initNavigation(){
-		$this->bootstrap('view');
-		$view = $this->getResource('view');
-		$config = new Zend_Config_Xml(APPLICATION_PATH . '/configs/navigation.xml', 'nav');
-		$clientConfig = new Zend_Config_Xml(APPLICATION_PATH . '/configs/clientNavigation.xml', 'nav');
-		$navigation = new Zend_Navigation($config);
-		$clientNavigation = new Zend_Navigation($clientConfig);
-		Zend_Registry::set('ClientNavigation', $clientNavigation);
-		$auth = Zend_Auth::getInstance();
-		$role = "5";
-		if ($auth->hasIdentity()){
-			$role = $auth->getIdentity()->role;
-		}
-		$view->navigation()->setAcl(new My_Controller_Helper_Acl())->setRole($role);
-		$view->navigation($navigation);
+		Zend_Controller_Front::getInstance()->registerPlugin(new My_Plugin_Navigation());		
 	}
 	
 	protected function _initTranslator(){
@@ -216,6 +203,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'workplaceList',
+			new Zend_Controller_Router_Route('klient/:clientId/databaze-pracovist',
+											array('controller' => 'workplace',
+													'action' => 'list'))
+		);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',
@@ -229,7 +223,19 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 												'action' => 'search'))
 		);
 		
+		$router->addRoute(
+			'printIndex',
+			new Zend_Controller_Router_Route('klient/:clientId/zaznamy-k-tisku',
+											array('controller' => 'print',
+												'action' => 'index'))
+		);
 		
+		$router->addRoute(
+			'printDiary',
+			new Zend_Controller_Router_Route('klient/:clientId/historie-bd',
+											array('controller' => 'print',
+												'action' => 'diary'))
+		);
 		
 	}
 

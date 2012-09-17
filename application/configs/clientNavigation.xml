@@ -30,5 +30,37 @@
 				</new>
 			</pages>
 		</client>
+		<print>
+			<label>Záznamy (k tisku)</label>
+			<route>printIndex</route>
+			<resource>print</resource>
+			<privilege>index</privilege>
+			<clientId>clientId</clientId>
+			<pages>
+				<diary>
+					<label>Historie BD</label>
+					<route>printDiary</route>
+					<resource>print</resource>
+					<privilege>diary</privilege>
+					<clientId>clientId</clientId>
+				</diary>
+			</pages>
+		</print>
+		<workplace>
+			<label>Pracoviště</label>
+			<route>workplaceList</route>
+			<resource>workplace</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<pages>
+				<list>
+					<label>Databáze pracovišť</label>
+					<route>workplaceList</route>
+					<resource>workplace</resource>
+					<privilege>list</privilege>
+					<clientId>clientId</clientId>
+				</list>
+			</pages>
+		</workplace>
 	</nav>
 </configdata>

@@ -143,24 +143,30 @@ class UserController extends Zend_Controller_Action
     {
     	$users = new Application_Model_DbTable_User();
     	$user = $users->getByUsername($values['username']);
-    	$password = $values['password'];
-    	$salt = base64_decode($user->getSalt());
-    	$password = $this->encrypt($password, $salt);
-    	
-    	$adapter = $this->_getAuthAdapter();
-    	$adapter->setIdentity($values['username']);
-    	$adapter->setCredential($password);
-    	
-    	$auth = Zend_Auth::getInstance();
-    	$result = $auth->authenticate($adapter);
-    	
-    	if ($result->isValid()){
-    		$loggedUser = $adapter->getResultRowObject();
-    		$auth->getStorage()->write($loggedUser);
-    		
-    		return true;
+    	if(!$user){
+    		$this->_helper->FlashMessenger('Uživatel se jménem "' . $values['username'] . '" neexistuje.');
+    		$this->_helper->redirector->gotoRoute(array(), 'userLogin');
     	}
-    	return false;
+    	else{
+	    	$password = $values['password'];
+	    	$salt = base64_decode($user->getSalt());
+	    	$password = $this->encrypt($password, $salt);
+	    	
+	    	$adapter = $this->_getAuthAdapter();
+	    	$adapter->setIdentity($values['username']);
+	    	$adapter->setCredential($password);
+	    	
+	    	$auth = Zend_Auth::getInstance();
+	    	$result = $auth->authenticate($adapter);
+	    	
+	    	if ($result->isValid()){
+	    		$loggedUser = $adapter->getResultRowObject();
+	    		$auth->getStorage()->write($loggedUser);
+	    		
+	    		return true;
+	    	}
+	    	return false;
+    	}
     }
 
     private function _getAuthAdapter()
