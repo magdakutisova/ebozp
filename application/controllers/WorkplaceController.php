@@ -172,8 +172,15 @@ class WorkplaceController extends Zend_Controller_Action
     {
         $this->view->subtitle = "Databáze pracovišť";
         $clientId = $this->getRequest()->getParam('clientId');
+        $this->view->clientId = $clientId;
         $workplacesDb = new Application_Model_DbTable_Workplace();
-        $workplaces = $workplacesDb->getByClient($clientId);
+        $workplaces = $workplacesDb->getByClientDetails($clientId);
+        $subsidiaries = new Application_Model_DbTable_Subsidiary();
+        foreach ($workplaces as $key => $workplace){
+        	if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace['id_subsidiary']))){
+        		unset($workplaces[$key]);
+        	}
+        }
         $this->view->workplaces = $workplaces;
     }
 

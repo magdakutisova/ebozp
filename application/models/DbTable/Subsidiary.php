@@ -4,7 +4,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 	protected $_name = 'subsidiary';
 	
-	protected $_referenceMap = array ('Client' => array ('columns' => 'client_id', 'refTableClass' => 'Application_Model_DbTable_Client', 'refColumns' => 'id_client' ) );
+	protected $_referenceMap = array ('Client' => array (
+		'columns' => 'client_id',
+		'refTableClass' => 'Application_Model_DbTable_Client',
+		'refColumns' => 'id_client' ) );
 	
 	public function getSubsidiary($id, $every = false) {
 		$id = ( int ) $id;

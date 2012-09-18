@@ -3,6 +3,14 @@ class Application_Model_DbTable_WorkplaceFactor extends Zend_Db_Table_Abstract {
 	
 	protected $_name = 'workplace_factor';
 	
+	protected $_referenceMap = array(
+    	'Workplace' => array(
+    		'columns' => 'workplace_id',
+    		'refTableClass' => 'Application_Model_DbTable_Workplace',
+    		'refColumns' => 'id_workplace'
+    	),
+    );
+	
 	public function getWorkplaceFactor($id){
 		$id = (int) $id;
 		$row = $this->fetchRow('id_workplace_factor = ' . $id);
