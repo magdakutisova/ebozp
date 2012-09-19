@@ -10,8 +10,10 @@
 <p>*****</p></div>
 
 <div class="span-5 floating-box">
-		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiary' => $this->subsidiary->getIdSubsidiary()), 'subsidiaryEdit')?>">Edituj pobočku</a> | 
-		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Karta klienta</a>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
+		<?php if ($this->canViewHeadquarters){?>
+		 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Karta klienta</a>
+		<?php }?>		
 	</div>
 
 <div class="box clear hidden" id="pobocky">

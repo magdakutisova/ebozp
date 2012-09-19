@@ -5,15 +5,19 @@
 <?php } else {?>
 
 <p><span class="bold">Název klienta: </span><?php echo $this->companyName;?></p>
-<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientIndex') ?>">Zpět na kartu klienta</a><br/><br/>
+<?php if ($this->canViewHeadquarters){?>
+	<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientIndex') ?>">Zpět na kartu klienta</a><br/><br/>
+<?php }?>
 <table>
+<?php if ($this->canViewHeadquarters){?>
 	<tr>
 		<td colspan=4><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientEdit') ?>">EDITACE ZÁKLADNÍCH ÚDAJŮ</a></td>
 	</tr>
+<?php }?>
 	<tr>
 		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew') ?>">PŘIDAT PRACOVIŠTĚ</a></td>
-		<td colspan=2><a href="#">EDITACE</a></td>
-		<td><a href="#">UPLOAD</a></td>
+		<td><a href="#">EDITACE</a></td>
+		<td colspan=2><a href="#">SMAZAT</a></td>
 	</tr>
 	<tr>
 		<td><a href="#">PŘIDAT PRACOVNÍ POZICE</a></td>

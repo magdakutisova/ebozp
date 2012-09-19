@@ -6,6 +6,7 @@ class ClientController extends Zend_Controller_Action
 	private $_username;
 	private $_role;
 	private $_user;
+	private $_canViewHeadquarters = false;
 
     public function init()
     {
@@ -29,13 +30,23 @@ class ClientController extends Zend_Controller_Action
 			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
 		}
 		
-		//do index, admin, edit action může jen když má přístup k pobočce/centrále
+		//do index, edit action může jen když má přístup k centrále
 		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
-		$subsidiaries = new Application_Model_DbTable_Subsidiary();		
-		if ($action == 'index' || $action == 'admin' || $action == 'edit'){
-			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();	
+    	if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+				$this->_canViewHeadquarters = true;
+		}	
+		if ($action == 'index' || $action == 'edit'){
+			if(!$this->_canViewHeadquarters){
+				$this->_helper->redirector('denied', 'error');
+			}
+		}
+		
+		//do admin action může jen když má přístup k některé z poboček
+		if ($action == 'admin'){
+			if(!$this->_canViewHeadquarters && !$this->hasAnySubsidiary()){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
@@ -43,9 +54,26 @@ class ClientController extends Zend_Controller_Action
 		//zobrazení soukromých poznámek
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
+		//zobrazení věcí jen pro majitele centrály
+		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
+		
 		//do list action může vždy - neošetřuje se
 		//new, delete action je ošetřena v Acl helperu
 		
+    }
+    
+    private function hasAnySubsidiary(){
+    	$clients = new Application_Model_DbTable_Client();
+    	$subsidiaries = $clients->getSubsidiaries($this->getRequest()->getParam('clientId'));
+    	$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+    	if ($subsidiaries){
+    		foreach($subsidiaries as $subsidiaryId){
+    			if($this->_acl->isAllowed($this->_user, $subsidiariesDb->getSubsidiary($subsidiaryId))){
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
     }
 
     public function indexAction()
@@ -263,6 +291,7 @@ class ClientController extends Zend_Controller_Action
 		$this->view->canDeleteClient = $this->_acl->isAllowed($this->_role, 'client', 'delete');
 		$this->view->canAddSubsidiary = $this->_acl->isAllowed($this->_role, 'subsidiary', 'new');
 		$this->view->canDeleteSubsidiary = $this->_acl->isAllowed($this->_role, 'subsidiary', 'delete');
+		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
 		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );

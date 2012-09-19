@@ -4,6 +4,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 	private $_username;
 	private $_user;
 	private $_acl;
+	private $_canViewHeadquarters = false;
 	
 	public function init() {
 		$this->view->title = 'Správa poboček';
@@ -29,9 +30,13 @@ class SubsidiaryController extends Zend_Controller_Action {
 			}
 		}
 		
+		if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+				$this->_canViewHeadquarters = true;
+		}
+		
 		//do new a delete action může jen když má přístup k centrále
 		if ($action == 'new' || $action == 'delete'){
-			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+			if(!$this->_canViewHeadquarters){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
@@ -54,6 +59,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
+		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
 		
 		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
 		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());

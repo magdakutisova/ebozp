@@ -169,6 +169,9 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		$client->save ();
 	}
 	
+	/*************************************************************
+	 * Vrací ID závislých poboček.
+	 */
 	public function getSubsidiaries($clientId){
 		$client = $this->fetchRow('id_client = ' . $clientId);
 		$select = $client->select()->where('deleted = 0')->where('hq = 0');
