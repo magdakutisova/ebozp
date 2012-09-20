@@ -2,6 +2,7 @@
 class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 	
 	public $helper = 'workplaceRisk';
+	protected $_idWorkplaceRisk;
 	protected $_risk;
 	protected $_note;
 	
@@ -25,12 +26,20 @@ class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 		}
 	}
 	
+	public function getIdWorkplaceRisk(){
+		return $this->_idWorkplaceRisk;
+	}
+	
 	public function getRisk() {
 		return $this->_risk;
 	}
 	
 	public function getNote() {
 		return $this->_note;
+	}
+	
+	public function setIdWorkplaceRisk($_idWorkplaceRisk){
+		$this->_idWorkplaceRisk = $_idWorkplaceRisk;
 	}
 	
 	public function setRisk($_risk) {
@@ -52,18 +61,17 @@ class My_Form_Element_WorkplaceRisk extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['risk']) && isset($values['note'])){
+		if(isset($values['id_workplace_risk']) && isset($values['risk']) && isset($values['note'])){
+			$this->setIdWorkplaceRisk($values['id_workplace_risk']);
 			$this->setRisk($values['risk']);
 			$this->setNote($values['note']);
-		}
-		else{
-			; //validace či co
 		}
 		return $this;
 	}
 	
 	public function getValue(){
 		$values = array();
+		$values['id_workplace_risk'] = $this->getIdWorkplaceRisk();
 		$values['risk'] = $this->getRisk();
 		$values['note'] = $this->getNote();
 		return $values;

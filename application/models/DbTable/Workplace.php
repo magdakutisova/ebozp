@@ -88,6 +88,58 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		}
 	}
 	
+	/**************************************************************
+	 * Vrací pole pro rozbalovací seznam pracovišť.
+	 */
+	public function getWorkplaces($clientId){
+		$select = $this->select()->from('workplace')
+			->join('subsidiary', 'workplace.subsidiary_id = subsidiary.id_subsidiary')
+			->where('client_id = ?', $clientId)
+			->where('subsidiary.deleted = 0')
+			->order('name');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		if (count($results) > 0){
+			$workplaces = array();
+			foreach($results as $result){
+				$key = $result->id_workplace;
+				$workplace = $result->name . ' - ' . $result->subsidiary_name;
+				$workplaces[$key][0] = $workplace;
+				$workplaces[$key][1] = $result->subsidiary_id;
+			}
+			return $workplaces;
+		}
+		else{
+			return 0;
+		}
+	}
+	
+	public function getWorkplaceFactors($workplaceId){
+		$workplace = $this->fetchRow('id_workplace = ' . $workplaceId);
+		$result = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceFactor', 'Workplace');
+		if($result->count()){
+			$workplaceFactors = array();
+			foreach($result as $workplaceFactor){
+				$workplaceFactor = $result->current();
+				$workplaceFactors[] = $this->processWorkplaceFactor($workplaceFactor);
+			}
+			return $workplaceFactors;
+		}
+	}
+	
+	public function getWorkplaceRisks($workplaceId){
+		$workplace = $this->fetchRow('id_workplace = ' . $workplaceId);
+		$result = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceRisk', 'Workplace');
+		if($result->count()){
+			$workplaceRisks = array();
+			foreach($result as $workplaceRisk){
+				$workplaceRisk = $result->current();
+				$workplaceRisks[] = $this->processWorkplaceRisk($workplaceRisk);
+			}
+			return $workplaceRisks;
+		}
+	}
+	
 	private function process($result){
 		if ($result->count()){
 			$workplaces = array();

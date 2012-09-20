@@ -12,8 +12,14 @@ class ClientController extends Zend_Controller_Action
     {
     	//globální nastavení view
 		$this->view->title = 'Správa klientů';
-		$this->view->headTitle ( $this->view->title );		
-		$this->_helper->layout()->setLayout('clientLayout');
+		$this->view->headTitle ( $this->view->title );
+		$action = $this->getRequest()->getActionName();
+		if($action == 'list' || $action == 'new'){
+			$this->_helper->layout()->setLayout('layout');
+		}
+		else{
+			$this->_helper->layout()->setLayout('clientLayout');
+		}
 		
 		//nastavení pro ajax
 		if ($this->getRequest ()->isXmlHttpRequest ()) {
@@ -30,27 +36,27 @@ class ClientController extends Zend_Controller_Action
 			$this->_role = Zend_Auth::getInstance()->getIdentity()->role;
 		}
 		
-		//do index, edit action může jen když má přístup k centrále
-		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
-		$subsidiaries = new Application_Model_DbTable_Subsidiary();	
-    	if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
-				$this->_canViewHeadquarters = true;
-		}	
-		if ($action == 'index' || $action == 'edit'){
-			if(!$this->_canViewHeadquarters){
-				$this->_helper->redirector('denied', 'error');
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		if ($action == 'index' || $action == 'edit' || $action == 'admin'){	
+			//do index, edit action může jen když má přístup k centrále
+	    	if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+					$this->_canViewHeadquarters = true;
+			}	
+			if ($action == 'index' || $action == 'edit'){
+				if(!$this->_canViewHeadquarters){
+					$this->_helper->redirector('denied', 'error');
+				}
+			}
+			
+			//do admin action může jen když má přístup k některé z poboček
+			if ($action == 'admin'){
+				if(!$this->_canViewHeadquarters && !$this->hasAnySubsidiary()){
+					$this->_helper->redirector('denied', 'error');
+				}
 			}
 		}
-		
-		//do admin action může jen když má přístup k některé z poboček
-		if ($action == 'admin'){
-			if(!$this->_canViewHeadquarters && !$this->hasAnySubsidiary()){
-				$this->_helper->redirector('denied', 'error');
-			}
-		}
-
 		//zobrazení soukromých poznámek
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
@@ -293,6 +299,7 @@ class ClientController extends Zend_Controller_Action
 		$this->view->canDeleteSubsidiary = $this->_acl->isAllowed($this->_role, 'subsidiary', 'delete');
 		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
 		
+		//výběr poboček
 		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
@@ -307,17 +314,18 @@ class ClientController extends Zend_Controller_Action
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
 			$this->view->form = $form;
-			
 			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
-				if ($form->isValid ( $formData )) {
-					$subsidiary = $this->getRequest ()->getParam ( 'select' );
-					if (isSet ( $formData ['edit'] )) {
-						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryEdit' );
-					}
-					if (isSet ( $formData ['delete'] )) {
-						//jen forward kvůli metodě POST
-						$this->_forward ( 'delete', 'subsidiary' );
+				if(isset($formData['editSubsidiary']) || isset($formData['deleteSubsidiary'])){
+					if ($form->isValid ( $formData )) {
+						$subsidiary = $this->getRequest ()->getParam ( 'select' );
+						if (isSet ( $formData ['editSubsidiary'] )) {
+							$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryEdit' );
+						}
+						if (isSet ( $formData ['deleteSubsidiary'] )) {
+							//jen forward kvůli metodě POST
+							$this->_forward ( 'delete', 'subsidiary' );
+						}
 					}
 				}
 			}
@@ -325,6 +333,41 @@ class ClientController extends Zend_Controller_Action
 		else{
 			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->form = $form;
+		}
+		
+		//výběr pracovišť
+		$workplaces = new Application_Model_DbTable_Workplace();
+		$workplaceSelect = $workplaces->getWorkplaces($clientId);
+		if ($workplaceSelect != 0){
+			foreach($workplaceSelect as $key => $workplace){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace[1]))){
+					unset($workplaceSelect[$key]);
+				}
+				else{
+					$workplace = $workplace[0];
+					$workplaceSelect[$key] = $workplace;
+				}
+			}
+			$formWorkplace = new Application_Form_Select();
+			$formWorkplace->select->setMultiOptions($workplaceSelect);
+			$formWorkplace->select->setLabel('Vyberte pracoviště:');
+			$formWorkplace->submit->setName('submitWorkplace');
+			$this->view->formWorkplace = $formWorkplace;
+			if($this->getRequest()->isPost()){
+				$formData = $this->getRequest()->getPost();
+				if(isset($formData['editWorkplace']) || isset($formData['deleteWorkplace'])){
+					if($formWorkplace->isValid($formData)){
+						$workplaceId = $this->getRequest()->getParam('select');
+						if(isset($formData['editWorkplace'])){
+							$this->_helper->redirector->gotoRoute(array('clientId' => $clientId, 'workplaceId' => $workplaceId), 'workplaceEdit');
+						}
+						if(isset($formData['deleteWorkplace'])){
+							//jen forward kvůli metodě POST
+							$this->_forward('delete', 'workplace');
+						}
+					}
+				}
+			}
 		}
 		
 		$defaultNamespace = new Zend_Session_Namespace();

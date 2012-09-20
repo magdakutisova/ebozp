@@ -2,6 +2,7 @@
 class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	
 	public $helper = 'workplaceFactor';
+	protected $_idWorkplaceFactor;
 	protected $_factor;
 	protected $_applies;
 	protected $_note;
@@ -26,6 +27,10 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 		}
 	}
 	
+	public function getIdWorkplaceFactor(){
+		return $this->_idWorkplaceFactor;
+	}
+	
 	/**
 	 * @return the $_factor
 	 */
@@ -47,6 +52,10 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 		return $this->_note;
 	}
 
+	public function setIdWorkplaceFactor($_idWorkplaceFactor){
+		$this->_idWorkplaceFactor = $_idWorkplaceFactor;
+	}
+	
 	/**
 	 * @param $_factor the $_factor to set
 	 */
@@ -84,8 +93,8 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	}
 
 	public function setValue($values){
-		//Zend_Debug::dump($values);
-		if(isset($values['factor']) && isset($values['applies']) && isset($values['note'])){
+		if(isset($values['id_workplace_factor']) && isset($values['factor']) && isset($values['applies']) && isset($values['note'])){
+			$this->setIdWorkplaceFactor($values['id_workplace_factor']);
 			$this->setFactor($values['factor']);
 			$this->setApplies($values['applies']);
 			$this->setNote($values['note']);
@@ -95,6 +104,7 @@ class My_Form_Element_WorkplaceFactor extends Zend_Form_Element_Xhtml{
 	
 	public function getValue(){
 		$values = array();
+		$values['id_workplace_factor'] = $this->getIdWorkplaceFactor();
 		$values['factor'] = $this->getFactor();
 		$values['applies'] = $this->getApplies();
 		$values['note'] = $this->getNote();

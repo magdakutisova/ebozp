@@ -46,10 +46,6 @@ class Application_Form_Workplace extends Zend_Form
        		'decorators' => $elementDecorator,
        	));
        	
-       	$this->addElement('hidden', 'id_factor', array(
-       		'value' => 20,
-       	));
-       	
        	$this->addElement('select', 'subsidiary_id', array(
        		'label' => 'Pobočka',
        		'required' => true,
@@ -102,104 +98,17 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 6,
        	));
        	
-       	$this->addElement('workplaceFactor', 'factor1', array(
-       		'factor' => 'Prach',
-       		'order' => 7,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor2', array(
-       		'factor' => 'Chemické látky',
-       		'order' => 8,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor3', array(
-       		'factor' => 'Hluk',
-       		'order' => 9,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor4', array(
-       		'factor' => 'Vibrace',
-       		'order' => 10,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor5', array(
-       		'factor' => 'Neionizující záření a elektromagnetická pole',
-       		'order' => 11,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor6', array(
-       		'factor' => 'Fyzická zátěž',
-       		'order' => 12,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor7', array(
-       		'factor' => 'Pracovní poloha',
-       		'order' => 13,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor8', array(
-       		'factor' => 'Zátěž teplem',
-       		'order' => 14,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor9', array(
-       		'factor' => 'Zátěž chladem',
-       		'order' => 15,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor10', array(
-       		'factor' => 'Psychická zátěž',
-       		'order' => 16,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor11', array(
-       		'factor' => 'Zraková zátěž',
-       		'order' => 17,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor12', array(
-       		'factor' => 'Práce s biologickými činiteli',
-       		'order' => 18,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
-       	$this->addElement('workplaceFactor', 'factor13', array(
-       		'factor' => 'Práce ve zvýšeném tlaku vzduchu',
-       		'order' => 19,
-       		'validators' => array(new My_Validate_WorkplaceFactor()),
-       	));
-       	
        	$this->addElement('button', 'new_factor', array(
        		'label' => 'Další faktor',
        		'order' => 100,
        		'decorators' => $elementDecorator2,
        	));
        	
-       	//rizika
-		$this->addElement('hidden', 'id_risk', array(
-       		'value' => 103,
-       	));
-        
+       	//rizika 
         $this->addElement('hidden', 'mainRisks', array(
        		'label' => 'Rizika na pracovišti:',
        		'decorators' => $elementDecoratorColspan,
        		'order' => 101,
-       	));
-       	
-       	$this->addElement('workplaceRisk', 'risk102', array(
-       		'order' => 102,
-       		'validators' => array(new My_Validate_WorkplaceRisk()),
        	));
        	
        	$this->addElement('button', 'new_risk', array(

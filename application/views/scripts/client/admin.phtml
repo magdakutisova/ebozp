@@ -16,8 +16,8 @@
 <?php }?>
 	<tr>
 		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew') ?>">PŘIDAT PRACOVIŠTĚ</a></td>
-		<td><a href="#">EDITACE</a></td>
-		<td colspan=2><a href="#">SMAZAT</a></td>
+		<td><a class="edit-workplace-link">EDITACE</a></td>
+		<td colspan=2><a class="delete-workplace-link">SMAZAT</a></td>
 	</tr>
 	<tr>
 		<td><a href="#">PŘIDAT PRACOVNÍ POZICE</a></td>
@@ -36,10 +36,10 @@
 			POBOČKY
 			<?php }?>
 		</td>
-		<td><a class="edit-link">EDITACE</a></td>
+		<td><a class="edit-subsidiary-link">EDITACE</a></td>
 		<td>
 			<?php if ($this->canDeleteSubsidiary){?>
-			<a class="delete-link">SMAZAT</a>
+			<a class="delete-subsidiary-link">SMAZAT</a>
 			<?php }?>
 		</td>
 		<td></td>
@@ -51,6 +51,10 @@
 
 <div id="pobocky" class="hidden">
 		<?php echo $this->form; ?>
+</div>
+
+<div id="pracoviste" class="hidden">
+	<?php echo $this->formWorkplace; ?>
 </div>
 
 <h3>Provést audit</h3>

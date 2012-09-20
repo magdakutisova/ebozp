@@ -8,18 +8,36 @@ $(function(){
 		$("#submit").removeAttr("onClick");
 	});
 	
-	$(".edit-link").click(function(){
+	$(".edit-subsidiary-link").click(function(){
 		$("#pobocky").removeClass("hidden");
-		$("#submit").val("Editovat");
-		$("#submit").attr("name", "edit");
+		$("#pracoviste").addClass("hidden");
+		$("#submit").val("Editovat pobočku");
+		$("#submit").attr("name", "editSubsidiary");
 		$("#submit").removeAttr("onClick");
 	});
 	
-	$(".delete-link").click(function(){
+	$(".delete-subsidiary-link").click(function(){
 		$("#pobocky").removeClass("hidden");
-		$("#submit").val("Smazat");
-		$("#submit").attr("name", "delete");
+		$("#pracoviste").addClass("hidden");
+		$("#submit").val("Smazat pobočku");
+		$("#submit").attr("name", "deleteSubsidiary");
 		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat? Budou smazána i veškerá závislá pracoviště!')");
+	});
+	
+	$(".edit-workplace-link").click(function(){
+		$("#pracoviste").removeClass("hidden");
+		$("#pobocky").addClass("hidden");
+		$("#submitWorkplace").val("Editovat pracoviště");
+		$("#submitWorkplace").attr("name", "editWorkplace");
+		$("#submitWorkplace").removeAttr("onClick");
+	});
+	
+	$(".delete-workplace-link").click(function(){
+		$("#pracoviste").removeClass("hidden");
+		$("#pobocky").addClass("hidden");
+		$("#submitWorkplace").val("Smazat pracoviště");
+		$("#submitWorkplace").attr("name", "deleteWorkplace");
+		$("#submitWorkplace").attr("onClick", "return confirm('Opravdu si přejete pracoviště smazat?')");
 	});
 	
 	$(".messages-link").click(function(){
