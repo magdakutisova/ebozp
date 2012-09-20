@@ -114,13 +114,16 @@ class WorkplaceController extends Zend_Controller_Action
 				}
 				//vložení rizik
 				if(preg_match('/risk\d+/', $key) || preg_match('/newRisk\d+/', $key)){
-	    			$risk = new Application_Model_WorkplaceRisk($value);
-	    			$risk->setWorkplaceId($workplaceId);
-	    			$risks->addWorkplaceRisk($risk);
+					if($value['risk'] != ''){
+	    				$risk = new Application_Model_WorkplaceRisk($value);
+	    				$risk->setWorkplaceId($workplaceId);
+	    				$risks->addWorkplaceRisk($risk);
+					}
 	    		}				
 			}
-	    	
-	    	//TODO zápis do bezpečnostního deníku
+			
+			$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště ' . $workplace->getName() . ' k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
 	    	if ($form->getElement('other')->isChecked()){
@@ -304,9 +307,11 @@ class WorkplaceController extends Zend_Controller_Action
     			}
     			//update rizik
     			if(preg_match('/risk\d+/', $key)){
-    				$risk = new Application_Model_WorkplaceRisk($value);
-    				$risk->setWorkplaceId($workplaceId);
-    				$risks->updateWorkplaceRisk($risk);
+    				if($value['risk'] != ''){
+    					$risk = new Application_Model_WorkplaceRisk($value);
+    					$risk->setWorkplaceId($workplaceId);
+    					$risks->updateWorkplaceRisk($risk);
+    				}
     				//TODO mazání rizik
     			}
     			//nová rizika
@@ -329,7 +334,19 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function deleteAction()
     {
-        // action body
+        if($this->getRequest()->getMethod() == 'POST'){
+        	$workplaceId = $this->_getParam('select');
+        	$workplaces = new Application_Model_DbTable_Workplace();
+        	$workplace = $workplaces->getWorkplace($workplaceId);
+        	$name = $workplace->getName();
+        	$workplaces->deleteWorkplace($workplaceId);
+        	//TODO zápis do bezpečnostního deníku
+        	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
+        }
+        else{
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 500);
+        }
     }
     
     private function prepareFormWithFormData($form, $formData){
