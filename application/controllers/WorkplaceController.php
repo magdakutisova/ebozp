@@ -207,7 +207,6 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		//když není odeslán, naplníme daty z databáze nebo ze session
 		if(!$this->getRequest()->isPost()){
-			//TODO
 			if (isset ( $defaultNamespace->formData )) {
 				$form = $this->prepareFormWithFormData($form, $defaultNamespace->formData);
 				$form->populate ( $defaultNamespace->formData );
@@ -321,7 +320,9 @@ class WorkplaceController extends Zend_Controller_Action
     				$risks->addWorkplaceRisk($risk);
     			}
     		}
-    		//TODO zápis do bezpečnostního deníku
+    		$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+    		
     		$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
     	}
@@ -340,7 +341,11 @@ class WorkplaceController extends Zend_Controller_Action
         	$workplace = $workplaces->getWorkplace($workplaceId);
         	$name = $workplace->getName();
         	$workplaces->deleteWorkplace($workplaceId);
-        	//TODO zápis do bezpečnostního deníku
+        	
+        	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+        	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+    		
         	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
         }
