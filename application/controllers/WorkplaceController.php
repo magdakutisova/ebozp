@@ -169,16 +169,20 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function listAction()
     {
-        $this->view->subtitle = "Databáze pracovišť";
         $clientId = $this->getRequest()->getParam('clientId');
+        $clients = new Application_Model_DbTable_Client();
+        $client = $clients->getClient($clientId);
+        $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
         $this->view->clientId = $clientId;
         $workplacesDb = new Application_Model_DbTable_Workplace();
         $workplaces = $workplacesDb->getByClientDetails($clientId);
-        $subsidiaries = new Application_Model_DbTable_Subsidiary();
-        foreach ($workplaces as $key => $workplace){
-        	if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace['id_subsidiary']))){
-        		unset($workplaces[$key]);
-        	}
+        if($workplaces != null){
+        	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+	        foreach ($workplaces as $key => $workplace){
+	        	if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace['id_subsidiary']))){
+	        		unset($workplaces[$key]);
+	        	}
+	        }
         }
         $this->view->workplaces = $workplaces;
     }
@@ -311,7 +315,6 @@ class WorkplaceController extends Zend_Controller_Action
     					$risk->setWorkplaceId($workplaceId);
     					$risks->updateWorkplaceRisk($risk);
     				}
-    				//TODO mazání rizik
     			}
     			//nová rizika
     			if(preg_match('/newRisk\d+/', $key)){

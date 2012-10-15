@@ -15,20 +15,6 @@
 	</tr>
 <?php }?>
 	<tr>
-		<td><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew') ?>">PŘIDAT PRACOVIŠTĚ</a></td>
-		<td><a class="edit-workplace-link">EDITACE</a></td>
-		<td colspan=2><a class="delete-workplace-link">SMAZAT</a></td>
-	</tr>
-	<tr>
-		<td><a href="#">PŘIDAT PRACOVNÍ POZICE</a></td>
-		<td colspan=2><a href="#">EDITACE</a></td>
-		<td><a href="#">UPLOAD</a></td>
-	</tr>
-	<tr>
-		<td><a href="#">PŘIDAT ODPOVĚDNÉ OSOBY</a></td>
-		<td colspan=3><a href="#">EDITACE</a></td>
-	</tr>
-	<tr>
 		<td>
 			<?php if ($this->canAddSubsidiary){?>
 			<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'subsidiaryNew') ?>">PŘIDAT POBOČKU</a>

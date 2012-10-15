@@ -1,21 +1,23 @@
-<div class="box overflow span-12" id="informations">
+<div class="box overflow span-11" id="informations">
 		<?php echo $this->client();?>
-	</div>
+</div>	
 
-	
-
-<div class="span-5 floating-box"><h3>Hodnota rizika u klienta</h3>
+<div class="span-5 overflow push-1 box width-200"><h3>Hodnota rizika u klienta</h3>
 <p>*****</p></div>
 
-<div class="span-5 floating-box">
-		<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Edituj klienta</a> | <a class="view-link large">Vyber pobočku</a>
-	</div>
+<div class="box clear">
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Edituj klienta</a>
+	 | <a class="view-link large">Vyber pobočku</a>
+	 | <a class="large" href="#">Pracovní pozice</a>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'workplaceList')?>">Pracoviště</a>
+	 | <a class="large" href="#">Pracovní činnosti</a>
+</div>
 
-<div class="box clear hidden" id="pobocky">
+<div class="box hidden" id="pobocky">
 		<?php echo $this->form; ?>
 </div>
 
-<div class="box tasks clear">
+<div class="box tasks">
 	<h3>Osobní úkoly</h3>
 	<p>neshody nebo lhůty, u kterých je zadáno jméno - přiděluje KOO popřípadě KL, Při auditu se vyplní pouze G7 nebo KL.</p>
 </div>

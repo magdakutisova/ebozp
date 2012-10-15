@@ -48,6 +48,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	 * Pro výpis databáze pracovišť.
 	 */
 	public function getByClientDetails($clientId){
+		//TODO 2nd version
 		$select = $this->select()
 			->from('workplace')
 			->join('subsidiary', 'subsidiary.id_subsidiary = workplace.subsidiary_id')
@@ -60,25 +61,11 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$i = 0;
 			foreach($result as $workplace){
 				$workplace = $result->current();
-				$workplaces[$workplace->subsidiary_name][$i]["workplace"] = $this->processWorkplace($workplace);
+				$workplaces[$workplace->subsidiary_name][$i] = $this->processWorkplace($workplace);
 				if($workplace->hq){
 					$workplaces[$workplace->subsidiary_name]['hq'] = 1;
 				}
 				$workplaces[$workplace->subsidiary_name]['id_subsidiary'] = $workplace->id_subsidiary; 
-				$workplaceFactors = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceFactor', 'Workplace');
-				if(count($workplaceFactors) > 0){
-					foreach($workplaceFactors as $workplaceFactor){
-						$workplaceFactor = $workplaceFactors->current();
-						$workplaces[$workplace->subsidiary_name][$i]['workplaceFactors'][] = $this->processWorkplaceFactor($workplaceFactor);
-					}
-				}
-				$workplaceRisks = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceRisk', 'Workplace');
-				if(count($workplaceRisks) > 0){
-					foreach($workplaceRisks as $workplaceRisk){
-						$workplaceRisk = $workplaceRisks->current();
-						$workplaces[$workplace->subsidiary_name][$i]['workplaceRisks'][] = $this->processWorkplaceRisk($workplaceRisk);
-					}
-				}
 				$i++;
 			}
 			return $workplaces;
@@ -114,32 +101,6 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		}
 	}
 	
-	public function getWorkplaceFactors($workplaceId){
-		$workplace = $this->fetchRow('id_workplace = ' . $workplaceId);
-		$result = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceFactor', 'Workplace');
-		if($result->count()){
-			$workplaceFactors = array();
-			foreach($result as $workplaceFactor){
-				$workplaceFactor = $result->current();
-				$workplaceFactors[] = $this->processWorkplaceFactor($workplaceFactor);
-			}
-			return $workplaceFactors;
-		}
-	}
-	
-	public function getWorkplaceRisks($workplaceId){
-		$workplace = $this->fetchRow('id_workplace = ' . $workplaceId);
-		$result = $workplace->findDependentRowset('Application_Model_DbTable_WorkplaceRisk', 'Workplace');
-		if($result->count()){
-			$workplaceRisks = array();
-			foreach($result as $workplaceRisk){
-				$workplaceRisk = $result->current();
-				$workplaceRisks[] = $this->processWorkplaceRisk($workplaceRisk);
-			}
-			return $workplaceRisks;
-		}
-	}
-	
 	private function process($result){
 		if ($result->count()){
 			$workplaces = array();
@@ -154,16 +115,6 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	private function processWorkplace($workplace){
 		$data = $workplace->toArray();
 		return new Application_Model_Workplace($data);
-	}
-	
-	private function processWorkplaceFactor($workplaceFactor){
-		$data = $workplaceFactor->toArray();
-		return new Application_Model_WorkplaceFactor($data); 
-	}
-	
-	private function processWorkplaceRisk($workplaceRisk){
-		$data = $workplaceRisk->toArray();
-		return new Application_Model_WorkplaceRisk($data);
 	}
 	
 }

@@ -24,22 +24,6 @@ $(function(){
 		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat? Budou smazána i veškerá závislá pracoviště!')");
 	});
 	
-	$(".edit-workplace-link").click(function(){
-		$("#pracoviste").removeClass("hidden");
-		$("#pobocky").addClass("hidden");
-		$("#submitWorkplace").val("Editovat pracoviště");
-		$("#submitWorkplace").attr("name", "editWorkplace");
-		$("#submitWorkplace").removeAttr("onClick");
-	});
-	
-	$(".delete-workplace-link").click(function(){
-		$("#pracoviste").removeClass("hidden");
-		$("#pobocky").addClass("hidden");
-		$("#submitWorkplace").val("Smazat pracoviště");
-		$("#submitWorkplace").attr("name", "deleteWorkplace");
-		$("#submitWorkplace").attr("onClick", "return confirm('Opravdu si přejete pracoviště smazat?')");
-	});
-	
 	$(".messages-link").click(function(){
 		$("#zpravy").toggleClass("hidden");
 	});
@@ -163,4 +147,7 @@ $(function(){
 	$(".print").click(function(){
 		window.print();
 	});
+	
+	//editable combobox jméno pracoviště
+	$("#workplace #name").jec();
 });

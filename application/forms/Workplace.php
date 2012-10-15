@@ -5,7 +5,7 @@ class Application_Form_Workplace extends Zend_Form
 
     public function init()
     {
-        $this->setName('workplaceFactors');
+        $this->setName('workplace');
         $this->setMethod('post');
         $this->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
         $this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
@@ -53,10 +53,11 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 1,
        	));
        	      	
-       	$this->addElement('text', 'name', array(
+       	$this->addElement('select', 'name', array(
        		'label' => 'Název pracoviště',
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
+       		'multiOptions' => array('test 1', 'test 2'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 2,
        	));

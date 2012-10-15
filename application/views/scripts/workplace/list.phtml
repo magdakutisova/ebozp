@@ -1,3 +1,4 @@
+<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew'); ?>">Přidat pracoviště</a>
 <?php if ($this->workplaces){ 
 	foreach ($this->workplaces as $key => $workplaces){
 		if(isset($workplaces['hq'])){ ?>
@@ -15,32 +16,6 @@
 				<?php } ?>
 				<?php if ($this->canViewPrivate && $workplace['workplace']->getPrivate() != ""){?>
 					<p class="no-margin"><strong>Soukromá poznámka: </strong><?php echo $workplace['workplace']->getPrivate();?></p>
-				<?php }
-				if(isset($workplace['workplaceFactors'])){?>
-					<h5><strong>Faktory pracovního prostředí</strong></h5>
-					<ul>
-					<?php foreach($workplace['workplaceFactors'] as $factor){ ?>
-						<li>
-						<?php echo $factor->getFactor();
-						if($factor->getNote() != ""){
-							echo " - " . $factor->getNote();
-						}?>
-						</li>	
-					<?php }?>
-					</ul>
-				<?php }
-				if(isset($workplace['workplaceRisks'])){?>
-					<h5><strong>Hlavní rizika</strong></h5>
-					<ul>
-					<?php foreach($workplace['workplaceRisks'] as $risk){ ?>
-						<li>
-						<?php echo $risk->getRisk();
-						if($risk->getNote() != ""){
-							echo " - " . $risk->getNote();
-						}?>
-						</li>
-					<?php }?>
-					</ul>
 				<?php }
 			}
 		}
