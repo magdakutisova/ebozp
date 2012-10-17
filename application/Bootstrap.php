@@ -182,6 +182,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'subsidiaryList',
+			new Zend_Controller_Router_Route('klient/:clientId/seznam-pobocek',
+											array('controller' => 'subsidiary',
+													'action' => 'list'))
+		);
+		
+		$router->addRoute(
 			'subsidiaryEdit',
 			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary/editovat',
 											array('controller' => 'subsidiary',

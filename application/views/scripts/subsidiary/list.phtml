@@ -1,0 +1,9 @@
+<ul>
+<?php foreach ($this->subsidiaries as $subsidiary){?>
+	<li>
+		<a href="<?php $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryList')?>">
+			<?php echo $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();?>
+		</a>
+	</li>
+<?php } ?>
+</ul>

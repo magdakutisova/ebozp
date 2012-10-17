@@ -121,6 +121,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	public function getSubsidiariesComplete($clientId) {
+		$select = $this->select ()->from ( 'subsidiary' )->where('client_id = ?', $clientId)->where ( 'deleted = 0' )->order('hq DESC');
+		$result = $this->fetchAll ( $select );
+		return $this->process($result);
+	}
+	
 	/******************
 	 * Vrátí centrální pobočku klienta.
 	 */

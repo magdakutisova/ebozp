@@ -53,11 +53,10 @@ class Application_Form_Workplace extends Zend_Form
        		'order' => 1,
        	));
        	      	
-       	$this->addElement('select', 'name', array(
+       	$this->addElement('text', 'name', array(
        		'label' => 'Název pracoviště',
        		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
-       		'multiOptions' => array('test 1', 'test 2'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 2,
        	));

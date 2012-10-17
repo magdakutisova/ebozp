@@ -2,6 +2,13 @@
 	Pobočka: <?php echo $this->subsidiary->getSubsidiaryName();?>
 </h3>
 
+<div class="box clear" id="pobocky">
+	<?php echo $this->form;?>
+	<?php if ($this->canViewHeadquarters){?>
+	<a href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Zpět na kartu klienta</a>
+	<?php }?>
+</div>
+
 <div class="box overflow span-11" id="informations">
 		<?php echo $this->subsidiary();?>
 	</div>
@@ -11,16 +18,9 @@
 	
 <div class="box clear">
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
-	<?php if ($this->canViewHeadquarters){?>
-	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Karta klienta</a>
-	<?php }?>
 	 | <a class="large" href="#">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="#">Pracovní činnosti</a>
-</div>
-
-<div class="box clear hidden" id="pobocky">
-	<?php echo $this->form;?>
 </div>
 
 <div class="box tasks clear">

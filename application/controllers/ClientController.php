@@ -121,11 +121,12 @@ class ClientController extends Zend_Controller_Action
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
+			$form->submit->setLabel('Vybrat');
 			$this->view->form = $form;
 			
 			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
-				if (in_array('Zobrazit', $formData) && $form->isValid ( $formData )) {
+				if (in_array('Vybrat', $formData) && $form->isValid ( $formData )) {
 					$subsidiary = $this->getRequest ()->getParam ( 'select' );
 					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
 				}

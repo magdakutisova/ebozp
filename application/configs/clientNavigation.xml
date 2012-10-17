@@ -30,6 +30,13 @@
 				</new>
 			</pages>
 		</client>
+		<subsidiary>
+			<label>Pobočky</label>
+			<route>subsidiaryList</route>
+			<resource>subsidiary</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+		</subsidiary>
 		<print>
 			<label>Záznamy (k tisku)</label>
 			<route>printIndex</route>

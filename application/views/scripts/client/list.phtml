@@ -4,6 +4,7 @@
 
 	<?php $client = "";
 	$companyName = "";
+	$companyAddress = "";
 	$clientId = "";
 	$allowed = ""?>
 	<ul>
@@ -12,11 +13,12 @@
 		if($allowed){ ?>
 		</ul>
 		<p class="bold">
-			<a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName; ?></a>
+			<a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName; ?> - <?php echo $companyAddress; ?></a>
 		</p>
 		<ul>
 		<?php }
 		$companyName = $subsidiary->getSubsidiaryName();
+		$companyAddress = $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
 		$clientId = $subsidiary->getClientId();
 		$allowed = $subsidiary->getAllowed();
 		continue;
@@ -27,7 +29,7 @@
 			<?php $client = $subsidiary->getClientId(); ?>
 			<p class="bold">
 			<?php if($allowed){?><a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php }?>
-				<?php echo $companyName;?>
+				<?php echo $companyName . ' - ' . $companyAddress ?>
 			<?php if($allowed){?></a><?php
 				$allowed = ''; }?>
 			</p>

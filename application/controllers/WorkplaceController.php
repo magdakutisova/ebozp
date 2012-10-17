@@ -21,7 +21,7 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_helper->layout()->setLayout('clientLayout');
         $this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
         
-        //získání odkazu na centrálu
+        //získání odkazu na centrálu - instance Application_Model_Subsidiary
         $action = $this->getRequest()->getActionName();
         $this->_acl = new My_Controller_Helper_Acl();
         if ($action != 'newfactor' && $action != 'newrisk'){
@@ -68,6 +68,7 @@ class WorkplaceController extends Zend_Controller_Action
 			}
 			$form->subsidiary_id->setMultiOptions ( $formContent );
 		}
+		
     	$defaultNamespace = new Zend_Session_Namespace();
 		
     	//pokud formulář není odeslán, předáme formulář do view

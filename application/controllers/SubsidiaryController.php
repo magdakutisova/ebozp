@@ -71,7 +71,38 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->_helper->diaryMessages();
 		
 		$defaultNamespace = new Zend_Session_Namespace();
-		$defaultNamespace->referer = $this->_request->getPathInfo();		
+		$defaultNamespace->referer = $this->_request->getPathInfo();	
+
+		//výběr poboček
+		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
+		
+    	if ($formContent != 0){
+			foreach ($formContent as $key => $subsidiary){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+					unset($formContent[$key]);
+				}
+			}
+    	}
+		
+		if ($formContent != 0) {
+			$form = new Application_Form_Select ();
+			$form->select->setMultiOptions ( $formContent );
+			$form->select->setLabel('Vyberte jinou pobočku:');
+			$form->submit->setLabel('Vybrat');
+			$this->view->form = $form;
+			
+			if ($this->getRequest ()->isPost ()) {
+				$formData = $this->getRequest ()->getPost ();
+				if (in_array('Vybrat', $formData) && $form->isValid ( $formData )) {
+					$subsidiary = $this->getRequest ()->getParam ( 'select' );
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
+				}
+			}
+		}
+    	else{
+			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
+			$this->view->form = $form;
+		}
 	}
 	
 	public function newAction() {
@@ -189,6 +220,19 @@ class SubsidiaryController extends Zend_Controller_Action {
 		} else {
 			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání pobočky.', 500 );
 		}
+	}
+	
+	public function listAction(){
+		$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $subsidiariesDb->getSubsidiariesComplete($this->getRequest()->getParam('clientId'));
+		$subsidiaryList = array();
+		foreach($subsidiaries as $subsidiary){
+			if($this->_acl->isAllowed($this->_user, $subsidiary)){
+				$subsidiaryList[] = $subsidiary;
+			}
+		}
+		$this->view->subsidiaries = $subsidiaryList;
+		$this->view->subtitle = 'Seznam poboček klienta ' . $subsidiaries[0]->getSubsidiaryName();
 	}
 
 }

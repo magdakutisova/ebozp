@@ -148,6 +148,4 @@ $(function(){
 		window.print();
 	});
 	
-	//editable combobox jméno pracoviště
-	$("#workplace #name").jec();
 });
