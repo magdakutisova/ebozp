@@ -56,7 +56,8 @@ class WorkplaceController extends Zend_Controller_Action
     {
     	$this->view->subtitle = "Zadat pracoviště";
     	
-    	$form = $this->_helper->workplaceFormInit();
+    	$form = new Application_Form_Workplace();
+    	//$form = $this->_helper->workplaceFormInit();
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );

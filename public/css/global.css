@@ -22,6 +22,14 @@
 	margin: 0; padding: 0;
 }
 
+.floating-box{
+	margin-left: 20px;
+	margin-right: 0px;
+	margin-bottom: 15px;
+	padding: 15px;
+	background: #e5eCf9;
+}
+
 #informations{
 	margin-top: 0;
 	margin-left: 0;

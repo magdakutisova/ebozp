@@ -12,11 +12,15 @@ class Application_Form_Workplace extends Zend_Form
         
         $view = Zend_Layout::getMvcInstance()->getView();
         
+        $questionMarkStart = '<img src="' . $view->baseUrl('images/question_mark.png') . '" height="20px" width="20px" alt="napoveda" title="';
+        $questionMarkEnd = '"/>';
+        
         //dekorátory
        	$elementDecoratorColspan = array(
        		'ViewHelper',
        		array('Errors'),
        		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 4)),
+       		array('Description', array('tag' => 'td')),
        		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
        		array('Label', array()),
        		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
@@ -59,22 +63,35 @@ class Application_Form_Workplace extends Zend_Form
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 2,
-       	));
+       		'description' => $questionMarkStart . 'Zadejte oficiální název pracoviště' . $questionMarkEnd,
+       	));       	
+       	$this->getElement('name')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('textarea', 'description', array(
-       		'label' => 'Popis pracoviště (jaké pracovní činnosti se zde vykonávají, technická zařízení a technologie...)',
-       		'required' => true,
+       	$this->addElement('text', 'business_hours', array(
+       		'label' => 'Provozní doba pracoviště',
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 3,
+       		'description' => $questionMarkStart . 'Doba, ve které probíhají na pracovišti práce, a uvedení, zda se jedná o směnný provoz' . $questionMarkEnd,
        	));
+       	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
        	
+       	$this->addElement('textarea', 'description', array(
+       		'label' => 'Popis pracoviště',
+       		'required' => true,
+       		'filters' => array('StringTrim', 'StripTags'),
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 4,
+       		'description' => $questionMarkStart . 'Zadejte stručný popis pracoviště a především jeho účel' . $questionMarkEnd,
+       	));
+       	$this->getElement('description')->getDecorator('Description')->setEscape(false);
+       	      	
        	$this->addElement('textarea', 'note', array(
        		'label' => 'Poznámka',
        		'required' => false,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 4,
+       		'order' => 5,
        	));
        	
        	$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -88,14 +105,86 @@ class Application_Form_Workplace extends Zend_Form
        			'required' => false,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspan,
-       			'order' => 5,
+       			'order' => 6,
        		));
         }
+        
+        $this->addElement('textarea', 'risks', array(
+       		'label' => 'Rizika na pracovišti',
+       		'required' => true,
+       		'filters' => array('StringTrim', 'StripTags'),
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 7,
+       		'description' => $questionMarkStart . 'Popište hlavní rizika, která se na pracovišti vyskytují' . $questionMarkEnd,
+       	));
+       	$this->getElement('risks')->getDecorator('Description')->setEscape(false);
+       	
+       	$this->addElement('textarea', 'risk_note', array(
+       		'label' => 'Poznámka k rizikům',
+       		'required' => false,
+       		'filters' => array('StringTrim', 'StripTags'),
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 8,
+       	));
+       	
+   		if($acl->isAllowed($user, 'private')){      	
+       		$this->addElement('textarea', 'risk_private', array(
+       			'label' => 'Soukromá poznámka k rizikům',
+       			'required' => false,
+       			'filters' => array('StringTrim', 'StripTags'),
+       			'decorators' => $elementDecoratorColspan,
+       			'order' => 9,
+       		));
+        }
+        
+        $this->addElement('hidden', 'boss', array(
+        	'label' => 'Vedoucí pracoviště',
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 10,
+        ));
+        
+        $this->addElement('text', 'boss_name', array(
+       		'label' => 'Jméno',
+       		'filters' => array('StringTrim', 'StripTags'),
+       		'decorators' => $elementDecoratorColspan,
+       		'order' => 11,
+        ));
+        
+        $this->addElement('text', 'boss_surname', array(
+        	'label' => 'Příjmení',
+        	'filters' => array('StringTrim', 'StripTags'),
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 12,
+        ));
+        
+        $this->addElement('text', 'boss_phone', array(
+        	'label' => 'Telefon',
+        	'filters' => array('StringTrim', 'StripTags'),
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 13,
+        ));
+        
+        $this->addElement('text', 'boss_email', array(
+        	'label' => 'E-mail',
+        	'filters' => array('StringTrim', 'StripTags'),
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 14,
+        ));
+        
+        $this->addElement('hidden', 'positions', array(
+        	'label' => 'Pracovní pozice:',
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 15,
+        	'description' => $questionMarkStart . 'Vyberte pracovní pozice (profese) ze seznamu, nebo, pokud je nenajdete, zadejte oficiální název tak, jak je uveden v pracovní smlouvě' . $questionMarkEnd,
+        ));
+        $this->getElement('positions')->getDecorator('Description')->setEscape(false);
+        
+        //další pozice
        	
        	$this->addElement('hidden', 'workplaceFactors', array(
        		'label' => 'Faktory pracovního prostředí:',
        		'decorators' => $elementDecoratorColspan,
-       		'order' => 6,
+       		'order' => 60,
        	));
        	
        	$this->addElement('button', 'new_factor', array(

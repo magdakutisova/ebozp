@@ -8,6 +8,10 @@ class Application_Model_Workplace{
 	private $risks;
 	private $riskNote;
 	private $riskPrivate;
+	private $bossName;
+	private $bossSurname;
+	private $bossPhone;
+	private $bossEmail;
 	private $subsidiaryId;
 	private $note;
 	private $private;
@@ -53,6 +57,22 @@ class Application_Model_Workplace{
 	
 	public function getRiskPrivate(){
 		return $this->riskPrivate;
+	}
+	
+	public function getBossName(){
+		return $this->bossName;
+	}
+	
+	public function getBossSurname(){
+		return $this->bossSurname;
+	}
+	
+	public function getBossPhone(){
+		return $this->bossPhone;
+	}
+	
+	public function getBossEmail(){
+		return $this->bossEmail;
 	}
 
 	/**
@@ -112,6 +132,22 @@ class Application_Model_Workplace{
 	public function setRiskPrivate($riskPrivate){
 		$this->riskPrivate = $riskPrivate;
 	}
+	
+	public function setBossName($bossName){
+		$this->bossName = $bossName;
+	}
+	
+	public function setBossSurname($bossSurname){
+		$this->bossSurname = $bossSurname;
+	}
+	
+	public function setBossPhone($bossPhone){
+		$this->bossPhone = $bossPhone;
+	}
+	
+	public function setBossEmail($bossEmail){
+		$this->bossEmail = $bossEmail;
+	}
 
 	/**
 	 * @param $subsidiaryId the $subsidiaryId to set
@@ -141,6 +177,11 @@ class Application_Model_Workplace{
 		$this->description = isset($data['description']) ? $data['description'] : null;
 		$this->risks = isset($data['risks']) ? $data['risks'] : null;
 		$this->riskNote = isset($data['risk_note']) ? $data['risk_note'] : null;
+		$this->riskPrivate = isset($data['risk_private']) ? $data['risk_private'] : null;
+		$this->bossName = isset($data['boss_name']) ? $data['boss_name'] : null;
+		$this->bossSurname = isset($data['boss_surname']) ? $data['boss_surname'] : null;
+		$this->bossPhone = isset($data['boss_phone']) ? $data['boss_phone'] : null;
+		$this->bossEmail = isset($data['boss_email']) ? $data['boss_email'] : null;
 		$this->subsidiaryId = isset($data['subsidiary_id']) ? $data['subsidiary_id'] : null;
 		$this->note = isset($data['note']) ? $data['note'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
@@ -158,6 +199,11 @@ class Application_Model_Workplace{
 		$data['description'] = $this->description;
 		$data['risks'] = $this->risks;
 		$data['risk_note'] = $this->riskNote;
+		$data['risk_private'] = $this->riskPrivate;
+		$data['boss_name'] = $this->bossName;
+		$data['boss_surname'] = $this->bossSurname;
+		$data['boss_phone'] = $this->bossPhone;
+		$data['boss_email'] = $this->bossEmail;
 		$data['subsidiary_id'] = $this->subsidiaryId;
 		$data['note'] = $this->note;
 		$data['private'] = $this->private;
