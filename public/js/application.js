@@ -24,6 +24,15 @@ $(function(){
 		$("#submit").attr("onClick", "return confirm('Opravdu si přejete pobočku smazat? Budou smazána i veškerá závislá pracoviště!')");
 	});
 	
+	$(".showTr").click(function(){
+		$("tr").removeClass("hidden");
+	});
+	
+	$("table").on("click", ".showNotes", function(){
+		$(this).parent().parent().next().removeClass("hidden");
+	});
+		
+	
 	$(".messages-link").click(function(){
 		$("#zpravy").toggleClass("hidden");
 	});
@@ -107,21 +116,21 @@ $(function(){
 		}
 	});
 	
-	//dynamické přidávání faktorů pracovního prostředí
-	$("#new_factor").click(function(){
-		ajaxAddFactor();
+	//dynamické přidávání pracovních pozic
+	$("#new_position").click(function(){
+		ajaxAddPosition();
 	});
 	
-	function ajaxAddFactor(){
-		var id = $("#id_factor").val();
+	function ajaxAddPosition(){
+		var id = $("#id_position").val();
+		var clientId = $("#client_id").val();
 		$.ajax({
 			type: "POST",
-			url: baseUrl + '/workplace/newfactor/format/html',
-			data: "id_factor=" + id,
+			url: baseUrl + '/workplace/newposition/format/html',
+			data: "id_position=" + id + "&clientId=" + clientId,
 			success: function(newElement){
-				$('#new_factor').parents('tr').before(newElement);
-				$("#id_factor").val(++id);
-				//console.log(newElement);
+				$('#new_position').parents('tr').before(newElement);
+				$("#id_position").val(++id);
 			}
 		});
 	}

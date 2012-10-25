@@ -21,6 +21,7 @@ class My_View_Helper_WorkplaceRisk extends Zend_View_Helper_FormElement{
 		$this->html .= '<td><label for="' . $name . '[risk]">Riziko</label></td><td colspan="2">' . $helper->formText($name . '[risk]', $risk) . '</td>';
 		$this->html .= '<td><label for="' . $name . '[note]">Popis, poznámka</label></td><td colspan="2">' . $helper->formText($name . '[note]', $note) . '</td>';
 		
+		
 		return $this->html;
 	}
 	

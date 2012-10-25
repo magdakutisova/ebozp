@@ -14,6 +14,7 @@ class Application_Form_Workplace extends Zend_Form
         
         $questionMarkStart = '<img src="' . $view->baseUrl('images/question_mark.png') . '" height="20px" width="20px" alt="napoveda" title="';
         $questionMarkEnd = '"/>';
+        $hiddenLink = '<a class="showTr">Poznámka</a>';
         
         //dekorátory
        	$elementDecoratorColspan = array(
@@ -25,6 +26,17 @@ class Application_Form_Workplace extends Zend_Form
        		array('Label', array()),
        		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+       	);
+       	
+       	$hiddenDecoratorColspan = array(
+       		'ViewHelper',
+       		array('Errors'),
+       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 4)),
+       		array('Description', array('tag' => 'td')),
+       		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
+       		array('Label', array()),
+       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
+       		array(array('row' => 'HtmlTag'), array('tag' => 'tr', 'class' => 'hidden')),
        	);
        	
        	$elementDecorator = array(
@@ -39,11 +51,14 @@ class Application_Form_Workplace extends Zend_Form
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
        	
-       	//polovina s faktory
        	$this->setDecorators(array(
         	'FormElements',
         	array('HtmlTag', array('tag' => 'table')),
         	'Form',
+        ));
+        
+        $this->addElement('hidden', 'client_id', array(
+        	'decorators' => $elementDecorator,
         ));
        	
        	$this->addElement('hidden', 'id_workplace', array(
@@ -69,6 +84,7 @@ class Application_Form_Workplace extends Zend_Form
        	
        	$this->addElement('text', 'business_hours', array(
        		'label' => 'Provozní doba pracoviště',
+       		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 3,
@@ -111,11 +127,10 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('textarea', 'risks', array(
        		'label' => 'Rizika na pracovišti',
-       		'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 7,
-       		'description' => $questionMarkStart . 'Popište hlavní rizika, která se na pracovišti vyskytují' . $questionMarkEnd,
+       		'description' => $questionMarkStart . 'Popište hlavní rizika, která se na pracovišti vyskytují' . $questionMarkEnd . '<br/>' .  $hiddenLink,
        	));
        	$this->getElement('risks')->getDecorator('Description')->setEscape(false);
        	
@@ -123,7 +138,7 @@ class Application_Form_Workplace extends Zend_Form
        		'label' => 'Poznámka k rizikům',
        		'required' => false,
        		'filters' => array('StringTrim', 'StripTags'),
-       		'decorators' => $elementDecoratorColspan,
+       		'decorators' => $hiddenDecoratorColspan,
        		'order' => 8,
        	));
        	
@@ -132,7 +147,7 @@ class Application_Form_Workplace extends Zend_Form
        			'label' => 'Soukromá poznámka k rizikům',
        			'required' => false,
        			'filters' => array('StringTrim', 'StripTags'),
-       			'decorators' => $elementDecoratorColspan,
+       			'decorators' => $hiddenDecoratorColspan,
        			'order' => 9,
        		));
         }
@@ -171,6 +186,11 @@ class Application_Form_Workplace extends Zend_Form
         	'order' => 14,
         ));
         
+        //pracovní pozice
+        $this->addElement('hidden', 'id_position', array(
+       		'value' => 17,
+       	));
+        
         $this->addElement('hidden', 'positions', array(
         	'label' => 'Pracovní pozice:',
         	'decorators' => $elementDecoratorColspan,
@@ -179,32 +199,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('positions')->getDecorator('Description')->setEscape(false);
         
-        //další pozice
-       	
-       	$this->addElement('hidden', 'workplaceFactors', array(
-       		'label' => 'Faktory pracovního prostředí:',
-       		'decorators' => $elementDecoratorColspan,
-       		'order' => 60,
-       	));
-       	
-       	$this->addElement('button', 'new_factor', array(
-       		'label' => 'Další faktor',
-       		'order' => 100,
-       		'decorators' => $elementDecorator2,
-       	));
-       	
-       	//rizika 
-        $this->addElement('hidden', 'mainRisks', array(
-       		'label' => 'Rizika na pracovišti:',
-       		'decorators' => $elementDecoratorColspan,
-       		'order' => 101,
-       	));
-       	
-       	$this->addElement('button', 'new_risk', array(
-       		'label' => 'Další riziko',
-       		'order' => 199,
-       		'decorators' => $elementDecorator2,
-       	));
+        $this->addElement('position', 'position', array(
+        	'order' => 16,
+        	'multiOptions' => array('test', 'test2'),
+        ));
+        
+        $this->addElement('button', 'new_position', array(
+        	'label' => 'Další pracovní pozice',
+        	'order' => 100,
+        	'decorators' => $elementDecorator2,
+        ));
+              	
+       //další obsah
        	
        	$this->addElement('checkbox', 'other', array(
        		'label' => 'Po uložení vložit další pracoviště',

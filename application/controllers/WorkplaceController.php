@@ -57,6 +57,8 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->view->subtitle = "Zadat pracoviště";
     	
     	$form = new Application_Form_Workplace();
+    	$clientId = $this->getRequest()->getParam('clientId');
+    	$form->client_id->setValue($clientId);
     	//$form = $this->_helper->workplaceFormInit();
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -143,14 +145,14 @@ class WorkplaceController extends Zend_Controller_Action
     	
     }
 
-    public function newfactorAction()
+    public function newpositionAction()
     {
 		$ajaxContext = $this->_helper->getHelper('AjaxContext');
-		$ajaxContext->addActionContext('newfactor', 'html')->initContext();
+		$ajaxContext->addActionContext('newposition', 'html')->initContext();
 		
-		$id = $this->_getParam('id_factor', null);
+		$id = $this->_getParam('id_position', null);
 		
-		$element = new My_Form_Element_WorkplaceFactor("newFactor$id");
+		$element = new My_Form_Element_Position("newPosition$id");
 		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
 		
 		$this->view->field = $element->__toString();
