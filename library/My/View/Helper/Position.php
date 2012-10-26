@@ -14,8 +14,9 @@ class My_View_Helper_Position extends Zend_View_Helper_FormElement{
 		}		
 		
 		if($value){
+			Zend_Debug::dump($value);
 			$idPosition = $value['id_position'];
-			$position = $value['name'];
+			$position = $value['position'];
 			$note = $value['note'];
 			$private = $value['private'];
 		}
@@ -29,7 +30,7 @@ class My_View_Helper_Position extends Zend_View_Helper_FormElement{
 		
 		$this->html .= '<tr id="'. $name . '" class="main">';
 		$this->html .= $helperHidden->formHidden($name . '[id_position]', $idPosition);
-		$this->html .= '<td colspan=2><label for="' . $name . '[name]">Název pracovní pozice</label></td><td colspan=4>' . $helperSelect->formSelect($name . '[name]', $position, null, $multiOptions) . '</td>';
+		$this->html .= '<td colspan=2><label for="' . $name . '[position]">Název pracovní pozice</label></td><td colspan=4>' . $helperSelect->formSelect($name . '[position]', $position, null, $multiOptions) . '</td>';
 		$this->html .= '<td class="hint"><a class="showNotes">Poznámka</a></td>';
 		$this->html .= '</tr><tr id="' . $name . '" class="hidden">';
 		$this->html .= '<td><label for="' . $name . '[note]">Poznámka</label></td><td>' . $helperText->formText($name . '[note]', $note) . '</td>';

@@ -3,7 +3,7 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 	
 	public $helper = 'position';
 	protected $_idPosition;
-	protected $_name;
+	protected $_position;
 	protected $_note;
 	protected $_private;
 	
@@ -21,8 +21,8 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 		return $this->_idPosition;
 	}
 	
-	public function getName() {
-		return $this->_name;
+	public function getPosition() {
+		return $this->_position;
 	}
 	
 	public function getNote() {
@@ -37,12 +37,12 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 		$this->_idPosition = $_idPosition;
 	}
 	
-	public function setName($_name) {
-		if (is_array($_name)){
-			$this->_name = implode(' ', $_name);
+	public function setPosition($_position) {
+		if (is_array($_position)){
+			$this->_position = implode(' ', $_position);
 		}
 		else{
-			$this->_name = $_name;
+			$this->_position = $_position;
 		}
 	}
 	
@@ -60,9 +60,9 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_position']) && isset($values['name']) && isset($values['note']) && isset($values['private'])){
+		if(isset($values['id_position']) && isset($values['position']) && isset($values['note']) && isset($values['private'])){
 			$this->setIdPosition($values['id_position']);
-			$this->setName($values['name']);
+			$this->setPosition($values['position']);
 			$this->setNote($values['note']);
 			$this->setPrivate($values['private']);
 		}
@@ -72,7 +72,7 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 	public function getValue(){
 		$values = array();
 		$values['id_position'] = $this->getIdPosition();
-		$values['name'] = $this->getName();
+		$values['position'] = $this->getPosition();
 		$values['note'] = $this->getNote();
 		$values['private'] = $this->getPrivate();
 		return $values;

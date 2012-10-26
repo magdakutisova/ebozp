@@ -202,6 +202,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('position', 'position', array(
         	'order' => 16,
         	'multiOptions' => array('test', 'test2'),
+        	'validators' => array(new My_Validate_Position()),
         ));
         
         $this->addElement('button', 'new_position', array(
@@ -225,9 +226,9 @@ class Application_Form_Workplace extends Zend_Form
     }
 
     public function preValidation(array $data){
-    	function findFactors($factor){
-    		if(strpos($factor, 'newFactor') !== false){
-    			return $factor;
+    	function findPositions($position){
+    		if(strpos($position, 'newPosition') !== false){
+    			return $position;
     		}
     	}
     	function findRisks($risk){
@@ -236,16 +237,17 @@ class Application_Form_Workplace extends Zend_Form
     		}
     	}
     	//Zend_Debug::dump($data);
-    	$newFactors = array_filter(array_keys($data), 'findFactors');
+    	$newPositions = array_filter(array_keys($data), 'findPositions');
     	$newRisks = array_filter(array_keys($data), 'findRisks');
 
-    	foreach($newFactors as $fieldName){
+    	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
      		$this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    		$this->addElement('workplaceFactor', 'newFactor' . strval($order - 1), array(
+    		$this->addElement('position', 'newPosition' . strval($order - 1), array(
     			'order' => $order,
     			'value' => $data[$fieldName],
-    			'validators' => array(new My_Validate_WorkplaceFactor()),
+    			'validators' => array(new My_Validate_Position()),
+    			'multiOptions' => array('test', 'test2'),
     		));
     	}
 

@@ -2,7 +2,7 @@
 class Application_Model_Position{
 	
 	private $idPosition;
-	private $name;
+	private $position;
 	private $workingHours;
 	private $categorization;
 	private $note;
@@ -22,10 +22,10 @@ class Application_Model_Position{
 	}
 
 	/**
-	 * @return the $name
+	 * @return the $position
 	 */
-	public function getName() {
-		return $this->name;
+	public function getPosition() {
+		return $this->position;
 	}
 
 	/**
@@ -64,10 +64,10 @@ class Application_Model_Position{
 	}
 
 	/**
-	 * @param $name the $name to set
+	 * @param $position the $name to set
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setPosition($position) {
+		$this->position = $position;
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Application_Model_Position{
 
 	public function populate(array $data){
 		$this->idPosition = isset($data['id_position']) ? $data['id_position'] : null;
-		$this->name = isset($data['name']) ? $data['name'] : null;
+		$this->position = isset($data['position']) ? $data['position'] : null;
 		$this->workingHours = isset($data['working_hours']) ? $data['working_hours'] : null;
 		$this->categorization = isset($data['categorization']) ? $data['categorization'] : null;
 		$this->note = isset($data['note']) ? $data['note'] : null;
@@ -114,7 +114,7 @@ class Application_Model_Position{
 		if(!$toUpdate){
 			$data['id_position'] = $this->idPosition;
 		}
-		$data['name'] = $this->name;
+		$data['position'] = $this->position;
 		$data['working_hours'] = $this->workingHours;
 		$data['categorization'] = $this->categorization;
 		$data['note'] = $this->note;

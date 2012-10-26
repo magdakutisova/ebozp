@@ -157,4 +157,7 @@ $(function(){
 		window.print();
 	});
 	
+	$("form#workplace select[id$=position]").jec();
+	//dořešit, aby se vepsaná možnost populatovala a taky načítání možností z DB
+	
 });

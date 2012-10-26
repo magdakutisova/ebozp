@@ -91,6 +91,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
+    		Zend_Debug::dump($this->getRequest()->getPost());
     		$form->populate($this->getRequest()->getPost());
     		$this->view->form = $form;
     		return;
@@ -154,6 +155,7 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		$element = new My_Form_Element_Position("newPosition$id");
 		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+		$element->setAttrib('multiOptions', array('test', 'test2'));
 		
 		$this->view->field = $element->__toString();
     }
