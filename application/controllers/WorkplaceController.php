@@ -4,14 +4,12 @@ class WorkplaceController extends Zend_Controller_Action
 {
 
     private $_client = null;
-
     private $_clientId = null;
-
     private $_acl = null;
-
     private $_user = null;
-
-    private $_username = null;
+    private $_username = null;    
+    private $_positionList = null;
+    private $_workList = null;
 
     public function init()
     {
@@ -24,27 +22,32 @@ class WorkplaceController extends Zend_Controller_Action
         //získání odkazu na centrálu - instance Application_Model_Subsidiary
         $action = $this->getRequest()->getActionName();
         $this->_acl = new My_Controller_Helper_Acl();
-        if ($action != 'newfactor' && $action != 'newrisk'){
-        	$this->_clientId = $this->getRequest()->getParam('clientId');
-        	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-        	$this->_client = $subsidiaries->getHeadquarters($this->_clientId);
-        	
-        	//přístupová práva
-        	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
-        	$users = new Application_Model_DbTable_User();
-			$this->_user = $users->getByUsername($this->_username);
-
-			//do new může jen ten, kdo má přístup k centrále
-			if ($action == 'new'){
-				if(!$this->_acl->isAllowed($this->_user, $this->_client)){
-					$this->_helper->redirector('denied', 'error');
-				}
-			}
-			
-			//soukromá poznámka
-			$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
-        }
+        $this->_clientId = $this->getRequest()->getParam('clientId');
+        $subsidiaries = new Application_Model_DbTable_Subsidiary();
+        $this->_client = $subsidiaries->getHeadquarters($this->_clientId);
         
+        //získání seznamu pracovních pozic
+        $positions = new Application_Model_DbTable_Position();
+        $this->_positionList = $positions->getPositions($this->_client->getIdSubsidiary());
+        
+        //získání seznamu pracovních činností
+        $works = new Application_Model_DbTable_Work();
+        $this->_workList = $works->getWorks($this->_client->getIdSubsidiary());
+        
+        //přístupová práva
+        $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
+        $users = new Application_Model_DbTable_User();
+		$this->_user = $users->getByUsername($this->_username);
+
+		//do new může jen ten, kdo má přístup k centrále
+		if ($action == 'new'){
+			if(!$this->_acl->isAllowed($this->_user, $this->_client)){
+				$this->_helper->redirector('denied', 'error');
+			}
+		}
+		
+		//soukromá poznámka
+		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
     }
 
     public function indexAction()
@@ -71,6 +74,8 @@ class WorkplaceController extends Zend_Controller_Action
 			}
 			$form->subsidiary_id->setMultiOptions ( $formContent );
 		}
+		$form->position->setAttrib('multiOptions', $this->_positionList);
+		$form->work->setAttrib('multiOptions', $this->_workList);
 		
     	$defaultNamespace = new Zend_Session_Namespace();
 		
@@ -87,11 +92,11 @@ class WorkplaceController extends Zend_Controller_Action
     	}
     	
     	//pokud je odeslán, zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost());
+    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList);
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
-    		Zend_Debug::dump($this->getRequest()->getPost());
+    		//Zend_Debug::dump($this->getRequest()->getPost());
     		$form->populate($this->getRequest()->getPost());
     		$this->view->form = $form;
     		return;
@@ -155,22 +160,22 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		$element = new My_Form_Element_Position("newPosition$id");
 		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-		$element->setAttrib('multiOptions', array('test', 'test2'));
+		$element->setAttrib('multiOptions', $this->_positionList);
 		
 		$this->view->field = $element->__toString();
     }
-
-    public function newriskAction()
-    {
-		$ajaxContext = $this->_helper->getHelper('AjaxContext');
-		$ajaxContext->addActionContext('newrisk', 'html')->initContext();
-		
-		$id = $this->_getParam('id_risk', null);
-		
-		$element = new My_Form_Element_WorkplaceRisk("newRisk$id");
-		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-		
-		$this->view->field = $element->__toString();
+    
+    public function newworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newwork', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_work', null);
+    	
+    	$element = new My_Form_Element_Work("newWork$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_workList);
+    	
+    	$this->view->field = $element->__toString();
     }
 
     public function listAction()

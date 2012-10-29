@@ -28,4 +28,26 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		$this->delete('id_work = ' . (int)$id);
 	}
 	
+	/********************************************************
+	 * Vrací seznam ID - činnost.
+	 */
+	public function getWorks($subsidiaryId){
+		$select = $this->select()
+			->from('work')
+			->join('position_has_work', 'work.id_work = position_has_work.id_work')
+			->join('position', 'position_has_work.id_position = position.id_position')
+			->where('subsidiary_id = ?', $subsidiaryId);
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$works = array();
+		$works[0] = '------';
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_work;
+				$works[$key] = $result->work;
+			}
+			return $works;
+		}
+	}
+	
 }

@@ -7,6 +7,7 @@ class Application_Model_Position{
 	private $categorization;
 	private $note;
 	private $private;
+	private $subsidiaryId;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -55,6 +56,10 @@ class Application_Model_Position{
 	public function getPrivate() {
 		return $this->private;
 	}
+	
+	public function getSubsidiaryId(){
+		return $this->subsidiaryId;
+	}
 
 	/**
 	 * @param $idPosition the $idPosition to set
@@ -97,6 +102,10 @@ class Application_Model_Position{
 	public function setPrivate($private) {
 		$this->private = $private;
 	}
+	
+	public function setSubsidiaryId($subsidiaryId){
+		$this->subsidiaryId = $subsidiaryId;
+	}
 
 	public function populate(array $data){
 		$this->idPosition = isset($data['id_position']) ? $data['id_position'] : null;
@@ -104,7 +113,8 @@ class Application_Model_Position{
 		$this->workingHours = isset($data['working_hours']) ? $data['working_hours'] : null;
 		$this->categorization = isset($data['categorization']) ? $data['categorization'] : null;
 		$this->note = isset($data['note']) ? $data['note'] : null;
-		$this->private = isset($data['private']) ? $data['private'] : null; 
+		$this->private = isset($data['private']) ? $data['private'] : null;
+		$this->subsidiaryId = isset($data['subsidiary_id']) ? $data['subsidiary_id'] : null;
 		
 		return $this;
 	}
@@ -119,6 +129,7 @@ class Application_Model_Position{
 		$data['categorization'] = $this->categorization;
 		$data['note'] = $this->note;
 		$data['private'] = $this->private;
+		$data['subsidiary_id'] = $this->subsidiaryId;
 		
 		return $data;
 	}

@@ -59,10 +59,12 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('hidden', 'client_id', array(
         	'decorators' => $elementDecorator,
+        	'order' => 1000,
         ));
        	
        	$this->addElement('hidden', 'id_workplace', array(
        		'decorators' => $elementDecorator,
+       		'order' => 1001,
        	));
        	
        	$this->addElement('select', 'subsidiary_id', array(
@@ -189,6 +191,7 @@ class Application_Form_Workplace extends Zend_Form
         //pracovní pozice
         $this->addElement('hidden', 'id_position', array(
        		'value' => 17,
+        	'order' => 1002,
        	));
         
         $this->addElement('hidden', 'positions', array(
@@ -201,7 +204,6 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('position', 'position', array(
         	'order' => 16,
-        	'multiOptions' => array('test', 'test2'),
         	'validators' => array(new My_Validate_Position()),
         ));
         
@@ -210,35 +212,59 @@ class Application_Form_Workplace extends Zend_Form
         	'order' => 100,
         	'decorators' => $elementDecorator2,
         ));
+        
+        //pracovní činnosti
+        $this->addElement('hidden', 'id_work', array(
+       		'value' => 103,
+        	'order' => 1003,
+        ));
+        
+        $this->addElement('hidden', 'works', array(
+        	'label' => 'Pracovní činnosti:',
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 101,
+        	'description' => $questionMarkStart . 'Zadejte jednotlivě pracovní činnosti, které se na pracovišti provádějí.' . $questionMarkEnd,
+        ));
+        $this->getElement('works')->getDecorator('Description')->setEscape(false);
+        
+        $this->addElement('work', 'work', array(
+        	'order' => 102,
+        	'validators' => array(new My_Validate_Work()),
+        ));
+        
+        $this->addElement('button', 'new_work', array(
+        	'label' => 'Další pracovní činnost',
+        	'order' => 200,
+        	'decorators' => $elementDecorator2,
+        ));
               	
-       //další obsah
+        //další obsah
        	
        	$this->addElement('checkbox', 'other', array(
        		'label' => 'Po uložení vložit další pracoviště',
-       		'order' => 200,
+       		'order' => 998,
        		'decorators' => $elementDecoratorColspan,
        	));
        	
        	$this->addElement('submit', 'save', array(
        		'decorators' => $elementDecorator2,
-       		'order' => 201,	
+       		'order' => 999,	
        	));
     }
 
-    public function preValidation(array $data){
+    public function preValidation(array $data, $positionList, $workList){
     	function findPositions($position){
     		if(strpos($position, 'newPosition') !== false){
     			return $position;
     		}
     	}
-    	function findRisks($risk){
-    		if(strpos($risk, 'newRisk') !== false){
-    			return $risk;
+    	function findWorks($work){
+    		if(strpos($work, 'newWork') !== false){
+    			return $work;
     		}
     	}
-    	//Zend_Debug::dump($data);
     	$newPositions = array_filter(array_keys($data), 'findPositions');
-    	$newRisks = array_filter(array_keys($data), 'findRisks');
+    	$newWorks = array_filter(array_keys($data), 'findWorks');
 
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
@@ -247,16 +273,17 @@ class Application_Form_Workplace extends Zend_Form
     			'order' => $order,
     			'value' => $data[$fieldName],
     			'validators' => array(new My_Validate_Position()),
-    			'multiOptions' => array('test', 'test2'),
+    			'multiOptions' => $positionList,
     		));
     	}
 
-    	foreach($newRisks as $fieldName){
+    	foreach($newWorks as $fieldName){
    			$order = preg_replace('/\D/', '', $fieldName) + 1;
-   			$this->addElement('workplaceRisk', 'newRisk' . strval($order - 1), array(
+   			$this->addElement('work', 'newWork' . strval($order - 1), array(
    				'order' => $order,
    				'value' => $data[$fieldName],
-   				'validators' => array(new My_Validate_WorkplaceRisk()),
+   				'validators' => array(new My_Validate_Work()),
+   				'multiOptions' => $workList,
    			));
     	}
     }

@@ -16,6 +16,8 @@ class My_Form_Decorator_ErrorsHtmlTag
         $tag = $this->getTag();
         $tagClass = $this->getTagClass();
         $id = $element->getId();
+        $options = $this->getOptions();
+        $colspan = $options['colspan'];
 
         $errors = $element->getMessages();
         if (!empty($errors)) {
@@ -35,7 +37,8 @@ class My_Form_Decorator_ErrorsHtmlTag
             else {
                 $decorator->setOptions(array(
                     'tag' => $tag,
-                    'id' => $id . '-errors'));
+                    'id' => $id . '-errors',
+                	'colspan' => $colspan));
             }
             $errors = $decorator->render($errors);
         }

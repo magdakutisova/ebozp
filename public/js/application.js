@@ -135,20 +135,21 @@ $(function(){
 		});
 	}
 	
-	//dynamické přidávání hlavních rizik
-	$("#new_risk").click(function(){
-		ajaxAddRisk();
+	//dynamické přidávání pracovních činností
+	$("#new_work").click(function(){
+		ajaxAddWork();
 	});
 	
-	function ajaxAddRisk(){
-		var id = $("#id_risk").val();
+	function ajaxAddWork(){
+		var id = $("#id_work").val();
+		var clientId = $("#client_id").val();
 		$.ajax({
 			type: "POST",
-			url: baseUrl + '/workplace/newrisk/format/html',
-			data: "id_risk=" + id,
+			url: baseUrl + '/workplace/newwork/format/html',
+			data: "id_work=" + id + "&clientId=" + clientId,
 			success: function(newElement){
-				$('#new_risk').parents('tr').before(newElement);
-				$("#id_risk").val(++id);
+				$('#new_work').parents('tr').before(newElement);
+				$('#id_work').val(++id);
 			}
 		});
 	}
@@ -156,8 +157,5 @@ $(function(){
 	$(".print").click(function(){
 		window.print();
 	});
-	
-	$("form#workplace select[id$=position]").jec();
-	//dořešit, aby se vepsaná možnost populatovala a taky načítání možností z DB
 	
 });

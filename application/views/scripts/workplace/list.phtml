@@ -1,26 +1,2 @@
 <a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew'); ?>">Přidat pracoviště</a>
-<?php if ($this->workplaces){ 
-	foreach ($this->workplaces as $key => $workplaces){
-		if(isset($workplaces['hq'])){ ?>
-			<h3><a href="<?php echo $this->url(array('clientId' => $this->clientId), 'clientIndex'); ?>"><?php echo $key?></a></h3>
-		<?php }
-		else{ ?>
-			<h3><a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiary' => $workplaces['id_subsidiary']), 'subsidiaryIndex'); ?>"><?php echo $key?></a></h3>
-		<?php }
-		foreach ($workplaces as $key => $workplace){
-			if (is_int($key)){?>
-				<h4><?php echo $workplace['workplace']->getName();?></h4>
-				<p class="no-margin"><strong>Popis: </strong><?php echo $workplace['workplace']->getDescription();?></p>
-				<?php if ($workplace['workplace']->getNote() != ""){?>
-					<p class="no-margin"><strong>Poznámka: </strong><?php echo $workplace['workplace']->getNote();?></p>
-				<?php } ?>
-				<?php if ($this->canViewPrivate && $workplace['workplace']->getPrivate() != ""){?>
-					<p class="no-margin"><strong>Soukromá poznámka: </strong><?php echo $workplace['workplace']->getPrivate();?></p>
-				<?php }
-			}
-		}
-	}
-}
-else{ ?>
-	<p>Klient nemá žádná pracoviště.</p>
-<?php } ?>
+

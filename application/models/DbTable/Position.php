@@ -28,4 +28,22 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		$this->delete('id_position = ' . (int)$id);
 	}
 	
+	
+	/*************************************************
+	 * Vrací seznam ID - pozice.
+	 */
+	public function getPositions($subsidiaryId){
+		$select = $this->select()->from('position')->where('subsidiary_id = ?', $subsidiaryId);
+		$results = $this->fetchAll($select);
+		$positions = array();
+		$positions[0] = '-----';
+		if(count($results) > 0){
+			foreach ($results as $result){
+				$key = $result->id_position;
+				$positions[$key] = $result->position;
+			}
+			return $positions;
+		}
+	}
+	
 }
