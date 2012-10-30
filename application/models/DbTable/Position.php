@@ -33,7 +33,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	 * Vrací seznam ID - pozice.
 	 */
 	public function getPositions($subsidiaryId){
-		$select = $this->select()->from('position')->where('subsidiary_id = ?', $subsidiaryId);
+		$select = $this->select()->from('position')->where('subsidiary_id = ?', $subsidiaryId)->order('position.position');
 		$results = $this->fetchAll($select);
 		$positions = array();
 		$positions[0] = '-----';
@@ -42,8 +42,8 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 				$key = $result->id_position;
 				$positions[$key] = $result->position;
 			}
-			return $positions;
 		}
+		return $positions;
 	}
 	
 }

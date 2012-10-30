@@ -36,7 +36,8 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 			->from('work')
 			->join('position_has_work', 'work.id_work = position_has_work.id_work')
 			->join('position', 'position_has_work.id_position = position.id_position')
-			->where('subsidiary_id = ?', $subsidiaryId);
+			->where('subsidiary_id = ?', $subsidiaryId)
+			->order('work.work');
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$works = array();
@@ -46,8 +47,8 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 				$key = $result->id_work;
 				$works[$key] = $result->work;
 			}
-			return $works;
 		}
+		return $works;
 	}
 	
 }

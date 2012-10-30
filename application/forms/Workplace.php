@@ -237,6 +237,25 @@ class Application_Form_Workplace extends Zend_Form
         	'order' => 200,
         	'decorators' => $elementDecorator2,
         ));
+        
+        //technické prostředky
+        $this->addElement('hidden', 'id_technical_device', array(
+        	'value' => 203,
+        	'order' => 1004,
+        ));
+        
+        $this->addElement('hidden', 'technical_devices', array(
+        	'label' => 'Technické prostředky:',
+        	'decorators' => $elementDecoratorColspan,
+        	'order' => 201,
+        	'description' => $questionMarkStart . 'Zadejte technologické celky, stroje, nástroje, manipulační nebo dopravní prostředky, které jsou trvale umístěny nebo se opakovaně vyskytují na pracovišti.' . $questionMarkEnd,
+        ));
+        $this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
+        
+        $this->addElement('technicalDevice', 'technicalDevice', array(
+        	'order' => 202,
+        	//'validators' => array(new My_Validate_Work()),
+        ));
               	
         //další obsah
        	
