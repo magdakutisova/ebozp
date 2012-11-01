@@ -154,6 +154,25 @@ $(function(){
 		});
 	}
 	
+	//dynamické přidávání technických prostředků
+	$("#new_technical_device").click(function(){
+		ajaxAddTechnicalDevice();
+	});
+	
+	function ajaxAddTechnicalDevice(){
+		var id = $("#id_technical_device").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/newtechnicaldevice/format/html',
+			data: "id_technical_device=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_technical_device').parents('tr').before(newElement);
+				$('#id_technical_device').val(++id);
+			}
+		});
+	}
+	
 	$(".print").click(function(){
 		window.print();
 	});

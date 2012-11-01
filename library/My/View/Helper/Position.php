@@ -31,7 +31,7 @@ class My_View_Helper_Position extends Zend_View_Helper_FormElement{
 		$this->html .= '<tr id="'. $name . '" class="main">';
 		$this->html .= $helperHidden->formHidden($name . '[id_position]', $idPosition);
 		$this->html .= '<td><label for="' . $name . '[position]">Vyberte pracovní pozici</label></td><td>' . $helperSelect->formSelect($name . '[position]', $position, null, $multiOptions) . '</td><td><label for="' . $name . '[new_position]">nebo vepište novou</label></td><td>' . $helperText->formText($name . '[new_position]', $newPosition) . '</td>';
-		$this->html .= '<td class="hint"><a class="showNotes">Poznámka</a></td>';
+		$this->html .= '<td colspan=2 class="hint"><a class="showNotes">Poznámka</a></td>';
 		$this->html .= '</tr><tr id="' . $name . '" class="hidden">';
 		$this->html .= '<td><label for="' . $name . '[note]">Poznámka</label></td><td>' . $helperText->formText($name . '[note]', $note) . '</td>';
 		$this->html .= '<td><label for="' . $name . '[private]">Soukromá poznámka</td><td>' . $helperText->formText($name . '[private]', $private) . '</td>';

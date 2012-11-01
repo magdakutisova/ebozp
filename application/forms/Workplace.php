@@ -24,7 +24,18 @@ class Application_Form_Workplace extends Zend_Form
        		array('Description', array('tag' => 'td')),
        		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
        		array('Label', array()),
-       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
+       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 1)),
+       		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+       	);
+       	
+       	$elementDecoratorColspanSeparator = array(
+       		'ViewHelper',
+       		array('Errors'),
+       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 4, 'class' => 'separator')),
+       		array('Description', array('tag' => 'td')),
+       		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
+       		array('Label', array()),
+       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 1, 'class' => 'separator')),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
        	
@@ -156,7 +167,7 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('hidden', 'boss', array(
         	'label' => 'Vedoucí pracoviště',
-        	'decorators' => $elementDecoratorColspan,
+        	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 10,
         ));
         
@@ -196,7 +207,7 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('hidden', 'positions', array(
         	'label' => 'Pracovní pozice:',
-        	'decorators' => $elementDecoratorColspan,
+        	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 15,
         	'description' => $questionMarkStart . 'Vyberte pracovní pozice (profese) ze seznamu, nebo, pokud je nenajdete, zadejte oficiální název tak, jak je uveden v pracovní smlouvě' . $questionMarkEnd,
         ));
@@ -221,7 +232,7 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('hidden', 'works', array(
         	'label' => 'Pracovní činnosti:',
-        	'decorators' => $elementDecoratorColspan,
+        	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 101,
         	'description' => $questionMarkStart . 'Zadejte jednotlivě pracovní činnosti, které se na pracovišti provádějí.' . $questionMarkEnd,
         ));
@@ -246,23 +257,44 @@ class Application_Form_Workplace extends Zend_Form
         
         $this->addElement('hidden', 'technical_devices', array(
         	'label' => 'Technické prostředky:',
-        	'decorators' => $elementDecoratorColspan,
+        	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 201,
         	'description' => $questionMarkStart . 'Zadejte technologické celky, stroje, nástroje, manipulační nebo dopravní prostředky, které jsou trvale umístěny nebo se opakovaně vyskytují na pracovišti.' . $questionMarkEnd,
         ));
         $this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
         
-        $this->addElement('technicalDevice', 'technicalDevice', array(
+        $this->addElement('technicalDevice', 'technical_device', array(
         	'order' => 202,
-        	//'validators' => array(new My_Validate_Work()),
+        	'validators' => array(new My_Validate_TechnicalDevice()),
+        ));
+        
+        $this->addElement('button', 'new_technical_device', array(
+        	'label' => 'Další technický prostředek',
+        	'order' => 300,
+        	'decorators' => $elementDecorator2,
         ));
               	
-        //další obsah
-       	
+        //chemické látky
+        $this->addElement('hidden', 'id_chemical', array(
+        	'value' => 303,
+        	'order' => 1005,
+        ));
+        
+        $this->addElement('hidden', 'chemicals', array(
+        	'label' => 'Chemické látky:',
+        	'decorators' => $elementDecoratorColspanSeparator,
+        	'order' => 301,
+        	'description' => $questionMarkStart . 'Zadejte jednotlivě chemické látky, které se používají nebo jsou skladovány na pracovišti. Název, obvyklé množství a její použití.' . $questionMarkEnd,
+        ));
+        $this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
+        
+        
+        
+        //zbytek       	
        	$this->addElement('checkbox', 'other', array(
        		'label' => 'Po uložení vložit další pracoviště',
        		'order' => 998,
-       		'decorators' => $elementDecoratorColspan,
+       		'decorators' => $elementDecoratorColspanSeparator,
        	));
        	
        	$this->addElement('submit', 'save', array(
@@ -271,7 +303,7 @@ class Application_Form_Workplace extends Zend_Form
        	));
     }
 
-    public function preValidation(array $data, $positionList, $workList){
+    public function preValidation(array $data, $positionList, $workList, $sortList, $typeList){
     	function findPositions($position){
     		if(strpos($position, 'newPosition') !== false){
     			return $position;
@@ -282,8 +314,14 @@ class Application_Form_Workplace extends Zend_Form
     			return $work;
     		}
     	}
+    	function findTechnicalDevices($technicalDevice){
+    		if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
+    			return $technicalDevice;
+    		}
+    	}
     	$newPositions = array_filter(array_keys($data), 'findPositions');
     	$newWorks = array_filter(array_keys($data), 'findWorks');
+    	$newTechnicalDevices = array_filter(array_keys($data), 'findTechnicalDevices');
 
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
@@ -304,6 +342,17 @@ class Application_Form_Workplace extends Zend_Form
    				'validators' => array(new My_Validate_Work()),
    				'multiOptions' => $workList,
    			));
+    	}
+    	
+    	foreach($newTechnicalDevices as $fieldName){
+    		$order = preg_replace('/\D/', '', $fieldName) + 1;
+    		$this->addElement('technicalDevice', 'newTechnicalDevice' . strval($order - 1), array(
+    			'order' => $order,
+    			'value' => $data[$fieldName],
+    			'validators' => array(new My_Validate_TechnicalDevice()),
+    			'multiOptions' => $sortList,
+    			'multiOptions2' => $typeList,
+    		));
     	}
     }
 

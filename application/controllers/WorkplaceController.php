@@ -10,6 +10,8 @@ class WorkplaceController extends Zend_Controller_Action
     private $_username = null;    
     private $_positionList = null;
     private $_workList = null;
+    private $_sortList = null;
+    private $_typeList = null;
 
     public function init()
     {
@@ -33,6 +35,11 @@ class WorkplaceController extends Zend_Controller_Action
         //získání seznamu pracovních činností
         $works = new Application_Model_DbTable_Work();
         $this->_workList = $works->getWorks($this->_client->getIdSubsidiary());
+        
+        //získání seznamů druhů a typů technických prostředků
+        $technicalDevices = new Application_Model_DbTable_TechnicalDevice();
+        $this->_sortList = $technicalDevices->getSorts($this->_client->getIdSubsidiary());
+        $this->_typeList = $technicalDevices->getTypes($this->_client->getIdSubsidiary());
         
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -76,6 +83,8 @@ class WorkplaceController extends Zend_Controller_Action
 		}
 		$form->position->setAttrib('multiOptions', $this->_positionList);
 		$form->work->setAttrib('multiOptions', $this->_workList);
+		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
+		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
 		
     	$defaultNamespace = new Zend_Session_Namespace();
 		
@@ -92,7 +101,7 @@ class WorkplaceController extends Zend_Controller_Action
     	}
     	
     	//pokud je odeslán, zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList);
+    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList);
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
@@ -174,6 +183,20 @@ class WorkplaceController extends Zend_Controller_Action
     	$element = new My_Form_Element_Work("newWork$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('multiOptions', $this->_workList);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newtechnicaldeviceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_technical_device', null);
+    	
+    	$element = new My_Form_Element_TechnicalDevice("newTechnicalDevice$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_sortList);
+    	$element->setAttrib('multiOptions2', $this->_typeList);
     	
     	$this->view->field = $element->__toString();
     }

@@ -6,6 +6,7 @@ class My_View_Helper_TechnicalDevice extends Zend_View_Helper_FormElement{
 	public function technicalDevice($name, $value = null, $attribs = null){
 		$this->html = '';
 		$idTechnicalDevice = $sort = $newSort = $type = $newType = $note = $private = '';
+		
 		if(isset($attribs['multiOptions'])){
 			$multiOptions = $attribs['multiOptions'];
 		}
@@ -19,7 +20,7 @@ class My_View_Helper_TechnicalDevice extends Zend_View_Helper_FormElement{
 		else{
 			$multiOptions2 = null;
 		}
-		
+
 		if($value){
 			$idTechnicalDevice = $value['id_technical_device'];
 			$sort = $value['sort'];
@@ -37,9 +38,10 @@ class My_View_Helper_TechnicalDevice extends Zend_View_Helper_FormElement{
 		$helperText = new Zend_View_Helper_FormText();
 		$helperText->setView($this->view);
 		
-		$this->html .= '<tr id"' . $name . '" class="main">';
+		$this->html .= '<tr id="' . $name . '" class="main">';
 		$this->html .= $helperHidden->formHidden($name . '[id_technical_device]', $idTechnicalDevice);
-		$this->html .= '<td><label for ="' . $name . '[sort]">Vyberte technický prostředek - název</label></td><td>' . $helperSelect->formSelect($name . '[sort]', null, $multiOptions) . '</td><td><label for ="' . $name . '[type]">typ</label></td><td>' . $helperSelect->formSelect($name . '[type]', null, $multiOptions2) . '</td><td><label for="' . $name . '[new_sort]">nebo vepište nový - název</label>' . $helperText->formText($name . '[new_sort]', $newSort) . '</td><td><label for="' . $name . '[new_type]">typ</label>' . $helperText->formText($name . '[new_type]', $newType) . '</td>';
+		$this->html .= '<td>Vyberte technický prostředek</td><td colspan=2><label for ="' . $name . '[sort]">Název </label>' . $helperSelect->formSelect($name . '[sort]', $sort,  null, $multiOptions) . '</td><td colspan=2><label for ="' . $name . '[type]">Typ </label>' . $helperSelect->formSelect($name . '[type]', $type, null, $multiOptions2) . '</td></tr>';
+		$this->html .= '<tr><td>Nebo vepište nový</td><td colspan=2><label for="' . $name . '[new_sort]">Název </label>' . $helperText->formText($name . '[new_sort]', $newSort) . '</td><td style="width: 300px;" colspan=2><label for="' . $name . '[new_type]">Typ </label>' . $helperText->formText($name . '[new_type]', $newType) . '</td>';
 		$this->html .= '<td class="hint"><a class="showNotes">Poznámka</a></td>';
 		$this->html .= '</tr><tr id="' . $name . '" class="hidden">';
 		$this->html .= '<td><label for="' . $name . '[note]">Poznámka</label></td><td>' . $helperText->formText($name . '[note]', $note) . '</td>';

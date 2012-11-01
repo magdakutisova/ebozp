@@ -28,4 +28,50 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		$this->delete('id_technical_device = ' . (int)$id);
 	}
 	
+	/****************************************************************
+	 * Vrací seznam ID - druh techniky.
+	 */
+	public function getSorts($subsidiaryId){
+		$select = $this->select()
+			->from('technical_device')
+			->join('position_has_technical_device', 'technical_device.id_technical_device = position_has_technical_device.id_technical_device')
+			->join('position', 'position_has_technical_device.id_position = position.id_position')
+			->where('subsidiary_id = ?', $subsidiaryId)
+			->order('technical_device.sort');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$technicalDevices = array();
+		$technicalDevices[0] = '------';
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_technical_device;
+				$technicalDevices[$key] = $result->sort;
+			}
+		}
+		return $technicalDevices;
+	}
+	
+	/****************************************************************
+	 * Vrací seznam ID - typ techniky.
+	 */
+	public function getTypes($subsidiaryId){
+		$select = $this->select()
+			->from('technical_device')
+			->join('position_has_technical_device', 'technical_device.id_technical_device = position_has_technical_device.id_technical_device')
+			->join('position', 'position_has_technical_device.id_position = position.id_position')
+			->where('subsidiary_id = ?', $subsidiaryId)
+			->order('technical_device.type');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$technicalDevices = array();
+		$technicalDevices[0] = '------';
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_technical_device;
+				$technicalDevices[$key] = $result->type;
+			}
+		}
+		return $technicalDevices;
+	}
+	
 }
