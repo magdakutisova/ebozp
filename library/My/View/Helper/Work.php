@@ -26,9 +26,10 @@ class My_View_Helper_Work extends Zend_View_Helper_FormElement{
 		$helperText = new Zend_View_Helper_FormText();
 		$helperText->setView($this->view);
 		
-		$this->html .= '<tr id="' . $name . '" class="main">';
+		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_work]', $idWork);
 		$this->html .= '<td><label for"' . $name . '[work]">Vyberte pracovní činnost</label></td><td>' . $helperSelect->formSelect($name . '[work]', $work, null, $multiOptions) . '</td><td><label for="' . $name . '[new_work]">nebo vepište novou</label></td><td>' . $helperText->formText($name . '[new_work]', $newWork) . '</td>';
+		$this->html .= '</tr>';
 		
 		return $this->html;
 	}

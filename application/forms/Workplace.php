@@ -46,7 +46,7 @@ class Application_Form_Workplace extends Zend_Form
        		array('Description', array('tag' => 'td')),
        		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
        		array('Label', array()),
-       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 2)),
+       		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 1)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr', 'class' => 'hidden')),
        	);
        	
@@ -288,9 +288,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
         
+        $this->addElement('chemicalComplete', 'chemical', array(
+        	'order' => 302,
+        	'validators' => array(new My_Validate_Chemical()),
+        ));
         
-        
-        //zbytek       	
+        $this->addElement('button', 'new_chemical', array(
+        	'label' => 'Další chemická látka',
+        	'order' => 400,
+        	'decorators' => $elementDecorator2,
+        ));
+
+        //zbytek
        	$this->addElement('checkbox', 'other', array(
        		'label' => 'Po uložení vložit další pracoviště',
        		'order' => 998,
@@ -303,7 +312,7 @@ class Application_Form_Workplace extends Zend_Form
        	));
     }
 
-    public function preValidation(array $data, $positionList, $workList, $sortList, $typeList){
+    public function preValidation(array $data, $positionList, $workList, $sortList, $typeList, $chemicalList){
     	function findPositions($position){
     		if(strpos($position, 'newPosition') !== false){
     			return $position;
@@ -319,9 +328,15 @@ class Application_Form_Workplace extends Zend_Form
     			return $technicalDevice;
     		}
     	}
+    	function findChemicals($chemical){
+    		if(strpos($chemical, 'newChemical') !== false){
+    			return $chemical;
+    		}
+    	}
     	$newPositions = array_filter(array_keys($data), 'findPositions');
     	$newWorks = array_filter(array_keys($data), 'findWorks');
     	$newTechnicalDevices = array_filter(array_keys($data), 'findTechnicalDevices');
+    	$newChemicals = array_filter(array_keys($data), 'findChemicals');
 
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
@@ -352,6 +367,16 @@ class Application_Form_Workplace extends Zend_Form
     			'validators' => array(new My_Validate_TechnicalDevice()),
     			'multiOptions' => $sortList,
     			'multiOptions2' => $typeList,
+    		));
+    	}
+    	
+    	foreach($newChemicals as $fieldName){
+    		$order = preg_replace('/\D/', '', $fieldName) + 1;
+    		$this->addElement('chemicalComplete', 'newChemical' . strval($order - 1), array(
+    			'order' => $order,
+    			'value' => $data[$fieldName],
+    			'validators' => array(new My_Validate_Chemical()),
+    			'multiOptions' => $chemicalList,
     		));
     	}
     }

@@ -173,6 +173,25 @@ $(function(){
 		});
 	}
 	
+	//dynamické přidávání chemických látek
+	$("#new_chemical").click(function(){
+		ajaxAddChemical();
+	});
+	
+	function ajaxAddChemical(){
+		var id = $("#id_chemical").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/newchemical/format/html',
+			data: "id_chemical=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_chemical').parents('tr').before(newElement);
+				$('#id_chemical').val(++id);
+			}
+		});
+	}
+	
 	$(".print").click(function(){
 		window.print();
 	});

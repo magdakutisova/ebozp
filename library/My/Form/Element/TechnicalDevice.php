@@ -7,8 +7,6 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 	protected $_newSort;
 	protected $_type;
 	protected $_newType;
-	protected $_note;
-	protected $_private;
 	
 	public function loadDefaultDecorators(){
 		if ($this->loadDefaultDecoratorsIsDisabled()){
@@ -44,14 +42,6 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 		return $this->_newType;
 	}
 	
-	public function getNote(){
-		return $this->_note;
-	}
-	
-	public function getPrivate(){
-		return $this->_private;
-	}
-	
 	public function setIdTechnicalDevice($_idTechnicalDevice){
 		$this->_idTechnicalDevice = $_idTechnicalDevice;
 	}
@@ -72,23 +62,13 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 		$this->_newType = $_newType;
 	}
 	
-	public function setNote($_note){
-		$this->_note = $_note;
-	}
-	
-	public function setPrivate($_private){
-		$this->_private = $_private;
-	}
-	
 	public function setValue($values){
-		if(isset($values['id_technical_device']) && isset($values['sort']) && isset($values['new_sort']) && isset($values['type']) && isset($values['new_type']) && isset($values['note']) && isset($values['private'])){
+		if(isset($values['id_technical_device']) && isset($values['sort']) && isset($values['new_sort']) && isset($values['type']) && isset($values['new_type'])){
 			$this->setIdTechnicalDevice($values['id_technical_device']);
 			$this->setSort($values['sort']);
 			$this->setNewSort($values['new_sort']);
 			$this->setType($values['type']);
 			$this->setNewType($values['new_type']);
-			$this->setNote($values['note']);
-			$this->setPrivate($values['private']);
 		}
 		return $this;
 	}
@@ -99,9 +79,7 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 		$values['sort'] = $this->getSort();
 		$values['new_sort'] = $this->getNewSort();
 		$values['type'] = $this->getType();
-		$values['new_type'] = $this->getNewType();
-		$values['note'] = $this->getNote();
-		$values['private'] = $this->getPrivate();		
+		$values['new_type'] = $this->getNewType();		
 		return $values;
 	}
 	

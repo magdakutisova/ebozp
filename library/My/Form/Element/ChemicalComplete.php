@@ -1,14 +1,12 @@
 <?php
-class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
+class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'chemical';
+	public $helper = 'chemicalComplete';
 	protected $_idChemical;
 	protected $_chemical;
 	protected $_newChemical;
 	protected $_usePurpose;
 	protected $_usualAmount;
-	protected $_note;
-	protected $_private;
 	
 	public function loadDefaultDecorators(){
 		if ($this->loadDefaultDecoratorsIsDisabled()){
@@ -43,15 +41,7 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 	public function getUsualAmount(){
 		return $this->_usualAmount;
 	}
-	
-	public function getNote(){
-		return $this->_note;
-	}
-	
-	public function getPrivate(){
-		return $this->_private;
-	}
-	
+		
 	public function setIdChemical($_idChemical){
 		$this->_idChemical = $_idChemical;
 	}
@@ -72,36 +62,24 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 		$this->_usualAmount = $_usualAmount;
 	}
 	
-	public function setNote($_note){
-		$this->_note = $_note;
-	}
-	
-	public function setPrivate($_private){
-		$this->_private = $_private;
-	}
-	
 	public function setValue($values){
-		if(isset($values['id_chemical']) && isset($values['chemical']) && isset($values['new_chemical']) && isset($values['use_purpose']) && isset($values['usual_amount']) && isset($values['note']) && isset($values['private'])){
+		if(isset($values['id_chemical']) && isset($values['chemical']) && isset($values['new_chemical']) && isset($values['use_purpose']) && isset($values['usual_amount'])){
 			$this->setIdChemical($values['id_chemical']);
 			$this->setChemical($values['chemical']);
 			$this->setNewChemical($values['new_chemical']);
 			$this->setUsePurpose($values['use_purpose']);
 			$this->setUsualAmount($values['usual_amount']);
-			$this->setNote($values['note']);
-			$this->setPrivate($values['private']);
 		}
 		return $this;
 	}
 	
-	public function getValue(){
+	public function getValue(){		
 		$values = array();
 		$values['id_chemical'] = $this->getIdChemical();
 		$values['chemical'] = $this->getChemical();
 		$values['new_chemical'] = $this->getNewChemical();
 		$values['use_purpose'] = $this->getUsePurpose();
 		$values['usual_amount'] = $this->getUsualAmount();
-		$values['note'] = $this->getNote();
-		$values['private'] = $this->getPrivate();
 		return $values;
 	}
 	

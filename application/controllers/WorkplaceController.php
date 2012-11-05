@@ -12,6 +12,7 @@ class WorkplaceController extends Zend_Controller_Action
     private $_workList = null;
     private $_sortList = null;
     private $_typeList = null;
+    private $_chemicalList = null;
 
     public function init()
     {
@@ -40,6 +41,10 @@ class WorkplaceController extends Zend_Controller_Action
         $technicalDevices = new Application_Model_DbTable_TechnicalDevice();
         $this->_sortList = $technicalDevices->getSorts($this->_client->getIdSubsidiary());
         $this->_typeList = $technicalDevices->getTypes($this->_client->getIdSubsidiary());
+        
+        //získání seznamu chemických látek
+        $chemicals = new Application_Model_DbTable_Chemical();
+        $this->_chemicalList = $chemicals->getChemicals($this->_client->getIdSubsidiary());
         
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -85,6 +90,7 @@ class WorkplaceController extends Zend_Controller_Action
 		$form->work->setAttrib('multiOptions', $this->_workList);
 		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
 		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
+		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
 		
     	$defaultNamespace = new Zend_Session_Namespace();
 		
@@ -101,7 +107,7 @@ class WorkplaceController extends Zend_Controller_Action
     	}
     	
     	//pokud je odeslán, zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList);
+    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
@@ -197,6 +203,19 @@ class WorkplaceController extends Zend_Controller_Action
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('multiOptions', $this->_sortList);
     	$element->setAttrib('multiOptions2', $this->_typeList);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newchemicalAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newchemical', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_chemical', null);
+    	
+    	$element = new My_Form_Element_ChemicalComplete("newChemical$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_chemicalList);
     	
     	$this->view->field = $element->__toString();
     }
