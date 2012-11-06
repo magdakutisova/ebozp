@@ -2,7 +2,7 @@
 class Application_Model_Work{
 	
 	private $idWork;
-	private $name;
+	private $work;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -20,8 +20,8 @@ class Application_Model_Work{
 	/**
 	 * @return the $name
 	 */
-	public function getName() {
-		return $this->name;
+	public function getWork() {
+		return $this->work;
 	}
 
 	/**
@@ -34,13 +34,13 @@ class Application_Model_Work{
 	/**
 	 * @param $name the $name to set
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setWork($work) {
+		$this->work = $work;
 	}
 
 	public function populate(array $data){
 		$this->idWork = isset($data['id_workplace']) ? $data['id_workplace'] : null;
-		$this->name = isset($data['name']) ? $data['name'] : null;
+		$this->work = isset($data['work']) ? $data['work'] : null;
 
 		return $this;
 	}
@@ -50,7 +50,7 @@ class Application_Model_Work{
 		if(!$toUpdate){
 			$data['id_work'] = $this->idWork;
 		}
-		$data['name'] = $this->name;
+		$data['work'] = $this->work;
 		
 		return $data;
 	}

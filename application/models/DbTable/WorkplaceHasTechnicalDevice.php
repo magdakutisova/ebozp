@@ -16,4 +16,10 @@ class Application_Model_DbTable_WorkplaceHasTechnicalDevice extends Zend_Db_Tabl
 		),
 	);
 	
+	public function addRelation($workplaceId, $technicalDeviceId){
+		$data['id_workplace'] = $workplaceId;
+		$data['id_technical_device'] = $technicalDeviceId;
+		$this->insert($data);
+	}
+	
 }

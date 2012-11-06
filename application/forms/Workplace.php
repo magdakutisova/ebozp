@@ -58,7 +58,7 @@ class Application_Form_Workplace extends Zend_Form
        	$elementDecorator2 = array(
        		'ViewHelper',
        		array('Errors'),
-       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
+       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
        	

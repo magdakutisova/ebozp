@@ -17,7 +17,7 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 			$this->addDecorator('ViewHelper')
 			->addDecorator('ErrorsHtmlTag', array(
 					'tag' => 'td',
-					'colspan' => 6,
+					'colspan' => 5,
 				));
 		}
 	}

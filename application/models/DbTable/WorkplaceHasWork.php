@@ -16,4 +16,10 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 		),
 	);
 	
+	public function addRelation($workplaceId, $workId){
+		$data['id_workplace'] = $workplaceId;
+		$data['id_work'] = $workId;
+		$this->insert($data);
+	}
+	
 }
