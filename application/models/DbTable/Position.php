@@ -32,8 +32,10 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	/*************************************************
 	 * Vrací seznam ID - pozice.
 	 */
-	public function getPositions($subsidiaryId){
-		$select = $this->select()->from('position')->where('subsidiary_id = ?', $subsidiaryId)->order('position.position');
+	public function getPositions($clientId){
+		$select = $this->select()->from('position')
+			->where('client_id = ?', $clientId)
+			->order('position');
 		$results = $this->fetchAll($select);
 		$positions = array();
 		$positions[0] = '-----';

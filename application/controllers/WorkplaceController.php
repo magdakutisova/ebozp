@@ -31,20 +31,20 @@ class WorkplaceController extends Zend_Controller_Action
         
         //získání seznamu pracovních pozic
         $positions = new Application_Model_DbTable_Position();
-        $this->_positionList = $positions->getPositions($this->_client->getIdSubsidiary());
+        $this->_positionList = $positions->getPositions($this->_clientId);
         
         //získání seznamu pracovních činností
         $works = new Application_Model_DbTable_Work();
-        $this->_workList = $works->getWorks($this->_client->getIdSubsidiary());
+        $this->_workList = $works->getWorks($this->_clientId);
         
         //získání seznamů druhů a typů technických prostředků
         $technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-        $this->_sortList = $technicalDevices->getSorts($this->_client->getIdSubsidiary());
-        $this->_typeList = $technicalDevices->getTypes($this->_client->getIdSubsidiary());
+        $this->_sortList = $technicalDevices->getSorts($this->_clientId);
+        $this->_typeList = $technicalDevices->getTypes($this->_clientId);
         
         //získání seznamu chemických látek
         $chemicals = new Application_Model_DbTable_Chemical();
-        $this->_chemicalList = $chemicals->getChemicals($this->_client->getIdSubsidiary());
+        $this->_chemicalList = $chemicals->getChemicals($this->_clientId);
         
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -94,6 +94,9 @@ class WorkplaceController extends Zend_Controller_Action
 		$form->save->setLabel('Uložit');
 		
     	$defaultNamespace = new Zend_Session_Namespace();
+    	
+    	//zmapujeme nové prvky
+    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
 		
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -106,9 +109,6 @@ class WorkplaceController extends Zend_Controller_Action
 			}
     		return;
     	}
-    	
-    	//pokud je odeslán, zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
@@ -125,6 +125,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
+	    	$workplace->setClientId($this->_clientId);
 	    	$workplaces = new Application_Model_DbTable_Workplace();
 	    	$workplaceId = $workplaces->addWorkplace($workplace);
 	    	
@@ -136,6 +137,9 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
 	    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
 	    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
+	    	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
+	    	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
+	    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
 	    	
 			foreach($formData as $key => $value){
 				//Zend_Debug::dump($formData);
@@ -151,9 +155,13 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['position']];
 							$position->setPosition($label);
 						}
+						elseif($value['new_position'] == ''){
+							$position->setPosition('');
+						}
 						if($value['new_position'] != ''){
 							$position->setPosition($value['new_position']);
 						}
+						$position->setClientId($this->_clientId);
 						$positionId = $positions->addPosition($position);
 						$workplaceHasPosition->addRelation($workplaceId, $positionId);
 					}
@@ -168,11 +176,22 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['work']];
 							$work->setWork($label);
 						}
+						elseif($value['new_work'] == ''){
+							$work->setWork('');
+						}
 						if($value['new_work'] != ''){
 							$work->setWork($value['new_work']);
 						}
-						$workId = $works->addWork($work);
-						$workplaceHasWork->addRelation($workplaceId, $workId);
+						$existingWork = $works->existsWork($work->getWork());
+						if($existingWork){
+							$workplaceHasWork->addRelation($workplaceId, $existingWork);
+							$clientHasWork->addRelation($this->_clientId, $existingWork);
+						}
+						else{
+							$workId = $works->addWork($work);
+							$workplaceHasWork->addRelation($workplaceId, $workId);
+							$clientHasWork->addRelation($this->_clientId, $workId);
+						}
 					}
 				}
 
@@ -185,6 +204,9 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['sort']];
 							$technicalDevice->setSort($label);
 						}
+						elseif($value['new_sort'] == ''){
+							$technicalDevice->setSort('');
+						}
 						if($value['new_sort'] != ''){
 							$technicalDevice->setSort($value['new_sort']);
 						}
@@ -193,11 +215,23 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['type']];
 							$technicalDevice->setType($label);
 						}
+						elseif($value['new_type'] == '')
+						{
+							$technicalDevice->setType('');
+						}	
 						if($value['new_type'] != ''){
 							$technicalDevice->setType($value['new_type']);
 						}
-						$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
-						$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
+						$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
+						if($existingTechnicalDevice){
+							$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
+							$clientHasTechnicalDevice->addRelation($this->_clientId, $existingTechnicalDevice);
+						}
+						else{
+							$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
+							$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
+							$clientHasTechnicalDevice->addRelation($this->_clientId, $technicalDeviceId);
+						}
 					}
 				}
 				
@@ -210,11 +244,22 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['chemical']];
 							$chemical->setChemical($label);
 						}
+						elseif($value['new_chemical'] == ''){
+							$chemical->setChemical('');
+						}
 						if($value['new_chemical'] != ''){
 							$chemical->setChemical($value['new_chemical']);
 						}
-						$chemicalId = $chemicals->addChemical($chemical);
-						$workplaceHasChemical->addRelation($workplaceId, $chemicalId);
+						$existingChemical = $chemicals->existsChemical($chemical->getChemical());
+						if($existingChemical){
+							$workplaceHasChemical->addRelation($workplaceId, $existingChemical, $value['use_purpose'], $value['usual_amount']);
+							$clientHasChemical->addRelation($this->_clientId, $existingChemical);
+						}
+						else{
+							$chemicalId = $chemicals->addChemical($chemical);
+							$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $value['use_purpose'], $value['usual_amount']);
+							$clientHasChemical->addRelation($this->_clientId, $chemicalId);
+						}
 					}
 				}
 			}
@@ -231,7 +276,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    	}
     	}
     	catch(Zend_Exception $e){
-    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e->getMessage());
+    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e->getMessage() . $e->getTraceAsString());
     		$defaultNamespace->formData = $formData;
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'workplaceNew');
     	}
@@ -294,14 +339,45 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function listAction()
     {
-        $clientId = $this->getRequest()->getParam('clientId');
         $clients = new Application_Model_DbTable_Client();
-        $client = $clients->getClient($clientId);
+        $client = $clients->getClient($this->_clientId);
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
-        $this->view->clientId = $clientId;
-        $workplacesDb = new Application_Model_DbTable_Workplace();
-        $workplaces = $workplacesDb->getByClientDetails($clientId);
-        if($workplaces != null){
+        $this->view->clientId = $this->_clientId;
+        
+        //výběr poboček
+        $subsidiaries = new Application_Model_DbTable_Subsidiary();
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+		
+    	if ($formContent != 0){
+			foreach ($formContent as $key => $subsidiary){
+				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+					unset($formContent[$key]);
+				}
+			}
+    	}
+		
+		if ($formContent != 0) {
+			$selectForm = new Application_Form_Select ();
+			$selectForm->select->setMultiOptions ( $formContent );
+			$selectForm->select->setLabel('Vyberte pobočku:');
+			$selectForm->submit->setLabel('Vybrat');
+			$this->view->selectForm = $selectForm;
+			
+			/*if ($this->getRequest ()->isPost ()) {
+				$formData = $this->getRequest ()->getPost ();
+				if (in_array('Vybrat', $formData) && $form->isValid ( $formData )) {
+					$subsidiary = $this->getRequest ()->getParam ( 'select' );
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
+				}
+			}*/
+		}
+    	else{
+			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
+			$this->view->selectForm = $selectForm;
+		}
+        //$workplacesDb = new Application_Model_DbTable_Workplace();
+        //$workplaces = $workplacesDb->getByClientDetails($clientId);
+        /*if($workplaces != null){
         	$subsidiaries = new Application_Model_DbTable_Subsidiary();
 	        foreach ($workplaces as $key => $workplace){
 	        	if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace['id_subsidiary']))){
@@ -309,7 +385,7 @@ class WorkplaceController extends Zend_Controller_Action
 	        	}
 	        }
         }
-        $this->view->workplaces = $workplaces;
+        $this->view->workplaces = $workplaces;*/
     }
 
     public function editAction()

@@ -16,9 +16,11 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 		),
 	);
 	
-	public function addRelation($workplaceId, $chemicalId){
+	public function addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount){
 		$data['id_workplace'] = $workplaceId;
 		$data['id_chemical'] = $chemicalId;
+		$data['use_purpose'] = $usePurpose;
+		$data['usual_amount'] = $usualAmount;
 		$this->insert($data);
 	}
 	

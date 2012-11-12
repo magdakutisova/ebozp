@@ -31,13 +31,13 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 	/********************************************************
 	 * Vrací seznam ID - činnost.
 	 */
-	public function getWorks($subsidiaryId){
+	public function getWorks($clientId){
 		$select = $this->select()
 			->from('work')
-			->join('position_has_work', 'work.id_work = position_has_work.id_work')
-			->join('position', 'position_has_work.id_position = position.id_position')
-			->where('subsidiary_id = ?', $subsidiaryId)
-			->order('work.work');
+			->join('client_has_work', 'work.id_work = client_has_work.id_work')
+			->where('client_has_work.id_client = ?', $clientId)
+			->order('work.work')
+			->group('work');
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$works = array();
@@ -49,6 +49,19 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 			}
 		}
 		return $works;
+	}
+	
+	public function existsWork($work){
+		$select = $this->select()
+			->from('work')
+			->where('work = ?', $work);
+		$results = $this->fetchAll($select);
+		if(count($results) > 0){
+			return $results->current()->id_work;
+		}
+		else{
+			return 0;
+		}
 	}
 	
 }

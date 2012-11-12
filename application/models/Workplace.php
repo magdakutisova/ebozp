@@ -15,6 +15,7 @@ class Application_Model_Workplace{
 	private $subsidiaryId;
 	private $note;
 	private $private;
+	private $clientId;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -95,6 +96,10 @@ class Application_Model_Workplace{
 	public function getPrivate() {
 		return $this->private;
 	}
+	
+	public function getClientId(){
+		return $this->clientId;
+	}
 
 	/**
 	 * @param $idWorkplace the $idWorkplace to set
@@ -169,6 +174,10 @@ class Application_Model_Workplace{
 	public function setPrivate($private) {
 		$this->private = $private;
 	}
+	
+	public function setClientId($clientId){
+		$this->clientId = $clientId;
+	}
 
 	public function populate(array $data){
 		$this->idWorkplace = isset($data['id_workplace']) ? $data['id_workplace'] : null;
@@ -185,6 +194,7 @@ class Application_Model_Workplace{
 		$this->subsidiaryId = isset($data['subsidiary_id']) ? $data['subsidiary_id'] : null;
 		$this->note = isset($data['note']) ? $data['note'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
+		$this->clientId = isset($data['client_id']) ? $data['client_id'] : null;
 		
 		return $this;
 	}
@@ -207,6 +217,7 @@ class Application_Model_Workplace{
 		$data['subsidiary_id'] = $this->subsidiaryId;
 		$data['note'] = $this->note;
 		$data['private'] = $this->private;
+		$data['client_id'] = $this->clientId;
 		
 		return $data;
 	}

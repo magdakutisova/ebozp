@@ -68,6 +68,7 @@ class Application_Form_Workplace extends Zend_Form
         	'Form',
         ));
         
+        //elementy        
         $this->addElement('hidden', 'client_id', array(
         	'decorators' => $elementDecorator,
         	'order' => 1000,

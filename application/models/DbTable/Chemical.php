@@ -31,13 +31,13 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 	/*********************************************************************
 	 * Vrací seznam ID - chemická látka.
 	 */
-	public function getChemicals($subsidiaryId) {
+	public function getChemicals($clientId) {
 		$select = $this->select()
 			->from('chemical')
-			->join('position_has_chemical', 'chemical.id_chemical = position_has_chemical.id_chemical')
-			->join('position', 'position_has_chemical.id_position = position.id_position')
-			->where('subsidiary_id = ?', $subsidiaryId)
-			->order('chemical.chemical');
+			->join('client_has_chemical', 'chemical.id_chemical = client_has_chemical.id_chemical')
+			->where('client_has_chemical.id_client = ?', $clientId)
+			->order('chemical.chemical')
+			->group('chemical');
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$chemicals = array();
@@ -49,6 +49,19 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 			}
 		}
 		return $chemicals;
+	}
+	
+	public function existsChemical($chemical){
+		$select = $this->select()
+			->from('chemical')
+			->where('chemical = ?', $chemical);
+		$results = $this->fetchAll($select);
+		if(count($results) > 0){
+			return $results->current()->id_chemical;
+		}
+		else{
+			return 0;
+		}
 	}
 	
 }
