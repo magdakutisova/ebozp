@@ -73,6 +73,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$form = new Application_Form_Workplace();
     	$clientId = $this->getRequest()->getParam('clientId');
+    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
     	$form->client_id->setValue($clientId);
     	//$form = $this->_helper->workplaceFormInit();
     	
@@ -86,6 +87,7 @@ class WorkplaceController extends Zend_Controller_Action
 			}
 			$form->subsidiary_id->setMultiOptions ( $formContent );
 		}
+		$form->subsidiary_id->setValue($subsidiaryId);
 		$form->position->setAttrib('multiOptions', $this->_positionList);
 		$form->work->setAttrib('multiOptions', $this->_workList);
 		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
@@ -128,6 +130,11 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$workplace->setClientId($this->_clientId);
 	    	$workplaces = new Application_Model_DbTable_Workplace();
 	    	$workplaceId = $workplaces->addWorkplace($workplace);
+	    	if(!$workplaceId){
+	    		$defaultNamespace->formData = $formData;
+	    		$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
+	    	}
 	    	
 	    	$positions = new Application_Model_DbTable_Position();
 	    	$works = new Application_Model_DbTable_Work();
@@ -162,8 +169,15 @@ class WorkplaceController extends Zend_Controller_Action
 							$position->setPosition($value['new_position']);
 						}
 						$position->setClientId($this->_clientId);
-						$positionId = $positions->addPosition($position);
-						$workplaceHasPosition->addRelation($workplaceId, $positionId);
+						
+						$existingPosition = $positions->existsPosition($position->getPosition(), $this->_clientId);
+						if($existingPosition){
+							$workplaceHasPosition->addRelation($workplaceId, $existingPosition);
+						}
+						else{
+							$positionId = $positions->addPosition($position);
+							$workplaceHasPosition->addRelation($workplaceId, $positionId);
+						}
 					}
 				}
 				
@@ -269,7 +283,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
 	    	if ($form->getElement('other')->isChecked()){
-	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId), 'workplaceNew' );
+	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew' );
 	    	}
 	    	else{
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'workplaceList');
@@ -278,7 +292,7 @@ class WorkplaceController extends Zend_Controller_Action
     	catch(Zend_Exception $e){
     		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e->getMessage() . $e->getTraceAsString());
     		$defaultNamespace->formData = $formData;
-    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'workplaceNew');
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
     	}
     	
     }
@@ -362,17 +376,17 @@ class WorkplaceController extends Zend_Controller_Action
 			$selectForm->select->setLabel('Vyberte pobočku:');
 			$selectForm->submit->setLabel('Vybrat');
 			$this->view->selectForm = $selectForm;
-			
-			/*if ($this->getRequest ()->isPost ()) {
+			$subsidiaryId = array_shift(array_keys($formContent));
+						
+			if ($this->getRequest ()->isPost ()) {
 				$formData = $this->getRequest ()->getPost ();
-				if (in_array('Vybrat', $formData) && $form->isValid ( $formData )) {
-					$subsidiary = $this->getRequest ()->getParam ( 'select' );
-					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId, 'subsidiary' => $subsidiary ), 'subsidiaryIndex' );
-				}
-			}*/
+				$subsidiaryId = $formData['select'];
+				$selectForm->populate($formData);
+			}
+			$this->view->subsidiaryId = $subsidiaryId;
 		}
     	else{
-			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
+			$selectForm = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->selectForm = $selectForm;
 		}
         //$workplacesDb = new Application_Model_DbTable_Workplace();

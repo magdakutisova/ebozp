@@ -17,9 +17,14 @@ class Application_Model_DbTable_WorkplaceHasPosition extends Zend_Db_Table_Abstr
 	);
 	
 	public function addRelation($workplaceId, $positionId){
-		$data['id_workplace'] = $workplaceId;
-		$data['id_position'] = $positionId;
-		$this->insert($data); 
+		try{
+			$data['id_workplace'] = $workplaceId;
+			$data['id_position'] = $positionId;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			//porušení integrity se ignoruje
+		} 
 	}
 	
 }

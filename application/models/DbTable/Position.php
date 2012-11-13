@@ -48,4 +48,15 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		return $positions;
 	}
 	
+	public function existsPosition($positionName, $clientId){
+		$position = $this->fetchAll($this->select()
+									->from('position')
+									->where('position = ?', $positionName)
+									->where('client_id = ?', $clientId));
+		if(count($position) != 0){
+			return $position->current()->id_position;
+		}
+		return false;
+	}
+	
 }

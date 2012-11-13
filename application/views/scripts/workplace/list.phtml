@@ -1,3 +1,10 @@
 <?php echo $this->selectForm;?>
+<?php if ($this->subsidiaryId != null){?>
 
-<a href="<?php echo $this->url(array('clientId' => $this->clientId), 'workplaceNew'); ?>">Přidat pracoviště</a>
+<div class="box">
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
+	| <a class="large" href="#">Přidat podadresář</a>
+	| <a class="large" href="#">Vyfiltrovat neúplná pracoviště</a>
+</div>
+
+<?php }?>

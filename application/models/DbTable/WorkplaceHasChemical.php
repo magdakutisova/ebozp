@@ -17,11 +17,16 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 	);
 	
 	public function addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount){
-		$data['id_workplace'] = $workplaceId;
-		$data['id_chemical'] = $chemicalId;
-		$data['use_purpose'] = $usePurpose;
-		$data['usual_amount'] = $usualAmount;
-		$this->insert($data);
+		try{
+			$data['id_workplace'] = $workplaceId;
+			$data['id_chemical'] = $chemicalId;
+			$data['use_purpose'] = $usePurpose;
+			$data['usual_amount'] = $usualAmount;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			//pokud dojde k porušení integrity, ignoruje se (chem. látka je již na pracovišti vložena)
+		}
 	}
 	
 }

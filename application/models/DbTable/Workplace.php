@@ -22,9 +22,14 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	}
 	
 	public function addWorkplace(Application_Model_Workplace $workplace){
-		$data = $workplace->toArray();
-		$workplaceId = $this->insert($data);
-		return $workplaceId;
+		//když neexistuje pracoviště s daným názvem u klienta, vložit a vrátit ID
+		$existingWorkplace = $this->existsWorkplace($workplace->getName(), $workplace->getClientId());
+		if(!$existingWorkplace){
+			$data = $workplace->toArray();
+			$workplaceId = $this->insert($data);
+			return $workplaceId;
+		}
+		return false;
 	}
 	
 	public function updateWorkplace(Application_Model_Workplace $workplace){
@@ -115,6 +120,17 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	private function processWorkplace($workplace){
 		$data = $workplace->toArray();
 		return new Application_Model_Workplace($data);
+	}
+	
+	public function existsWorkplace($workplaceName, $clientId){
+		$workplace = $this->fetchAll($this->select()
+									->from('workplace')
+									->where('name = ?', $workplaceName)
+									->where('client_id = ?', $clientId));
+		if (count($workplace) != 0){
+			return $workplace->current()->id_workplace;
+		}
+		return false;
 	}
 	
 }
