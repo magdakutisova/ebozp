@@ -3,7 +3,7 @@
 class WorkplaceController extends Zend_Controller_Action
 {
 
-    private $_client = null;
+    private $_headquarters = null;
     private $_clientId = null;
     private $_acl = null;
     private $_user = null;
@@ -27,7 +27,7 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_acl = new My_Controller_Helper_Acl();
         $this->_clientId = $this->getRequest()->getParam('clientId');
         $subsidiaries = new Application_Model_DbTable_Subsidiary();
-        $this->_client = $subsidiaries->getHeadquarters($this->_clientId);
+        $this->_headquarters = $subsidiaries->getHeadquarters($this->_clientId);
         
         //získání seznamu pracovních pozic
         $positions = new Application_Model_DbTable_Position();
@@ -53,7 +53,7 @@ class WorkplaceController extends Zend_Controller_Action
 
 		//do new může jen ten, kdo má přístup k centrále
 		if ($action == 'new'){
-			if(!$this->_acl->isAllowed($this->_user, $this->_client)){
+			if(!$this->_acl->isAllowed($this->_user, $this->_headquarters)){
 				$this->_helper->redirector('denied', 'error');
 			}
 		}
@@ -370,6 +370,8 @@ class WorkplaceController extends Zend_Controller_Action
 			}
     	}
 		
+    	$subsidiaryId = null;
+    	
 		if ($formContent != 0) {
 			$selectForm = new Application_Form_Select ();
 			$selectForm->select->setMultiOptions ( $formContent );
@@ -388,6 +390,12 @@ class WorkplaceController extends Zend_Controller_Action
     	else{
 			$selectForm = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->selectForm = $selectForm;
+		}
+		
+		if($subsidiaryId != null){
+			$workplaceDb = new Application_Model_DbTable_Workplace();
+			$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
+			Zend_Debug::dump($workplaces);
 		}
         //$workplacesDb = new Application_Model_DbTable_Workplace();
         //$workplaces = $workplacesDb->getByClientDetails($clientId);

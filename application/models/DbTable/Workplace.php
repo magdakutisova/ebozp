@@ -49,35 +49,83 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
-	/****************************************
-	 * Pro výpis databáze pracovišť.
-	 */
-	public function getByClientDetails($clientId){
-		//TODO 2nd version
+	public function getBySubsidiaryWithDetails($subsidiaryId){
 		$select = $this->select()
 			->from('workplace')
-			->join('subsidiary', 'subsidiary.id_subsidiary = workplace.subsidiary_id')
-			->where('subsidiary.client_id = ?', $clientId)
-			->order('subsidiary.subsidiary_name');
-		$select->setIntegrityCheck(false);
+			->where('workplace.subsidiary_id = ?', $subsidiaryId);
 		$result = $this->fetchAll($select);
-		if ($result->count()){
-			$workplaces = array();
-			$i = 0;
+		
+		$workplaces = array();
+		$i = 0;
+		if($result != null){
 			foreach($result as $workplace){
-				$workplace = $result->current();
-				$workplaces[$workplace->subsidiary_name][$i] = $this->processWorkplace($workplace);
-				if($workplace->hq){
-					$workplaces[$workplace->subsidiary_name]['hq'] = 1;
+				$workplaces[$i]['workplace'] = $this->processWorkplace($workplace);
+				
+				$selectPositions = $this->select()
+					->from('position')
+					->join('workplace_has_position', 'position.id_position = workplace_has_position.id_position')
+					->where('workplace_has_position.id_workplace = ?', $workplaces[$i]['workplace']->getIdWorkplace());
+				$selectPositions->setIntegrityCheck(false);
+				$positions = $this->fetchAll($selectPositions);
+				if($positions != null){
+					$j = 0;
+					foreach($positions as $position){
+						$workplaces[$i]['positions'][$j] = $position->position;
+						$j++;
+					}
 				}
-				$workplaces[$workplace->subsidiary_name]['id_subsidiary'] = $workplace->id_subsidiary; 
+				
+				$selectWorks = $this->select()
+					->from('work')
+					->join('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
+					->where('workplace_has_work.id_workplace = ?', $workplaces[$i]['workplace']->getIdWorkplace());
+				$selectWorks->setIntegrityCheck(false);
+				$works = $this->fetchAll($selectWorks);
+				if($works != null){
+					$k = 0;
+					foreach($works as $work){
+						$workplaces[$i]['works'][$k] = $work->work;
+						$k++;
+					}
+				}
+				
+				$selectTechnicalDevices = $this->select()
+					->from('technical_device')
+					->join('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
+					->where('workplace_has_technical_device.id_workplace = ?', $workplaces[$i]['workplace']->getIdWorkplace());
+				$selectTechnicalDevices->setIntegrityCheck(false);
+				$technicalDevices = $this->fetchAll($selectTechnicalDevices);
+				if($technicalDevices != null){
+					$l = 0;
+					foreach($technicalDevices as $technicalDevice){
+						$workplaces[$i]['technical_devices'][$l]['sort'] = $technicalDevice->sort;
+						$workplaces[$i]['technical_devices'][$l]['type'] = $technicalDevice->type;
+						$l++;
+					}
+				}
+				
+				$selectChemicals = $this->select()
+					->from('chemical')
+					->join('workplace_has_chemical', 'chemical.id_chemical = workplace_has_chemical.id_chemical')
+					->where('workplace_has_chemical.id_workplace = ?', $workplaces[$i]['workplace']->getIdWorkplace());
+				$selectChemicals->setIntegrityCheck(false);
+				$chemicals = $this->fetchAll($selectChemicals);
+				if($chemicals != null){
+					$k = 0;
+					foreach($chemicals as $chemical){
+						$workplaces[$i]['chemicals'][$k]['chemical'] = $chemical->chemical;
+						$workplaces[$i]['chemicals'][$k]['usual_amount'] = $chemical->usual_amount;
+						$workplaces[$i]['chemicals'][$k]['use_purpose'] = $chemical->use_purpose;
+						$k++;
+					}
+				}
+					
 				$i++;
 			}
+			
 			return $workplaces;
 		}
-		else{
-			return null;
-		}
+		return null;
 	}
 	
 	/**************************************************************
