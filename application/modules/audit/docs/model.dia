@@ -757,7 +757,7 @@
         <dia:point val="55.4508,2.47888"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="55.4008,2.42888;91.4208,5.32888"/>
+        <dia:rectangle val="55.4008,2.42888;91.4208,6.12888"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="55.4508,2.47888"/>
@@ -766,7 +766,7 @@
         <dia:real val="35.920000000000002"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="2.7999999999999998"/>
+        <dia:real val="3.5999999999999996"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Audit_Model_Forms#</dia:string>
@@ -915,6 +915,54 @@
               </dia:attribute>
               <dia:attribute name="comment">
                 <dia:string>#Řádek reprezentující dotazník#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="0"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
+            <dia:string>#findById#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#Audit_Model_Row_Form#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#Najde formulář podle id#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>#id#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#int#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>#identifikační číslo formuláře#</dia:string>
               </dia:attribute>
               <dia:attribute name="kind">
                 <dia:enum val="0"/>
@@ -1181,18 +1229,18 @@
     </dia:object>
     <dia:object type="UML - Dependency" version="1" id="O8">
       <dia:attribute name="obj_pos">
-        <dia:point val="73.4108,5.32923"/>
+        <dia:point val="73.4108,6.12933"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="72.9779,5.27923;73.8779,11.5765"/>
+        <dia:rectangle val="72.9779,6.07933;73.8779,11.5765"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="73.4108,5.32923"/>
-        <dia:point val="73.4108,8.02788"/>
-        <dia:point val="73.4279,8.02788"/>
+        <dia:point val="73.4108,6.12933"/>
+        <dia:point val="73.4108,8.42793"/>
+        <dia:point val="73.4279,8.42793"/>
         <dia:point val="73.4279,11.1265"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
@@ -1219,7 +1267,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O5" connection="10"/>
+        <dia:connection handle="0" to="O5" connection="12"/>
         <dia:connection handle="1" to="O6" connection="8"/>
       </dia:connections>
     </dia:object>
