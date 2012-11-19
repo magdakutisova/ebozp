@@ -9,8 +9,8 @@
 <div class="box">
 	<?php if($this->workplaces != null){
 		foreach($this->workplaces as $workplace){?>
-			<div class="workplace-title"><?php echo $workplace['workplace']->getName()?></div>
-			<div>
+			<div class="workplace-title">&bull; <a class="show-info"><?php echo $workplace['workplace']->getName()?></a></div>
+			<div class="workplace-info hidden">
 				<?php if($workplace['workplace']->getBusinessHours()){?>
 					<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>
 				<?php }?>

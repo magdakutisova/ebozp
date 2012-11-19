@@ -211,7 +211,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'workplaceList',
-			new Zend_Controller_Router_Route('klient/:clientId/databaze-pracovist',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-pracovist',
 											array('controller' => 'workplace',
 													'action' => 'list'))
 		);

@@ -32,6 +32,9 @@ $(function(){
 		$(this).parent().parent().next().removeClass("hidden");
 	});
 		
+	$("div").on("click", ".show-info", function(){
+		$(this).parent().next().toggleClass("hidden");
+	});
 	
 	$(".messages-link").click(function(){
 		$("#zpravy").toggleClass("hidden");
