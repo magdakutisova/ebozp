@@ -1,0 +1,25 @@
+<?php 
+if ($this->category->hasParent()) {
+	echo $this->category($this->category->getParent(), "Zpět na předka");
+} else {
+	// odkaz na hlavni stranu
+	echo "<a href='/audit/category/index'>Na seznam kategorií</a>";
+}
+?>
+<h1>Kategorie <?php echo $this->category->name; ?></h1>
+<?php
+echo $this->form->render();
+
+// pokud kategorie nema predka, pak se zobrazi formular pro pridani pootmka a seznam potomku
+if (!$this->category->hasParent()) {
+?>
+<h2>Podkategorie</h2>
+<?php 
+	echo $this->action("list", "category", "audit", array("category" => array("id" => $this->category->id)));
+	
+	echo "<h2>Nová podkategorie</h2>";
+	echo $this->action("create", "category", "audit", array("category" => array("id" => $this->category->id)));
+}
+?>
+<h2>Smazat kategorii</h2>
+<?php echo $this->deleteForm; ?>
