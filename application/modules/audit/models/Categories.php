@@ -26,7 +26,7 @@ class Audit_Model_Categories extends Zend_Db_Table_Abstract {
 	 * @param Audio_Model_Row_Category $parent pripadny predek
 	 * @return Audit_Model_Row_Category
 	 */
-	public function createCategory($name, Audio_Model_Row_Category $parent = null) {
+	public function createCategory($name, Audit_Model_Row_Category $parent = null) {
 		// navratova hodnota
 		$retVal = $this->createRow(array(
 				"name" => $name
