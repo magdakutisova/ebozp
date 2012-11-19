@@ -52,7 +52,8 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	public function getBySubsidiaryWithDetails($subsidiaryId){
 		$select = $this->select()
 			->from('workplace')
-			->where('workplace.subsidiary_id = ?', $subsidiaryId);
+			->where('workplace.subsidiary_id = ?', $subsidiaryId)
+			->order('name');
 		$result = $this->fetchAll($select);
 		
 		$workplaces = array();

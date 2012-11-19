@@ -395,19 +395,8 @@ class WorkplaceController extends Zend_Controller_Action
 		if($subsidiaryId != null){
 			$workplaceDb = new Application_Model_DbTable_Workplace();
 			$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
-			Zend_Debug::dump($workplaces);
+			$this->view->workplaces = $workplaces;
 		}
-        //$workplacesDb = new Application_Model_DbTable_Workplace();
-        //$workplaces = $workplacesDb->getByClientDetails($clientId);
-        /*if($workplaces != null){
-        	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-	        foreach ($workplaces as $key => $workplace){
-	        	if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace['id_subsidiary']))){
-	        		unset($workplaces[$key]);
-	        	}
-	        }
-        }
-        $this->view->workplaces = $workplaces;*/
     }
 
     public function editAction()
