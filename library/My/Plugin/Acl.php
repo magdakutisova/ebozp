@@ -20,7 +20,7 @@ class My_Plugin_Acl extends Zend_Controller_Plugin_Abstract{
 		
 		if(!$this->_acl->isAllowed($role, $resource, $action)){
 			if ($role == My_Role::ROLE_GUEST){
-				$request->setControllerName('user')->setActionName('login');
+				$request->setControllerName('user')->setActionName('login')->setModuleName("default");
 			}
 			else{
 				$request->setControllerName('error')->setActionName('denied');
