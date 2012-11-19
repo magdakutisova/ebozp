@@ -14,7 +14,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 		foreach ($pages as $page){
 			$page->setParams(array('clientId' => $clientId));
 		}
-		
+
 		if($clientId != null){
 			$subs = $clientNavigation->findOneBy('label', 'Pobočky');
 			$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -23,6 +23,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
 			$subsidiaries = $subsidiariesDb->getSubsidiariesComplete($clientId);
 			$acl = new My_Controller_Helper_Acl();
+			$subIds = array();
 			foreach($subsidiaries as $subsidiary){
 				if($acl->isAllowed($user, $subsidiary)){				 
 					$subs->addPage(array(
@@ -35,7 +36,13 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 							'subsidiary' => $subsidiary->getIdSubsidiary(),
 						)
 					));
+					$subIds[] = $subsidiary->getIdSubsidiary();
 				}
+			}
+			
+			$pages = $clientNavigation->findAllBy('subsidiaryId', 'subsidiaryId');
+			foreach ($pages as $page){
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0]));
 			}
 		}
 		

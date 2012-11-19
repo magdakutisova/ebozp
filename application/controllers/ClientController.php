@@ -116,7 +116,9 @@ class ClientController extends Zend_Controller_Action
 				}
 			}
     	}
-		
+    	
+    	$this->view->subsidiaryId = array_shift(array_keys($formContent));
+    	
 		if ($formContent != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );

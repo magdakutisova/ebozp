@@ -19,7 +19,7 @@
 <div class="box clear">
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
 	 | <a class="large" href="#">Pracovní pozice</a>
-	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'workplaceList')?>">Pracoviště</a>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary()), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="#">Pracovní činnosti</a>
 </div>
 
