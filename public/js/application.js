@@ -40,6 +40,10 @@ $(function(){
 		$("#zpravy").toggleClass("hidden");
 	});
 	
+	$(".show-folder-form").click(function(){
+		$(".folder-form").toggleClass("hidden");
+	});
+	
 	$(".list").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/nazev/ #filtered");

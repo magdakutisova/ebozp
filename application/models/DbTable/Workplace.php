@@ -7,7 +7,17 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
     	'Subsidiary' => array(
     		'columns' => 'subsidiary_id',
     		'refTableClass' => 'Application_Model_DbTable_Subsidiary',
-    		'refColumns' => 'id_subsidiary'
+    		'refColumns' => 'id_subsidiary',
+    	),
+    	'Client' => array(
+    		'columns' => 'client_id',
+    		'refTableClass' => 'Application_Model_DbTable_Client',
+    		'refColumns' => 'id_client',
+    	),
+    	'Folder' => array(
+    		'columns' => 'folder_id',
+    		'refTableClass' => 'Application_Model_DbTable_Folder',
+    		'refColumns' => 'id_folder',
     	),
     );
 	

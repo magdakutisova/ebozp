@@ -381,7 +381,7 @@ class WorkplaceController extends Zend_Controller_Action
 			$this->view->selectForm = $selectForm;
 			$subsidiaryId = array_shift(array_keys($formContent));
 						
-			if ($this->getRequest ()->isPost ()) {
+			if ($this->getRequest ()->isPost () && in_array('Vybrat', $this->getRequest()->getPost())) {
 				$formData = $this->getRequest ()->getPost ();
 				$subsidiaryId = $formData['select'];
 				$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
@@ -397,8 +397,22 @@ class WorkplaceController extends Zend_Controller_Action
 			$this->view->selectForm = $selectForm;
 		}
 		
-		//vypisování pracovišť
 		if($subsidiaryId != null){
+			//vkládání podadresářů
+			$textForm = new Application_Form_Text();
+			$textForm->text->setLabel('Název adresáře:');
+			$textForm->submit->setLabel('Přidat');
+			$this->view->textForm = $textForm;
+			if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
+				$formData = $this->getRequest()->getPost();
+				$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
+					'clientId' => $this->_clientId,
+					'subsidiaryId' => $subsidiaryId,
+					'folder' => $formData['text'],
+				));
+			}
+			
+			//vypisování pracovišť
 			$workplaceDb = new Application_Model_DbTable_Workplace();
 			$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
 			$this->view->workplaces = $workplaces;
@@ -573,6 +587,17 @@ class WorkplaceController extends Zend_Controller_Action
         else{
         	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 500);
         }
+    }
+    
+    public function newfolderAction(){
+    	$this->_helper->layout->disableLayout();
+    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+    	$folder = new Application_Model_Folder();
+    	$folder->setFolder($this->getRequest()->getParam('folder'));
+    	$folders = new Application_Model_DbTable_Folder();
+    	$folders->addFolder($folder);
+    	$this->_helper->FlashMessenger('Adresář ' . $folder->getFolder() . ' přidán.');
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
     }
     
     private function prepareFormWithFormData($form, $formData){
