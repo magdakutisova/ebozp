@@ -418,9 +418,27 @@ class WorkplaceController extends Zend_Controller_Action
 			$deleteForm->submit->setLabel('Smazat');
 			$folders = new Application_Model_DbTable_Folder();
 			$folderList = $folders->getFolders($this->_clientId);
-			Zend_Debug::dump($folderList);
 			$deleteForm->select->setMultiOptions($folderList);
 			$this->view->deleteForm = $deleteForm;
+			if($this->getRequest()->isPost() && in_array('Smazat', $this->getRequest()->getPost())){
+				$formData = $this->getRequest()->getPost();
+				$this->_helper->redirector->gotoSimple('deletefolder', 'workplace', null, array(
+					'clientId' => $this->_clientId,
+					'subsidiaryId' => $subsidiaryId,
+					'folderId' => $formData['select'],
+				));
+			}
+			
+			//přesouvání do jiného podadresáře
+			if($this->getRequest()->isPost() && in_array('Uložit', $this->getRequest()->getPost())){
+				$formData = $this->getRequest()->getPost();
+				$this->_helper->redirector->gotoSimple('switchfolder', 'workplace', null, array(
+					'clientId' => $this->_clientId,
+					'subsidiaryId' => $subsidiaryId,
+					'workplaceId' => $formData['workplace_id'],
+					'folderId' => $formData['select'],
+				));
+			}
 			
 			//vypisování pracovišť
 			$workplaceDb = new Application_Model_DbTable_Workplace();
@@ -600,13 +618,35 @@ class WorkplaceController extends Zend_Controller_Action
     }
     
     public function newfolderAction(){
-    	$this->_helper->layout->disableLayout();
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
     	$folder = new Application_Model_Folder();
     	$folder->setFolder($this->getRequest()->getParam('folder'));
+    	$folder->setClientId($this->_clientId);
     	$folders = new Application_Model_DbTable_Folder();
     	$folders->addFolder($folder);
     	$this->_helper->FlashMessenger('Adresář ' . $folder->getFolder() . ' přidán.');
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    }
+    
+    public function switchfolderAction(){
+    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+    	$workplaceId = $this->getRequest()->getParam('workplaceId');
+    	$folderId = $this->getRequest()->getParam('folderId');
+    	
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$workplace = $workplaces->getWorkplace($workplaceId);
+    	$workplace->setFolderId($folderId);
+    	$workplaces->updateWorkplace($workplace);
+    	
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    }
+    
+    public function deletefolderAction(){
+    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+    	$folderId = $this->getRequest()->getParam('folderId');
+    	$folders = new Application_Model_DbTable_Folder();
+    	$folders->deleteFolder($folderId);
+    	$this->_helper->FlashMessenger('Adresář smazán.');
     	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
     }
     
