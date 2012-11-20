@@ -1,0 +1,12 @@
+<h2>Formuláře</h2>
+<ul>
+	<?php 
+	foreach ($this->forms as $form) {
+		?>
+	<li>
+		<?php echo $this->formLink($form, null, "/audit/form/edit"); ?>
+	</li>
+		<?php 
+	}
+	?>
+</ul>

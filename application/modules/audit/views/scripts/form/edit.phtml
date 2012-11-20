@@ -1,0 +1,32 @@
+<link type="text/css" rel="stylesheet" href="/css/questionary.css">
+<h1>Editace formuláře - <?php echo $this->form->name; ?></h1>
+<?php
+echo $this->editForm;
+?>
+<div>
+<?php 
+echo $this->formButton("add-group", "Přidat skupinu");
+echo $this->formButton("remove-group", "Odstranit skupinu");
+echo $this->formButton("edit-group", "Upravit nadpis skupiny");
+echo $this->formButton("sort-group", "Řadit skupiny");
+echo $this->formButton("endsort-group", "Dokončit řazení", array("style" => "display:none;"));
+?>
+</div>
+<div>
+<?php 
+echo $this->formButton("add-question", "Přidat otázku");
+echo $this->formButton("remove-question", "Odstranit otázku");
+echo $this->formButton("edit-question", "Upravit otázku");
+echo $this->formButton("sort-question", "Řadit otázky");
+echo $this->formButton("endsort-question", "Dokončit řazení", array("style" => "display:none"));
+?>
+</div>
+<div>
+<?php echo $this->formButton("cancel-action", "Zrušit", array("style" => "display:none;")); ?>
+</div>
+<div id="form-container"></div>
+<script type="text/javascript">
+var QDATA = <?php echo Zend_Json::encode($this->questionary->toArray()); ?>
+</script>
+<script type="text/javascript" src="/js/questionary.items.js"></script>
+<script type="text/javascript" src="/js/audit/form/edit.js"></script>
