@@ -4,12 +4,16 @@
 <div class="box">
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
 	| <a class="large show-folder-form">Přidat podadresář</a>
-	| <a class="large">Smazat podadresář</a>
+	| <a class="large show-folder-delete">Smazat podadresář</a>
 	| <a class="large" href="#">Vyfiltrovat neúplná pracoviště</a>
 </div>
 
 <div class="hidden box folder-form">
 	<?php echo $this->textForm; ?>
+</div>
+
+<div class="hidden box folder-delete">
+	<?php echo $this->deleteForm; ?>
 </div>
 
 <div class="box">

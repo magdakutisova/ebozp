@@ -44,6 +44,10 @@ $(function(){
 		$(".folder-form").toggleClass("hidden");
 	});
 	
+	$(".show-folder-delete").click(function(){
+		$(".folder-delete").toggleClass("hidden");
+	});
+	
 	$(".list").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/nazev/ #filtered");

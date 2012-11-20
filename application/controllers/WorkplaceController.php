@@ -412,6 +412,16 @@ class WorkplaceController extends Zend_Controller_Action
 				));
 			}
 			
+			//mazání podadresářů
+			$deleteForm = new Application_Form_Select();
+			$deleteForm->select->setLabel('Vyberte adresář:');
+			$deleteForm->submit->setLabel('Smazat');
+			$folders = new Application_Model_DbTable_Folder();
+			$folderList = $folders->getFolders($this->_clientId);
+			Zend_Debug::dump($folderList);
+			$deleteForm->select->setMultiOptions($folderList);
+			$this->view->deleteForm = $deleteForm;
+			
 			//vypisování pracovišť
 			$workplaceDb = new Application_Model_DbTable_Workplace();
 			$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
