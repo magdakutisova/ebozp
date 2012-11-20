@@ -18,6 +18,10 @@
 	overflow: auto;
 }
 
+.inline{
+	display: inline;
+}
+
 .diary-message, .no-margin{
 	margin: 0; padding: 0;
 }
@@ -38,7 +42,7 @@
 	background: #e5eCf9;
 }
 
-div.workplace-title{
+a.workplace-title{
 	font-size: 120%;
 	font-weight: bold;
 	margin-top: 10px;

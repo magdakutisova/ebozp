@@ -338,7 +338,7 @@ class ClientController extends Zend_Controller_Action
 			$this->view->form = $form;
 		}
 		
-		//výběr pracovišť
+		//výběr pracovišť - se momentálně nezobrazuje
 		$workplaces = new Application_Model_DbTable_Workplace();
 		$workplaceSelect = $workplaces->getWorkplaces($clientId);
 		if ($workplaceSelect != 0){

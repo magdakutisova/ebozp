@@ -145,7 +145,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	public function getWorkplaces($clientId){
 		$select = $this->select()->from('workplace')
 			->join('subsidiary', 'workplace.subsidiary_id = subsidiary.id_subsidiary')
-			->where('client_id = ?', $clientId)
+			->where('workplace.client_id = ?', $clientId)
 			->where('subsidiary.deleted = 0')
 			->order('name');
 		$select->setIntegrityCheck(false);

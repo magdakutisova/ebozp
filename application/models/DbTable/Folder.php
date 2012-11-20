@@ -20,23 +20,19 @@ class Application_Model_DbTable_Folder extends Zend_Db_Table_Abstract{
 	}
 	
 	public function deleteFolder($id){
-		$this->delete('id_folder = ?' . (int)$id);
+		$this->delete('id_folder = ' . (int)$id);
 	}
 	
 	/*******************************************************
 	 * Vrací pole ID - název pro multioptions.
 	 */
 	public function getFolders($clientId){
-		Zend_Debug::dump($clientId);
 		$select = $this->select()
 			->from('folder')
-			->join('workplace', 'folder.id_folder = workplace.folder_id')
-			->where('workplace.client_id = ?', $clientId)
-			->order('folder.folder');
+			->where('client_id = ?', $clientId)
+			->order('folder');
 		$select->setIntegrityCheck(false);
-		Zend_Debug::dump($select->__toString());
 		$results = $this->fetchAll($select);
-		Zend_Debug::dump($results);
 		$folders = array();
 		if(count($results) > 0){
 			foreach($results as $result){

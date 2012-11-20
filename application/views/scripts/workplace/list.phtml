@@ -19,7 +19,12 @@
 <div class="box">
 	<?php if($this->workplaces != null){
 		foreach($this->workplaces as $workplace){?>
-			<div class="workplace-title">&bull; <a class="show-info"><?php echo $workplace['workplace']->getName()?></a></div>
+			<div>
+				&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
+				| <a>Editovat</a>
+				| <a>Smazat</a>
+				| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
+			</div>
 			<div class="workplace-info hidden">
 				<?php if($workplace['workplace']->getBusinessHours()){?>
 					<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>
