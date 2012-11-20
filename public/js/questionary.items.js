@@ -226,6 +226,7 @@ QUESTIONARY.__BASE__.prototype.renderItem = function () {
 	$("<div class='questionary-content'>").appendTo(retVal);
 	$("<br class='questionary-clearer'>").appendTo(retVal);
 	$("<input type='hidden' name='className'>").val(this._className).appendTo(retVal);
+	$("<input type='hidden' name='itemName'>").val(this._name).appendTo(retVal);
 	
 	this._node = retVal;
 	
@@ -444,7 +445,7 @@ QUESTIONARY.Questionary.prototype.setLocked = function (locked) {
 // odebere prvek z dotazniku
 QUESTIONARY.Questionary.prototype.removeItem = function (item) {
 	// kontrola, jeslti je prvek soucasti tohoto dotazniku
-	if (item.getQuestionary() != this) throw "Item is not part of this questionary";
+	if (item.questionary() != this) throw "Item is not part of this questionary";
 	
 	// kontrola prislusnosti ke kontejneru
 	if (item.container()) {
@@ -1120,7 +1121,7 @@ QUESTIONARY.ValueList.prototype.renderItem = function () {
 	var retVal = QUESTIONARY.ChooseInput.prototype.renderItem.call(this);
 	
 	// pripojeni pole
-	var content = $("<div class='questionary-item-radio'>");
+	var content = $("<div class='questionary-item-valuelist'>");
 	
 	// vyhodnoceni vychozi hodnoty
 	var val = this.getValue();
