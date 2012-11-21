@@ -311,6 +311,33 @@ $((new function () {
 	}
 	
 	/*
+	 * rozlozi otazku na zavaznost a zneni
+	 */
+	function explodeQuestion(text) {
+		var pos = text.indexOf(" ");
+		
+		var weight = text.substr(0, pos);
+		var question = text.substr(pos + 1);
+		
+		// trim zavorek
+		weight = weight.substr(1, weight.length - 2);
+		
+		var retVal = {
+				question : question,
+				weight : Number(weight)
+		};
+		
+		return retVal;
+	}
+	
+	/**
+	 * slozi zneni otazky a zavaznost
+	 */
+	function buildQuestion(question, weight) {
+		return "(" + weight + ") " + question;
+	}
+	
+	/*
 	 * prida otazku
 	 */
 	function addQuestion() {
@@ -427,10 +454,15 @@ $((new function () {
 		var elementName = $(this).find(">input[name='itemName']").val();
 		var item = questionary.getByName(elementName);
 		
-		var question = prompt("Nové znění otázky:", item.label());
+		var qData = explodeQuestion(item.label());
+		
+		var question = prompt("Nové znění otázky:", qData.question);
 		
 		if (question.length) {
-			item.label(question);
+			// sestaveni dat
+			var text = buildQuestion(question, qData.weight);
+			
+			item.label(text);
 		} else {
 			alert("Otázka nesmí být prázdná");
 		}
@@ -538,6 +570,37 @@ $((new function () {
 		selectedGroup = null;
 	}
 	
+	/*
+	 * pripravi otazky na zmenu zavaznosti
+	 */
+	function weightQuestion() {
+		var questions = getQuestions();
+		
+		enableHighlighting(questions);
+		
+		questions.click(weightQuestionFinish);
+	}
+	
+	function weightQuestionFinish() {
+		// nalezeni jmena
+		var name = $(this).find(">input[name='itemName']").val();
+		var item = questionary.getByName(name);
+		
+		var qParts = explodeQuestion(item.label());
+		
+		var newWeight = Number(prompt("Zadejte novou váhu:", qParts.weight));
+		
+		if (!newWeight) {
+			alert("Neplatná závažnost");
+		} else {
+			qParts.weight = newWeight;
+		}
+		
+		item.label(buildQuestion(qParts.question, qParts.weight));
+		
+		render();
+	}
+	
 	/*******************
 	 * ulozeni formulare
 	 *******************/
@@ -572,8 +635,10 @@ $((new function () {
 		$("#add-question").click(addQuestion);
 		$("#remove-question").click(removeQuestion);
 		$("#edit-question").click(editQuestion);
+		$("#weight-question").click(weightQuestion);
 		$("#sort-question").click(sortQuestionSelectGroup);
 		$("#endsort-question").click(sortQuestionFinish);
+		
 		$("#formpost").submit(saveForm);
 		
 		render();
