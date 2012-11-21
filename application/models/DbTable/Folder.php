@@ -34,6 +34,7 @@ class Application_Model_DbTable_Folder extends Zend_Db_Table_Abstract{
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$folders = array();
+		$folders[0] = '---Žádné umístění---';
 		if(count($results) > 0){
 			foreach($results as $result){
 				$key = $result->id_folder;

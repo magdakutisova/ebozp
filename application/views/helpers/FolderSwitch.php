@@ -17,7 +17,7 @@ class Zend_View_Helper_FolderSwitch extends Zend_View_Helper_Abstract{
         
         $form->setAttrib('class', 'inline');
 		
-		$form->select->setLabel('Přesunout do podadresáře:');
+		$form->select->setLabel('Změnit umístění pracoviště:');
 		$folders = new Application_Model_DbTable_Folder();
 		$folderList = $folders->getFolders($this->view->clientId);
 		$form->select->setMultiOptions($folderList);

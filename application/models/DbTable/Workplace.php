@@ -62,8 +62,10 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	public function getBySubsidiaryWithDetails($subsidiaryId){
 		$select = $this->select()
 			->from('workplace')
+			->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
 			->where('workplace.subsidiary_id = ?', $subsidiaryId)
-			->order('name');
+			->order(array('folder.folder', 'workplace.name'));
+		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		
 		$workplaces = array();
@@ -71,6 +73,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		if($result != null){
 			foreach($result as $workplace){
 				$workplaces[$i]['workplace'] = $this->processWorkplace($workplace);
+				$workplaces[$i]['folder'] = $workplace->folder;
 				
 				$selectPositions = $this->select()
 					->from('position')

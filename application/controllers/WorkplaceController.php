@@ -149,13 +149,9 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
 	    	
 			foreach($formData as $key => $value){
-				//Zend_Debug::dump($formData);
-				//Zend_Debug::dump($key);
-				//Zend_Debug::dump($value);
 				//vložení pracovních pozic
 				if($key == "position" || preg_match('/newPosition\d+/', $key)){
 					if($value['position'] != 0 || $value['new_position'] != ''){
-						//Zend_Debug::dump($value);
 						$position = new Application_Model_Position($value);
 						if($value['position'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
@@ -286,7 +282,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew' );
 	    	}
 	    	else{
-	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsididaryId' => $subsidiary->getIdSubsidiary()), 'workplaceList');
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsididaryId' => $subsidiaryId), 'workplaceList');
 	    	}
     	}
     	catch(Zend_Exception $e){
@@ -400,7 +396,7 @@ class WorkplaceController extends Zend_Controller_Action
 		if($subsidiaryId != null){
 			//vkládání podadresářů
 			$textForm = new Application_Form_Text();
-			$textForm->text->setLabel('Název adresáře:');
+			$textForm->text->setLabel('Název umístění:');
 			$textForm->submit->setLabel('Přidat');
 			$this->view->textForm = $textForm;
 			if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
@@ -414,7 +410,7 @@ class WorkplaceController extends Zend_Controller_Action
 			
 			//mazání podadresářů
 			$deleteForm = new Application_Form_Select();
-			$deleteForm->select->setLabel('Vyberte adresář:');
+			$deleteForm->select->setLabel('Vyberte umístění:');
 			$deleteForm->submit->setLabel('Smazat');
 			$folders = new Application_Model_DbTable_Folder();
 			$folderList = $folders->getFolders($this->_clientId);
@@ -635,7 +631,12 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$workplaces = new Application_Model_DbTable_Workplace();
     	$workplace = $workplaces->getWorkplace($workplaceId);
-    	$workplace->setFolderId($folderId);
+    	if($folderId == 0){
+    		$workplace->setFolderId(null);
+    	}
+    	else{
+    		$workplace->setFolderId($folderId);
+    	}
     	$workplaces->updateWorkplace($workplace);
     	
     	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
@@ -644,6 +645,9 @@ class WorkplaceController extends Zend_Controller_Action
     public function deletefolderAction(){
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
     	$folderId = $this->getRequest()->getParam('folderId');
+    	if($folderId == 0){
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    	}
     	$folders = new Application_Model_DbTable_Folder();
     	$folders->deleteFolder($folderId);
     	$this->_helper->FlashMessenger('Adresář smazán.');
