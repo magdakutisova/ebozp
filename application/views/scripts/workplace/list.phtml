@@ -2,8 +2,8 @@
 <?php if ($this->subsidiaryId != null){?>
 
 <div class="box">
-	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
-	| <a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
+	<?php if($this->canAddWorkplace){?><a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
+	| <?php }?><a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
 	| <a class="large show-folder-delete">Smazat umístění</a>
 	| <a class="large" href="#">Vyfiltrovat neúplná pracoviště</a>
 </div>
@@ -52,9 +52,10 @@
 			<?php if($workplace['workplace']->getRiskNote()){?>
 				<p class="no-margin"><span class="bold">Poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskNote()?></p>
 			<?php }?>
-			<?php if($workplace['workplace']->getRiskPrivate()){?>
+			<?php if($this->canViewPrivate){
+				if($workplace['workplace']->getRiskPrivate()){?>
 				<p class="no-margin"><span class="bold">Soukromá poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskPrivate()?></p>
-			<?php }?>
+			<?php }}?>
 			<?php if($workplace['workplace']->getBossSurname()){?>
 				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['workplace']->getBossName() . ' ' . $workplace['workplace']->getBossSurname();
 								if ($workplace['workplace']->getBossPhone()){
@@ -67,9 +68,10 @@
 			<?php if($workplace['workplace']->getNote()){?>
 				<p class="no-margin"><span class="bold">Poznámka: </span> <?php echo $workplace['workplace']->getNote()?></p>
 			<?php }?>
-			<?php if($workplace['workplace']->getPrivate()){?>
+			<?php if($this->canViewPrivate){
+				if($workplace['workplace']->getPrivate()){?>
 				<p class="no-margin"><span class="bold">Soukromá poznámka: </span> <?php echo $workplace['workplace']->getPrivate()?></p>
-			<?php }?>
+			<?php }}?>
 			<?php if(isset($workplace['positions'])){?>
 				<p class="no-margin"><span class="bold">Pracovní pozice na pracovišti: </span></p>
 				<ul class="no-margin-bottom">

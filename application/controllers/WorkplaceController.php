@@ -51,11 +51,18 @@ class WorkplaceController extends Zend_Controller_Action
         $users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
 
-		//do new může jen ten, kdo má přístup k centrále
-		if ($action == 'new'){
-			if(!$this->_acl->isAllowed($this->_user, $this->_headquarters)){
+		//do new může jen ten, kdo má přístup k centrále (to jsme se domluvili jednou po telefonu, kdyby
+		//byl problém
+		if(!$this->_acl->isAllowed($this->_user, $this->_headquarters)){
+			if ($action == 'new'){			
 				$this->_helper->redirector('denied', 'error');
 			}
+			else{
+				$this->view->canAddWorkplace = false;
+			}
+		}
+		else{
+			$this->view->canAddWorkplace = true;
 		}
 		
 		//soukromá poznámka
@@ -114,7 +121,6 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
-    		//Zend_Debug::dump($this->getRequest()->getPost());
     		$form->populate($this->getRequest()->getPost());
     		$this->view->form = $form;
     		return;
@@ -123,7 +129,6 @@ class WorkplaceController extends Zend_Controller_Action
     	//zpracování formuláře  	
     	try{
 	    	$formData = $this->getRequest()->getPost();
-	    	//My_Debug::dump($formData);
 	    		    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
@@ -282,7 +287,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew' );
 	    	}
 	    	else{
-	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsididaryId' => $subsidiaryId), 'workplaceList');
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
 	    	}
     	}
     	catch(Zend_Exception $e){
@@ -394,6 +399,10 @@ class WorkplaceController extends Zend_Controller_Action
 		}
 		
 		if($subsidiaryId != null){
+			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($subsidiaryId))){
+				$this->_helper->redirector->gotoSimple('denied', 'error');
+			}
+			
 			//vkládání podadresářů
 			$textForm = new Application_Form_Text();
 			$textForm->text->setLabel('Název umístění:');
