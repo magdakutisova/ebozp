@@ -1,0 +1,7 @@
+*~
+.*
+!.gitignore
+.settings/
+.buildpath
+library/Zend
+*.log
