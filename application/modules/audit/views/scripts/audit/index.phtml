@@ -1,0 +1,27 @@
+<h1>Nový audit</h1>
+<ul class="tree" id="client-list">
+<?php
+foreach ($this->clients as $client) {
+	?>
+	<li class="tree-folder">
+		<h2><?php 
+		echo $this->tree()->folderTitle($client->company_name, array("open" => false));
+		?></h2>
+		<ul class="hidden">
+		<?php 
+		$diaries = $this->subSiDiaryIndex[$client->id_client];
+		$items = array();
+		
+		foreach ($diaries as $diary) {
+			$items[] = $this->createAuditLink($diary);
+		}
+		
+		echo $this->tree()->items($items);
+		?>
+		</ul>
+	</li>
+	<?php
+}
+?>
+</ul>
+<script type="text/javascript" src="/js/audit/audit/index.js"></script>

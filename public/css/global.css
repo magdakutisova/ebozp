@@ -123,3 +123,10 @@ dt#send-label		{clear: both;}
 input[id*='factor_'], input[id*='risk_'] {width: 300px;}
 td[id*='-errors']						 {color: red; font-weight: bold;}
 form#workplace select					 {min-width: 200px;}
+
+/*
+ * CSS - PETR JINDRA
+ */
+.tree { list-style: none; }
+.tree-roller { border: dotted 1px black; font-family: monospace; cursor: hand; cursor: pointer;  padding: 2px 5px;}
+.tree-roller:hover { background-color: #e5eCf9; }

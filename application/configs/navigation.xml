@@ -28,7 +28,12 @@
 					<resource>client</resource>
 					<privilege>new</privilege>
 				</new>
-			</pages>
+				<audit><label>Nový audit</label>
+					<resource>audit:audit</resource>
+					<privilege>create</privilege>
+					<uri>/audit/audit/index</uri>
+					</audit>
+				</pages>
 		</client>
 		<userAdmin>
 			<label>Administrace uživatelů</label>
