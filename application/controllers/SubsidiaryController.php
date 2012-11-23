@@ -54,6 +54,9 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$subsidiaryId = $this->_getParam('subsidiary');
 		$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
+		if($subsidiary->getHq()){
+			$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'clientIndex');
+		}
 		
 		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;

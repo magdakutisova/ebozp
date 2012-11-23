@@ -2,9 +2,9 @@
 <?php if ($this->subsidiaryId != null){?>
 
 <div class="box">
-	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
-	| <a class="large show-folder-form">Přidat podadresář</a>
-	| <a class="large show-folder-delete">Smazat podadresář</a>
+	<?php if($this->canAddWorkplace){?><a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
+	| <?php }?><a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
+	| <a class="large show-folder-delete">Smazat umístění</a>
 	| <a class="large" href="#">Vyfiltrovat neúplná pracoviště</a>
 </div>
 
@@ -15,98 +15,114 @@
 <div class="hidden box folder-delete">
 	<?php echo $this->deleteForm; ?>
 </div>
+<div>
 
-<div class="box">
-	<?php if($this->workplaces != null){
-		foreach($this->workplaces as $workplace){?>
-			<div>
-				&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
-				| <a>Editovat</a>
-				| <a>Smazat</a>
-				| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
-			</div>
-			<div class="workplace-info hidden">
-				<?php if($workplace['workplace']->getBusinessHours()){?>
-					<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>
+<?php if($this->workplaces != null){
+	$folder = 'default';
+	foreach($this->workplaces as $workplace){
+		if($workplace['folder'] != $folder){
+			$folder = $workplace['folder']; ?>
+			</div><h3><?php
+				if($folder == ''){
+					echo 'Pracoviště bez určeného umístění';
+				}
+				else{
+					echo $folder;
+				}
+			?>
+			</h3>
+			<div class="box">
+		<?php } ?>
+		<div>
+			&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
+			| <a>Editovat</a>
+			| <a>Smazat</a>
+			| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
+		</div>
+		<div class="workplace-info hidden">
+			<?php if($workplace['workplace']->getBusinessHours()){?>
+				<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>
+			<?php }?>
+			<?php if($workplace['workplace']->getDescription()){?>
+				<p class="no-margin"><span class="bold">Popis: </span> <?php echo $workplace['workplace']->getDescription()?></p>
+			<?php }?>
+			<?php if($workplace['workplace']->getRisks()){?>
+				<p class="no-margin"><span class="bold">Rizika: </span> <?php echo $workplace['workplace']->getRisks()?></p>
+			<?php }?>
+			<?php if($workplace['workplace']->getRiskNote()){?>
+				<p class="no-margin"><span class="bold">Poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskNote()?></p>
+			<?php }?>
+			<?php if($this->canViewPrivate){
+				if($workplace['workplace']->getRiskPrivate()){?>
+				<p class="no-margin"><span class="bold">Soukromá poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskPrivate()?></p>
+			<?php }}?>
+			<?php if($workplace['workplace']->getBossSurname()){?>
+				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['workplace']->getBossName() . ' ' . $workplace['workplace']->getBossSurname();
+								if ($workplace['workplace']->getBossPhone()){
+									echo ', telefon: ' . $workplace['workplace']->getBossPhone();
+								}
+								if ($workplace['workplace']->getBossEmail()){
+									echo ', e-mail: ' . $workplace['workplace']->getBossEmail();
+								}?></p>
+			<?php }?>
+			<?php if($workplace['workplace']->getNote()){?>
+				<p class="no-margin"><span class="bold">Poznámka: </span> <?php echo $workplace['workplace']->getNote()?></p>
+			<?php }?>
+			<?php if($this->canViewPrivate){
+				if($workplace['workplace']->getPrivate()){?>
+				<p class="no-margin"><span class="bold">Soukromá poznámka: </span> <?php echo $workplace['workplace']->getPrivate()?></p>
+			<?php }}?>
+			<?php if(isset($workplace['positions'])){?>
+				<p class="no-margin"><span class="bold">Pracovní pozice na pracovišti: </span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($workplace['positions'] as $position){?>
+					<li><?php echo $position?></li>
 				<?php }?>
-				<?php if($workplace['workplace']->getDescription()){?>
-					<p class="no-margin"><span class="bold">Popis: </span> <?php echo $workplace['workplace']->getDescription()?></p>
+				</ul>
+			<?php }?>
+			<?php if(isset($workplace['works'])){?>
+				<p class="no-margin"><span class="bold">Pracovní činnosti na pracovišti: </span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($workplace['works'] as $work){?>
+					<li><?php echo $work?></li>
 				<?php }?>
-				<?php if($workplace['workplace']->getRisks()){?>
-					<p class="no-margin"><span class="bold">Rizika: </span> <?php echo $workplace['workplace']->getRisks()?></p>
+				</ul>
+			<?php }?>
+			<?php if(isset($workplace['technical_devices'])){?>
+				<p class="no-margin"><span class="bold">Technické prostředky na pracovišti: </span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($workplace['technical_devices'] as $technicalDevice){?>
+					<li><?php if ($technicalDevice['sort']){
+						echo $technicalDevice['sort'];
+					}?>
+					<?php if ($technicalDevice['sort'] && $technicalDevice['type']){
+						echo ' ';
+					}?>
+					<?php if ($technicalDevice['type']){
+						echo $technicalDevice['type'];
+					}?></li>
 				<?php }?>
-				<?php if($workplace['workplace']->getRiskNote()){?>
-					<p class="no-margin"><span class="bold">Poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskNote()?></p>
+				</ul>
+			<?php }?>
+			<?php if(isset($workplace['chemicals'])){?>
+				<p class="no-margin"><span class="bold">Chemické látky na pracovišti: </span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($workplace['chemicals'] as $chemical){?>
+					<li><?php echo $chemical['chemical']?>
+					<?php if ($chemical['usual_amount']){
+						echo ', obvyklé množství: ' . $chemical['usual_amount'];
+					}?>
+					<?php if ($chemical['use_purpose']){
+						echo ', účel použití: ' . $chemical['use_purpose'];
+					}?>
+					</li>
 				<?php }?>
-				<?php if($workplace['workplace']->getRiskPrivate()){?>
-					<p class="no-margin"><span class="bold">Soukromá poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskPrivate()?></p>
-				<?php }?>
-				<?php if($workplace['workplace']->getBossSurname()){?>
-					<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['workplace']->getBossName() . ' ' . $workplace['workplace']->getBossSurname();
-									if ($workplace['workplace']->getBossPhone()){
-										echo ', telefon: ' . $workplace['workplace']->getBossPhone();
-									}
-									if ($workplace['workplace']->getBossEmail()){
-										echo ', e-mail: ' . $workplace['workplace']->getBossEmail();
-									}?></p>
-				<?php }?>
-				<?php if($workplace['workplace']->getNote()){?>
-					<p class="no-margin"><span class="bold">Poznámka: </span> <?php echo $workplace['workplace']->getNote()?></p>
-				<?php }?>
-				<?php if($workplace['workplace']->getPrivate()){?>
-					<p class="no-margin"><span class="bold">Soukromá poznámka: </span> <?php echo $workplace['workplace']->getPrivate()?></p>
-				<?php }?>
-				<?php if(isset($workplace['positions'])){?>
-					<p class="no-margin"><span class="bold">Pracovní pozice na pracovišti: </span></p>
-					<ul class="no-margin-bottom">
-					<?php foreach($workplace['positions'] as $position){?>
-						<li><?php echo $position?></li>
-					<?php }?>
-					</ul>
-				<?php }?>
-				<?php if(isset($workplace['works'])){?>
-					<p class="no-margin"><span class="bold">Pracovní činnosti na pracovišti: </span></p>
-					<ul class="no-margin-bottom">
-					<?php foreach($workplace['works'] as $work){?>
-						<li><?php echo $work?></li>
-					<?php }?>
-					</ul>
-				<?php }?>
-				<?php if(isset($workplace['technical_devices'])){?>
-					<p class="no-margin"><span class="bold">Technické prostředky na pracovišti: </span></p>
-					<ul class="no-margin-bottom">
-					<?php foreach($workplace['technical_devices'] as $technicalDevice){?>
-						<li><?php if ($technicalDevice['sort']){
-							echo $technicalDevice['sort'];
-						}?>
-						<?php if ($technicalDevice['sort'] && $technicalDevice['type']){
-							echo ' ';
-						}?>
-						<?php if ($technicalDevice['type']){
-							echo $technicalDevice['type'];
-						}?></li>
-					<?php }?>
-					</ul>
-				<?php }?>
-				<?php if(isset($workplace['chemicals'])){?>
-					<p class="no-margin"><span class="bold">Chemické látky na pracovišti: </span></p>
-					<ul class="no-margin-bottom">
-					<?php foreach($workplace['chemicals'] as $chemical){?>
-						<li><?php echo $chemical['chemical']?>
-						<?php if ($chemical['usual_amount']){
-							echo ', obvyklé množství: ' . $chemical['usual_amount'];
-						}?>
-						<?php if ($chemical['use_purpose']){
-							echo ', účel použití: ' . $chemical['use_purpose'];
-						}?>
-						</li>
-					<?php }?>
-					</ul>
-				<?php }?>
-			</div>
-		<?php }
-	} else {?>
-		<p>Pobočka nemá žádná pracoviště.</p>
-	<?php }?>
-</div>	
+				</ul>
+			<?php }?>
+		</div>
+	<?php } ?></div>
+<?php } else {?>
+	<p>Pobočka nemá žádná pracoviště.</p>
+<?php }?>
+
 <?php }?>

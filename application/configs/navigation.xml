@@ -6,7 +6,7 @@
 			<route>home</route>
 		</home>
 		<client>
-			<label>Klient</label>
+			<label>Klienti</label>
 			<route>clientList</route>
 			<resource>client</resource>
 			<privilege>list</privilege>

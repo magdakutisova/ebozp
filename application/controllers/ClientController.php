@@ -110,16 +110,16 @@ class ClientController extends Zend_Controller_Action
 		$formContent = $subsidiaries->getSubsidiaries ( $clientId );
 		
     	if ($formContent != 0){
-			foreach ($formContent as $key => $subsidiary){
+			foreach ($formContent as $key => $subs){
 				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
 					unset($formContent[$key]);
 				}
 			}
     	}
     	
-    	$this->view->subsidiaryId = array_shift(array_keys($formContent));
-    	
-		if ($formContent != 0) {
+    	$this->view->subsidiaryId = $subsidiary->getIdSubsidiary();
+    	  	
+		if (count($formContent) != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
