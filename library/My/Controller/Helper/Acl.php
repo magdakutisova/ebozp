@@ -14,6 +14,14 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('workplace'));
 		$this->add(new Zend_Acl_Resource('print'));
 		
+		/*
+		 * ZDROJE MODULU AUDIT 
+		 */
+		$this->add(new Zend_Acl_Resource("audit:form"));
+		$this->add(new Zend_Acl_Resource("audit:category"));
+		$this->add(new Zend_Acl_Resource("audit:index"));
+		$this->add(new Zend_Acl_Resource("audit:audit"));
+		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
 		$technician = My_Role::ROLE_TECHNICIAN;
@@ -39,6 +47,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
+		$this->allow($technician, "audit:audit", array("index", "create", "post"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
