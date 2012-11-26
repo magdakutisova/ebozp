@@ -2,7 +2,7 @@
 .questionary-container { margin: auto;  width: 820px; font-family: Arial; }
 .questionary-head { text-align: center; font-variant: small-caps; border : 0px black solid; border: 0px black solid; border-bottom: 1px black solid;}
 .questionary-item { width: 100%; padding: 5px 3px; position: relative;}
-.questionary-label,.questionary-content { background: #d0e8f0; margin: 2px; padding: 4px 4px; width: inherit; vertical-align: middle; border-radius: 5px; }
+.questionary-label,.questionary-content { background: #e5ecf9; margin: 2px; padding: 4px 4px; width: inherit; vertical-align: middle; border-radius: 5px; }
 .questionary-label {float: left; width: 385px; }
 .questionary-content { float: right; width: 385px; margin-right: 8px; }
 .questionary-clearer { clear: both; }
