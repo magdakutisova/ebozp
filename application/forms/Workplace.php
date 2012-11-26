@@ -314,30 +314,10 @@ class Application_Form_Workplace extends Zend_Form
     }
 
     public function preValidation(array $data, $positionList, $workList, $sortList, $typeList, $chemicalList){
-    	function findPositions($position){
-    		if(strpos($position, 'newPosition') !== false){
-    			return $position;
-    		}
-    	}
-    	function findWorks($work){
-    		if(strpos($work, 'newWork') !== false){
-    			return $work;
-    		}
-    	}
-    	function findTechnicalDevices($technicalDevice){
-    		if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
-    			return $technicalDevice;
-    		}
-    	}
-    	function findChemicals($chemical){
-    		if(strpos($chemical, 'newChemical') !== false){
-    			return $chemical;
-    		}
-    	}
-    	$newPositions = array_filter(array_keys($data), 'findPositions');
-    	$newWorks = array_filter(array_keys($data), 'findWorks');
-    	$newTechnicalDevices = array_filter(array_keys($data), 'findTechnicalDevices');
-    	$newChemicals = array_filter(array_keys($data), 'findChemicals');
+    	$newPositions = array_filter(array_keys($data), array($this, 'findPositions'));
+    	$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
+    	$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
+    	$newChemicals = array_filter(array_keys($data), array($this, 'findChemicals'));
 
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
@@ -379,6 +359,30 @@ class Application_Form_Workplace extends Zend_Form
     			'validators' => array(new My_Validate_Chemical()),
     			'multiOptions' => $chemicalList,
     		));
+    	}
+    }
+    
+	private function findPositions($position){
+    	if(strpos($position, 'newPosition') !== false){
+    		return $position;
+    	}
+    }
+    
+    private function findWorks($work){
+    	if(strpos($work, 'newWork') !== false){
+    		return $work;
+    	}
+    }
+    
+    private function findTechnicalDevices($technicalDevice){
+    	if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
+    		return $technicalDevice;
+    	}
+    }
+    
+	private function findChemicals($chemical){
+    	if(strpos($chemical, 'newChemical') !== false){
+    		return $chemical;
     	}
     }
 

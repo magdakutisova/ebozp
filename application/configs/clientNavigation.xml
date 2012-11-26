@@ -60,6 +60,7 @@
 			<privilege>list</privilege>
 			<clientId>clientId</clientId>
 			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter>filter</filter>
 			<pages>
 				<list>
 					<label>Databáze pracovišť</label>
@@ -68,6 +69,7 @@
 					<privilege>list</privilege>
 					<clientId>clientId</clientId>
 					<subsidiaryId>subsidiaryId</subsidiaryId>
+					<filter>filter</filter>
 				</list>
 			</pages>
 		</workplace>

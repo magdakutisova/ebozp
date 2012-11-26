@@ -59,14 +59,34 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
-	public function getBySubsidiaryWithDetails($subsidiaryId){
-		$select = $this->select()
-			->from('workplace')
-			->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
-			->where('workplace.subsidiary_id = ?', $subsidiaryId)
-			->order(array('folder.folder', 'workplace.name'));
-		$select->setIntegrityCheck(false);
-		$result = $this->fetchAll($select);
+	public function getBySubsidiaryWithDetails($subsidiaryId, $incomplete = false){
+		if(!$incomplete){
+			$select = $this->select()
+				->from('workplace')
+				->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
+				->where('workplace.subsidiary_id = ?', $subsidiaryId)
+				->order(array('folder.folder', 'workplace.name'));
+			$select->setIntegrityCheck(false);
+			$result = $this->fetchAll($select);
+		}
+		else{
+			$subSelectA = $this->select()
+				->distinct()
+				->from(array('workplace_has_position'), array('workplace_has_position.id_workplace'));
+			$subSelectA->setIntegrityCheck(false);
+			$subSelectB = $this->select()
+				->distinct()
+				->from(array('workplace_has_work'), array('workplace_has_work.id_workplace'));
+			$subSelectB->setIntegrityCheck(false);
+			$select = $this->select()
+				->from('workplace')
+				->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
+				->where('workplace.subsidiary_id = ?', $subsidiaryId)
+				->where('workplace.business_hours IS NULL OR workplace.id_workplace NOT IN (' . $subSelectA . ') OR workplace.id_workplace NOT IN (' . $subSelectB . ')')
+				->order(array('folder.folder', 'workplace.name'));
+			$select->setIntegrityCheck(false);
+			$result = $this->fetchAll($select);
+		}
 		
 		$workplaces = array();
 		$i = 0;
