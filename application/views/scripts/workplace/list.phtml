@@ -5,7 +5,11 @@
 	<?php if($this->canAddWorkplace){?><a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
 	| <?php }?><a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
 	| <a class="large show-folder-delete">Smazat umístění</a>
-	| <a class="large" href="#">Vyfiltrovat neúplná pracoviště</a>
+	| <?php if($this->filter == 'vse'){?> 
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'neuplna'), 'workplaceList'); ?>">Vyfiltrovat neúplná pracoviště</a>
+	<?php }else{?>
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList'); ?>">Zobrazit všechna pracoviště</a>
+	<?php }?>
 </div>
 
 <div class="hidden box folder-form">
@@ -35,7 +39,7 @@
 		<?php } ?>
 		<div>
 			&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
-			| <a>Editovat</a>
+			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceEdit');?>">Editovat</a>
 			| <a>Smazat</a>
 			| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
 		</div>
@@ -121,8 +125,12 @@
 			<?php }?>
 		</div>
 	<?php } ?></div>
-<?php } else {?>
+<?php } else {
+		if ($this->filter == "vse"){?>
 	<p>Pobočka nemá žádná pracoviště.</p>
+	<?php }else{?>
+	<p>Pobočka nemá žádná neúplná pracoviště.</p>
+	<?php }?>
 <?php }?>
 
 <?php }?>

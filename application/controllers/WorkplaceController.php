@@ -76,33 +76,42 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function newAction()
     {
+    	$defaultNamespace = new Zend_Session_Namespace();
     	$this->view->subtitle = "Zadat pracoviště";
     	
-    	$form = new Application_Form_Workplace();
+    	//pokud předtím selhalo odeslání, tak se načte aktuální formulář se všemi dodatečně vloženými elementy
+    	if (isset ( $defaultNamespace->form )) {
+    		$form = $defaultNamespace->form;
+			unset ( $defaultNamespace->form );
+		}
+		//jinak se vytvoří nový
+		else{
+    		$form = new Application_Form_Workplace();
+		}
+		
+		//získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
-    	$form->client_id->setValue($clientId);
-    	//$form = $this->_helper->workplaceFormInit();
     	
+    	$form->client_id->setValue($clientId);
+    	
+    	//naplnění multiselectu pobočkami
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
 		if ($formContent != 0){
-			foreach ($formContent as $key => $subsidiary){
-				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
-					unset($formContent[$key]);
-				}
-			}
+			$formContent = $this->filterSubsidiarySelect($formContent);
 			$form->subsidiary_id->setMultiOptions ( $formContent );
 		}
 		$form->subsidiary_id->setValue($subsidiaryId);
+		
+		//naplnění ostatních multiselectů
 		$form->position->setAttrib('multiOptions', $this->_positionList);
 		$form->work->setAttrib('multiOptions', $this->_workList);
 		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
 		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
 		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
-		$form->save->setLabel('Uložit');
 		
-    	$defaultNamespace = new Zend_Session_Namespace();
+		$form->save->setLabel('Uložit');
     	
     	//zmapujeme nové prvky
     	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
@@ -126,17 +135,25 @@ class WorkplaceController extends Zend_Controller_Action
     		return;
     	}
     	
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$adapter = $workplaces->getAdapter();
+    	
     	//zpracování formuláře  	
     	try{
+    		//init session pro případ selhání ukládání
 	    	$formData = $this->getRequest()->getPost();
-	    		    	
+	    	$defaultNamespace->formData = $formData;
+	    	$defaultNamespace->form = $form;
+	    	
+	    	//zahájení transakce
+	    	$adapter->beginTransaction();
+	    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
 	    	$workplace->setClientId($this->_clientId);
-	    	$workplaces = new Application_Model_DbTable_Workplace();
+
 	    	$workplaceId = $workplaces->addWorkplace($workplace);
 	    	if(!$workplaceId){
-	    		$defaultNamespace->formData = $formData;
 	    		$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
 	    	}
@@ -279,20 +296,24 @@ class WorkplaceController extends Zend_Controller_Action
 				}
 			}
 			
+			//uložení transakce
+			$adapter->commit();
+			
 			$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary()), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
 	    	if ($form->getElement('other')->isChecked()){
 	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew' );
 	    	}
 	    	else{
-	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
 	    	}
     	}
-    	catch(Zend_Exception $e){
+    	catch(Exception $e){
+    		//zrušení transakce
+    		$adapter->rollback();
     		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e->getMessage() . $e->getTraceAsString());
-    		$defaultNamespace->formData = $formData;
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
     	}
     	
@@ -359,39 +380,21 @@ class WorkplaceController extends Zend_Controller_Action
         
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
         $this->view->clientId = $this->_clientId;
+        $filter = $this->getRequest()->getParam('filter');
+        $this->view->filter = $filter;
         
         //výběr poboček
         $subsidiaries = new Application_Model_DbTable_Subsidiary();
     	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
 		
     	if ($formContent != 0){
-			foreach ($formContent as $key => $subsidiary){
-				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
-					unset($formContent[$key]);
-				}
-			}
+			$formContent = $this->filterSubsidiarySelect($formContent);
     	}
 		
     	$subsidiaryId = null;
     	
 		if ($formContent != 0) {
-			$selectForm = new Application_Form_Select ();
-			$selectForm->select->setMultiOptions ( $formContent );
-			$selectForm->select->setLabel('Vyberte pobočku:');
-			$selectForm->submit->setLabel('Vybrat');
-			$this->view->selectForm = $selectForm;
-			$subsidiaryId = array_shift(array_keys($formContent));
-						
-			if ($this->getRequest ()->isPost () && in_array('Vybrat', $this->getRequest()->getPost())) {
-				$formData = $this->getRequest ()->getPost ();
-				$subsidiaryId = $formData['select'];
-				$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
-			}
-			else{
-				$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
-				$selectForm->select->setValue($subsidiaryId);
-			}
-			$this->view->subsidiaryId = $subsidiaryId;
+			$subsidiaryId = $this->initSubsidiarySwitch($formContent, $subsidiaryId);
 		}
     	else{
 			$selectForm = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
@@ -404,50 +407,22 @@ class WorkplaceController extends Zend_Controller_Action
 			}
 			
 			//vkládání podadresářů
-			$textForm = new Application_Form_Text();
-			$textForm->text->setLabel('Název umístění:');
-			$textForm->submit->setLabel('Přidat');
-			$this->view->textForm = $textForm;
-			if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
-				$formData = $this->getRequest()->getPost();
-				$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
-					'clientId' => $this->_clientId,
-					'subsidiaryId' => $subsidiaryId,
-					'folder' => $formData['text'],
-				));
-			}
+			$this->initFolderInsert($subsidiaryId);
 			
 			//mazání podadresářů
-			$deleteForm = new Application_Form_Select();
-			$deleteForm->select->setLabel('Vyberte umístění:');
-			$deleteForm->submit->setLabel('Smazat');
-			$folders = new Application_Model_DbTable_Folder();
-			$folderList = $folders->getFolders($this->_clientId);
-			$deleteForm->select->setMultiOptions($folderList);
-			$this->view->deleteForm = $deleteForm;
-			if($this->getRequest()->isPost() && in_array('Smazat', $this->getRequest()->getPost())){
-				$formData = $this->getRequest()->getPost();
-				$this->_helper->redirector->gotoSimple('deletefolder', 'workplace', null, array(
-					'clientId' => $this->_clientId,
-					'subsidiaryId' => $subsidiaryId,
-					'folderId' => $formData['select'],
-				));
-			}
+			$this->initFolderDelete($subsidiaryId);
 			
 			//přesouvání do jiného podadresáře
-			if($this->getRequest()->isPost() && in_array('Uložit', $this->getRequest()->getPost())){
-				$formData = $this->getRequest()->getPost();
-				$this->_helper->redirector->gotoSimple('switchfolder', 'workplace', null, array(
-					'clientId' => $this->_clientId,
-					'subsidiaryId' => $subsidiaryId,
-					'workplaceId' => $formData['workplace_id'],
-					'folderId' => $formData['select'],
-				));
-			}
+			$this->initFolderSwitch($subsidiaryId);
 			
 			//vypisování pracovišť
 			$workplaceDb = new Application_Model_DbTable_Workplace();
-			$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
+			if($filter == 'vse'){
+				$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId);
+			}
+			if($filter == 'neuplna'){
+				$workplaces = $workplaceDb->getBySubsidiaryWithDetails($subsidiaryId, true);
+			}
 			$this->view->workplaces = $workplaces;
 		}
     }
@@ -589,7 +564,7 @@ class WorkplaceController extends Zend_Controller_Action
     			}
     		}
     		$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary()), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
     		
     		$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
@@ -612,7 +587,7 @@ class WorkplaceController extends Zend_Controller_Action
         	
         	$subsidiaries = new Application_Model_DbTable_Subsidiary();
         	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary()), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
     		
         	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
@@ -630,7 +605,7 @@ class WorkplaceController extends Zend_Controller_Action
     	$folders = new Application_Model_DbTable_Folder();
     	$folders->addFolder($folder);
     	$this->_helper->FlashMessenger('Adresář ' . $folder->getFolder() . ' přidán.');
-    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workplaceList');
     }
     
     public function switchfolderAction(){
@@ -648,19 +623,19 @@ class WorkplaceController extends Zend_Controller_Action
     	}
     	$workplaces->updateWorkplace($workplace);
     	
-    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workplaceList');
     }
     
     public function deletefolderAction(){
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
     	$folderId = $this->getRequest()->getParam('folderId');
     	if($folderId == 0){
-    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workplaceList');
     	}
     	$folders = new Application_Model_DbTable_Folder();
     	$folders->deleteFolder($folderId);
     	$this->_helper->FlashMessenger('Adresář smazán.');
-    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceList');
+    	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workplaceList');
     }
     
     private function prepareFormWithFormData($form, $formData){
@@ -693,10 +668,84 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		return $form;
     }
+    
+    private function filterSubsidiarySelect($formContent){
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+    	foreach ($formContent as $key => $subsidiary){
+			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+				unset($formContent[$key]);
+			}
+		}
+		return $formContent;
+    }
+    
+    private function initSubsidiarySwitch($formContent, $subsidiaryId){
+    	$selectForm = new Application_Form_Select ();
+		$selectForm->select->setMultiOptions ( $formContent );
+		$selectForm->select->setLabel('Vyberte pobočku:');
+		$selectForm->submit->setLabel('Vybrat');
+		$this->view->selectForm = $selectForm;
+		$subsidiaryId = array_shift(array_keys($formContent));
+					
+		if ($this->getRequest ()->isPost () && in_array('Vybrat', $this->getRequest()->getPost())) {
+			$formData = $this->getRequest ()->getPost ();
+			$subsidiaryId = $formData['select'];
+			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workplaceList');
+		}
+		else{
+			$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+			$selectForm->select->setValue($subsidiaryId);
+		}
+		$this->view->subsidiaryId = $subsidiaryId;
+		return $subsidiaryId;
+    }
 
+    private function initFolderInsert($subsidiaryId){
+    	$textForm = new Application_Form_Text();
+		$textForm->text->setLabel('Název umístění:');
+		$textForm->submit->setLabel('Přidat');
+		$this->view->textForm = $textForm;
+		if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
+			$formData = $this->getRequest()->getPost();
+			$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
+				'clientId' => $this->_clientId,
+				'subsidiaryId' => $subsidiaryId,
+				'filter' => $this->getRequest()->getParam('filter'),
+				'folder' => $formData['text'],
+			));
+		}
+    }
+    
+    private function initFolderDelete($subsidiaryId){
+    	$deleteForm = new Application_Form_Select();
+		$deleteForm->select->setLabel('Vyberte umístění:');
+		$deleteForm->submit->setLabel('Smazat');
+		$folders = new Application_Model_DbTable_Folder();
+		$folderList = $folders->getFolders($this->_clientId);
+		$deleteForm->select->setMultiOptions($folderList);
+		$this->view->deleteForm = $deleteForm;
+		if($this->getRequest()->isPost() && in_array('Smazat', $this->getRequest()->getPost())){
+			$formData = $this->getRequest()->getPost();
+			$this->_helper->redirector->gotoSimple('deletefolder', 'workplace', null, array(
+				'clientId' => $this->_clientId,
+				'subsidiaryId' => $subsidiaryId,
+				'filter' => $this->getRequest()->getParam('filter'),
+				'folderId' => $formData['select'],
+			));
+		}
+    }
+    
+    private function initFolderSwitch($subsidiaryId){
+    	if($this->getRequest()->isPost() && in_array('Uložit', $this->getRequest()->getPost())){
+			$formData = $this->getRequest()->getPost();
+			$this->_helper->redirector->gotoSimple('switchfolder', 'workplace', null, array(
+				'clientId' => $this->_clientId,
+				'subsidiaryId' => $subsidiaryId,
+				'workplaceId' => $formData['workplace_id'],
+				'filter' => $this->getRequest()->getParam('filter'),
+				'folderId' => $formData['select'],
+			));
+		}
+    }
+    
 }
-
-
-
-
-

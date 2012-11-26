@@ -211,14 +211,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'workplaceList',
-			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-pracovist',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-pracovist/:filter',
 											array('controller' => 'workplace',
 													'action' => 'list'))
 		);
 		
 		$router->addRoute(
 			'workplaceEdit',
-			new Zend_Controller_Router_Route('klient/:clientId/upravit-pracoviste/:workplaceId',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/upravit-pracoviste/:workplaceId',
 											array('controller' => 'workplace',
 													'action' => 'edit'))
 		);
