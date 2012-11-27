@@ -51,6 +51,15 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 		return $chemicals;
 	}
 	
+	public function getByWorkplace($workplaceId){
+		$select = $this->select()
+			->from('chemical')
+			->join('workplace_has_chemical')
+			->where('id_workplace = ?', $workplaceId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	public function existsChemical($chemical){
 		$select = $this->select()
 			->from('chemical')
@@ -62,6 +71,22 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 		else{
 			return 0;
 		}
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$chemicals = array();
+			foreach($result as $chemical){
+				$chemical = $result->current();
+				$chemicals[] = $this->processChemical($chemical);
+			}
+			return $chemicals;
+		}
+	}
+	
+	private function processChemical($chemical){
+		$data = $chemical->toArray();
+		return new Application_Model_Chemical($data);
 	}
 	
 }

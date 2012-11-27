@@ -48,6 +48,15 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		return $positions;
 	}
 	
+	public function getByWorkplace($workplaceId){
+		$select = $this->select()
+			->from('position')
+			->join('workplace_has_position')
+			->where('id_workplace = ?', $workplaceId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	public function existsPosition($positionName, $clientId){
 		$position = $this->fetchAll($this->select()
 									->from('position')
@@ -57,6 +66,22 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 			return $position->current()->id_position;
 		}
 		return false;
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$positions = array();
+			foreach($result as $position){
+				$position = $result->current();
+				$positions[] = $this->processPosition($position);
+			}
+			return $positions;
+		}
+	}
+	
+	private function processPosition($position){
+		$data = $position->toArray();
+		return new Application_Model_Position($data);
 	}
 	
 }

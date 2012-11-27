@@ -78,6 +78,15 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		return $technicalDevices;
 	}
 	
+	public function getByWorkplace($workplaceId){
+		$select = $this->select()
+			->from('technical_device')
+			->join('workplace_has_technical_device')
+			->where('id_workplace = ?', $workplaceId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	public function existsTechnicalDevice($sort, $type){
 		$select = $this->select()
 			->from('technical_device')
@@ -90,6 +99,22 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		else{
 			return 0;
 		}
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$technicalDevices = array();
+			foreach($result as $technicalDevice){
+				$technicalDevice = $result->current();
+				$technicalDevices[] = $this->processTechnicalDevice($technicalDevice);
+			}
+			return $technicalDevices;
+		}
+	}
+	
+	private function processTechnicalDevice($technicalDevice){
+		$data = $technicalDevice->toArray();
+		return new Application_Model_TechnicalDevice($data);
 	}
 	
 }

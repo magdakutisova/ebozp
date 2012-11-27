@@ -51,6 +51,15 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		return $works;
 	}
 	
+	public function getByWorkplace($workplaceId){
+		$select = $this->select()
+			->from('work')
+			->join('workplace_has_work')
+			->where('id_workplace = ?', $workplaceId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	public function existsWork($work){
 		$select = $this->select()
 			->from('work')
@@ -62,6 +71,22 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		else{
 			return 0;
 		}
+	}
+	
+	private function process($result){
+		if ($result->count()){
+			$works = array();
+			foreach($result as $work){
+				$work = $result->current();
+				$works[] = $this->processWork($work);
+			}
+			return $works;
+		}
+	}
+	
+	private function processWork($work){
+		$data = $work->toArray();
+		return new Application_Model_Work($data);
 	}
 	
 }
