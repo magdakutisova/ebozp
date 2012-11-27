@@ -1,0 +1,9 @@
+<div id="questionary"></div>
+<script type="text/javascript">
+var QDATA = <?php echo Zend_Json::encode($this->questionary->toArray()); ?>
+</script>
+<?php
+echo $this->form;
+?>
+<script type="text/javascript" src="/js/questionary.items.js"></script>
+<script type="text/javascript" src="/js/audit/audit/fill.js"></script>
