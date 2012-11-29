@@ -1,0 +1,97 @@
+<h1><?php echo $this->client->company_name; ?></h1>
+<h2>Audity</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Pobočka
+			</th>
+			<th>
+			Zodpovědná osoba
+			</th>
+			<th>
+			Datum provedení
+			</th>
+			<th>
+			Technik
+			</th>
+			<th>
+			Klient
+			</th>
+			<th>
+			Koordinátor
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php
+$subIndex = $this->subIndex;
+$respIndex = $this->openResp;
+
+foreach ($this->open as $audit) {
+	// vygenerovani seznamu zodpovednych
+	$respList = array();
+	
+	foreach ($respIndex[$audit->id] as $resp) {
+		$respList[] = $resp->name;
+	}
+	?>
+		<tr>
+			<td>
+			<a href="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $audit->id), "audit-fill"); ?>"><?php echo $subIndex[$audit->subsidiary_id]->subsidiary_name; ?></a>
+			</td>
+			<td>
+			<?php echo implode(",", $respList)?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($audit->done_at); ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->auditor_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->client_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->coordinator_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+		</tr>
+	<?php 
+}
+
+// vypsani uzavrenych auditu
+$respIndex = $this->closedResp;
+
+foreach ($this->closed as $audit) {
+	// vygenerovani seznamu zodpovednych
+	$respList = array();
+	
+	foreach ($respIndex[$audit->id] as $resp) {
+		$respList[] = $resp->name;
+	}
+	?>
+		<tr>
+			<td>
+			<a href="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $audit->id), "audit-get"); ?>"><?php echo $subIndex[$audit->subsidiary_id]->subsidiary_name; ?></a>
+			</td>
+			<td>
+			<?php echo implode(",", $respList)?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($audit->done_at); ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->auditor_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->client_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->coordinator_confirmed_at) ? "Ne" : "Ano"; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>

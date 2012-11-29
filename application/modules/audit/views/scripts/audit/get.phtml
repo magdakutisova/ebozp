@@ -1,0 +1,6 @@
+<h1>Audit</h1>
+<h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
+<?php 
+echo $this->partial("audit/_commonTable.phtml", $this);
+echo $this->partial("audit/_recordTable.phtml", $this);
+?>

@@ -7,6 +7,20 @@ class Audit_AuditController extends Zend_Controller_Action {
 	 */
 	protected $_user;
 	
+	/**
+	 * radek auditu, pokud je nejaky nacten
+	 * 
+	 * @var Audit_Model_Row_Audit
+	 */
+	protected $_audit = null;
+	
+	/**
+	 * identifikacni cislo auditu
+	 * 
+	 * @var int
+	 */
+	protected $_auditId = 0;
+	
 	public function init() {
 		// zapsani helperu
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
@@ -16,16 +30,27 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableUsers = new Application_Model_DbTable_User();
 		
 		$this->_user = $tableUsers->getByUsername($username);
+		
+		// kontrola auditu
+		$auditId = $this->getRequest()->getParam("auditId", 0);
+		
+		if ($auditId)  {
+			$tableAudits = new Audit_Model_Audits();
+			$this->_audit = $tableAudits->getById($auditId);
+			$this->_auditId = $auditId;
+		}
 	}
 	
 	public function createAction() {
 		// nacteni dat a naplneni formulare
+		$subsidiaryId = $this->getRequest()->getParam("subsidiaryId", 0);
+		
 		$data = $this->getRequest()->getParam("audit", array());
-		$data = array_merge(array("subsidiary_id" => 0), $data);
+		$data = array_merge(array("subsidiary_id" => $subsidiaryId), $data);
 		
 		// nacteni dat
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$diary = $tableSubsidiaries->find($data["subsidiary_id"])->current();
+		$diary = $tableSubsidiaries->find($subsidiaryId)->current();
 		
 		// pokud nebylo nic nalezeno, vraci se na index
 		if (!$diary) throw new Zend_Exception("Pobočka nenalezena");
@@ -52,14 +77,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 	}
 	
 	public function fillAction() {
-		$data = $this->getRequest()->getParam("audit");
-		$data = array_merge(array("id" => 0), $data);
+		$data = $this->getRequest()->getParam("audit", array());
+		$data = array_merge(array("id" => $this->_auditId), $data);
 		
 		// nacteni auditu
-		$tableAudits = new Audit_Model_Audits();
-		$audit = $tableAudits->getById($data["id"]);
+		$audit = $this->_audit;
 		
-		if (!$audit) throw new Zend_Exception("Audit #" . $data["id"] . " has not been found");
+		if (!$audit) throw new Zend_Exception("Audit #" . $this->_auditId . " has not been found");
 		
 		// nacteni dotazniku
 		$tableQuestionaries = new Questionary_Model_Filleds();
@@ -71,9 +95,60 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$form->populate($audit->toArray());
 		$form->populate($data)->isValidPartial($data);
 		
+		// nacteni klienta a pobocky
+		$subsidiary = $audit->findParentRow("Application_Model_DbTable_Subsidiary");
+		$client = $subsidiary->findParentRow("Application_Model_DbTable_Client");
+		
+		$this->view->layout()->setLayout("client-layout");
+		
 		$this->view->questionary = $questionary;
 		$this->view->audit = $audit;
 		$this->view->form = $form;
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+	}
+	
+	public function getAction() {
+		// kontrola auditu
+		if (!$this->_audit) throw new Zend_Exception("Audit #" . $this->_auditId . " has not been found");
+		
+		$audit = $this->_audit;
+		
+		// nacteni zaznamu a skupin a indexace zaznamu dle skupin
+		$groups = $audit->getGroups();
+		
+		// nacteni zaznamu a indexace dle skupin
+		$records = $audit->getRecords();
+		
+		$recordIndex = array();
+		
+		// vytvoreni mist dle skupin
+		foreach ($groups as $group) {
+			$recordIndex[$group->id] = array();
+		}
+		
+		// nacteni doprovodnych informaci
+		$responsibiles = $audit->getResponsibiles();
+		$auditor = $audit->getAuditor();
+		$client = $audit->getClient();
+		$coordinator = $audit->getCoordinator();
+		$subsidiary = $audit->getSubsidiary();
+		
+		// zapis zaznamu
+		foreach ($records as $record) {
+			$recordIndex[$record->group_id][] = $record;
+		}
+		
+		$this->view->layout()->setLayout("client-layout");
+		
+		$this->view->audit = $this->_audit;
+		$this->view->groups = $groups;
+		$this->view->recordIndex = $recordIndex;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->client = $client;
+		$this->view->coordinator = $coordinator;
+		$this->view->auditor = $auditor;
+		$this->view->responsibiles = $responsibiles;
 	}
 	
 	public function indexAction() {
@@ -113,9 +188,51 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->subSiDiaryIndex = $subSiDiaryIndex;
 	}
 	
+	public function techlistAction() {
+		// nacteni klienta
+		$tableClients = new Application_Model_DbTable_Client();
+		$client = $tableClients->find($this->getRequest()->clientId)->current();
+		
+		if (!$client) throw new Zend_Exception("Client #" . $this->getRequest()->clientId . " has not been found");
+		
+		// nacteni auditu, kde je uzivatel auditorem a patri ke klientovi
+		$tableAudits = new Audit_Model_Audits();
+		
+		// nejprve nacteni probihajicich auditu, ktere nebyly uzavreny technikem nebo byly znovu utevreny
+		$open = $tableAudits->fetchAll(array(
+				"auditor_id = " . $this->_user->getIdUser(),
+				"client_id = " . $client->id_client,
+				"auditor_confirmed_at = 0"
+				), "done_at");
+		
+		// nacteni seznamu zodpovednych osob za otevrene audity
+		$openResp = self::loadResponsibiles($open);
+		
+		// nactnei uzavrenych auditu
+		$closed = $tableAudits->fetchAll(array(
+				"auditor_id = " . $this->_user->getIdUser(),
+				"client_id = " . $client->id_client,
+				"auditor_confirmed_at > 0"
+		), "done_at");
+		
+		$closedResp = self::loadResponsibiles($closed);
+		
+		// nacteni seznamu pobocek
+		$subIndex = self::loadSubdiaryIndex($client);
+		
+		$this->view->layout()->setLayout("client-layout");
+		
+		$this->view->client = $client;
+		$this->view->open = $open;
+		$this->view->openResp = $openResp;
+		$this->view->closed = $closed;
+		$this->view->closedResp = $closedResp;
+		$this->view->subIndex = $subIndex;
+	}
+	
 	public function postAction() {
 		// nacteni dat
-		$data = $this->getRequest()->getParam("audit");
+		$data = $this->getRequest()->getParam("audit", array());
 		
 		// nacteni a validace formulare
 		$form = new Audit_Form_Audit();
@@ -143,9 +260,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$formRow = $tableForms->find($form->getValue("form_id"))->current();
 		
 		// vytvoreni zaznamu
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $formRow, $subsidiary, $doneAt, array());
+		$audit = $tableAudits->createAudit($auditor, $coordinator, $formRow, $subsidiary, $doneAt, explode(",", $form->getValue("responsibile_name")));
 		
-		$this->_redirect("/audit/audit/fill?audit[id]=" . $audit->id);
+		$this->_redirect(
+				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-fill")
+		);
 	}
 	
 	public function putAction() {
@@ -153,7 +272,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$data = $this->getRequest()->getParam("audit");
 		
 		$form = new Audit_Form_AuditFill();
-		$form->getElement("summary")->setRequired(false);
+		
+		// kontrola konecneho odeslani
+		if (!$data["close"])
+			$form->getElement("summary")->setRequired(false);
 		
 		// kontrola validity
 		$form->populate($data);
@@ -175,13 +297,84 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit->summary = $form->getValue("summary");
 		$audit->progress_note = $form->getValue("progress_note");
 		
+		// kontrola uzavreni ze strany technika
+		if ($data["close"]) {
+			$audit->setDone();
+			
+			// zapis dat do vypisu auditu
+			$tableRecords = new Audit_Model_AuditsRecords();
+			$tableRecords->createRecords($audit);
+			
+			$audit->save();
+			
+			// presmerovani na vypis
+			$this->_redirect(
+				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-get")
+			);
+			
+			return;
+		}
+		
 		$audit->save();
 		
 		// presmerovani na fill
-		$this->_redirect("/audit/audit/fill?audit[id]=" . $audit->id);
+		$this->_redirect(
+				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-fill")
+		);
 	}
 	
-	protected function submit(Audit_Form_AuditFill $form, Audit_Model_Row_Audit $audit) {
+	/**
+	 * vraci index pobocek
+	 * @param Zend_Db_Table_Row_Abstract $client
+	 */
+	public static function loadSubdiaryIndex(Zend_Db_Table_Row_Abstract $client) {
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll("client_id = " . $client->id_client);
 		
+		$subIndex = array();
+		
+		foreach ($subsidiaries as $sub) {
+			$subIndex[$sub->id_subsidiary] = $sub;
+		}
+		
+		return $subIndex;
+	}
+	
+	/**
+	 * sestavi rowsety zodpovednych lidi do setu
+	 * 
+	 * @param Audit_Model_Rowset_Audits $audits zkoumane audity
+	 * @return array<Audit_Model_Rowset_AuditsResponsibiles>
+	 */
+	public static function loadResponsibiles(Audit_Model_Rowset_Audits $audits) {
+		// sestaveni seznamu id a priprava pomocneho pole
+		$idList = array(0);
+		$resList = array();
+		$retVal = array();
+		
+		foreach ($audits as $audit) {
+			$idList[] = $audit->id;
+			$respList[$audit->id] = array();
+			$retVal[$audit->id] = array();
+		}
+		
+		// nactnei dat
+		$tableResp = new Audit_Model_AuditsResponsibiles();
+		$responsibiles = $tableResp->fetchAll($tableResp->getAdapter()->quoteInto("audit_id in (?)", $idList), "audit_id")->toArray();
+		
+		// zapis dat do pomocne promenne
+		foreach ($responsibiles as $item) {
+			$resList[$item["audit_id"]][] = $item;
+		}
+		
+		// vygenerovani rowsetu a jejich ulozeni do pole navratove hodnoty
+		foreach ($resList as $auditId => $item) {
+			$retVal[$auditId] = new Audit_Model_Rowset_AuditsResponsibiles(array(
+					"data" => $item,
+					"table" => $tableResp
+			));
+		}
+		
+		return $retVal;
 	}
 }

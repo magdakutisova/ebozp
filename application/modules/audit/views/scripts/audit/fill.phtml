@@ -1,3 +1,5 @@
+<h1>Audit</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
 <div id="questionary"></div>
 <script type="text/javascript">
 var QDATA = <?php echo Zend_Json::encode($this->questionary->toArray()); ?>

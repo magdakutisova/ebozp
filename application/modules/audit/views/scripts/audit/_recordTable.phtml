@@ -1,0 +1,63 @@
+<?php
+foreach ($this->groups as $group) {
+	$records = $this->recordIndex[$group->id];
+	?>
+<h3><?php echo $group->name; ?></h3>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Otázka
+			</th>
+			<th>
+			Hodnota
+			</th>
+			<th>
+			Závažnost
+			</th>
+			<th>
+			Komentář
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	foreach ($records as $record) {
+		// vyhodnoceni hodnoty
+		switch ($record->score) {
+			case Audit_Model_AuditsRecords::SCORE_A:
+				$score = "Ano";
+				break;
+				
+			case Audit_Model_AuditsRecords::SCORE_C:
+				$score = "Částečně";
+				break;
+				
+			case Audit_Model_AuditsRecords::SCORE_N:
+				$score = "Ne";
+				break;
+				
+			default:
+				$score = "Netýká se";
+		}
+		
+		?>
+	<tr>
+		<td>
+		<?php echo $record->question; ?>
+		</td>
+		<td>
+		<?php echo $score; ?>
+		</td>
+		<td>
+		<?php echo $record->weight; ?>
+		</td>
+		<td style="white-space: pre;"><?php echo $record->note; ?></td>
+	</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
+	<?php 
+}

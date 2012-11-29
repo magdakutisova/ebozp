@@ -1,0 +1,100 @@
+<?php 
+// sestaveni zodpovednych osob
+$respList = array();
+
+foreach ($this->responsibiles as $resp) {
+	$respList[] = $resp->name;
+}
+
+$responsibiles = implode(", ", $respList);
+
+$audit = $this->audit;
+?>
+<table>
+	<tbody>
+		<tr>
+			<td>
+			Klient
+			</td>
+			<td>
+			<?php echo $this->client->company_name ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Pobočka
+			</td>
+			<td>
+			<?php echo $this->subsidiary->subsidiary_name; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Technik
+			</td>
+			<td>
+			<?php echo $this->auditor->username; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Zodpovědná osoba klienta
+			</td>
+			<td>
+			<?php echo $responsibiles; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Koordinátor
+			</td>
+			<td>
+			<?php echo $this->coordinator->username; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Proveden dne
+			</td>
+			<td>
+			<?php echo $this->sqlDate($this->audit->done_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Potvrzen technikem:
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->auditor_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->auditor_confirmed_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Potvrzen klientem:
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->client_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->client_confirmed_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Potvrzen koordinátorem:
+			</td>
+			<td>
+			<?php echo $this->sqlEmptyDateTime($audit->coordinator_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->coordinator_confirmed_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Poznámka o průběhu
+			</td>
+			<td style="white-space: pre;"><?php echo $audit->progress_note; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Shrnutí
+			</td>
+			<td><?php echo $audit->summary; ?></td>
+		</tr>
+	</tbody>
+</table>
