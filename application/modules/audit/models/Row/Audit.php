@@ -28,6 +28,17 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		return $this->findParentRow("Application_Model_User", "coordinator");
 	}
 	
+	public function getGroups() {
+		return $this->findDependentRowset("Audit_Model_AuditsRecordsGroups", "audit");
+	}
+	
+	/**
+	 * vraci seznam zaznamu auditu
+	 */
+	public function getRecords() {
+		return $this->findDependentRowset("Audit_Model_AuditsRecords", "audit");
+	}
+	
 	/**
 	 * vraci seznam zodpovednych ze strany klienta
 	 * 
@@ -65,6 +76,17 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 */
 	public function touch() {
 		$this->modified_at = new Zend_Db_Expr("NOW()");
+		
+		return $this;
+	}
+	
+	/**
+	 * oznaci audit jako potvrzeny technikem
+	 * 
+	 * @return Audit_Model_Row_Audit
+	 */
+	public function setDone() {
+		$this->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
 		
 		return $this;
 	}

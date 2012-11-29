@@ -10,19 +10,19 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	protected $_referenceMap = array(
 			"auditor" => array(
 					"columns" => "auditor_id",
-					"refTableClass" => "Application_Model_User",
+					"refTableClass" => "Application_Model_DbTable_User",
 					"refColumns" => "id_user"
 			),
 			
 			"client" => array(
 					"columns" => "client_id",
-					"refTableClass" => "Application_Model_Client",
+					"refTableClass" => "Application_Model_DbTable_Client",
 					"refColumns" => "id_client"
 			),
 			
 			"coordinator" => array(
 					"columns" => "coordinator_id",
-					"refTableClass" => "Application_Model_User",
+					"refTableClass" => "Application_Model_DbTable_User",
 					"refColumns" => "id_user"
 			),
 			
@@ -46,7 +46,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 			
 			"subsidiary" => array(
 					"columns" => "subsidiary_id",
-					"refTableClass" => "Application_Model_Subsidiary",
+					"refTableClass" => "Application_Model_DbTable_Subsidiary",
 					"refColumns" => "id_subsidiary"
 			)
 	);
@@ -97,6 +97,18 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		$retVal->modified_at = new Zend_Db_Expr("NOW()");
 		
 		$retVal->save();
+		
+		// zapis zodpovednych hodnot
+		$tableResp = new Audit_Model_AuditsResponsibiles();
+		
+		foreach ($responsibiles as $item) {
+			$item = trim($item);
+			
+			$tableResp->insert(array(
+					"audit_id" => $retVal->id,
+					"name" => $item
+			));
+		}
 		
 		return $retVal;
 	}
