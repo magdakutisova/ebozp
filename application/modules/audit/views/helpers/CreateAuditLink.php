@@ -7,7 +7,12 @@ class Zend_View_Helper_CreateAuditLink extends Zend_View_Helper_Abstract {
 			$caption = $diary->subsidiary_name;
 		}
 		
-		$retVal = "<a href='/audit/audit/create?audit[subsidiary_id]=" . $diary->id_subsidiary . "'>" . $caption . "</a>";
+		$link = $this->view->url(array(
+				"clientId" => $diary->client_id,
+				"subsidiaryId" => $diary->id_subsidiary
+		), "audit-create");
+		
+		$retVal = "<a href='" . $link . "'>" . $caption . "</a>";
 		
 		return $retVal;
 	}
