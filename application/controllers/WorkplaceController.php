@@ -429,7 +429,7 @@ class WorkplaceController extends Zend_Controller_Action
     	$workplaceId = $this->getRequest()->getParam('workplaceId');
         
     	$form->client_id->setValue($clientId);
-    	$form->workplace_id->setValue($workplaceId);
+    	$form->id_workplace->setValue($workplaceId);
         
         $workplaces = new Application_Model_DbTable_Workplace();
         $workplace = $workplaces->getWorkplace($workplaceId);
@@ -444,7 +444,7 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		$form = $this->fillMultiselects($form);
 		$form->removeElement('other');
-		$form->setLabel('Uložit');
+		$form->getElement('save')->setLabel('Uložit');
 		
 		//zmapujeme nové prvky
     	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
@@ -471,11 +471,15 @@ class WorkplaceController extends Zend_Controller_Action
 				if(count($positionData) > 0){
 					foreach($positionData as $position){
 						$form->addElement('position', 'position' . $order, array(
-							'idPosition' => $position->getIdPosition(),
-							'position' => $position->getPosition(),
 							'order' => $order,
 							'validators' => array(new My_Validate_Position()),
+							'multiOptions' => $this->_positionList,
 						));
+						$positionIndex = array_search($position->getPosition(), $this->_positionList);
+						$value = array('id_position' => $position->getIdPosition(),
+										'position' => $positionIndex,
+										'new_position' => '');
+						$form->getElement('position' . $order)->setValue($value);
 						$order++;
 					}
 				}
@@ -488,11 +492,15 @@ class WorkplaceController extends Zend_Controller_Action
 				if(count($workData) > 0){
 					foreach($workData as $work){
 						$form->addElement('work', 'work' . $order, array(
-							'idWork' => $work->getIdWork(),
-							'work' => $work->getWork(),
 							'order' => $order,
 							'validators' => array(new My_Validate_Work()),
+							'multiOptions' => $this->_workList,
 						));
+						$workIndex = array_search($work->getWork(), $this->_workList);
+						$value = array('id_work' => $work->getIdWork(),
+										'work' => $workIndex,
+										'new_work' => '');
+						$form->getElement('work' . $order)->setValue($value);
 						$order++;
 					}
 				}
@@ -505,12 +513,19 @@ class WorkplaceController extends Zend_Controller_Action
 				if(count($technicalDeviceData) > 0){
 					foreach($technicalDeviceData as $technicalDevice){
 						$form->addElement('technicalDevice', 'technical_device' . $order, array(
-							'idTechnicalDevice' => $technicalDevice->getIdTechnicalDevice(),
-							'sort' => $technicalDevice->getSort(),
-							'type' => $technicalDevice->getType(),
 							'order' => $order,
 							'validators' => array(new My_Validate_TechnicalDevice()),
+							'multiOptions' => $this->_sortList,
+							'multiOptions2' => $this->_typeList,
 						));
+						$sortIndex = array_search($technicalDevice->getSort(), $this->_sortList);
+						$typeIndex = array_search($technicalDevice->getType(), $this->_typeList);
+						$value = array('id_technical_device' => $technicalDevice->getIdTechnicalDevice(),
+										'sort' => $sortIndex,
+										'type' => $typeIndex,
+										'new_sort' => '',
+										'new_type' => '');
+						$form->getElement('technical_device' . $order)->setValue($value);
 						$order++;
 					}
 				}
@@ -522,12 +537,18 @@ class WorkplaceController extends Zend_Controller_Action
 				$chemicalData = $chemicals->getByWorkplace($workplaceId);
 				if(count($chemicalData) > 0){
 					foreach($chemicalData as $chemical){
-						$form->addElement('chemical', 'chemical' . $order, array(
-							'idChemical' => $chemical->getIdChemical(),
-							'chemical' => $chemical->getChemical(),
+						$form->addElement('chemicalComplete', 'chemical' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Chemical()),
+							'multiOptions' => $this->_chemicalList,
 						));
+						$chemicalIndex = array_search($chemical['chemical']->getChemical(), $this->_chemicalList);
+						$value = array('id_chemical' => $chemical['chemical']->getIdChemical(),
+										'chemical' => $chemicalIndex,
+										'usual_amount' => $chemical['usual_amount'],
+										'use_purpose' => $chemical['use_purpose'],
+										'new_chemical' => '');
+						$form->getElement('chemical' . $order)->setValue($value);
 						$order++;
 					}
 				}
@@ -537,12 +558,9 @@ class WorkplaceController extends Zend_Controller_Action
 	        return;
 		}
 		
-    	//pokud je odeslán, zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost());
-    	
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
-    		$form = $this->prepareFormWithFormData($form, $this->getRequest()->getPost());
+    		Zend_Debug::dump($this->getRequest()->getPost());
     		$form->populate($this->getRequest()->getPost());
     		$this->view->form = $form;
     		return;

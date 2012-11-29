@@ -51,13 +51,17 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 		return $chemicals;
 	}
 	
+	/************************************
+	 * Zatím vrací jen kompletní včetně dat ve vazební tabulce.
+	 */
 	public function getByWorkplace($workplaceId){
 		$select = $this->select()
 			->from('chemical')
-			->join('workplace_has_chemical')
+			->join('workplace_has_chemical', 'chemical.id_chemical = workplace_has_chemical.id_chemical')
 			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
-		return $this->process($result);
+		return $this->processComplete($result);
 	}
 	
 	public function existsChemical($chemical){
@@ -79,6 +83,21 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 			foreach($result as $chemical){
 				$chemical = $result->current();
 				$chemicals[] = $this->processChemical($chemical);
+			}
+			return $chemicals;
+		}
+	}
+	
+	private function processComplete($result){
+		if ($result->count()){
+			$chemicals = array();
+			$i = 0;
+			foreach($result as $chemical){
+				$chemical = $result->current();
+				$chemicals[$i]['chemical'] = $this->processChemical($chemical);
+				$chemicals[$i]['usual_amount'] = $chemical->usual_amount;
+				$chemicals[$i]['use_purpose'] = $chemical->use_purpose;
+				$i++;
 			}
 			return $chemicals;
 		}

@@ -81,8 +81,9 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 	public function getByWorkplace($workplaceId){
 		$select = $this->select()
 			->from('technical_device')
-			->join('workplace_has_technical_device')
+			->join('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
 			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->process($result);
 	}

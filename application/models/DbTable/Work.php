@@ -54,8 +54,9 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 	public function getByWorkplace($workplaceId){
 		$select = $this->select()
 			->from('work')
-			->join('workplace_has_work')
+			->join('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
 			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->process($result);
 	}
