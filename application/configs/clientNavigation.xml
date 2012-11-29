@@ -37,6 +37,13 @@
 			<privilege>list</privilege>
 			<clientId>clientId</clientId>
 		</subsidiary>
+		<audits>
+			<label>Audity</label>
+			<resource>audit:audit</resource>
+			<privilege>techlist</privilege>
+			<route>audit-list-technic</route>
+			<clientId>clientId</clientId>
+		</audits>
 		<print>
 			<label>Záznamy (k tisku)</label>
 			<route>printIndex</route>
