@@ -7,7 +7,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getAuditor() {
-		return $this->findParentRow("Application_Model_User", "auditor");
+		return $this->findParentRow("Application_Model_DbTable_User", "auditor");
 	}
 	
 	/**
@@ -16,7 +16,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getClient() {
-		return $this->findParentRow("Application_Model_Client", "client");
+		return $this->findParentRow("Application_Model_DbTable_Client", "client");
 	}
 	
 	/**
@@ -25,7 +25,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getCoordinator() {
-		return $this->findParentRow("Application_Model_User", "coordinator");
+		return $this->findParentRow("Application_Model_DbTable_User", "coordinator");
 	}
 	
 	public function getGroups() {
@@ -45,7 +45,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Audit_Model_Rowset_AuditsResponsibiles
 	 */
 	public function getResponsibiles() {
-		return $this->findDependentRowset("Audit_Model_Rowset_AuditsResponsibiles", "audit");
+		return $this->findDependentRowset("Audit_Model_AuditsResponsibiles", "audit");
 	}
 	
 	/**
@@ -54,7 +54,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getSubsidiary() {
-		return $this->findParentRow("Application_Model_Subsidiary", "subsidiary");
+		return $this->findParentRow("Application_Model_DbTable_Subsidiary", "subsidiary");
 	}
 	
 	/**

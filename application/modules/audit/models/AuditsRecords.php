@@ -168,8 +168,8 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 						$audit->id,
 						$groupRow->id,
 						$itemIndex[$item->getName()]->id,
-						$adapter->quote($item->getLabel()),
 						$adapter->quote($explodedLabel->label),
+						$adapter->quote($note->getValue()),
 						$adapter->quote($score),
 						$adapter->quote($explodedLabel->weight)
 				);
