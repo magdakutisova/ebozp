@@ -1971,7 +1971,7 @@
         <dia:point val="73.7,13.2"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="73.65,13.15;90.42,33.45"/>
+        <dia:rectangle val="73.65,13.15;90.42,34.25"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="73.7,13.2"/>
@@ -1980,7 +1980,7 @@
         <dia:real val="16.669999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="20.200000000000006"/>
+        <dia:real val="21.000000000000007"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_mistakes#</dia:string>
@@ -2118,7 +2118,7 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#outpost_id#</dia:string>
+            <dia:string>#subsidiary_id#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#int#</dia:string>
@@ -2141,7 +2141,7 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#workpost_id#</dia:string>
+            <dia:string>#workplace_id#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#int#</dia:string>
@@ -2256,7 +2256,7 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#catgory#</dia:string>
+            <dia:string>#category#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#varchar(32)#</dia:string>
@@ -2308,7 +2308,7 @@
             <dia:string>#varchar(32)#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
-            <dia:string>#not null#</dia:string>
+            <dia:string>#null#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#upřesnění#</dia:string>
@@ -2440,16 +2440,62 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#status#</dia:string>
+            <dia:string>#created_at#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#tinyint#</dia:string>
+            <dia:string>#timestamp#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#CURRENT_TIMESTAMP#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#TS vytvoření záznamu#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#will_be_removed_at#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#date#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>#not null#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
-            <dia:string>#Stav#</dia:string>
+            <dia:string>#Datum, kdy by měla být neshoda odstraněna#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#removed_at#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#date#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#datum skutečného odebrání#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -2496,29 +2542,6 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#Jméno zaměstnance zodpovědného za odstranění neshody#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="visibility">
-            <dia:enum val="0"/>
-          </dia:attribute>
-          <dia:attribute name="abstract">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="class_scope">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-        </dia:composite>
-        <dia:composite type="umlattribute">
-          <dia:attribute name="name">
-            <dia:string>#will_be_removed_at#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="type">
-            <dia:string>#date#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="value">
-            <dia:string>#not null#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="comment">
-            <dia:string>#Datum, kdy by měla být neshoda odstraněna#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
