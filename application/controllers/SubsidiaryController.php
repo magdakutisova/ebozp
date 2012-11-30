@@ -106,6 +106,13 @@ class SubsidiaryController extends Zend_Controller_Action {
 			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
 			$this->view->form = $form;
 		}
+		
+		/*
+		 * PETR JINDRA 30. 11. 2012
+		*/
+		
+		// kontrola ACL pro vytvoreni auditu
+		$this->view->createAuditAllowed = $this->_acl->isAllowed($this->_user->getRoleId(), "audit:audit", "create");
 	}
 	
 	public function newAction() {
