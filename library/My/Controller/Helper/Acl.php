@@ -39,6 +39,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace', 'print'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
+		$this->allow($client, "audit:audit", array("clientlist", "get"));
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
@@ -48,10 +49,12 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
 		$this->allow($technician, "audit:audit", array("index", "create", "post", "fill", "put", "get", "techlist"));
+		$this->deny($technician, "audit:audit", array("clientlist"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
-		$this->deny($coordinator, "audit:audit", array("fill", "post", "create"));
+		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist"));
+		$this->allow($coordinator, "audit:audit", array("coordlist", "review"));
 
 		$this->allow($admin);
 		
