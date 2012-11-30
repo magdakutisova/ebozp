@@ -251,50 +251,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 												'action' => 'diary'))
 		);
 		
-		// routa na vyplneni dotazniku auditu ze strany technika
-		$router->addRoute(
-			"audit-fill",
-			new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/fill",
-					array(
-						"module" => "audit",
-						"controller" => "audit",
-						"action" => "fill"
-					)
-			)
-		);
-		
-		// routa na vytvoreni dotazniku
-		$router->addRoute(
-				"audit-create",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/create",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "create"
-						)
-				)
-		);
-		
-		// routa na zobrazeni auditu (read-only)
-		$router->addRoute(
-				"audit-get",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/get",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "get"
-						)
-				)
-		);
-		
-		// routa na prehled auditu technika
-		$router->addRoute(
-			"audit-list-technic",
-			new Zend_Controller_Router_Route("/klient/:clientId/audit/list/technic",
-					array("module" => "audit",
-							"controller" => "audit",
-							"action" => "techlist"))
-		);
 	}
 
 }
