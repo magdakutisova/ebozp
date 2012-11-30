@@ -41,6 +41,54 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 	}
 	
+	public function clientlistAction() {
+		// nacteni seznamu pobocek
+		$subsidiaries = $this->_user->getUserSubsidiaries();
+		$subsidiaries[] = 0;
+		
+		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		// podminky pro nacteni otevrenych a uzavrenych auditu
+		$open = array(
+				"0"
+		);
+		
+		// nactnei uzavrenych auditu
+		$closed = array(
+				$adapter->quoteInto("subsidiary_id in (?)", $subsidiaries)
+		);
+		
+		$this->_loadList($open, $closed);
+		
+		$this->view->openRoute = "audit-review";
+		$this->view->closedRoute = "audit-get";
+	}
+	
+	public function coordlistAction() {
+		// nacteni seznamu pobocek
+		$subsidiaries = $this->_user->getUserSubsidiaries();
+		$subsidiaries[] = 0;
+	
+		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+	
+		// podminky pro nacteni otevrenych a uzavrenych auditu
+		$open = array(
+				"coordinator_id = " . $this->_user->getIdUser(),
+				"coordinator_confirmed_at = 0"
+		);
+	
+		// nactnei uzavrenych auditu
+		$closed = array(
+				"coordinator_id = " . $this->_user->getIdUser(),
+				"coordinator_confirmed_at > 0"
+		);
+	
+		$this->_loadList($open, $closed);
+	
+		$this->view->openRoute = "audit-review";
+		$this->view->closedRoute = "audit-get";
+	}
+	
 	public function createAction() {
 		// nacteni dat a naplneni formulare
 		$subsidiaryId = $this->getRequest()->getParam("subsidiaryId", 0);
@@ -189,45 +237,22 @@ class Audit_AuditController extends Zend_Controller_Action {
 	}
 	
 	public function techlistAction() {
-		// nacteni klienta
-		$tableClients = new Application_Model_DbTable_Client();
-		$client = $tableClients->find($this->getRequest()->clientId)->current();
-		
-		if (!$client) throw new Zend_Exception("Client #" . $this->getRequest()->clientId . " has not been found");
-		
-		// nacteni auditu, kde je uzivatel auditorem a patri ke klientovi
-		$tableAudits = new Audit_Model_Audits();
-		
-		// nejprve nacteni probihajicich auditu, ktere nebyly uzavreny technikem nebo byly znovu utevreny
-		$open = $tableAudits->fetchAll(array(
+		// podminky pro nacteni otevrenych a uzavrenych auditu
+		$open = array(
 				"auditor_id = " . $this->_user->getIdUser(),
-				"client_id = " . $client->id_client,
 				"auditor_confirmed_at = 0"
-				), "done_at");
-		
-		// nacteni seznamu zodpovednych osob za otevrene audity
-		$openResp = self::loadResponsibiles($open);
-		
+		);
+
 		// nactnei uzavrenych auditu
-		$closed = $tableAudits->fetchAll(array(
+		$closed = array(
 				"auditor_id = " . $this->_user->getIdUser(),
-				"client_id = " . $client->id_client,
 				"auditor_confirmed_at > 0"
-		), "done_at");
+		);
 		
-		$closedResp = self::loadResponsibiles($closed);
+		$this->_loadList($open, $closed);
 		
-		// nacteni seznamu pobocek
-		$subIndex = self::loadSubdiaryIndex($client);
-		
-		$this->view->layout()->setLayout("client-layout");
-		
-		$this->view->client = $client;
-		$this->view->open = $open;
-		$this->view->openResp = $openResp;
-		$this->view->closed = $closed;
-		$this->view->closedResp = $closedResp;
-		$this->view->subIndex = $subIndex;
+		$this->view->openRoute = "audit-fill";
+		$this->view->closedRoute = "audit-get";
 	}
 	
 	public function postAction() {
@@ -321,6 +346,54 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->_redirect(
 				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-fill")
 		);
+	}
+	
+	public function reviewAction() {
+		$this->getAction();
+	}
+	
+	/**
+	 * nacte seznamy auditu a zapise je do view
+	 * @param array $openCond
+	 * @param array $closedCont
+	 * @throws Zend_Exception
+	 */
+	protected function _loadList(array $openCond, array $closedCond) {
+		// nacteni klienta
+		$tableClients = new Application_Model_DbTable_Client();
+		$client = $tableClients->find($this->getRequest()->clientId)->current();
+		
+		// doplneni informaci o klientovi do podminek
+		$openCond[] = "client_id = " . $client->id_client;
+		$closedCond[] = "client_id = " . $client->id_client;
+		
+		if (!$client) throw new Zend_Exception("Client #" . $this->getRequest()->clientId . " has not been found");
+		
+		// nacteni auditu, kde je uzivatel auditorem a patri ke klientovi
+		$tableAudits = new Audit_Model_Audits();
+		
+		// nejprve nacteni probihajicich auditu, ktere nebyly uzavreny technikem nebo byly znovu utevreny
+		$open = $tableAudits->fetchAll($openCond, "done_at desc");
+		
+		// nacteni seznamu zodpovednych osob za otevrene audity
+		$openResp = self::loadResponsibiles($open);
+		
+		// nactnei uzavrenych auditu
+		$closed = $tableAudits->fetchAll($closedCond, "done_at desc");
+		
+		$closedResp = self::loadResponsibiles($closed);
+		
+		// nacteni seznamu pobocek
+		$subIndex = self::loadSubdiaryIndex($client);
+		
+		$this->view->layout()->setLayout("client-layout");
+		
+		$this->view->client = $client;
+		$this->view->open = $open;
+		$this->view->openResp = $openResp;
+		$this->view->closed = $closed;
+		$this->view->closedResp = $closedResp;
+		$this->view->subIndex = $subIndex;
 	}
 	
 	/**

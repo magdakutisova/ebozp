@@ -1,6 +1,5 @@
-#Wed Jul 18 12:58:01 CEST 2012
 eclipse.preferences.version=1
-include_path=0;/guardian\u00055;org.zend.php.framework.CONTAINER\u00051;C\:/Program Files/Zend/Apache2/htdocs/guardian/library
+include_path=0;/Guardian
 org.eclipse.php.core.phpForamtterIndentationSize=1
 org.eclipse.php.core.phpForamtterUseTabs=true
 phpVersion=php5

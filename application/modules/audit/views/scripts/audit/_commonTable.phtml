@@ -70,15 +70,7 @@ $audit = $this->audit;
 		</tr>
 		<tr>
 			<td>
-			Potvrzen klientem:
-			</td>
-			<td>
-			<?php echo $this->sqlEmptyDateTime($audit->client_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->client_confirmed_at); ?>
-			</td>
-		</tr>
-		<tr>
-			<td>
-			Potvrzen koordinátorem:
+			Zpracován koordinátorem:
 			</td>
 			<td>
 			<?php echo $this->sqlEmptyDateTime($audit->coordinator_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->coordinator_confirmed_at); ?>
