@@ -3,6 +3,8 @@ $((new function () {
 	questionary.setFromArray(QDATA);
 	questionary.setDesingMode(true);
 	
+	q = questionary;
+	
 	// obsahuje tooltip
 	var tooltip = null;
 	
@@ -10,8 +12,7 @@ $((new function () {
 	var selects = {
 		"A" : "ANO",
 		"NT" : "NT",
-		"C" : "Č",
-		"N" : "N"
+		"N" : "NE"
 	};
 	
 	/****************
@@ -60,6 +61,24 @@ $((new function () {
 		target.children().remove();
 		
 		questionary.render().appendTo(target);
+		
+		// helper pro skryvani dat
+		target.find(".questionary-item-group span.questionary-item-group-label")
+				.css("cursor", "pointer")
+				.click(function () {
+			$(this).parent().parent().find(">.questionary-item-group-content").toggle();
+		});
+		
+		// helper nastaveni defaultni hodnoty
+		target.find(":text,textarea").change(updateDefVal);
+	}
+	
+	function updateDefVal() {
+		// nacteni defaultni hodnnoty
+		var defVal = $(this).val();
+		var itemName = $(this).parents(".questionary-item:first").find(":hidden[name='itemName']").val();
+		
+		questionary.getByName(itemName).defVal(defVal);
 	}
 	
 	/*
@@ -134,7 +153,7 @@ $((new function () {
 		group.defVal(1);
 		
 		// vlozeni hodnoceni
-		var labels = questionary.addItem(itemName + "labels", "ValueList");
+		var labels = questionary.addItem(itemName + "-labels", "ValueList");
 		labels.label("Hodnocení");
 		
 		labels.setOptions(selects);
@@ -212,6 +231,13 @@ $((new function () {
 			
 			// nacteni prvku a jeho odebrani
 			var item = questionary.getByName(name);
+			
+			// odebrani prvku ve skupine
+			var groupedItems = item.getItems();
+			
+			for (var i in groupedItems) {
+				questionary.removeItem(groupedItems[i]);
+			}
 			
 			questionary.removeItem(item);
 		}
@@ -305,9 +331,59 @@ $((new function () {
 	 * vraci bazove jmeno otazky
 	 */
 	function getQuestionBaseName(name) {
-		var position = name.lastIndexOf("[");
+		var position = name.lastIndexOf("-");
 		
 		return name.substr(0, position);
+	}
+	
+	function editQuestionDialog(question, weight, callback, groupName, submitLabel) {
+		// vytvoreni dialogu
+		var wrapper = $("<div id='qdialog'>");
+		
+		var form = $("<form action='#'>").appendTo(wrapper);
+		var table = $("<table>").appendTo(form);
+		
+		// zavaznost
+		$("<tr>").appendTo(table).append(
+				$("<td>").text("Závažnost:")
+		).append(
+				$("<td>").append(
+						$("<input type='text' name='weight'>").val(weight)
+				)
+		);
+		
+		// zneni otazky
+		$("<tr>").appendTo(table).append(
+				$("<td colspan='2'>").text("Znění otázky:")
+		);
+		
+		$("<tr>").appendTo(table).append(
+				$("<td colspan='2'>").append(
+						$("<textarea name='question'>").val(question)
+				)
+		);
+		
+		if (submitLabel == undefined) {
+			submitLabel = "Přidat otázku";
+		}
+		
+		// odeslani
+		$("<tr>").appendTo(table).append(
+				$("<td colspan='2'>").append(
+						$("<input type='submit'>").val(submitLabel).click(callback)
+				)
+		);
+		
+		// nacteni jmena skupiny
+		form.append(
+				$("<input type='hidden' name='groupName'>").val(groupName)
+		);
+		
+		wrapper.appendTo("body").dialog({
+			modal: true,
+			width: "500px",
+			draggable : false
+		});
 	}
 	
 	/*
@@ -345,20 +421,34 @@ $((new function () {
 		var groups = getGroups();
 		
 		enableHighlighting(groups);
-		groups.click(addQuestionFinish);
+		groups.click(showQDialog);
 		
 		showTooltip("Vyberte skupinu, do které přidat otázku");
+	}
+	
+	/*
+	 * udalost kliknuti na otazku ktera zobrazi dialog
+	 */
+	function showQDialog() {
+		var groupName = $(this).find(">input[name='itemName']").val();
+		
+		editQuestionDialog("", 0, addQuestionFinish, groupName);
 	}
 	
 	/*
 	 * dokonci pridani
 	 */
 	function addQuestionFinish() {
-		var groupName = $(this).find(">input[name='itemName']").val();
+		var form = $(this).parents("form:first");
+		
+		var groupName = form.find(":hidden[name='groupName']").val();
 		var group = questionary.getByName(groupName);
 		
 		// zjisteni popisku
-		var label = prompt("Otázka:");
+		var question = form.find("textarea").val();
+		var weight = form.find("input[type='text']").val();
+		
+		var label = buildQuestion(question, weight);
 		
 		if (!label.length) {
 			alert("Otázka nesmí být prázdná");
@@ -376,8 +466,8 @@ $((new function () {
 		
 		try {
 			while (1) {
-				itemBaseName = "question[" + groupIndex + "][" + (i++) + "]";
-				itemName = itemBaseName + "[score]";
+				itemBaseName = "question-" + groupIndex + "-" + (i++);
+				itemName = itemBaseName + "-score";
 				
 				questionary.getByName(itemName);
 			}
@@ -392,14 +482,47 @@ $((new function () {
 		
 		group.addItem(score);
 		
+		// vegenrovani skupiny hodnot pro novou neshodu
+		var mistake = questionary.addItem(itemBaseName + "-mistake", "Group");
+		mistake.label("Neshoda").defVal(1);
+		
+		var category = questionary.addItem(itemBaseName + "-category", "Text");
+		category.label("Kategorie");
+		
+		var subcategory = questionary.addItem(itemBaseName + "-subcategory", "Text");
+		subcategory.label("Podkategorie");
+		
+		var mistakeText = questionary.addItem(itemBaseName + "-mistake_text", "TextArea");
+		mistakeText.label("Popis neshody");
+		
+		var concretisation = questionary.addItem(itemBaseName + "-concretisation", "Text");
+		concretisation.label("Konkretizace");
+		
+		var suggestion = questionary.addItem(itemBaseName + "-suggestion", "TextArea");
+		suggestion.label("Návrh řešení");
+		
+		var comment = questionary.addItem(itemBaseName + "-comment", "TextArea");
+		comment.label("Komentář");
+		
+		mistake.addItem(category).addItem(subcategory).addItem(concretisation).addItem(mistakeText).addItem(suggestion).addItem(comment);
+		
+		group.addItem(mistake);
+		
 		// misto pro poznamku
-		var note = questionary.addItem(itemBaseName + "[note]", "TextArea");
+		var note = questionary.addItem(itemBaseName + "-note", "TextArea");
 		note.label("Poznámka");
 		
 		group.addItem(note);
 		
 		render();
 		hideTooltip();
+		
+		// zniceni dialogu
+		var dialog = $("#qdialog");
+		dialog.dialog("destroy");
+		dialog.remove();
+		
+		return false;
 	}
 	
 	/*
@@ -423,12 +546,22 @@ $((new function () {
 			var name = $(this).find(">input[name='itemName']").val();
 			var baseName = getQuestionBaseName(name);
 			
-			// nacteni itemu
+			// nacteni itemu a poznamky
 			var item = questionary.getByName(name);
-			var note = questionary.getByName(baseName + "[note]");
+			var note = questionary.getByName(baseName + "-note");
 			
-			questionary.removeItem(item)
+			questionary.removeItem(item);
 			questionary.removeItem(note);
+			
+			// nacteni a odtraneni skupiny neshody
+			var mistake = questionary.getByName(baseName + "-mistake");
+			var items = mistake.getItems();
+			
+			for (var i in items) {
+				questionary.removeItem(items[i]);
+			}
+			
+			questionary.removeItem(mistake);
 		}
 		hideTooltip();
 		render();
@@ -441,9 +574,19 @@ $((new function () {
 		var questions = getQuestions();
 		
 		enableHighlighting(questions);
-		questions.click(editQuestionFinish);
+		questions.click(showEditQDialog);
 		
 		showTooltip("Vyberte otázku k editaci");
+	}
+	
+	function showEditQDialog() {
+		// nacteni jmena elementu
+		var elementName = $(this).find(">input[name='itemName']").val();
+		var item = questionary.getByName(elementName);
+		
+		var qData = explodeQuestion(item.label());
+		
+		editQuestionDialog(qData.question, qData.weight, editQuestionFinish, elementName, "Potvrdit změny");
 	}
 	
 	/*
@@ -451,16 +594,16 @@ $((new function () {
 	 */
 	function editQuestionFinish() {
 		// nacteni jmena elementu
-		var elementName = $(this).find(">input[name='itemName']").val();
+		var form = $(this).parents("form:first");
+		var elementName = form.find("input[name='groupName']").val();
 		var item = questionary.getByName(elementName);
 		
-		var qData = explodeQuestion(item.label());
-		
-		var question = prompt("Nové znění otázky:", qData.question);
+		var question = form.find("textarea").val();
+		var weight = form.find("input[type='text']").val();
 		
 		if (question.length) {
 			// sestaveni dat
-			var text = buildQuestion(question, qData.weight);
+			var text = buildQuestion(question, weight);
 			
 			item.label(text);
 		} else {
@@ -469,6 +612,13 @@ $((new function () {
 		
 		hideTooltip();
 		render();
+		
+		// skryti dialogu
+		var dialog = $("#qdialog");
+		dialog.dialog("destroy");
+		dialog.remove();
+		
+		return false;
 	}
 	
 	/*
@@ -515,11 +665,13 @@ $((new function () {
 		target.find(">.questionary-item:odd").each(function () {
 			var node = $(this);
 			var note = node.next();
+			var mistake = note.next();
 			
 			var set = $("<div class='sortings'>");
 			
 			node.appendTo(set);
 			note.appendTo(set);
+			mistake.appendTo(set);
 			
 			target.append(set);
 			
@@ -635,7 +787,6 @@ $((new function () {
 		$("#add-question").click(addQuestion);
 		$("#remove-question").click(removeQuestion);
 		$("#edit-question").click(editQuestion);
-		$("#weight-question").click(weightQuestion);
 		$("#sort-question").click(sortQuestionSelectGroup);
 		$("#endsort-question").click(sortQuestionFinish);
 		
