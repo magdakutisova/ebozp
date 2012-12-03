@@ -84,6 +84,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		);
 	
 		$this->_loadList($open, $closed);
+		
+		// nacteni neshod tykajicich se pobocky
 	
 		$this->view->openRoute = "audit-review";
 		$this->view->closedRoute = "audit-get";
@@ -314,8 +316,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$filled = $audit->findParentRow("Questionary_Model_Filleds");
 		$questionary = $filled->toClass();
 		
-		// ulozeni formulare
-		$questionary->setFromArray(Zend_Json::decode($data["content"]));
+		// ulozeni novych dat do formulare
+		$formData = Zend_Json::decode($data["content"]);
+		
+		foreach ($formData as $name => $value) {
+			$questionary->getByName($name)->fill($value);
+		}
+		
 		$filled->saveFilledData($questionary);
 		
 		// zapis poznamek a shrnuti
