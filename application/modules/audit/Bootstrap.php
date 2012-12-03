@@ -80,5 +80,41 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"controller" => "audit",
 								"action" => "coordlist"))
 		);
+		
+		// vytvoreni neshod koordinatorem
+		$router->addRoute(
+				"audit-mistake-create",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/create-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "create"))
+		);
+		
+		// nova neshoda
+		$router->addRoute(
+				"audit-mistake-post",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/post-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "post"))
+		);
+		
+		// nova neshoda
+		$router->addRoute(
+				"audit-mistake-attach",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/attach-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "attach"))
+		);
+		
+		// zobrazit jednu neshodu
+		$router->addRoute(
+				"audit-mistake-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistake/:mistakeId",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "get"))
+		);
 	}
 }

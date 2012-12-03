@@ -21,6 +21,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:category"));
 		$this->add(new Zend_Acl_Resource("audit:index"));
 		$this->add(new Zend_Acl_Resource("audit:audit"));
+		$this->add(new Zend_Acl_Resource("audit:mistake"));
 		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
@@ -40,6 +41,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace', 'print'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, "audit:audit", array("clientlist", "get"));
+		$this->allow($client, "audit:mistake", array("get"));
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
@@ -55,6 +57,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist"));
 		$this->allow($coordinator, "audit:audit", array("coordlist", "review"));
+		$this->allow($coordinator, "audit:mistake", array("create", "post", "attach"));
 
 		$this->allow($admin);
 		
