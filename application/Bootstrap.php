@@ -6,6 +6,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap( 'view' );
 		$view = $this->getResource( 'view' );
 		$view->doctype( 'XHTML1_STRICT' );
+		$view->setEncoding('UTF-8');
 	}
 	
 	protected function _initAutoload() {
@@ -15,6 +16,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     }
     
     protected function _initSession(){
+    	//Zend_Session::destroy();
     	Zend_Session::start(true);
     	new Zend_Session_Namespace();
     }

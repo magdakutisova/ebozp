@@ -78,7 +78,6 @@ class WorkplaceController extends Zend_Controller_Action
     {
     	$defaultNamespace = new Zend_Session_Namespace();
     	$this->view->subtitle = "Zadat pracoviště";
-    	
     	$form = $this->loadOrCreateForm($defaultNamespace);
 		
 		//získání parametrů ID klienta a pobočky
@@ -102,7 +101,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//zmapujeme nové prvky
     	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
-		
+    	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
     		$this->view->form = $form;
@@ -131,9 +130,10 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$formData = $this->getRequest()->getPost();
 	    	$defaultNamespace->formData = $formData;
 	    	$defaultNamespace->form = $form;
-	    	
+
 	    	//zahájení transakce
 	    	$adapter->beginTransaction();
+	    	throw new Exception();
 	    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
@@ -418,10 +418,11 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function editAction()
     {
-        $defaultNamespace = new Zend_Session_Namespace();
+    	$defaultNamespace = new Zend_Session_Namespace();
     	$this->view->subtitle = "Upravit pracoviště";
-        
-        $form = $this->loadOrCreateForm($defaultNamespace);
+        //die();
+    	$form = $this->loadOrCreateForm($defaultNamespace);
+    	//Zend_Debug::dump($form);
         
         //získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
@@ -448,9 +449,14 @@ class WorkplaceController extends Zend_Controller_Action
 		
 		//zmapujeme nové prvky
     	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
-		
+		$form->removeElement('position');
+		$form->removeElement('work');
+		$form->removeElement('technical_device');
+		$form->removeElement('chemical');
+    	
 		//když není odeslán, naplníme daty z databáze nebo ze session
 		if(!$this->getRequest()->isPost()){
+			$this->view->form = $form;
 			if (isset ( $defaultNamespace->formData )) {
 				$form->populate ( $defaultNamespace->formData );
 				unset ( $defaultNamespace->formData );
@@ -458,19 +464,17 @@ class WorkplaceController extends Zend_Controller_Action
 			else{
 				//naplnění základních polí pro pracoviště
 				$form->populate($workplace->toArray());
-				
 				$positions = new Application_Model_DbTable_Position();
 				$works = new Application_Model_DbTable_Work();
 				$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
 				$chemicals = new Application_Model_DbTable_Chemical();
 				
 				//přidání pracovních pozic
-				$form->removeElement('position');
 				$order = 16;
 				$positionData = $positions->getByWorkplace($workplaceId);
 				if(count($positionData) > 0){
 					foreach($positionData as $position){
-						$form->addElement('position', 'position' . $order, array(
+						$newPosition = new My_Form_Element_Position('newPosition' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Position()),
 							'multiOptions' => $this->_positionList,
@@ -479,19 +483,19 @@ class WorkplaceController extends Zend_Controller_Action
 						$value = array('id_position' => $position->getIdPosition(),
 										'position' => $positionIndex,
 										'new_position' => '');
-						$form->getElement('position' . $order)->setValue($value);
+						$newPosition->setValue($value);
+						$form->addElement($newPosition);
 						$order++;
 					}
 				}
 				$form->getElement('id_position')->setValue($order);
 				
 				//přidání pracovních činností
-				$form->removeElement('work');
 				$order = 102;
 				$workData = $works->getByWorkplace($workplaceId);
 				if(count($workData) > 0){
 					foreach($workData as $work){
-						$form->addElement('work', 'work' . $order, array(
+						$newWork = new My_Form_Element_Work('newWork' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Work()),
 							'multiOptions' => $this->_workList,
@@ -500,19 +504,19 @@ class WorkplaceController extends Zend_Controller_Action
 						$value = array('id_work' => $work->getIdWork(),
 										'work' => $workIndex,
 										'new_work' => '');
-						$form->getElement('work' . $order)->setValue($value);
+						$newWork->setValue($value);
+						$form->addElement($newWork);
 						$order++;
 					}
 				}
 				$form->getElement('id_work')->setValue($order);
 				
 				//přidání technických prostředků
-				$form->removeElement('technical_device');
 				$order = 202;
 				$technicalDeviceData = $technicalDevices->getByWorkplace($workplaceId);
 				if(count($technicalDeviceData) > 0){
 					foreach($technicalDeviceData as $technicalDevice){
-						$form->addElement('technicalDevice', 'technical_device' . $order, array(
+						$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_TechnicalDevice()),
 							'multiOptions' => $this->_sortList,
@@ -525,19 +529,19 @@ class WorkplaceController extends Zend_Controller_Action
 										'type' => $typeIndex,
 										'new_sort' => '',
 										'new_type' => '');
-						$form->getElement('technical_device' . $order)->setValue($value);
+						$newTechnicalDevice->setValue($value);
+						$form->addElement($newTechnicalDevice);
 						$order++;
 					}
 				}
 				$form->getElement('id_technical_device')->setValue($order);
 				
 				//přidání chemických látek
-				$form->removeElement('chemical');
 				$order = 302;
 				$chemicalData = $chemicals->getByWorkplace($workplaceId);
 				if(count($chemicalData) > 0){
 					foreach($chemicalData as $chemical){
-						$form->addElement('chemicalComplete', 'chemical' . $order, array(
+						$newChemical = new My_Form_Element_ChemicalComplete('newChemical' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Chemical()),
 							'multiOptions' => $this->_chemicalList,
@@ -548,31 +552,40 @@ class WorkplaceController extends Zend_Controller_Action
 										'usual_amount' => $chemical['usual_amount'],
 										'use_purpose' => $chemical['use_purpose'],
 										'new_chemical' => '');
-						$form->getElement('chemical' . $order)->setValue($value);
+						$newChemical->setValue($value);
+						$form->addElement($newChemical);
 						$order++;
 					}
 				}
 				$form->getElement('id_chemical')->setValue($order);
 			}
-	        $this->view->form = $form;
-	        return;
+			return;
 		}
 		
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
-    		Zend_Debug::dump($this->getRequest()->getPost());
     		$form->populate($this->getRequest()->getPost());
     		$this->view->form = $form;
     		return;
     	}
     	
     	//zpracování formuláře
+    	$adapter = $workplaces->getAdapter();
     	try{
-    		$formData = $this->getRequest()->getPost();
-    		
+    		//init session pro případ selhání ukládání
+	    	$formData = $this->getRequest()->getPost();
+	    	$defaultNamespace->formData = $formData;
+	    	$defaultNamespace->form = $form;
+
+	    	//zahájení transakce
+	    	$adapter->beginTransaction();
+	    	
     		//update pracoviště
     		$workplace = new Application_Model_Workplace($formData);
-    		$workplaces->updateWorkplace($workplace);
+    		if(!$workplaces->updateWorkplace($workplace)){
+    			$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
+	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
+    		}
     		
     		$factors = new Application_Model_DbTable_WorkplaceFactor();
     		$risks = new Application_Model_DbTable_WorkplaceRisk();
@@ -780,11 +793,19 @@ class WorkplaceController extends Zend_Controller_Action
     }
     
     private function fillMultiselects($form){
-    	$form->position->setAttrib('multiOptions', $this->_positionList);
-		$form->work->setAttrib('multiOptions', $this->_workList);
-		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
-		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
-		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
+    	if($form->position != null){
+    		$form->position->setAttrib('multiOptions', $this->_positionList);
+    	}
+    	if($form->work != null){
+			$form->work->setAttrib('multiOptions', $this->_workList);
+    	}
+    	if($form->technical_device != null){
+			$form->technical_device->setAttrib('multiOptions', $this->_sortList);
+			$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
+    	}
+    	if($form->chemical != null){
+			$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
+    	}
 		return $form;
     }
     
