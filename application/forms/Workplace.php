@@ -314,7 +314,7 @@ class Application_Form_Workplace extends Zend_Form
        	));
     }
 
-    public function preValidation(array $data, $positionList, $workList, $sortList, $typeList, $chemicalList){
+    public function preValidation(array $data, $positionList, $workList, $sortList, $typeList, $chemicalList, $toEdit = false){
     	$newPositions = array_filter(array_keys($data), array($this, 'findPositions'));
     	$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
     	$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
@@ -322,44 +322,77 @@ class Application_Form_Workplace extends Zend_Form
 
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
+     		$newPositionData = isset($data[$fieldName]['new_position']) ? $data[$fieldName]['new_position'] : '';
      		$this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    		$this->addElement('position', 'newPosition' . strval($order - 1), array(
+    		$newPosition = new My_Form_Element_Position('newPosition' . strval($order - 1), array(
     			'order' => $order,
-    			'value' => $data[$fieldName],
+    			'value' => array('id_position' => $data[$fieldName]['id_position'],
+    							'position' => $data[$fieldName]['position'],
+    							'new_position' => $newPositionData),
     			'validators' => array(new My_Validate_Position()),
     			'multiOptions' => $positionList,
     		));
+    		if($toEdit){
+    			$newPosition->setAttrib('toEdit', true);
+    		}
+    		$this->addElement($newPosition);
     	}
 
     	foreach($newWorks as $fieldName){
    			$order = preg_replace('/\D/', '', $fieldName) + 1;
-   			$this->addElement('work', 'newWork' . strval($order - 1), array(
+   			$newWorkData = isset($data[$fieldName]['new_work']) ? $data[$fieldName]['new_work'] : '';
+   			$newWork = new My_Form_Element_Work('newWork' . strval($order - 1), array(
    				'order' => $order,
-   				'value' => $data[$fieldName],
+   				'value' => array('id_work' => $data[$fieldName]['id_work'],
+   								'work' => $data[$fieldName]['work'],
+   								'new_work' => $newWorkData),
    				'validators' => array(new My_Validate_Work()),
    				'multiOptions' => $workList,
    			));
+   			if($toEdit){
+   				$newWork->setAttrib('toEdit', true);
+   			}
+   			$this->addElement($newWork);
     	}
     	
     	foreach($newTechnicalDevices as $fieldName){
     		$order = preg_replace('/\D/', '', $fieldName) + 1;
-    		$this->addElement('technicalDevice', 'newTechnicalDevice' . strval($order - 1), array(
+    		$newSortData = isset($data[$fieldName]['new_sort']) ? $data[$fieldName]['new_sort'] : '';
+    		$newTypeData = isset($data[$fieldName]['new_type']) ? $data[$fieldName]['new_type'] : '';
+    		$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . strval($order - 1), array(
     			'order' => $order,
-    			'value' => $data[$fieldName],
+    			'value' => array('id_technical_device' => $data[$fieldName]['id_technical_device'],
+    							'sort' => $data[$fieldName]['sort'],
+    							'type' => $data[$fieldName]['type'],
+    							'new_sort' => $newSortData,
+    							'new_type' => $newTypeData),
     			'validators' => array(new My_Validate_TechnicalDevice()),
     			'multiOptions' => $sortList,
     			'multiOptions2' => $typeList,
     		));
+    		if($toEdit){
+    			$newTechnicalDevice->setAttrib('toEdit', true);
+    		}
+    		$this->addElement($newTechnicalDevice);
     	}
     	
     	foreach($newChemicals as $fieldName){
     		$order = preg_replace('/\D/', '', $fieldName) + 1;
-    		$this->addElement('chemicalComplete', 'newChemical' . strval($order - 1), array(
+    		$newChemicalData = isset($data[$fieldName]['new_chemical']) ? $data[$fieldName]['new_chemical'] : '';
+    		$newChemical = new My_Form_Element_ChemicalComplete('newChemical' . strval($order - 1), array(
     			'order' => $order,
-    			'value' => $data[$fieldName],
+    			'value' => array('id_chemical' => $data[$fieldName]['id_chemical'],
+    							'chemical' => $data[$fieldName]['chemical'],
+    							'new_chemical' => $newChemicalData,
+    							'usual_amount' => $data[$fieldName]['usual_amount'],
+    							'use_purpose' => $data[$fieldName]['use_purpose']),
     			'validators' => array(new My_Validate_Chemical()),
     			'multiOptions' => $chemicalList,
     		));
+    		if($toEdit){
+    			$newChemical->setAttrib('toEdit', true);
+    		}
+    		$this->addElement($newChemical);
     	}
     }
     

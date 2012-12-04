@@ -203,6 +203,21 @@ $(function(){
 		});
 	}
 	
+	//dynamické odebírání pracovních pozic
+	$("#remove_position").click(function(){
+		ajaxRemovePosition();
+		removePosition(this);
+	});
+	
+	function ajaxRemovePosition(){
+		//odstranit záznam z DB
+	}
+	
+	function removePosition(row){
+		var positionId = $(row).siblings().filter(":first").val();
+		alert(positionId);
+	}
+	
 	$(".print").click(function(){
 		window.print();
 	});

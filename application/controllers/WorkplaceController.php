@@ -448,7 +448,7 @@ class WorkplaceController extends Zend_Controller_Action
 		$form->getElement('save')->setLabel('Uložit');
 		
 		//zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
+    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList, true);
 		$form->removeElement('position');
 		$form->removeElement('work');
 		$form->removeElement('technical_device');
@@ -477,11 +477,10 @@ class WorkplaceController extends Zend_Controller_Action
 						$newPosition = new My_Form_Element_Position('newPosition' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Position()),
-							'multiOptions' => $this->_positionList,
+							'toEdit' => true,
 						));
-						$positionIndex = array_search($position->getPosition(), $this->_positionList);
 						$value = array('id_position' => $position->getIdPosition(),
-										'position' => $positionIndex,
+										'position' => $position->getPosition(),
 										'new_position' => '');
 						$newPosition->setValue($value);
 						$form->addElement($newPosition);
@@ -498,11 +497,10 @@ class WorkplaceController extends Zend_Controller_Action
 						$newWork = new My_Form_Element_Work('newWork' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Work()),
-							'multiOptions' => $this->_workList,
+							'toEdit' => true,
 						));
-						$workIndex = array_search($work->getWork(), $this->_workList);
 						$value = array('id_work' => $work->getIdWork(),
-										'work' => $workIndex,
+										'work' => $work->getWork(),
 										'new_work' => '');
 						$newWork->setValue($value);
 						$form->addElement($newWork);
@@ -519,14 +517,11 @@ class WorkplaceController extends Zend_Controller_Action
 						$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_TechnicalDevice()),
-							'multiOptions' => $this->_sortList,
-							'multiOptions2' => $this->_typeList,
+							'toEdit' => true,
 						));
-						$sortIndex = array_search($technicalDevice->getSort(), $this->_sortList);
-						$typeIndex = array_search($technicalDevice->getType(), $this->_typeList);
 						$value = array('id_technical_device' => $technicalDevice->getIdTechnicalDevice(),
-										'sort' => $sortIndex,
-										'type' => $typeIndex,
+										'sort' => $technicalDevice->getSort(),
+										'type' => $technicalDevice->getType(),
 										'new_sort' => '',
 										'new_type' => '');
 						$newTechnicalDevice->setValue($value);
@@ -544,11 +539,10 @@ class WorkplaceController extends Zend_Controller_Action
 						$newChemical = new My_Form_Element_ChemicalComplete('newChemical' . $order, array(
 							'order' => $order,
 							'validators' => array(new My_Validate_Chemical()),
-							'multiOptions' => $this->_chemicalList,
+							'toEdit' => true,
 						));
-						$chemicalIndex = array_search($chemical['chemical']->getChemical(), $this->_chemicalList);
 						$value = array('id_chemical' => $chemical['chemical']->getIdChemical(),
-										'chemical' => $chemicalIndex,
+										'chemical' => $chemical['chemical']->getChemical(),
 										'usual_amount' => $chemical['usual_amount'],
 										'use_purpose' => $chemical['use_purpose'],
 										'new_chemical' => '');
