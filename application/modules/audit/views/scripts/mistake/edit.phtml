@@ -1,0 +1,10 @@
+<h1>Úprava neshody</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box">
+<?php echo "<a href='" . $this->backTo . "'>Zpět</a>"?>
+</div>
+<?php
+echo $this->form;
+?>
+<h3>Smazat neshodu</h3>
+<?php echo $this->formDelete; ?>

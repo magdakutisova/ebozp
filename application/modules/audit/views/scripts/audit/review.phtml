@@ -1,0 +1,83 @@
+<h1>Audit</h1>
+<h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
+<?php 
+echo $this->partial("audit/_commonTable.phtml", $this);
+
+foreach ($this->groups as $group) {
+	$records = $this->recordIndex[$group->id];
+	?>
+<h3><?php echo $group->name; ?></h3>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Otázka
+			</th>
+			<th>
+			Hodnocení
+			</th>
+			<th>
+			Záv.
+			</th>
+			<th>
+			Komentář
+			</th>
+			<th>
+			
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	foreach ($records as $record) {
+		// vyhodnoceni hodnoty
+		switch ($record->score) {
+			case Audit_Model_AuditsRecords::SCORE_A:
+				$score = "Ano";
+				break;
+				
+			case Audit_Model_AuditsRecords::SCORE_C:
+				$score = "Částečně";
+				break;
+				
+			case Audit_Model_AuditsRecords::SCORE_N:
+				$score = "Ne";
+				break;
+				
+			default:
+				$score = "Netýká se";
+		}
+		
+		// vyhodnoceni zobrazeni zaskrtavaciho policka pro vyber
+		if (!$record->mistake_id && ($record->score == Audit_Model_AuditsRecords::SCORE_N || $record->score == Audit_Model_AuditsRecords::SCORE_C)) {
+			// zapis checkboxu
+			$check = "<a href='" . $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id, "recordId" => $record->id), "audit-mistake-create") . "'>Vytvořit neshodu</a>";
+		} elseif ($record->mistake_id) {
+			$check = "<a href='" . $this->url(array("clientId" => $this->client->id_client, "mistakeId" => $record->mistake_id), "audit-mistake-get") . "'>Zobrazit neshodu</a>";
+		} else {
+			$check = "";
+		}
+		?>
+	<tr>
+		<td>
+		<?php echo $this->formLabel("record[$record->id]", $record->question); ?>
+		</td>
+		<td>
+		<?php echo $score; ?>
+		</td>
+		<td>
+		<?php echo $record->weight; ?>
+		</td>
+		<td style="white-space: pre;"><?php echo $record->note; ?></td>
+		<td>
+		<?php echo $check; ?>
+		</td>
+	</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
+	<?php 
+}
+?>

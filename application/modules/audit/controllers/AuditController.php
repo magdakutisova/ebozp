@@ -337,7 +337,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$tableRecords = new Audit_Model_AuditsRecords();
 			$tableRecords->createRecords($audit);
 			
-			$audit->save();
+			// $audit->save();
 			
 			// presmerovani na vypis
 			$this->_redirect(

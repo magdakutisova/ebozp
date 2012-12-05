@@ -13,6 +13,12 @@ $(function () {
 		target.find(":radio").each(function () {
 			$(this).click(solveMistake);
 		}).filter(":checked").click();
+		
+		$("#questionary").find(":text[name$='removed']").datepicker({
+			"dateFormat" : "dd. mm. yy",
+			"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+			"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
+		});
 	}
 	
 	function solveMistake() {

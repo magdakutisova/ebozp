@@ -1,5 +1,8 @@
 <h1>Audit</h1>
 <h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box">
+	<a href="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-mistakes-auditlist")?>">Zobrazit neshody nevázané na dotazník</a>
+</div>
 <div id="questionary"></div>
 <script type="text/javascript">
 var QDATA = <?php echo Zend_Json::encode($this->questionary->toArray()); ?>

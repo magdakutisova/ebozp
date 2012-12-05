@@ -1,6 +1,10 @@
 <?php
 class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	
+	const SUBMITED_ALL = 0;
+	const SUBMITED_SUBMITED = 1;
+	const SUBMITED_UNSUBMITED = 2;
+	
 	protected $_name = "audit_audits_records_mistakes";
 	
 	protected $_sequence = true;
@@ -30,6 +34,12 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 					"columns" => "audit_id",
 					"refTableClass" => "Audit_Model_Audits",
 					"refColumns" => "id"
+			),
+			
+			"subsidiary" => array(
+					"columns" => "subsidiary_id",
+					"refTableClass" => "Application_Model_DbTable_Subsidiary",
+					"refcolumns" => "subsidiary_id"
 			)
 	);
 	
@@ -38,7 +48,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	protected $_rowsetClass = "Audit_Model_Rowset_AuditsRecordsMistakes";
 	
 	public function createMistake(
-			Audit_Model_Row_AuditRecord $record,
+			Audit_Model_Row_AuditRecord $record = null,
 			Zend_Date $willBeRemoved,
 			$mistake,
 			$suggestion,
@@ -47,23 +57,31 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 			$category,
 			$subcategory,
 			$concretization = null,
-			Audit_Model_Row_Audit $audit = null
+			Audit_Model_Row_Audit $audit = null,
+			$weight = null
 			) 
 	{	
+		// kontrola auditu a recordu
+		if (is_null($audit) && is_null($record)) throw new Zend_Db_Table_Exception("Audit and Record can not be null both");
+		
 		// kontrola auditu a pripadne jeho nacteni
 		if (is_null($audit)) {
 			$audit = $record->getAudit();
 		}
 		
+		// vyhodnoceni otazky a zavaznosti
+		$question = $record ? $record->question : null;
+		$weight = $weight ? $weight : $record->weight;
+		
 		// vytvoreni zaznamu o neshode
 		$retVal = $this->createRow(array(
-				"record_id" => $record->id,
+				"record_id" => $record ? $record->id : null,
 				"audit_id" => $audit->id,
 				"client_id" => $audit->client_id,
 				"subsidiary_id" => $audit->subsidiary_id,
-				"questionary_item_id" => $record->questionary_item_id,
-				"weight" => $record->weight,
-				"question" => $record->question,
+				"questionary_item_id" => $record ? $record->questionary_item_id : null,
+				"weight" => $weight,
+				"question" => $question,
 				"category" => $category,
 				"subcategory" => $subcategory,
 				"concretisation" => $concretization,
@@ -90,6 +108,12 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		return $this->fetchAll("client_id = " . $client->id_client);
 	}
 	
+	/**
+	 * vraci neshod dle id
+	 * 
+	 * @param int $id id neshody
+	 * @return Audit_Model_Row_AuditRecordMistake
+	 */
 	public function getById($id) {
 		return $this->find($id)->current();
 	}
@@ -114,5 +138,33 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		if ($actualsOnly) $where .= " !is_removed";
 		
 		return $this->fetchAll($where, $order);
+	}
+	
+	/**
+	 * vraci seznam vsech nezarazenych neshod
+	 * 
+	 * @param Audit_Model_Row_Audit $audit audit ke kteremu se vazou
+	 * @param int $submitFilter filtrace
+	 * @return Audit_Model_Rowset_AuditsRecordsMistakes
+	 */
+	public function getUngrouped(Audit_Model_Row_Audit $audit, $submitFilter = self::SUBMITED_ALL) {
+		$where = array("audit_id = " . $audit->id);
+		
+		// vyhodnoceni filtrace
+		if ($submitFilter) {
+			switch ($submitFilter) {
+				case self::SUBMITED_SUBMITED:
+					$where[] = "is_submited";
+					break;
+					
+				case self::SUBMITED_UNSUBMITED:
+					$where[] = "!is_submited";
+					break;
+					
+				default:
+			}
+		}
+		
+		return $this->fetchAll($where);
 	}
 }

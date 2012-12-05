@@ -1,0 +1,17 @@
+<h1>Nová nezařazená neshoda</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box">
+<?php 
+$urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
+
+$url = $this->url($urlParams, "audit-mistakes-auditlist");
+echo "<a href='$url'>Zpět na seznam</a> | ";
+
+$url = $this->url($urlParams, "audit-fill");
+echo "<a href='$url'>Zpět na audit</a>";
+?>
+</div>
+<?php
+echo $this->form;
+?>
+<script type="text/javascript" src="/js/audit/mistake/create.js"></script>

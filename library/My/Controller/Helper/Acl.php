@@ -51,6 +51,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
 		$this->allow($technician, "audit:audit", array("index", "create", "post", "fill", "put", "get", "techlist"));
+		$this->allow($technician, "audit:mistake", array("auditlist", "edit", "get", "delete", "createalone", "postalone", "edit", "delete", "put"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));

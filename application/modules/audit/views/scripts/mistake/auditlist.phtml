@@ -1,0 +1,65 @@
+<h1>Neshody mimo dotazník</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box">
+	<?php 
+	$params = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
+	$url = $this->url($params, "audit-mistake-createalone");
+	echo "<a href='$url'>Nová neshoda</a> | ";
+	
+	$url = $this->backTo;
+	echo "<a href='$url'>$this->backCaption</a>"
+	?>
+</div>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Kategorie
+			</th>
+			<th>
+			Podkategorie
+			</th>
+			<th>
+			Upřesnění
+			</th>
+			<th>
+			Neshoda
+			</th>
+			<th>
+			&nbsp;
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+foreach ($this->mistakes as $mistake) {
+	?>
+		<tr>
+			<td>
+			<?php echo $mistake->category; ?>
+			</td>
+			<td>
+			<?php echo $mistake->subcategory; ?>
+			</td>
+			<td>
+			<?php echo $mistake->concretisation; ?>
+			</td>
+			<td style="white-space: pre"><?php echo $mistake->mistake; ?></td>
+			<td>
+				<?php 
+				$url = $this->url(array(
+						"clientId" => $this->client->id_client,
+						"auditId" => $this->audit->id,
+						"mistakeId" => $mistake->id
+				), "audit-mistake-edit");
+				
+				echo "<a href='$url'>Upravit</a>";
+				?>
+			</td>
+		</tr>
+	<?php 
+}
+	?>
+	</tbody>
+</table>
+<?php

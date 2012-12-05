@@ -1,0 +1,136 @@
+<h1>Přiřazení neshody k záznamu z auditu</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<?php 
+$record = $this->record;
+
+// vyhodnoceni skore
+switch ($record->score) {
+	
+	case Audit_Model_AuditsRecords::SCORE_A:
+		$score = "Ano";
+		break;
+	
+	case Audit_Model_AuditsRecords::SCORE_N:
+		$score = "Ne";
+		break;
+		
+	case Audit_Model_AuditsRecords::SCORE_C:
+		$score = "Částečně";
+		break;
+	
+	default:
+		$score = "Netýká se";
+		break;
+}
+?>
+<table>
+	<tr>
+		<td>
+			<strong>
+			Otázka
+			</strong>
+		</td>
+		<td>
+		<?php echo $record->question; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<strong>
+			Závažnost
+			</strong>
+		</td>
+		<td>
+		<?php echo $record->weight; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<strong>
+			Hodnocení
+			</strong>
+		</td>
+		<td>
+		<?php echo $score; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<strong>
+			Poznámka
+			</strong>
+		</td>
+		<td style="white-space: pre;"><?php echo $record->note; ?></td>
+	</tr>
+	<tr>
+		<td>
+			<strong>
+			Zjištěno dne
+			</strong>
+		</td>
+		<td>
+			<?php echo $this->sqlDate($this->audit->done_at); ?>
+		</td>
+	</tr>
+</table>
+<h3>Nová neshoda</h3>
+<?php
+echo $this->createForm;
+?>
+<h3>Přiřadit existující neshodu</h3>
+<form method="post" action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id, "recordId" => $record->id), "audit-mistake-attach"); ?>">
+<table>
+	<thead>
+		<tr>
+			<th>
+			Kategorie
+			</th>
+			<th>
+			Podkategorie
+			</th>
+			<th>
+			Specifikace
+			</th>
+			<th>
+			Neshoda
+			</th>
+			<th>
+			Ze dne
+			</th>
+			<th>
+			&nbsp;
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	foreach ($this->mistakes as $mistake) {
+		?>
+		<tr>
+			<td>
+			<?php echo $mistake->category; ?>
+			</td>
+			<td>
+			<?php echo $mistake->subcategory; ?>
+			</td>
+			<td>
+			<?php echo $mistake->concretisation; ?>
+			</td>
+			<td style="white-space: pre;"><?php echo $mistake->mistake; ?></td>
+			<td>
+			<?php echo $this->sqlDate($mistake->notified_at); ?>
+			</td>
+			<td>
+			<input type="radio" name="mistake[id]" value="<?php echo $mistake->id; ?>">
+			</td>
+		</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
+<p>
+<?php echo $this->formSubmit("mistake[submit]", "Připojit neshodu k záznamu"); ?>
+</p>
+</form>
+<script type="text/javascript" src="/js/audit/mistake/create"></script>
