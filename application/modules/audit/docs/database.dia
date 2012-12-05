@@ -1382,7 +1382,7 @@
         <dia:point val="47.6,25.55"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="47.55,25.5;60.47,34.6"/>
+        <dia:rectangle val="47.55,25.5;60.47,35.4"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="47.6,25.55"/>
@@ -1391,7 +1391,7 @@
         <dia:real val="12.82"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="9"/>
+        <dia:real val="9.7999999999999989"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_audits_records#</dia:string>
@@ -1539,6 +1539,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#identifikační číslo skupiny#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#mistake_id#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#int#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#identifikační číslo přiřazené neshody#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1971,7 +1994,7 @@
         <dia:point val="73.7,13.2"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="73.65,13.15;90.42,34.25"/>
+        <dia:rectangle val="73.65,13.15;90.42,35.85"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="73.7,13.2"/>
@@ -1980,10 +2003,10 @@
         <dia:real val="16.669999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="21.000000000000007"/>
+        <dia:real val="22.600000000000009"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#audit_mistakes#</dia:string>
+        <dia:string>#audit_audits_records_mistakes#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -2085,6 +2108,29 @@
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#audit_id#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#int#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#identifikační číslo auditu#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
           </dia:attribute>
           <dia:attribute name="abstract">
             <dia:boolean val="false"/>
@@ -2239,7 +2285,7 @@
             <dia:string>#text#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
-            <dia:string>#not null#</dia:string>
+            <dia:string>#null#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#otázka#</dia:string>
@@ -2599,6 +2645,29 @@
             <dia:boolean val="false"/>
           </dia:attribute>
         </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#is_submited#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#bool#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#0#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#Přepínač odeslání neshody#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
       </dia:attribute>
       <dia:attribute name="operations">
         <dia:composite type="umloperation">
@@ -2677,13 +2746,13 @@
         <dia:point val="60.42,27.45"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="60.3082,17.9691;73.8118,27.7809"/>
+        <dia:rectangle val="60.3082,18.7691;73.8118,27.7809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="60.42,27.45"/>
         <dia:point val="67.06,27.45"/>
-        <dia:point val="67.06,18.3"/>
-        <dia:point val="73.7,18.3"/>
+        <dia:point val="67.06,19.1"/>
+        <dia:point val="73.7,19.1"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -2713,7 +2782,7 @@
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O4" connection="9"/>
-        <dia:connection handle="1" to="O8" connection="16"/>
+        <dia:connection handle="1" to="O8" connection="18"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O10">
