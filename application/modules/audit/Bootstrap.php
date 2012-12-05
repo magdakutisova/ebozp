@@ -108,6 +108,33 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "attach"))
 		);
 		
+		// nova neshoda bez zavislosti na zaznamu
+		$router->addRoute(
+				"audit-mistake-createalone",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/create-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "createalone"))
+		);
+		
+		// nova neshoda bez zavislosti na zaznamu - vytvoreni
+		$router->addRoute(
+				"audit-mistake-postalone",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/post-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "postalone"))
+		);
+		
+		// zobrazit vypis neshod, ktere nejsou vazany k zadne otazce auditu s motnosti pridani
+		$router->addRoute(
+				"audit-mistakes-auditlist",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/ungrouped-mistakes",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "auditlist"))
+		);
+		
 		// zobrazit jednu neshodu
 		$router->addRoute(
 				"audit-mistake-get",
@@ -115,6 +142,33 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array("module" => "audit",
 								"controller" => "mistake",
 								"action" => "get"))
+		);
+		
+		// edituje neshodu
+		$router->addRoute(
+				"audit-mistake-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "edit"))
+		);
+		
+		// edituje neshodu
+		$router->addRoute(
+				"audit-mistake-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/put",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "put"))
+		);
+		
+		// smaze neshodu
+		$router->addRoute(
+				"audit-mistake-delete",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/delete",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "delete"))
 		);
 	}
 }
