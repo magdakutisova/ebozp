@@ -112,7 +112,14 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 	 */
 	public function createRecords(Audit_Model_Row_Audit $audit) {
 		// smazani starych dat
-		$this->delete("audit_id = " . $audit->id);
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableGroups = new Audit_Model_AuditsRecordsGroups();
+		
+		$where = "audit_id = " . $audit->id;
+		
+		$tableMistakes->delete($where . " and record_id is not null");
+		$this->delete($where);
+		$tableGroups->delete($where);
 		
 		// nacteni formulare a vyplnenych dat
 		$tableFilleds = new Questionary_Model_Filleds();
@@ -130,7 +137,6 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 		}
 		
 		$tableItems = new Questionary_Model_QuestionariesItems();
-		$tableGroups = new Audit_Model_AuditsRecordsGroups();
 		
 		// vygenerovani seznamu skupin
 		$groups = $questionary->getItems();
@@ -143,8 +149,9 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 		$adapter->beginTransaction();
 		
 		try {
-			// nacteni id dalsiho zaznamu
+			// nacteni id dalsiho zaznamu a zalohovani prvniho
 			$recordId = $adapter->query("select Auto_increment from information_schema.tables where table_name='" . $this->_name . "' and table_schema = DATABASE()")->fetchColumn();
+			$statId = $recordId;
 			
 			foreach ($groups as $group) {
 				// zaneseni skupiny
@@ -198,7 +205,7 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 						
 						list($day, $motnh, $year) = explode(". ", $mistakeItems[6]->getValue());
 						$removedAt = $year . "-" . $motnh . "-" . $day;
-						
+						echo ($audit->done_at);
 						// sestaveni dat pro zapis neshody
 						$item = array(
 								$audit->id,											// id auditu
@@ -214,8 +221,8 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 								$adapter->quote($mistakeItems[3]->getValue()),		// neshoda
 								$adapter->quote($mistakeItems[4]->getValue()),		// navrh reseni
 								$adapter->quote($mistakeItems[5]->getValue()),		// komentar
-								$audit->done_at,									// datum zjisteni neshody
-								$removedAt,											// bude odstaneno
+								$adapter->quote($audit->done_at),					// datum zjisteni neshody
+								$adapter->quote($removedAt),						// bude odstaneno
 								$adapter->quote($mistakeItems[7]->getValue())		// zodpovedna osoba
 						);
 						
@@ -229,7 +236,8 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 			}
 			
 			// priprava SQL pro zapis zaznamu
-			$sqlBase = "insert into `" . $this->_name . "` (audit_id, group_id, questionary_item_id, question, note, score, weight) values ";
+			$recordName = $this->_name;
+			$sqlBase = "insert into `$recordName` (audit_id, group_id, questionary_item_id, question, note, score, weight) values ";
 			$chunks = array_chunk($records, 100);
 			
 			// zapis dat zaznamu
@@ -239,8 +247,9 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 			}
 			
 			// priprava SQL pro zapis neshod
-			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-			$sqlBase = "insert into " . $tableMistakes->info("name") . " (audit_id, client_id, subsidiary_id, record_id, questionary_item_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, will_be_removed_at, responsibile_name) values ";
+			$mistakeName = $tableMistakes->info("name");
+			
+			$sqlBase = "insert into $mistakeName (audit_id, client_id, subsidiary_id, record_id, questionary_item_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, will_be_removed_at, responsibile_name) values ";
 			$chunks = array_chunk($mistakes, 100);
 			
 			// zapis neshod do databaze
@@ -249,11 +258,14 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 				$adapter->query($sql);
 			}
 			
+			// nastaveni id neshody do zaznamu
+			$sql = "update `$this->_name`, `$mistakeName` set $recordName.mistake_id = $mistakeName.id where $recordName.id = $mistakeName.record_id and $recordName.id beween $statId and $recordId";
+			$adapter->query($sql);
+			
 			$adapter->commit();
 		} catch (Exception $e) {
 			// vraceni zmen zpusobenych transakce
 			$adapter->rollBack();
-			die($e->getMessage());
 		}
 		die();
 		// odemceni dat
