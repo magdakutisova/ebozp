@@ -501,24 +501,9 @@ $((new function () {
 		var suggestion = questionary.addItem(itemBaseName + "-suggestion", "TextArea");
 		suggestion.label("Návrh řešení");
 		
-		var comment = questionary.addItem(itemBaseName + "-comment", "TextArea");
-		comment.label("Komentář");
-		
-		var removed = questionary.addItem(itemBaseName + "-removed", "Text");
-		removed.label("Bude odstraněno");
-		
-		var responsibile = questionary.addItem(itemBaseName + "-responsibile", "Text");
-		responsibile.label("Odpovědná osoba");
-		
-		mistake.addItem(category).addItem(subcategory).addItem(concretisation).addItem(mistakeText).addItem(suggestion).addItem(comment).addItem(removed).addItem(responsibile);
-		
+		mistake.addItem(category).addItem(subcategory).addItem(concretisation).addItem(mistakeText).addItem(suggestion);
+
 		group.addItem(mistake);
-		
-		// misto pro poznamku
-		var note = questionary.addItem(itemBaseName + "-note", "TextArea");
-		note.label("Poznámka");
-		
-		group.addItem(note);
 		
 		render();
 		hideTooltip();

@@ -170,6 +170,9 @@ class Audit_FormController extends Zend_Controller_Action {
 		// zapis do dotazniku
 		$questionaryRow->saveClass($questionary);
 		
+		// zapis do formulare
+		$formRow->writeQuestionary($questionary);
+		
 		// nastaveni view
 		$this->view->response = true;
 	}
