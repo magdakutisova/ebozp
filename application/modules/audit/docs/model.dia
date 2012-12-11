@@ -4328,7 +4328,7 @@
         <dia:point val="144.242,29.5103"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="144.192,29.4603;181.752,44.9603"/>
+        <dia:rectangle val="144.192,29.4603;181.752,45.7603"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="144.242,29.5103"/>
@@ -4337,7 +4337,7 @@
         <dia:real val="37.460000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="15.400000000000002"/>
+        <dia:real val="16.200000000000003"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Audit_Model_AuditsRecordsMistakes#</dia:string>
@@ -4429,16 +4429,16 @@
       <dia:attribute name="attributes">
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#SUBMITED_ALL#</dia:string>
+            <dia:string>#SUBMITED_UNUSED#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#int#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="value">
             <dia:string>#0#</dia:string>
           </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>##</dia:string>
+          </dia:attribute>
           <dia:attribute name="comment">
-            <dia:string>#Filtrace všech samostatných neshod#</dia:string>
+            <dia:string>#Fitlrace nepoužitých neshod#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="3"/>
@@ -4485,6 +4485,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#Filtrace neodeslaných hodnot#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="3"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="true"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#SUBMITED_ALL#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#int#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#4#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#Filtrace všech samostatných neshod#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="3"/>
@@ -5156,18 +5179,18 @@
     </dia:object>
     <dia:object type="UML - Dependency" version="1" id="O32">
       <dia:attribute name="obj_pos">
-        <dia:point val="162.972,44.9608"/>
+        <dia:point val="162.972,45.7608"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="162.53,44.9108;163.43,48.81"/>
+        <dia:rectangle val="162.53,45.7108;163.43,48.81"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="162.972,44.9608"/>
-        <dia:point val="162.972,46.4604"/>
-        <dia:point val="162.98,46.4604"/>
+        <dia:point val="162.972,45.7608"/>
+        <dia:point val="162.972,46.8604"/>
+        <dia:point val="162.98,46.8604"/>
         <dia:point val="162.98,48.36"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
@@ -5194,7 +5217,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O30" connection="28"/>
+        <dia:connection handle="0" to="O30" connection="30"/>
         <dia:connection handle="1" to="O31" connection="8"/>
       </dia:connections>
     </dia:object>
@@ -7601,7 +7624,7 @@
         <dia:point val="71.5525,58.4503"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="71.1112,58.4003;72.0112,62.1997"/>
+        <dia:rectangle val="71.1112,58.4003;72.0113,62.1997"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -7609,8 +7632,8 @@
       <dia:attribute name="orth_points">
         <dia:point val="71.5525,58.4503"/>
         <dia:point val="71.5525,59.9"/>
-        <dia:point val="71.5612,59.9"/>
-        <dia:point val="71.5612,61.7497"/>
+        <dia:point val="71.5613,59.9"/>
+        <dia:point val="71.5613,61.7497"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -7642,7 +7665,7 @@
     </dia:object>
     <dia:object type="UML - Dependency" version="1" id="O49">
       <dia:attribute name="obj_pos">
-        <dia:point val="71.5612,64.0503"/>
+        <dia:point val="71.5613,64.0503"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
         <dia:rectangle val="71.0975,64.0003;71.9975,69.5497"/>
@@ -7651,8 +7674,8 @@
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="71.5612,64.0503"/>
-        <dia:point val="71.5612,66.375"/>
+        <dia:point val="71.5613,64.0503"/>
+        <dia:point val="71.5613,66.375"/>
         <dia:point val="71.5475,66.375"/>
         <dia:point val="71.5475,69.0997"/>
       </dia:attribute>

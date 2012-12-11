@@ -2626,10 +2626,10 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#is_submited#</dia:string>
+            <dia:string>#submit_status#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#bool#</dia:string>
+            <dia:string>#tinyint#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>#0#</dia:string>
