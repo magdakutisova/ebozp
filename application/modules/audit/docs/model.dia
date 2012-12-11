@@ -1365,16 +1365,16 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O10">
       <dia:attribute name="obj_pos">
-        <dia:point val="19.75,20.2"/>
+        <dia:point val="20.55,20.2"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="19.7,20.15;49.945,30.25"/>
+        <dia:rectangle val="20.5,20.15;49.205,30.25"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="19.75,20.2"/>
+        <dia:point val="20.55,20.2"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="30.145"/>
+        <dia:real val="28.605"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="10"/>
@@ -1526,23 +1526,6 @@
               </dia:attribute>
               <dia:attribute name="comment">
                 <dia:string>#koordinátor auditu#</dia:string>
-              </dia:attribute>
-              <dia:attribute name="kind">
-                <dia:enum val="0"/>
-              </dia:attribute>
-            </dia:composite>
-            <dia:composite type="umlparameter">
-              <dia:attribute name="name">
-                <dia:string>#form#</dia:string>
-              </dia:attribute>
-              <dia:attribute name="type">
-                <dia:string>#Audit_Model_Row_Form#</dia:string>
-              </dia:attribute>
-              <dia:attribute name="value">
-                <dia:string>##</dia:string>
-              </dia:attribute>
-              <dia:attribute name="comment">
-                <dia:string>#identifikační číslo formuláře formulář#</dia:string>
               </dia:attribute>
               <dia:attribute name="kind">
                 <dia:enum val="0"/>
@@ -2406,7 +2389,7 @@
     </dia:object>
     <dia:object type="UML - Dependency" version="1" id="O13">
       <dia:attribute name="obj_pos">
-        <dia:point val="34.8225,30.2503"/>
+        <dia:point val="34.8525,30.2503"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
         <dia:rectangle val="34.3275,30.2003;35.2275,36.8497"/>
@@ -2415,8 +2398,8 @@
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="34.8225,30.2503"/>
-        <dia:point val="34.8225,33.125"/>
+        <dia:point val="34.8525,30.2503"/>
+        <dia:point val="34.8525,33.125"/>
         <dia:point val="34.7775,33.125"/>
         <dia:point val="34.7775,36.3997"/>
       </dia:attribute>
