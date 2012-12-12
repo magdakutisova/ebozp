@@ -205,17 +205,17 @@ $(function(){
 	
 	//dynamické odebírání pracovních pozic
 	$("#remove_position").click(function(){
-		ajaxRemovePosition();
-		removePosition(this);
+		removePositionFromDb();
+		removePositionFromHtml(this);
 	});
 	
-	function ajaxRemovePosition(){
+	function removePositionFromDb(){
 		//odstranit záznam z DB
 	}
 	
-	function removePosition(row){
-		var positionId = $(row).siblings().filter(":first").val();
-		alert(positionId);
+	function removePositionFromHtml(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
 	}
 	
 	$(".print").click(function(){
