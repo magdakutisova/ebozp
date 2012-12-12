@@ -133,7 +133,6 @@ class WorkplaceController extends Zend_Controller_Action
 
 	    	//zahájení transakce
 	    	$adapter->beginTransaction();
-	    	throw new Exception();
 	    	
 	    	//vložení pracoviště
 	    	$workplace = new Application_Model_Workplace($formData);
@@ -302,7 +301,7 @@ class WorkplaceController extends Zend_Controller_Action
     	catch(Exception $e){
     		//zrušení transakce
     		$adapter->rollback();
-    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e->getMessage() . $e->getTraceAsString());
+    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e . $e->getMessage() . $e->getTraceAsString());
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
     	}
     	
