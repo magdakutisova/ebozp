@@ -28,6 +28,15 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		return $this->findParentRow("Application_Model_DbTable_User", "coordinator");
 	}
 	
+	/**
+	 * vraci instance formularu
+	 * 
+	 * @return Audit_Model_Rowset_AuditsForms
+	 */
+	public function getForms() {
+		return $this->findDependentRowset("Audit_Model_AuditsForms", "audit");
+	}
+	
 	public function getGroups() {
 		return $this->findDependentRowset("Audit_Model_AuditsRecordsGroups", "audit");
 	}

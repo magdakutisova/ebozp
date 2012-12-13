@@ -26,18 +26,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 					"refColumns" => "id_user"
 			),
 			
-			"filled" => array(
-					"columns" => "form_filled_id",
-					"refTableClass" => "Questionary_Model_Filleds",
-					"refColumns" => "id"
-			),
-			
-			"form" => array(
-					"columns" => "form_id",
-					"refTableClass" => "Audit_Model_Forms",
-					"refColumns" => "questionary_id"
-			),
-			
 			"questionary" => array(
 					"columns" => "form_id",
 					"refTableClass" => "Questionary_Model_Questionaries",
@@ -60,7 +48,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 * 
 	 * @param Zend_Db_Table_Row_Abstract $auditor uzivatel auditora
 	 * @param Zend_Db_Table_Row_Abstract $coordinator uzivatel koordinatora
-	 * @param Audit_Model_Row_Form $form formular auditu
 	 * @param Zend_Db_Table_Row_Abstract $subsidiary pobocka
 	 * @param Zend_Date $date datum provedeni auditu
 	 * @param array $responsibiles seznam zodpovednych
@@ -68,7 +55,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 */
 	public function createAudit(Zend_Db_Table_Row_Abstract $auditor, 
 			Zend_Db_Table_Row_Abstract $coordinator,
-			Audit_Model_Row_Form $form,
 			Zend_Db_Table_Row_Abstract $subsidiary,
 			Zend_Date $doneAt,
 			array $responsibiles) 
@@ -77,21 +63,12 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		$retVal = $this->createRow(array(
 				"client_id" => $subsidiary->client_id,
 				"subsidiary_id" => $subsidiary->id_subsidiary,
-				"form_id" => $form->questionary_id,
 				"auditor_id" => $auditor->id_user,
 				"auditor_name" => $auditor->username,
 				"coordinator_id" => $coordinator->id_user,
 				"coordinator_name" => $coordinator->username,
 				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss")
 		));
-		
-		// vytvoreni instance formulare
-		$questionary = $form->getQuestionary();
-		
-		$tableFilleds = new Questionary_Model_Filleds();
-		$filled = $tableFilleds->createFilled($questionary);
-		
-		$retVal->form_filled_id = $filled->id;
 		
 		// zapis posledni modifikace a ulozeni dat
 		$retVal->modified_at = new Zend_Db_Expr("NOW()");

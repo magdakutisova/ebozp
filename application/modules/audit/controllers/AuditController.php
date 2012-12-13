@@ -123,7 +123,49 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$form->isValidPartial($data);
 		$form->populate($data);
 		
+		// nastavei action
+		$form->setAction($this->view->url(array(
+				"clientId" => $diary->client_id,
+				"subsidiaryId" => $subsidiaryId
+				), "audit-post"));
+		
 		$this->view->form = $form;
+	}
+	
+	public function editAction() {
+		// kontrola dat
+		if (!$this->_audit) throw new Zend_Exception("Audit not found");
+		
+		// vytvoreni formulare
+		$form = new Audit_Form_Audit();
+		$form->fillSelects();
+		$form->populate(array("audit" => $this->_audit->toArray()));
+		
+		// naplneni zodpovednych osob
+		$form->getElement("responsibile_name")->setValue($this->_audit->getResponsibiles());
+		
+		// nacteni instanci formularu
+		$formInstances = $this->_audit->getForms();
+		
+		// nactei formularu, ktere jeste mohou byt vyplneny
+		$instanceForm = new Audit_Form_FormInstanceCreate();
+		$instanceForm->loadUnused($formInstances);
+		
+		// vytvoreni odkazu pro novy formular
+		$url = $this->view->url(array(
+				"clientId" => $this->_audit->client_id,
+				"subsidiaryId" => $this->_audit->subsidiary_id,
+				"auditId" => $this->_auditId
+		), "audit-form-instance");
+		
+		$instanceForm->setAction($url);
+		
+		$this->view->subsidiary = $this->_audit->getSubsidiary();
+		$this->view->client = $this->_audit->getClient();
+		$this->view->form = $form;
+		$this->view->instanceForm = $instanceForm;
+		$this->view->formInstances = $formInstances;
+		$this->view->audit = $this->_audit;
 	}
 	
 	public function fillAction() {
@@ -282,15 +324,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// datum provedeni
 		$doneAt = new Zend_Date($form->getValue("done_at"), "MM. dd. y");
 		
-		// nacteni radku fomrulare
-		$tableForms = new Audit_Model_Forms();
-		$formRow = $tableForms->find($form->getValue("form_id"))->current();
-		
 		// vytvoreni zaznamu
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $formRow, $subsidiary, $doneAt, explode(",", $form->getValue("responsibile_name")));
+		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, explode(",", $form->getValue("responsibile_name")));
 		
 		$this->_redirect(
-				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-fill")
+				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-edit")
 		);
 	}
 	

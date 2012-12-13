@@ -1,9 +1,10 @@
 <?php
 class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	
-	const SUBMITED_ALL = 0;
+	const SUBMITED_UNUSED = 0;
 	const SUBMITED_SUBMITED = 1;
 	const SUBMITED_UNSUBMITED = 2;
+	const SUBMITED_ALL = 4;
 	
 	protected $_name = "audit_audits_records_mistakes";
 	

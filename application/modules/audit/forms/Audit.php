@@ -2,15 +2,6 @@
 class Audit_Form_Audit extends Zend_Form {
 	
 	public function fillSelects() {
-		// nalezeni formularu auditu
-		$tableForms = new Audit_Model_Forms();
-		$forms = $tableForms->fetchAll(null, "name");
-		
-		// zapis formularu
-		foreach ($forms as $item) {
-			$this->getElement("form_id")->addMultiOption($item->questionary_id, $item->name);
-		}
-		
 		// nactei koordinatoru
 		$tableUsers = new Application_Model_DbTable_User();
 		$coordinators = $tableUsers->fetchAll("role = " . My_Role::ROLE_COORDINATOR, "username");
@@ -77,12 +68,6 @@ class Audit_Form_Audit extends Zend_Form {
 								)
 						)
 				)
-		));
-		
-		// typ formulare
-		$this->addElement("select", "form_id", array(
-				"decorators" => $elementDecorator,
-				"label" => "Formulář auditu"
 		));
 		
 		// koordinator

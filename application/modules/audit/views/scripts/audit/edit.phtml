@@ -1,0 +1,56 @@
+<h1>Audit</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box tab-head">
+	<a href="#overview">Přehled</a> | <a href="#forms">Formuláře</a> | <a href="#mistakes">Neshody</a>
+</div>
+<div id="overview" class="tab">
+<h3>Přehled</h3>
+<?php
+echo $this->form;
+?>
+</div>
+<div id="forms" class="tab">
+<h3>Formuláře</h3>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Formulář
+			</th>
+			<th>
+			Skóre
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+$params = array(
+		"clientId" => $this->client->id_client,
+		"subsidiaryId" => $this->subsidiary->id_subsidiary,
+		"auditId" => $this->audit->id
+);
+
+foreach ($this->formInstances as $instance) {
+	$params["instanceId"] = $instance->id;
+	
+	$href = $this->url($params, "audit-form-fill");
+	
+	?>
+		<tr>
+			<td>
+			<a href="<?php echo $href; ?>"><?php echo $instance->name; ?></a>
+			</td>
+			<td>
+			<?php echo $instance->score; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>
+<?php echo $this->instanceForm; ?>
+</div>
+<div id="mistakes" class="tab">
+<h3>Neshody</h3>
+</div>

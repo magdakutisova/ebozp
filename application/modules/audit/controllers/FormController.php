@@ -77,6 +77,10 @@ class Audit_FormController extends Zend_Controller_Action {
 		$this->view->editForm = $editForm;
 	}
 	
+	public function fillAction() {
+		
+	}
+	
 	/*
 	 * zobrazi formular pro vyplneni
 	 */
@@ -91,6 +95,55 @@ class Audit_FormController extends Zend_Controller_Action {
 	 */
 	public function indexAction() {
 		
+	}
+	
+	public function instanceAction() {
+		// nastaveni layoutu
+		$this->view->layout()->setLayout("client-layout");
+		
+		// vygenerovani url na vyplneni
+		$params = array(
+				"auditId" => $this->getRequest()->getParam("auditId", 0),
+				"clientId" => $this->getRequest()->getParam("clientId", 0),
+				"subsidiaryId" => $this->getRequest()->getParam("subsidiaryId", 0)
+		);
+		
+		// nacteni auditu
+		$auditId = $this->getRequest()->getParam("auditId", 0);
+		$tableAudits = new Audit_Model_Audits();
+		$audit = $tableAudits->getById($auditId);
+		
+		if (!$audit) throw new Zend_Exception("Audit #$auditId not found");
+		
+		// nacteni dat
+		$formForm = new Audit_Form_FormInstanceCreate();
+		$formForm->populate($_REQUEST);
+		
+		// nacteni dotazniku
+		$tableForms = new Audit_Model_Forms();
+		$form = $tableForms->findById($formForm->getValue("questionary_id"));
+		
+		if (!$form) throw new Zend_Exception("Invalid form id");
+		
+		// kontrola existence instance dotazniku
+		$tableAuditForms = new Audit_Model_AuditsForms();
+		$auditForm = $tableAuditForms->getByAuditAndForm($audit, $form);
+		
+		if ($auditForm) {
+			$params["formId"] = $auditForm->id;
+			
+			$url = $this->view->url($params, "audit-form-fill");
+			$this->_redirect($url);
+			return;
+		}
+		
+		// vytvoreni instance
+		$auditForm = $tableAuditForms->createForm($audit, $form);
+		
+		$params["formId"] = $auditForm->id;
+			
+		$url = $this->view->url($params, "audit-form-fill");
+		$this->_redirect($url);
 	}
 	
 	/*
