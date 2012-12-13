@@ -27,4 +27,11 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 		}
 	}
 	
+	public function removeRelation($workplaceId, $workId){
+		$this->delete(array(
+			'id_workplace = ?' => $workplaceId,
+			'id_work = ?' => $workId,
+		));
+	}
+	
 }

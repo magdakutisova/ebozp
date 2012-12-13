@@ -46,7 +46,7 @@ class My_View_Helper_TechnicalDevice extends Zend_View_Helper_FormElement{
 		if($toEdit){
 			$this->html .= '<tr id="' . $name . '">';
 			$this->html .= $helperHidden->formHidden($name . '[id_technical_device]', $idTechnicalDevice);
-			$this->html .= '<td>Technický prostředek</td><td colspan=2>' . $helperText->formText($name . '[sort]', $sort,  array('readonly' => 'readonly')) . '</td><td colspan=2>' . $helperText->formText($name . '[type]', $type, array('readonly' => 'readonly')) . '</td><td>' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'hideTr')) . '</td>';
+			$this->html .= '<td>Technický prostředek</td><td colspan=2>' . $helperText->formText($name . '[sort]', $sort,  array('readonly' => 'readonly')) . '</td><td colspan=2>' . $helperText->formText($name . '[type]', $type, array('readonly' => 'readonly')) . '</td><td>' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'remove_technical_device')) . '</td>';
 			$this->html .= '</tr>';
 		}
 		else{

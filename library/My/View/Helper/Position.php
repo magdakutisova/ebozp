@@ -35,7 +35,7 @@ class My_View_Helper_Position extends Zend_View_Helper_FormElement{
 		if($toEdit){
 			$this->html .= '<tr id="' . $name . '">';
 			$this->html .= $helperHidden->formHidden($name . '[id_position]', $idPosition);
-			$this->html .= '<td><label for="' . $name . '[position]">Pracovní pozice</label></td><td colspan="4">' . $helperText->formText($name . '[position]', $position, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('id' => 'remove_position')) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[position]">Pracovní pozice</label></td><td colspan="4">' . $helperText->formText($name . '[position]', $position, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'remove_position')) . '</td>';
 			$this->html .= '</tr>';	
 		}
 		else{

@@ -360,6 +360,50 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$this->view->field = $element->__toString();
     }
+    
+    public function removepositionAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removeposition', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$positionId = $this->_getParam('positionId', null);
+
+    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
+    	$workplaceHasPosition->removeRelation($workplaceId, $positionId);
+    }
+    
+	public function removeworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removework', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$workId = $this->_getParam('workId', null);
+
+    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
+    	$workplaceHasWork->removeRelation($workplaceId, $workId);
+    }
+    
+	public function removetechnicaldeviceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removetechnicaldevice', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$technicalDeviceId = $this->_getParam('technicalDeviceId', null);
+
+    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+    	$workplaceHasTechnicalDevice->removeRelation($workplaceId, $technicalDeviceId);
+    }
+    
+	public function removechemicalAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removechemical', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$chemicalId = $this->_getParam('chemicalId', null);
+
+    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
+    	$workplaceHasChemical->removeRelation($workplaceId, $chemicalId);
+    }
 
     public function listAction()
     {

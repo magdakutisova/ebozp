@@ -27,4 +27,11 @@ class Application_Model_DbTable_WorkplaceHasTechnicalDevice extends Zend_Db_Tabl
 		}
 	}
 	
+	public function removeRelation($workplaceId, $technicalDeviceId){
+		$this->delete(array(
+			'id_workplace = ?' => $workplaceId,
+			'id_technical_device = ?' => $technicalDeviceId,
+		));
+	}
+	
 }

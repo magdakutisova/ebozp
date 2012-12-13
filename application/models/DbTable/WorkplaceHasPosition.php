@@ -27,4 +27,11 @@ class Application_Model_DbTable_WorkplaceHasPosition extends Zend_Db_Table_Abstr
 		} 
 	}
 	
+	public function removeRelation($workplaceId, $positionId){
+		$this->delete(array(
+			'id_workplace = ?' => $workplaceId,
+			'id_position = ?' => $positionId,
+		));
+	}
+	
 }
