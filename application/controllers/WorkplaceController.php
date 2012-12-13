@@ -618,8 +618,12 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$adapter->beginTransaction();
 	    	
     		//update pracoviště
-    		$workplace = new Application_Model_Workplace($formData);
-    		if(!$workplaces->updateWorkplace($workplace)){
+    		$workplaceNew = new Application_Model_Workplace($formData);
+    		$differentName = true;
+    		if($workplace->getName() == $workplaceNew->getName()){
+    			$differentName = false;
+    		}
+    		if(!$workplaces->updateWorkplace($workplaceNew, $differentName)){
     			$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
@@ -662,10 +666,10 @@ class WorkplaceController extends Zend_Controller_Action
     				$risks->addWorkplaceRisk($risk);
     			}
     		}
-    		$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+    		$subsidiary = $subsidiaries->getSubsidiary($workplaceNew->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
     		
-    		$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' upraveno.');
+    		$this->_helper->FlashMessenger('Pracoviště ' . $workplaceNew->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
     	}
     	catch (Exception $e){
