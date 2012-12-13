@@ -240,6 +240,7 @@ $(function(){
 		var clientId = $("#client_id").val();
 		var subsidiaryId = $("#subsidiary_id").val();
 		var workplaceId = $("#id_workplace").val();
+		alert(workId + ' ' + clientId + ' ' + subsidiaryId + ' ' + workplaceId);
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/workplace/removework/format/html',
