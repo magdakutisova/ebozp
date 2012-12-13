@@ -407,7 +407,15 @@ class WorkplaceController extends Zend_Controller_Action
 
     public function listAction()
     {
-        $clients = new Application_Model_DbTable_Client();
+        $defaultNamespace = new Zend_Session_Namespace();
+        if (isset($defaultNamespace->form)){
+        	unset($defaultNamespace->form);
+        }
+        if (isset($defaultNamespace->formData)){
+        	unset($defaultNamespace->formData);
+        }
+    	
+    	$clients = new Application_Model_DbTable_Client();
         $client = $clients->getClient($this->_clientId);
         
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
