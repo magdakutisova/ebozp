@@ -133,6 +133,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$createForm->populate($_REQUEST);
 		$createForm->isValidPartial($_REQUEST);
 		
+		$this->_loadCategories();
+		
 		// zapis do view
 		$this->view->record = $record;
 		$this->view->audit = $this->_audit;
@@ -143,7 +145,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	}
 	
 	public function createaloneAction() {
-		$form = new Audit_Form_MistakeCreate();
+		$form = new Audit_Form_MistakeCreateAlone();
 		
 		// nastaveni akce
 		$form->setAction(
@@ -153,7 +155,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				), "audit-mistake-postalone")
 		);
 		
+		$this->_fillAloneMistake($form);
+		
 		$form->isValidPartial($_REQUEST);
+		$this->_loadCategories();
 		
 		$this->view->form = $form;
 		$this->view->audit = $this->_audit;
@@ -161,7 +166,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 	}
 	
-	public function deleteAction() {
+	public function deleteAction($redirect = true) {
 		// nacteni neshody
 		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
 		
@@ -170,7 +175,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		if (!$mistake) throw new Zend_Db_Table_Exception("Mistake id #$mistakeId not found");
 		
-		//$mistake->delete();
+		$mistake->delete();
 		
 		// presmerovani na vypis
 		$params = array("clientId" => $mistake->client_id);
@@ -182,8 +187,14 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		} else {
 			
 		}
-		die(var_dump($params));
-		$this->_redirect($this->view->url($params, $route));
+		
+		if ($redirect) $this->_redirect($this->view->url($params, $route));
+	}
+	
+	public function deleteHtmlAction() {
+		$this->deleteAction(false);
+		
+		$this->view->layout()->setLayout("floating-layout");
 	}
 	
 	public function editAction() {
@@ -198,7 +209,18 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$data = $mistake->toArray();
 		$data["will_be_removed_at"] = $this->view->sqlDate($data["will_be_removed_at"]);
 		
-		$form = new Audit_Form_MistakeCreate();
+		// vyhodnoceni vyplneni pracoviste
+		if ($mistake->workplace_id) {
+			$form = new Audit_Form_MistakeCreateAlone();
+			$this->_fillAloneMistake($form);
+			
+			$deleteForm = new Audit_Form_MistakeDelete();
+			$deleteForm->populate(array("mistake" => $mistake->toArray()));
+		} else {
+			$form = new Audit_Form_MistakeCreate();
+			
+			$deleteForm = null;
+		}
 		
 		$form->populate(array("mistake" => $data));
 		$form->getElement("submit")->setLabel("Uložit");
@@ -229,6 +251,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$route = "audit-mistakes-auditlist";
 		}
 		
+		// nacteni seznamu kategorii
+		$this->_loadCategories();
+		
 		$backTo = $this->view->url($params, $route);
 		
 		$this->view->form = $form;
@@ -237,12 +262,13 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->client = $mistake->getClient();
 		$this->view->subsidiary = $mistake->getSubsidiary();
 		$this->view->mistake = $mistake;
+		$this->view->deleteForm = $deleteForm;
 	}
 	
 	public function editHtmlAction() {
 		// provedeni akce a vypnuti layoutu
 		$this->editAction();
-		$this->view->layout()->disableLayout();
+		$this->view->layout()->setLayout("floating-layout");
 		
 		// nastaveni zemenne routy formulare
 		$params = array(
@@ -254,6 +280,12 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->form->setAction(
 				$this->view->url($params, "audit-mistake-put-html")
 		);
+		
+		if ($this->view->deleteForm) {
+			$this->view->deleteForm->setAction(
+					$this->view->url($params, "audit-mistake-delete-html")
+			);
+		}
 	}
 	
 	public function getAction() {
@@ -327,7 +359,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function postaloneAction() {
 		
 		// kontrola dat
-		$form = new Audit_Form_MistakeCreate();
+		$form = new Audit_Form_MistakeCreateAlone();
+		
+		$this->_fillAloneMistake($form);
+		
 		if (!$form->isValidPartial($_REQUEST)) {
 			$this->_forward("createalone");
 			return;
@@ -350,6 +385,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				$this->_audit,
 				$form->getvalue("weight"));
 		
+		// nastaveni id pracoviste
+		$mistake->workplace_id = $form->getValue("workplace_id");
+		$mistake->submit_status = Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED;
+		
 		// nastaveni zodpovedne osoby
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
 		$mistake->save();
@@ -357,8 +396,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->_redirect($this->view->url(
 				array(
 						"clientId" => $this->_audit->client_id,
-						"auditId" => $this->_audit->id
-				), "audit-mistakes-auditlist"
+						"auditId" => $this->_audit->id,
+						"subsidiaryId" => $this->_audit->subsidiary_id
+				), "audit-edit"
 		));
 	}
 	
@@ -409,5 +449,41 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// redirect na spravnou adresu
 		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));
+	}
+	
+	/**
+	 * naplni formular pracovisti a podobne
+	 * 
+	 * @param Audit_Form_MistakeCreateAlone $form formular
+	 * @return Audit_Form_MistakeCreateAlone
+	 */
+	protected function _fillAloneMistake(Audit_Form_MistakeCreateAlone $form) {
+		// naplneni pracovist
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		
+		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_audit->client_id, "name");
+		$workplaceList = array();
+		
+		foreach ($workplaces as $item) {
+			$workplaceList[$item->id_workplace] = $item->name;
+		}
+		
+		$form->getElement("workplace_id")->setMultiOptions($workplaceList);
+		
+		return $form;
+	}
+	
+	protected function _loadCategories() {
+		// nacteni kategorii a zapis do seznamu
+		$tableCategories = new Audit_Model_Categories();
+		$categories = $tableCategories->getRoots("name");
+		
+		$list = array();
+		
+		foreach ($categories as $item) {
+			$list[] = $item->name;
+		}
+		
+		$this->view->categories = $list;
 	}
 }

@@ -4,11 +4,11 @@
 <?php 
 $urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
 
-$url = $this->url($urlParams, "audit-mistakes-auditlist");
-echo "<a href='$url'>Zpět na seznam</a> | ";
-
-$url = $this->url($urlParams, "audit-fill");
+$url = $this->url($urlParams, "audit-edit");
 echo "<a href='$url'>Zpět na audit</a>";
+
+echo $this->dataList("categories", $this->categories);
+echo $this->dataList("subcategories", array());
 ?>
 </div>
 <?php

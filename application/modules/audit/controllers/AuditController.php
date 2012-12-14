@@ -178,6 +178,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// nacteni neshod tykajicich se auditu
 		$mistakes = $this->_audit->getMistakes();
+		
+		// nacteni seznamu pracovist na pobocce
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		
+		$workplaces = $tableWorkplaces->fetchAll("subsidiary_id = " . $this->_audit->subsidiary_id, "name");
+		$workIndex = array();
+		
+		foreach ($workplaces as $item) {
+			$workIndex[$item->id_workplace] = $item;
+		}
 
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
@@ -186,6 +196,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->formInstances = $formInstances;
 		$this->view->audit = $this->_audit;
 		$this->view->mistakes = $mistakes;
+		$this->view->workIndex = $workIndex;
 	}
 	
 	public function fillAction() {

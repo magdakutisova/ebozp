@@ -5,6 +5,8 @@
 </div>
 <?php
 echo $this->form;
+echo $this->dataList("categories", $this->categories);
+echo $this->dataList("subcategories", array());
 ?>
 <h3>Smazat neshodu</h3>
 <?php echo $this->formDelete; ?>

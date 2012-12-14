@@ -4,120 +4,128 @@ echo $this->formHidden("clientId", $this->client->id_client);
 ?>
 <h1>Audit</h1>
 <h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
-<div class="box tab-head">
-	<a href="#overview">Přehled</a> | <a href="#forms">Formuláře</a> | <a href="#mistakes">Neshody</a>
-</div>
-<div id="overview" class="tab">
-<h3>Přehled</h3>
-<?php
-echo $this->form;
-?>
-<em>*)Shrnutí musí být vyplněno než bude audit uzavřen a odeslán koordinátorovi</em>
-</div>
-<div id="forms" class="tab">
-<h3>Formuláře</h3>
-<table>
-	<thead>
-		<tr>
-			<th>
-			Formulář
-			</th>
-			<th>
-			Skóre
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-<?php 
-$params = array(
-		"clientId" => $this->client->id_client,
-		"subsidiaryId" => $this->subsidiary->id_subsidiary,
-		"auditId" => $this->audit->id
-);
-
-foreach ($this->formInstances as $instance) {
-	$params["formId"] = $instance->id;
-	
-	$href = $this->url($params, "audit-form-fill");
-	
-	?>
-		<tr>
-			<td>
-			<a href="<?php echo $href; ?>"><?php echo $instance->name; ?></a>
-			</td>
-			<td>
-			<?php echo $instance->score; ?>
-			</td>
-		</tr>
-	<?php 
-}
-?>
-	</tbody>
-</table>
-<?php echo $this->instanceForm; ?>
-</div>
-<div id="mistakes" class="tab">
-<h3>Neshody</h3>
-<table id="table-mistakes">
-	<thead>
-		<tr style="border: 1px solid black;">
-			<th>
-			Kategorie
-			</th>
-			<th>
-			Podkategorie
-			</th>
-			<th>
-			Upřesnění
-			</th>
-			<th>
-			Pracoviště
-			</th>
-			<th rowspan="2">
-			Akce
-			</th>
-		</tr>
-		<tr>
-			<td colspan="2">
-			Neshoda
-			</td>
-			<td colspan="2">
-			Návrh
-			</td>
-		</tr>
-	</thead>
-	<tbody>
-	<?php 
-	foreach ($this->mistakes as $mistake) {
+<div id="tabs">
+	<ul>
+		<li><a href="#overview">Přehled</a></li>
+		<li><a href="#forms">Formuláře</a></li>
+		<li><a href="#mistakes">Neshody</a></li>
+	</ul>
+	<div id="overview" class="tab">
+		<h3>Přehled</h3>
+		<?php
+		echo $this->form;
 		?>
-		<tbody>
-			<tr>
-				<td>
-				<?php echo $mistake->category; ?>
-				</td>
-				<td>
-				<?php echo $mistake->subcategory; ?>
-				</td>
-				<td>
-				<?php echo $mistake->concretisation; ?>
-				</td>
-				<td>
-				<?php echo $mistake->workplace_id ? "p" : "-"; ?>
-				</td>
-				<td rowspan="2">
-				<button type="button" name="edit-mistake">Upravit</button>
-				<?php echo $this->formHidden("mistakeId", $mistake->id); ?>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="white-space: pre;"><?php echo $mistake->mistake; ?></td>
-				<td colspan="2" style="white-space: pre;"><?php echo $mistake->suggestion; ?></td>
-			</tr>
-		</tbody>
+		<em>*)Shrnutí musí být vyplněno než bude audit uzavřen a odeslán koordinátorovi</em>
+		</div>
+	<div id="forms" class="tab">
+		<h3>Formuláře</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>
+					Formulář
+					</th>
+					<th>
+					Skóre
+					</th>
+				</tr>
+			</thead>
+			<tbody>
 		<?php 
-	}
-	?>
-	</tbody>
-</table>
+		$params = array(
+				"clientId" => $this->client->id_client,
+				"subsidiaryId" => $this->subsidiary->id_subsidiary,
+				"auditId" => $this->audit->id
+		);
+		
+		foreach ($this->formInstances as $instance) {
+			$params["formId"] = $instance->id;
+			
+			$href = $this->url($params, "audit-form-fill");
+			
+			?>
+				<tr>
+					<td>
+					<a href="<?php echo $href; ?>"><?php echo $instance->name; ?></a>
+					</td>
+					<td>
+					<?php echo $instance->score; ?>
+					</td>
+				</tr>
+			<?php 
+		}
+		?>
+			</tbody>
+		</table>
+		<?php echo $this->instanceForm; ?>
+	</div>
+	<div id="mistakes" class="tab">
+		<h3>Neshody</h3>
+		<table id="table-mistakes">
+			<thead>
+				<tr style="border: 1px solid black;">
+					<th>
+					Kategorie
+					</th>
+					<th>
+					Podkategorie
+					</th>
+					<th>
+					Upřesnění
+					</th>
+					<th>
+					Pracoviště
+					</th>
+					<th rowspan="2">
+					Akce
+					</th>
+				</tr>
+				<tr>
+					<td colspan="2">
+					Neshoda
+					</td>
+					<td colspan="2">
+					Návrh
+					</td>
+				</tr>
+			</thead>
+			<?php 
+			foreach ($this->mistakes as $mistake) {
+				?>
+			<tbody style="border: 1px solid black">
+				<tr>
+					<td>
+					<?php echo $mistake->category; ?>
+					</td>
+					<td>
+					<?php echo $mistake->subcategory; ?>
+					</td>
+					<td>
+					<?php echo $mistake->concretisation; ?>
+					</td>
+					<td>
+					<?php echo $mistake->workplace_id ? $this->workIndex[$mistake->workplace_id]->name : "-"; ?>
+					</td>
+					<td rowspan="2">
+					<button type="button" name="edit-mistake">Upravit</button>
+					<?php echo $this->formHidden("mistakeId", $mistake->id); ?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="white-space: pre;"><?php echo $mistake->mistake; ?></td>
+					<td colspan="2" style="white-space: pre;"><?php echo $mistake->suggestion; ?></td>
+				</tr>
+			</tbody>
+				<?php 
+			}
+			?>
+		</table>
+		<?php 
+		// vytvoreni neshody mimo dotaznik
+		$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone");
+		
+		echo "<div class='box'><a href='$url'>Přidat neshodu mimo dotazník</a></div>";
+		?>
+	</div>
 </div>
 <script type="text/javascript" src="/js/audit/audit/edit.js"></script>

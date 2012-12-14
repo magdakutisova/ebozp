@@ -244,5 +244,14 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"controller" => "mistake",
 								"action" => "delete"))
 		);
+		
+		// smaze neshodu v plovoucim okne
+		$router->addRoute(
+				"audit-mistake-delete-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/delete/html",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "delete.html"))
+		);
 	}
 }

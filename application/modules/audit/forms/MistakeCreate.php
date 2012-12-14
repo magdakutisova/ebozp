@@ -45,7 +45,8 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 				"label" => "Kategorie",
 				"required" => true,
 				"decorators" => $elementDecorator,
-				"validators" => array(array("notEmpty"))
+				"validators" => array(array("notEmpty")),
+				"list" => "categories"
 		));
 		
 		// podkategorie
