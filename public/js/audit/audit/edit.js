@@ -28,4 +28,5 @@ $(function () {
 	}
 	
 	$("#table-mistakes button[name='edit-mistake']").click(openMistake);
+	$("#tabs").tabs();
 });
