@@ -20,6 +20,17 @@ class Audit_Model_Row_AuditForm extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
+	 * vraci seznam skupin ve formulari
+	 */
+	public function getGroups() {
+		$tableGroups = new Audit_Model_AuditsRecordsGroups();
+		$select = $tableGroups->select(false);
+		$select->order("id");
+		
+		return $this->findDependentRowset($tableGroups, "form", $select);
+	}
+	
+	/**
 	 * vraci seznam prirazenych zaznamu
 	 * 
 	 * @return Audit_Model_Rowset_AuditsRecords

@@ -160,6 +160,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$instanceForm->setAction($url);
 		
+		// nacteni neshod tykajicich se auditu
+		
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
 		$this->view->form = $form;

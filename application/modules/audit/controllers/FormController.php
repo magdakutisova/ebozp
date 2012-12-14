@@ -78,7 +78,51 @@ class Audit_FormController extends Zend_Controller_Action {
 	}
 	
 	public function fillAction() {
+		$this->view->layout()->setLayout("client-layout");
 		
+		// nacteni dat
+		$auditId = $this->getRequest()->getParam("auditId", 0);
+		$formId = $this->getRequest()->getParam("formId", 0);
+		$clientId = $this->getRequest()->getParam("clientId", 0);
+		$subsidiaryId = $this->getRequest()->getParam("subsidiaryId", 0);
+		
+		// nacteni formularu
+		$tableForms = new Audit_Model_AuditsForms();
+		$form = $tableForms->getById($formId);
+		
+		if (!$form) throw new Zend_Exception("Form #" . $formId . " not found");
+		
+		// kontrola orpavneni
+		if ($form->audit_id != $auditId) throw new Zend_Exception("Form id #$formId is not belongs to audit #$auditId");
+		
+		// nacteni stranky
+		$pageIndex = $this->getRequest()->getParam("page", 1) - 1;
+		
+		// nacteni stran
+		$groups = $form->getGroups();
+		
+		// nacteni zaznamu ze skupiny
+		$actualGroup = $groups[$pageIndex];
+		
+		// nacteni zaznmu
+		$records = $actualGroup->getRecords();
+		
+		// nacteni informaci o klientovi a podobne
+		$tableClients = new Application_Model_DbTable_Client();
+		$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
+		
+		$client = $tableClients->find($clientId)->current();
+		$subsidiary = $tableSubsidiary->find($subsidiaryId)->current();
+		
+		// mastaven view
+		$this->view->groups = $groups;
+		$this->view->pageIndex = $pageIndex;
+		$this->view->actualGroup = $actualGroup;
+		$this->view->records = $records;
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->auditId = $auditId;
+		$this->view->form = $form;
 	}
 	
 	/*
@@ -228,5 +272,102 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		// nastaveni view
 		$this->view->response = true;
+	}
+	
+	public function saveAction() {
+		// nacteni dat
+		$auditId = $this->getRequest()->getParam("auditId", 0);
+		$subsidiaryId = $this->getRequest()->getParam("subsidiaryId", 0);
+		$clientId = $this->getRequest()->getParam("clientId", 0);
+		$formId = $this->getRequest()->getParam("formId", 0);
+		$page = $this->getRequest()->getParam("page", 0) - 1;
+		
+		// nacteni dat z databaze a kontrola dat
+		$tableAudits = new Audit_Model_Audits();
+		$tableForms = new Audit_Model_AuditsForms();
+		
+		// kontrola auditu
+		$audit = $tableAudits->getById($auditId);
+		if (!$audit) throw new Zend_Exception("Audit #$auditId not found");
+		
+		// nacteni formulare
+		$form = $tableForms->getById($formId);
+		
+		// kontrola formulare
+		if (!$form) throw new Zend_Exception("Form #$formId not found");
+		if ($form->audit_id != $audit->id) throw new Zend_Exception("Form #$formId is not belongs to audit #$auditId");
+		
+		// nacteni skupiny
+		$groups = $form->getGroups();
+		$currentGroup = $groups[$page];
+		
+		// priprava tabulky
+		$tableRecords = new Audit_Model_AuditsRecords();
+		
+		// sestaveni zakladniho SQL
+		$sqlBase = "update `" . $tableRecords->info("name") . "` set ";
+		
+		// data z requestu
+		$data = (array) $this->getRequest()->getParam("record", array());
+		
+		// zapis dat
+		$toUpdate = array();
+		$activatedMistakeIds = array();
+		$recordIds = array(0);
+		
+		// prochazeni zaznamu a tvorba dotazu
+		$adapter = $tableRecords->getAdapter();
+		
+		foreach ($data as $index => $item) {
+			$item = array_merge(array("comment" => "", "note" => Audit_Model_AuditsRecords::SCORE_NT, "mistake_id" => 0), $item);
+			
+			$sql = $sqlBase;
+			
+			// cast updatu
+			$sql .= "`note` = " . $adapter->quote($item["note"]) . ", `score` = " . $item["score"];
+			
+			// case podminky
+			$sql .= " where audit_id = " . $audit->id . " and id = " . $adapter->quote($index) . " and audit_form_id = " . $adapter->quote($formId);
+			
+			$toUpdate[] = $sql;
+			$recordIds[] = $index;
+			
+			// vyhodnoceni aktivace neshody
+			if ($item["score"] == Audit_Model_AuditsRecords::SCORE_N) {
+				$activatedMistakeIds[] = $item["mistake_id"];
+			}
+		}
+		
+		// zaneseni zmen
+		if ($toUpdate) {
+			$sql = implode(";", $toUpdate) . ";";
+			$adapter->query($sql);
+		}
+		
+		// zaneseni zaznamu o chybach
+		$where = array(
+				"audit_id = " . $audit->id,
+				"record_id in (" . $adapter->quote($recordIds) . ")"
+		);
+		
+		// deaktivace chyb
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableMistakes->update(array("submit_status" => Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNUSED), $where);
+		
+		// aktivace chyb
+		if ($activatedMistakeIds) {
+			$where[1] = "id in (" . $adapter->quote($activatedMistakeIds) . ")";
+			$tableMistakes->update(array("submit_status" => Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED), $where);
+		}
+		
+		// presmerovani zpet na editaci
+		$url = $this->view->url(array(
+				"auditId" => $auditId,
+				"clientId" => $clientId,
+				"subsidiaryId" => $subsidiaryId,
+				"formId" => $formId
+		), "audit-form-fill");
+		
+		$this->_redirect($url);
 	}
 }

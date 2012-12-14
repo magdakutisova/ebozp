@@ -6,6 +6,10 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	const SUBMITED_UNSUBMITED = 2;
 	const SUBMITED_ALL = 4;
 	
+	const SUBMITED_VAL_UNUSED = 0;
+	const SUBMITED_VAL_UNSUBMITED = 1;
+	const SUBMITED_VAL_SUBMITED = 2;
+	
 	protected $_name = "audit_audits_records_mistakes";
 	
 	protected $_sequence = true;

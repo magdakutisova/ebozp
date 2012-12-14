@@ -1,0 +1,155 @@
+<h1>Formulář auditu</h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<div class="box">
+	<?php 
+	$params = array(
+			"clientId" => $this->client->id_client,
+			"subsidiaryId" => $this->subsidiary->id_subsidiary,
+			"auditId" => $this->auditId
+	);
+	
+	$url = $this->url($params, "audit-edit");
+	
+	echo "<a href='$url'>Zpět na audit</a>"
+	?>
+</div>
+<?php
+// vygenerovani url formulare pro ulozeni strany
+$params = array(
+		"clientId" => $this->client->id_client,
+		"subsidiaryId" => $this->subsidiary->id_subsidiary,
+		"auditId" => $this->auditId,
+		"formId" => $this->form->id,
+		"page" => $this->pageIndex + 1
+);
+
+$saveUrl = $this->url($params, "audit-form-save");
+?>
+<h3><?php echo $this->actualGroup->name; ?></h3>
+<form action="<?php echo $saveUrl?>" method="post" id="form-fill-group">
+	<table>
+		<thead>
+			<tr>
+				<th>
+				Otázka
+				</th>
+				<th width="32px">
+				Ano
+				</th>
+				<th width="32px">
+				NT
+				</th>
+				<th width="32px">
+				Ne
+				</th>
+				<th>
+				Komentář
+				</th>
+				<th width="50px">
+				Akce
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php 
+		// hodnoty pro radio
+		$values = array(
+				Audit_Model_AuditsRecords::SCORE_A => "",
+				Audit_Model_AuditsRecords::SCORE_NT => "",
+				Audit_Model_AuditsRecords::SCORE_N => ""
+		);
+		
+		$defVal = Audit_Model_AuditsRecords::SCORE_NT;
+		
+		// vypsani otazek
+		foreach ($this->records as $record) {
+			$name = "record[$record->id]";
+			?>
+			<tr>
+				<td style="white-space: pre; width: 300px"><?php echo $record->question; ?></td>
+				<td>
+				<?php echo $this->formRadio($name . "[score]", $record->score, null, $values, "</td><td>"); ?>
+				</td>
+				<td>
+				<?php echo $this->formTextarea($name . "[note]", $record->note, array("style" => "width: 100px")); ?>
+				</td>
+				<td>
+				<?php 
+				// vyhodnoceni zobrazeni tlacitka pro neshodu
+				$style = ($record->score == Audit_Model_AuditsRecords::SCORE_N) ? null : array("style" => "visibility: hidden;");
+				
+				echo $this->formButton($name . "[comment-button]", "Zvětšit/zmenšit komentář");
+				echo $this->formButton($name . "[mistake]", "Neshoda", $style);
+				echo $this->formHidden($name . "[mistake_id]", $record->mistake_id);
+				?>
+				</td>
+			</tr>
+			<?php 
+		}
+		?>
+		</tbody>
+	</table>
+	<p>
+		<?php echo $this->formSubmit("submit", "Uložit"); ?>
+	</p>
+</form>
+<?php 
+// navigace
+$selectVals = array();
+$i = 1;
+
+foreach ($this->groups as $group) {
+	$selectVals[$i++] = $group->name;
+}
+
+$params = array(
+		"clientId" => $this->client->id_client,
+		"subsidiaryId" => $this->subsidiary->id_subsidiary,
+		"auditId" => $this->auditId,
+		"formId" => $this->form->id
+);
+$page = $this->pageIndex + 1;
+
+// vypsani dat pro sestaveni routy
+echo $this->formHidden("auditId", $this->auditId);
+echo $this->formHidden("clientId", $this->client->id_client);
+echo $this->formHidden("subsidiaryId", $this->subsidiary->id_subsidiary);
+echo $this->formHidden("formId", $this->form->id);
+
+?>
+<form id="record-groups-navigation">
+	<table>
+		<tbody>
+			<tr>
+				<td>
+				<?php 
+				if ($this->pageIndex > 0) {
+					$params["page"] = $page - 1;
+					
+					$url = $this->url($params, "audit-form-fill");
+					
+					echo "<a href='$url'>Předchozí</a>";
+				} else {
+					echo "&nbsp;";
+				}
+				?>
+				</td>
+				<td>
+				<?php echo $this->formSelect("navigation-page", $this->pageIndex + 1, null, $selectVals)?>
+				</td>
+				<td>
+				<?php 
+				if ($this->pageIndex < count($this->groups) -1) {
+					$params["page"] = $page + 1;
+					
+					$url = $this->url($params, "audit-form-fill");
+					
+					echo "<a href='$url'>Další</a>";
+				}
+				?>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+<script type="text/javascript" src="/js/audit/form/fill.js"></script>

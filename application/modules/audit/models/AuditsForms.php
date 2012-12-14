@@ -88,7 +88,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			foreach ($groupList as $group) {
 				// zapis skupiny
-				$groups[] = "(" . $adapter->quote($group->getLabel()) . ")";
+				$groups[] = "(" . $adapter->quote($group->getLabel()) . ", $retVal->id)";
 				
 				// zapis prvku
 				$items = $group->getItems();
@@ -147,7 +147,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			var_dump($groups, $records, $mistakes);
 			// zpis skupin
 			if ($groups) {
-				$sql = "insert into `$nameGroups` (name) values " . implode(",", $groups);
+				$sql = "insert into `$nameGroups` (name, audit_form_id) values " . implode(",", $groups);
 				$adapter->query($sql);
 			}
 			

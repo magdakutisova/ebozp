@@ -31,7 +31,7 @@ $params = array(
 );
 
 foreach ($this->formInstances as $instance) {
-	$params["instanceId"] = $instance->id;
+	$params["formId"] = $instance->id;
 	
 	$href = $this->url($params, "audit-form-fill");
 	

@@ -232,6 +232,24 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->backTo = $backTo;
 		$this->view->client = $mistake->getClient();
 		$this->view->subsidiary = $mistake->getSubsidiary();
+		$this->view->mistake = $mistake;
+	}
+	
+	public function editHtmlAction() {
+		// provedeni akce a vypnuti layoutu
+		$this->editAction();
+		$this->view->layout()->disableLayout();
+		
+		// nastaveni zemenne routy formulare
+		$params = array(
+				"clientId" => $this->_audit->client_id,
+				"auditId" => $this->_audit->id,
+				"mistakeId" => $this->view->mistake->id
+		);
+		
+		$this->view->form->setAction(
+				$this->view->url($params, "audit-mistake-put-html")
+		);
 	}
 	
 	public function getAction() {
@@ -340,7 +358,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		));
 	}
 	
-	public function putAction() {
+	public function putAction($redirect = true, $forwardOnError = null) {
 		// nacteni neshody
 		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
@@ -351,7 +369,13 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$form = new Audit_Form_MistakeCreate();
 		
 		// validace dat
-		if (!$form->isValid($_REQUEST)) $this->_forward("edit");
+		if (!$form->isValid($_REQUEST)) {
+			if ($forwardOnError) {
+				$this->_forward($forwardOnError);
+			} else {
+				$this->_forward("edit");
+			}
+		}
 		
 		// zapis dat
 		$data = $form->getValues(true);
@@ -366,6 +390,16 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// presmerovani zpet na vypis
 		$params = array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id, "mistakeId" => $mistake->id);
 		
-		$this->_redirect($this->view->url($params, "audit-mistake-edit"));
+		if ($redirect) $this->_redirect($this->view->url($params, "audit-mistake-edit"));
+		
+		return $params;
+	}
+	
+	public function putHtmlAction() {
+		// zavolani akce bez rediractu
+		$params = $this->putAction(false);
+		
+		// redirect na spravnou adresu
+		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));
 	}
 }

@@ -8,9 +8,9 @@ class Audit_Model_AuditsRecordsGroups extends Zend_Db_Table_Abstract {
 	protected $_sequence = true;
 	
 	protected $_referenceMap = array(
-			"audit" => array(
-					"columns" => "audit_id",
-					"refTableClass" => "Audit_Model_Audits",
+			"form" => array(
+					"columns" => "audit_form_id",
+					"refTableClass" => "Audit_Model_AuditsForms",
 					"refColumns" => "id"
 			)
 	);
