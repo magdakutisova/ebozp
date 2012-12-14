@@ -37,8 +37,20 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		return $this->findDependentRowset("Audit_Model_AuditsForms", "audit");
 	}
 	
-	public function getGroups() {
-		return $this->findDependentRowset("Audit_Model_AuditsRecordsGroups", "audit");
+	/**
+	 * vraci seznam neshod z auditu
+	 * 
+	 * @return Audit_Model_Rowset_AuditsRecordsMistakes
+	 */
+	public function getMistakes() {
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		
+		$where = array(
+				"audit_id = " . $this->id,
+				"submit_status"
+		);
+		
+		return $tableMistakes->fetchAll($where);
 	}
 	
 	/**

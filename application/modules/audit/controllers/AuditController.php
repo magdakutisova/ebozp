@@ -137,12 +137,28 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if (!$this->_audit) throw new Zend_Exception("Audit not found");
 		
 		// vytvoreni formulare
-		$form = new Audit_Form_Audit();
+		$form = new Audit_Form_AuditFill();
 		$form->fillSelects();
 		$form->populate(array("audit" => $this->_audit->toArray()));
 		
 		// naplneni zodpovednych osob
 		$form->getElement("responsibile_name")->setValue($this->_audit->getResponsibiles());
+		
+		// uprava datumu
+		$doneAt = $this->_audit->done_at;
+		list($year, $month, $day) = explode("-", $doneAt);
+		$form->getElement("done_at")->setValue("$day. $month. $year");
+		
+		// uprava akce a tlacitka odeslat
+		$form->getElement("submit")->setLabel("Uložit");
+		
+		$params = array(
+				"clientId" => $this->_audit->client_id,
+				"subsidiaryId" => $this->_audit->subsidiary_id,
+				"auditId" => $this->_audit->id
+		);
+		
+		$form->setAction($this->view->url($params, "audit-put"));
 		
 		// nacteni instanci formularu
 		$formInstances = $this->_audit->getForms();
@@ -161,13 +177,15 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$instanceForm->setAction($url);
 		
 		// nacteni neshod tykajicich se auditu
-		
+		$mistakes = $this->_audit->getMistakes();
+
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
 		$this->view->form = $form;
 		$this->view->instanceForm = $instanceForm;
 		$this->view->formInstances = $formInstances;
 		$this->view->audit = $this->_audit;
+		$this->view->mistakes = $mistakes;
 	}
 	
 	public function fillAction() {
@@ -297,7 +315,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$this->_loadList($open, $closed);
 		
-		$this->view->openRoute = "audit-fill";
+		$this->view->openRoute = "audit-edit";
 		$this->view->closedRoute = "audit-get";
 	}
 	
@@ -339,10 +357,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$data = $this->getRequest()->getParam("audit");
 		
 		$form = new Audit_Form_AuditFill();
-		
-		// kontrola konecneho odeslani
-		if (!$data["close"])
-			$form->getElement("summary")->setRequired(false);
+		$form->getElement("summary")->setRequired(false);
 		
 		// kontrola validity
 		$form->populate($data);
@@ -352,46 +367,17 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableAudits = new Audit_Model_Audits();
 		$audit = $tableAudits->getById($form->getValue("id"));
 		
-		// nacteni formulare
-		$filled = $audit->findParentRow("Questionary_Model_Filleds");
-		$questionary = $filled->toClass();
-		
-		// ulozeni novych dat do formulare
-		$formData = Zend_Json::decode($data["content"]);
-		
-		foreach ($formData as $name => $value) {
-			$questionary->getByName($name)->fill($value);
-		}
-		
-		$filled->saveFilledData($questionary);
-		
 		// zapis poznamek a shrnuti
 		$audit->summary = $form->getValue("summary");
 		$audit->progress_note = $form->getValue("progress_note");
 		
-		// kontrola uzavreni ze strany technika
-		if ($data["close"]) {
-			$audit->setDone();
-			
-			// zapis dat do vypisu auditu
-			$tableRecords = new Audit_Model_AuditsRecords();
-			$tableRecords->createRecords($audit);
-			
-			$audit->save();
-			
-			// presmerovani na vypis
-			$this->_redirect(
-				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-get")
-			);
-			
-			return;
-		}
+		// nastaveni ostanich dat
 		
 		$audit->save();
 		
 		// presmerovani na fill
 		$this->_redirect(
-				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-fill")
+				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-edit")
 		);
 	}
 	

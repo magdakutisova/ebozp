@@ -199,6 +199,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$data["will_be_removed_at"] = $this->view->sqlDate($data["will_be_removed_at"]);
 		
 		$form = new Audit_Form_MistakeCreate();
+		
 		$form->populate(array("mistake" => $data));
 		$form->getElement("submit")->setLabel("Uložit");
 		$form->setAction($this->view->url(array(
@@ -206,6 +207,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				"auditId" => $this->_audit->id,
 				"mistakeId" => $mistake->id
 		), "audit-mistake-put"));
+		
+		// nastaveni dat z requestu, pokud neco je k dispozici
+		$form->isValidPartial($_REQUEST);
 		
 		$params = array(
 				"clientId" => $this->_audit->client_id,
@@ -375,6 +379,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			} else {
 				$this->_forward("edit");
 			}
+			
+			return false;
 		}
 		
 		// zapis dat
@@ -397,7 +403,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	
 	public function putHtmlAction() {
 		// zavolani akce bez rediractu
-		$params = $this->putAction(false);
+		$params = $this->putAction(false, "edit.html");
+		
+		if (!$params) return;
 		
 		// redirect na spravnou adresu
 		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));

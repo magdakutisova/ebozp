@@ -1,7 +1,11 @@
 <?php
-class Audit_Form_AuditFill extends Zend_Form {
+class Audit_Form_AuditFill extends Audit_Form_Audit {
 	
 	public function init() {
+		parent::init();
+		
+		$this->removeElement("submit");
+		
 		// nastaveni dat
 		$this->setName("audit-fill");
 		$this->setMethod(Zend_Form::METHOD_POST);
@@ -43,16 +47,10 @@ class Audit_Form_AuditFill extends Zend_Form {
 		
 		// shrnuti
 		$this->addElement("textarea", "summary", array(
-				"label" => "Shrnutí",
+				"label" => "Shrnutí*",
 				"decorators" => $elementDecorator,
 				"validators" => array("NotEmpty"),
 				"required" => true
-		));
-		
-		// zaskrtavac potvrzeni
-		$this->addElement("checkbox", "close", array(
-				"label" => "Dokončit",
-				"decorators" => $elementDecorator
 		));
 		
 		$this->getElement("close");

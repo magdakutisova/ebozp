@@ -6,14 +6,70 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		$frontController = $this->getResource('FrontController');
 		$router = $frontController->getRouter();
 		
-		// routa na vyplneni dotazniku auditu ze strany technika
+		// route pro post auditu
 		$router->addRoute(
-				"audit-fill",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/fill",
+				"audit-post",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/post",
 						array(
 								"module" => "audit",
 								"controller" => "audit",
-								"action" => "fill"
+								"action" => "post"
+						))
+		);
+		
+		// route pro update auditu
+		$router->addRoute(
+				"audit-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/put",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "put"
+						))
+		);
+		
+		// routa pro fill dotazniku
+		$router->addRoute(
+				"audit-form-fill",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/form/:formId/edit/:page",
+					array(
+							"module" => "audit",
+							"controller" => "form",
+							"action" => "fill",
+							"page" => 1
+					))
+		);
+		
+		// routa pro ulozeni dotazniku
+		$router->addRoute(
+				"audit-form-save",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/form/:formId/save/:page",
+						array(
+								"module" => "audit",
+								"controller" => "form",
+								"action" => "save"
+						))
+		);
+		
+		// vytvoreni instance formulare
+		$router->addRoute(
+				"audit-form-instance",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/append-form",
+						array(
+								"module" => "audit",
+								"controller" => "form",
+								"action" => "instance"
+						))
+		);
+		
+		// routa na vyplneni dotazniku auditu ze strany technika
+		$router->addRoute(
+				"audit-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "edit"
 						)
 				)
 		);
@@ -153,13 +209,31 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "edit"))
 		);
 		
-		// edituje neshodu
+		// edituje neshodu bez layoutu
+		$router->addRoute(
+				"audit-mistake-edit-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/html",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "edit.html"))
+		);
+		
+		// ulozi zmenenou neshodu
 		$router->addRoute(
 				"audit-mistake-put",
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/put",
 						array("module" => "audit",
 								"controller" => "mistake",
 								"action" => "put"))
+		);
+		
+		// ulozi zmenenou neshodu jako html
+		$router->addRoute(
+				"audit-mistake-put-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/put/html",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "put.html"))
 		);
 		
 		// smaze neshodu
