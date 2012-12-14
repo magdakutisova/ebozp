@@ -160,16 +160,21 @@ class WorkplaceController extends Zend_Controller_Action
 				//vložení pracovních pozic
 				if($key == "position" || preg_match('/newPosition\d+/', $key)){
 					//pokud je vybraná nebo vyplněná nějaká pozice
-					if($value['position'] != 0 || $value['new_position'] != ''){
+					if($value['position'] != 0 || $value['position'] != '' || $value['new_position'] != ''){
 						$position = new Application_Model_Position($value);
 						//pokud pozice je vybraná v multiselectu
-						if($value['position'] != 0){
+						if(preg_match('/\d+/', $value['position'])){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['position']];
 							$position->setPosition($label);
 						}
+						//pokud je vypsaná v textboxu při editaci
+						elseif($value['position'] != ''){
+							$position->setPosition($value['position']);
+						}
+						//pokud jsou obě políčka prázdná
 						elseif($value['new_position'] == ''){
-							$position->setPosition('');
+							continue;
 						}
 						if($value['new_position'] != ''){
 							$position->setPosition($value['new_position']);
@@ -197,7 +202,7 @@ class WorkplaceController extends Zend_Controller_Action
 							$work->setWork($label);
 						}
 						elseif($value['new_work'] == ''){
-							$work->setWork('');
+							continue;
 						}
 						if($value['new_work'] != ''){
 							$work->setWork($value['new_work']);
@@ -242,6 +247,9 @@ class WorkplaceController extends Zend_Controller_Action
 						if($value['new_type'] != ''){
 							$technicalDevice->setType($value['new_type']);
 						}
+						if($technicalDevice->getSort() == '' && $technicalDevice->getType() == ''){
+							continue;
+						}
 						$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
 						if($existingTechnicalDevice){
 							$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
@@ -264,8 +272,9 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['chemical']];
 							$chemical->setChemical($label);
 						}
+						//pokud jsou obě políčka prázdná
 						elseif($value['new_chemical'] == ''){
-							$chemical->setChemical('');
+							continue;
 						}
 						if($value['new_chemical'] != ''){
 							$chemical->setChemical($value['new_chemical']);
@@ -635,6 +644,8 @@ class WorkplaceController extends Zend_Controller_Action
     			$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
+    		
+    		My_Debug::dump($formData);
     		
     		$factors = new Application_Model_DbTable_WorkplaceFactor();
     		$risks = new Application_Model_DbTable_WorkplaceRisk();
