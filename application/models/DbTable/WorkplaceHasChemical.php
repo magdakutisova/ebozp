@@ -29,4 +29,11 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 		}
 	}
 	
+	public function removeRelation($workplaceId, $chemicalId){
+		$this->delete(array(
+			'id_workplace = ?' => $workplaceId,
+			'id_chemical = ?' => $chemicalId,
+		));
+	}
+	
 }

@@ -39,7 +39,7 @@ class Application_Model_Work{
 	}
 
 	public function populate(array $data){
-		$this->idWork = isset($data['id_workplace']) ? $data['id_workplace'] : null;
+		$this->idWork = isset($data['id_work']) ? $data['id_work'] : null;
 		$this->work = isset($data['work']) ? $data['work'] : null;
 
 		return $this;

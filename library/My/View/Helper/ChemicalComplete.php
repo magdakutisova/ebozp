@@ -39,7 +39,7 @@ class My_View_Helper_ChemicalComplete extends Zend_View_Helper_FormElement{
 		if($toEdit){
 			$this->html .= '<tr id="' . $name . '">';
 			$this->html .= $helperHidden->formHidden($name . '[id_chemical]', $idChemical);
-			$this->html .= '<td><label for="' . $name . '[chemical]">Chemická látka</label></td><td colspan="4">' . $helperText->formText($name . '[chemical]', $chemical, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'hideTr')) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[chemical]">Chemická látka</label></td><td colspan="4">' . $helperText->formText($name . '[chemical]', $chemical, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'remove_chemical_complete')) . '</td>';
 			$this->html .= '</tr><tr>';
 			$this->html .= '<td><label for="' . $name . '[usual_amount]">Obvyklé množství</label></td><td>' . $helperText->formText($name . '[usual_amount]', $usualAmount) . '</td><td><label for="' . $name . '[use_purpose]">Účel použití</label></td><td>' . $helperText->formText($name . '[use_purpose]', $usePurpose) . '</td>';
 			$this->html .= '</tr>';

@@ -204,16 +204,107 @@ $(function(){
 	}
 	
 	//dynamické odebírání pracovních pozic
-	$("#remove_position").click(function(){
-		removePositionFromDb();
+	$(".remove_position").click(function(){
+		removePositionFromDb(this);
 		removePositionFromHtml(this);
 	});
 	
-	function removePositionFromDb(){
-		//odstranit záznam z DB
+	function removePositionFromDb(row){
+		var positionId = $(row).parent().siblings().filter(":first").val();
+		var clientId = $("#client_id").val();
+		var subsidiaryId = $("#subsidiary_id").val();
+		var workplaceId = $("#id_workplace").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/removeposition/format/html',
+			data: "positionId=" + positionId + "&clientId=" + clientId + "&subsidiaryId=" + subsidiaryId + "&workplaceId=" + workplaceId,
+			success: function(){
+				console.log("OK");
+			}
+		});
 	}
 	
 	function removePositionFromHtml(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
+	}
+	
+	//dynamické odebírání pracovních činností
+	$(".remove_work").click(function(){
+		removeWorkFromDb(this);
+		removeWorkFromHtml(this);
+	});
+	
+	function removeWorkFromDb(row){
+		var workId = $(row).parent().siblings().filter(":first").val();
+		var clientId = $("#client_id").val();
+		var subsidiaryId = $("#subsidiary_id").val();
+		var workplaceId = $("#id_workplace").val();
+		alert(workId + ' ' + clientId + ' ' + subsidiaryId + ' ' + workplaceId);
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/removework/format/html',
+			data: "workId=" + workId + "&clientId=" + clientId + "&subsidiaryId=" + subsidiaryId + "&workplaceId=" + workplaceId,
+			success: function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	function removeWorkFromHtml(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
+	}
+	
+	//dynamické odebírání technických prostředků
+	$(".remove_technical_device").click(function(){
+		removeTechnicalDeviceFromDb(this);
+		removeTechnicalDeviceFromHtml(this);
+	});
+	
+	function removeTechnicalDeviceFromDb(row){
+		var technicalDeviceId = $(row).parent().siblings().filter(":first").val();
+		var clientId = $("#client_id").val();
+		var subsidiaryId = $("#subsidiary_id").val();
+		var workplaceId = $("#id_workplace").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/removetechnicaldevice/format/html',
+			data: "technicalDeviceId=" + technicalDeviceId + "&clientId=" + clientId + "&subsidiaryId=" + subsidiaryId + "&workplaceId=" + workplaceId,
+			success: function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	function removeTechnicalDeviceFromHtml(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
+	}
+	
+	//dynamické odebírání chemických látek
+	$(".remove_chemical_complete").click(function(){
+		removeChemicalCompleteFromDb(this);
+		removeChemicalCompleteFromHtml(this);
+	});
+	
+	function removeChemicalCompleteFromDb(row){
+		var chemicalId = $(row).parent().siblings().filter(":first").val();
+		var clientId = $("#client_id").val();
+		var subsidiaryId = $("#subsidiary_id").val();
+		var workplaceId = $("#id_workplace").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/removechemical/format/html',
+			data: "chemicalId=" + chemicalId + "&clientId=" + clientId + "&subsidiaryId=" + subsidiaryId + "&workplaceId=" + workplaceId,
+			success: function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	function removeChemicalCompleteFromHtml(row){
+		$(row).parent().parent().next().remove();
 		$(row).parent().parent().next().remove();
 		$(row).parent().parent().remove();
 	}

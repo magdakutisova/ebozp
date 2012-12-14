@@ -160,16 +160,21 @@ class WorkplaceController extends Zend_Controller_Action
 				//vložení pracovních pozic
 				if($key == "position" || preg_match('/newPosition\d+/', $key)){
 					//pokud je vybraná nebo vyplněná nějaká pozice
-					if($value['position'] != 0 || $value['new_position'] != ''){
+					if($value['position'] != 0 || $value['position'] != '' || $value['new_position'] != ''){
 						$position = new Application_Model_Position($value);
 						//pokud pozice je vybraná v multiselectu
-						if($value['position'] != 0){
+						if(preg_match('/\d+/', $value['position'])){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['position']];
 							$position->setPosition($label);
 						}
+						//pokud je vypsaná v textboxu při editaci
+						elseif($value['position'] != ''){
+							$position->setPosition($value['position']);
+						}
+						//pokud jsou obě políčka prázdná
 						elseif($value['new_position'] == ''){
-							$position->setPosition('');
+							continue;
 						}
 						if($value['new_position'] != ''){
 							$position->setPosition($value['new_position']);
@@ -197,7 +202,7 @@ class WorkplaceController extends Zend_Controller_Action
 							$work->setWork($label);
 						}
 						elseif($value['new_work'] == ''){
-							$work->setWork('');
+							continue;
 						}
 						if($value['new_work'] != ''){
 							$work->setWork($value['new_work']);
@@ -242,6 +247,9 @@ class WorkplaceController extends Zend_Controller_Action
 						if($value['new_type'] != ''){
 							$technicalDevice->setType($value['new_type']);
 						}
+						if($technicalDevice->getSort() == '' && $technicalDevice->getType() == ''){
+							continue;
+						}
 						$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
 						if($existingTechnicalDevice){
 							$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
@@ -264,8 +272,9 @@ class WorkplaceController extends Zend_Controller_Action
 							$label = $listNameOptions[$value['chemical']];
 							$chemical->setChemical($label);
 						}
+						//pokud jsou obě políčka prázdná
 						elseif($value['new_chemical'] == ''){
-							$chemical->setChemical('');
+							continue;
 						}
 						if($value['new_chemical'] != ''){
 							$chemical->setChemical($value['new_chemical']);
@@ -360,10 +369,62 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$this->view->field = $element->__toString();
     }
+    
+    public function removepositionAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removeposition', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$positionId = $this->_getParam('positionId', null);
+
+    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
+    	$workplaceHasPosition->removeRelation($workplaceId, $positionId);
+    }
+    
+	public function removeworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removework', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$workId = $this->_getParam('workId', null);
+
+    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
+    	$workplaceHasWork->removeRelation($workplaceId, $workId);
+    }
+    
+	public function removetechnicaldeviceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removetechnicaldevice', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$technicalDeviceId = $this->_getParam('technicalDeviceId', null);
+
+    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+    	$workplaceHasTechnicalDevice->removeRelation($workplaceId, $technicalDeviceId);
+    }
+    
+	public function removechemicalAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('removechemical', 'html')->initContext();
+    	
+    	$workplaceId = $this->_getParam('workplaceId', null);
+    	$chemicalId = $this->_getParam('chemicalId', null);
+
+    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
+    	$workplaceHasChemical->removeRelation($workplaceId, $chemicalId);
+    }
 
     public function listAction()
     {
-        $clients = new Application_Model_DbTable_Client();
+        $defaultNamespace = new Zend_Session_Namespace();
+        if (isset($defaultNamespace->form)){
+        	unset($defaultNamespace->form);
+        }
+        if (isset($defaultNamespace->formData)){
+        	unset($defaultNamespace->formData);
+        }
+    	
+    	$clients = new Application_Model_DbTable_Client();
         $client = $clients->getClient($this->_clientId);
         
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
@@ -574,11 +635,17 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$adapter->beginTransaction();
 	    	
     		//update pracoviště
-    		$workplace = new Application_Model_Workplace($formData);
-    		if(!$workplaces->updateWorkplace($workplace)){
+    		$workplaceNew = new Application_Model_Workplace($formData);
+    		$differentName = true;
+    		if($workplace->getName() == $workplaceNew->getName()){
+    			$differentName = false;
+    		}
+    		if(!$workplaces->updateWorkplace($workplaceNew, $differentName)){
     			$this->_helper->FlashMessenger('Chyba! Pracoviště s tímto názvem již existuje. Zvolte prosím jiný název.');
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
+    		
+    		My_Debug::dump($formData);
     		
     		$factors = new Application_Model_DbTable_WorkplaceFactor();
     		$risks = new Application_Model_DbTable_WorkplaceRisk();
@@ -618,10 +685,10 @@ class WorkplaceController extends Zend_Controller_Action
     				$risks->addWorkplaceRisk($risk);
     			}
     		}
-    		$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+    		$subsidiary = $subsidiaries->getSubsidiary($workplaceNew->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
     		
-    		$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' upraveno.');
+    		$this->_helper->FlashMessenger('Pracoviště ' . $workplaceNew->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
     	}
     	catch (Exception $e){

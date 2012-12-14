@@ -35,7 +35,7 @@ class My_View_Helper_Work extends Zend_View_Helper_FormElement{
 		if($toEdit){
 			$this->html .= '<tr id="' . $name . '">';
 			$this->html .= $helperHidden->formHidden($name . '[id_work]', $idWork);
-			$this->html .= '<td><label for"' . $name . '[work]">Pracovní činnost</label></td><td colspan="4">' . $helperText->formText($name . '[work]', $work, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'hideTr')) . '</td>';
+			$this->html .= '<td><label for"' . $name . '[work]">Pracovní činnost</label></td><td colspan="4">' . $helperText->formText($name . '[work]', $work, array('readonly' => 'readonly')) . '</td><td colspan="2">' . $helperSubmit->formSubmit($name . '[submit]', 'Odebrat', array('class' => 'remove_work')) . '</td>';
 			$this->html .= '</tr>';
 		}
 		else{

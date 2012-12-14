@@ -42,9 +42,14 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		return false;
 	}
 	
-	public function updateWorkplace(Application_Model_Workplace $workplace){
+	public function updateWorkplace(Application_Model_Workplace $workplace, $differentName = false){
 		$data = $workplace->toArray();
-		$existingWorkplace = $this->existsWorkplace($workplace->getName(), $workplace->getClientId());
+		if($differentName){
+			$existingWorkplace = $this->existsWorkplace($workplace->getName(), $workplace->getClientId());
+		}
+		else{
+			$existingWorkplace = false;
+		}
 		if(!$existingWorkplace){
 			$this->update($data, 'id_workplace = ' . $workplace->getIdWorkplace());
 			return true;
