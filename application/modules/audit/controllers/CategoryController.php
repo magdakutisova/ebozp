@@ -113,6 +113,30 @@ class Audit_CategoryController extends Zend_Controller_Action {
 		$this->view->deleteForm = $deleteForm;
 	}
 	
+	public function childrenJsonAction() {
+		// vytvoreni odpovedi odpovedi
+		$retVal = array();
+		$this->view->subcategories = $retVal;
+		
+		// nacteni jmena
+		$name = $this->getRequest()->getParam("name", "");
+		
+		// nacteni kategorie
+		$tableCategories = new Audit_Model_Categories();
+		$category = $tableCategories->fetchRow("name like " . $tableCategories->getAdapter()->quote($name));
+		
+		if (!$category) return;
+		
+		// nacteni podkategorii
+		$subcategories = $category->getChildren();
+		
+		foreach ($subcategories as $item) {
+			$retVal[] = $item->name;
+		}
+		
+		$this->view->subcategories = $retVal;
+	}
+	
 	/*
 	 * vypise seznam korenovych kategorii a formular pro pridani nove
 	 */

@@ -252,7 +252,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		// nacteni seznamu kategorii
-		$this->_loadCategories();
+		$this->_loadCategories($mistake->category);
 		
 		$backTo = $this->view->url($params, $route);
 		
@@ -349,6 +349,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$record->mistake_id = $mistake->id;
 		$record->save();
 		
+		// kontrola kategorii
+		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
+		
 		// presmerovani na audit
 		$this->_redirect($this->view->url(array(
 				"clientId" => $this->_audit->client_id,
@@ -393,6 +396,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
 		$mistake->save();
 		
+		// kontrola kategorii
+		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
+		
 		$this->_redirect($this->view->url(
 				array(
 						"clientId" => $this->_audit->client_id,
@@ -432,6 +438,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		list($day, $month, $year) = explode(". ", $data["will_be_removed_at"]);
 		$mistake->will_be_removed_at = $year . "-" . $month . "-" . $day;
 		$mistake->save();
+		
+		// kontrola kategorii
+		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
 		
 		// presmerovani zpet na vypis
 		$params = array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id, "mistakeId" => $mistake->id);
@@ -473,7 +482,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		return $form;
 	}
 	
-	protected function _loadCategories() {
+	protected function _loadCategories($actualBase = null) {
 		// nacteni kategorii a zapis do seznamu
 		$tableCategories = new Audit_Model_Categories();
 		$categories = $tableCategories->getRoots("name");
@@ -485,5 +494,50 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		$this->view->categories = $list;
+		
+		// kontrola kategorie
+		if (is_null($actualBase)) {
+			$this->view->subcategories = array();
+		} else {
+			// nacteni zakladni kategorie
+			$base = $tableCategories->fetchRow(array("parent_id is null and name like " . $tableCategories->getAdapter()->quote($actualBase)));
+			
+			$subcategories = $base->getChildren();
+			$subList = array();
+			
+			foreach ($subcategories as $item) {
+				$subList[] = $item->name;
+			}
+			
+			$this->view->subcategories = $subList;
+		}
+	}
+	
+	/**
+	 * vlozi kategorie do databaze, pokud neexistuji
+	 * 
+	 * @param array $categories seznam zkoumanych kategorii
+	 */
+	protected function _postCategoriesIfNotExists($category, $subcategory) {
+		// tabulka a adapter
+		$tableCategories = new Audit_Model_Categories();
+		$adapter = $tableCategories->getAdapter();
+		
+		// nacteni kategorie a podkategorie
+		$categoryRow = $tableCategories->fetchRow("parent_id is null and name like " . $adapter->quote($category));
+		
+		if (!$categoryRow) {
+			$categoryRow = $tableCategories->createCategory($category);
+		}
+		
+		// nacteni a kontrola podkategorie
+		$subcategoryRow = $tableCategories->fetchRow(array(
+				"name like " . $adapter->quote($subcategory),
+				"parent_id = " . $categoryRow->id
+		));
+		
+		if (!$subcategoryRow) {
+			$tableCategories->createCategory($subcategory, $categoryRow);
+		}
 	}
 }

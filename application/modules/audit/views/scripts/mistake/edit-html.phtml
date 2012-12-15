@@ -2,7 +2,7 @@
 <?php 
 echo $this->form;
 echo $this->dataList("categories", $this->categories);
-echo $this->dataList("subcategories", array());
+echo $this->dataList("subcategories", $this->subcategories);
 
 // kontrola mazaciho formulare
 if ($this->deleteForm) {
@@ -10,3 +10,4 @@ if ($this->deleteForm) {
 	echo $this->deleteForm;
 }
 ?>
+<script type="text/javascript" src="/js/audit/mistake/create.js"></script>
