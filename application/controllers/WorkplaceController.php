@@ -162,18 +162,16 @@ class WorkplaceController extends Zend_Controller_Action
 					//pokud je vybraná nebo vyplněná nějaká pozice
 					if($value['position'] != 0 || $value['position'] != '' || $value['new_position'] != ''){
 						$position = new Application_Model_Position($value);
+						//pokud je vypsaná v textboxu při editaci
+						$position->setPosition($value['position']);
 						//pokud pozice je vybraná v multiselectu
-						if(preg_match('/\d+/', $value['position'])){
+						if(preg_match('/\d+/', $value['position']) && $value['position'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['position']];
 							$position->setPosition($label);
 						}
-						//pokud je vypsaná v textboxu při editaci
-						elseif($value['position'] != ''){
-							$position->setPosition($value['position']);
-						}
 						//pokud jsou obě políčka prázdná
-						elseif($value['new_position'] == ''){
+						elseif(($value['position'] == 0 || $value['position'] == '') && $value['new_position'] == ''){
 							continue;
 						}
 						if($value['new_position'] != ''){
@@ -194,14 +192,15 @@ class WorkplaceController extends Zend_Controller_Action
 				
 				//vložení pracovních činností
 				if($key == "work" || preg_match('/newWork\d+/', $key)){
-					if($value['work'] != 0 || $value['new_work'] != ''){
+					if($value['work'] != 0 || $value['work'] != '' || $value['new_work'] != ''){
 						$work = new Application_Model_Work($value);
-						if($value['work'] != 0){
+						$work->setWork($value['work']);
+						if(preg_match('/\d+/', $value['work']) && $value['work'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['work']];
 							$work->setWork($label);
 						}
-						elseif($value['new_work'] == ''){
+						elseif(($value['work'] == 0 || $value['work'] == '') && $value['new_work'] == ''){
 							continue;
 						}
 						if($value['new_work'] != ''){
@@ -222,25 +221,28 @@ class WorkplaceController extends Zend_Controller_Action
 
 				//vložení technických zařízení
 				if($key == "technical_device" || preg_match('/newTechnicalDevice\d+/', $key)){
-					if($value['sort'] != 0 || $value['new_sort'] != '' || $value['type'] != 0 || $value['new_type'] != ''){
+					if($value['sort'] != 0 || $value['sort'] != '' || $value['new_sort'] != '' ||
+						$value['type'] != 0 || $value['type'] != '' || $value['new_type'] != ''){
 						$technicalDevice = new Application_Model_TechnicalDevice($value);
-						if($value['sort'] != 0){
+						$technicalDevice->setSort($value['sort']);
+						$technicalDevice->setType($value['type']);
+						if(preg_match('/\d+/', $value['sort']) && $value['sort'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['sort']];
 							$technicalDevice->setSort($label);
 						}
-						elseif($value['new_sort'] == ''){
+						elseif(($value['sort'] == 0 || $value['sort'] == '') && $value['new_sort'] == ''){
 							$technicalDevice->setSort('');
 						}
 						if($value['new_sort'] != ''){
 							$technicalDevice->setSort($value['new_sort']);
 						}
-						if($value['type'] != 0){
+						if(preg_match('/\d+/', $value['type']) && $value['type'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions2');
 							$label = $listNameOptions[$value['type']];
 							$technicalDevice->setType($label);
 						}
-						elseif($value['new_type'] == '')
+						elseif(($value['type'] == 0 || $value['type'] == '') && $value['new_type'] == '')
 						{
 							$technicalDevice->setType('');
 						}	
@@ -265,15 +267,16 @@ class WorkplaceController extends Zend_Controller_Action
 				
 				//vložení chemických látek
 				if($key == "chemical" || preg_match('/newChemical\d+/', $key)){
-					if($value['chemical'] != 0 || $value['new_chemical']){
+					if($value['chemical'] != 0 || $value['chemical'] != '' || $value['new_chemical'] != ''){
 						$chemical = new Application_Model_Chemical($value);
-						if($value['chemical'] != 0){
+						$chemical->setChemical($value['chemical']);
+						if(preg_match('/\d+/', $value['chemical']) && $value['chemical'] != 0){
 							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
 							$label = $listNameOptions[$value['chemical']];
 							$chemical->setChemical($label);
 						}
 						//pokud jsou obě políčka prázdná
-						elseif($value['new_chemical'] == ''){
+						elseif(($value['chemical'] == 0 || $value['chemical'] == '') && $value['new_chemical'] == ''){
 							continue;
 						}
 						if($value['new_chemical'] != ''){
