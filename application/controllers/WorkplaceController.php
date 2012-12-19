@@ -144,157 +144,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
 	    	}
 	    	
-	    	$positions = new Application_Model_DbTable_Position();
-	    	$works = new Application_Model_DbTable_Work();
-	    	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-	    	$chemicals = new Application_Model_DbTable_Chemical();
-	    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
-	    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
-	    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
-	    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
-	    	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
-	    	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
-	    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
-	    	
-			foreach($formData as $key => $value){
-				//vložení pracovních pozic
-				if($key == "position" || preg_match('/newPosition\d+/', $key)){
-					//pokud je vybraná nebo vyplněná nějaká pozice
-					if($value['position'] != 0 || $value['position'] != '' || $value['new_position'] != ''){
-						$position = new Application_Model_Position($value);
-						//pokud je vypsaná v textboxu při editaci
-						$position->setPosition($value['position']);
-						//pokud pozice je vybraná v multiselectu
-						if(preg_match('/\d+/', $value['position']) && $value['position'] != 0){
-							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
-							$label = $listNameOptions[$value['position']];
-							$position->setPosition($label);
-						}
-						//pokud jsou obě políčka prázdná
-						elseif(($value['position'] == 0 || $value['position'] == '') && $value['new_position'] == ''){
-							continue;
-						}
-						if($value['new_position'] != ''){
-							$position->setPosition($value['new_position']);
-						}
-						$position->setClientId($this->_clientId);
-						
-						$existingPosition = $positions->existsPosition($position->getPosition(), $this->_clientId);
-						if($existingPosition){
-							$workplaceHasPosition->addRelation($workplaceId, $existingPosition);
-						}
-						else{
-							$positionId = $positions->addPosition($position);
-							$workplaceHasPosition->addRelation($workplaceId, $positionId);
-						}
-					}
-				}
-				
-				//vložení pracovních činností
-				if($key == "work" || preg_match('/newWork\d+/', $key)){
-					if($value['work'] != 0 || $value['work'] != '' || $value['new_work'] != ''){
-						$work = new Application_Model_Work($value);
-						$work->setWork($value['work']);
-						if(preg_match('/\d+/', $value['work']) && $value['work'] != 0){
-							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
-							$label = $listNameOptions[$value['work']];
-							$work->setWork($label);
-						}
-						elseif(($value['work'] == 0 || $value['work'] == '') && $value['new_work'] == ''){
-							continue;
-						}
-						if($value['new_work'] != ''){
-							$work->setWork($value['new_work']);
-						}
-						$existingWork = $works->existsWork($work->getWork());
-						if($existingWork){
-							$workplaceHasWork->addRelation($workplaceId, $existingWork);
-							$clientHasWork->addRelation($this->_clientId, $existingWork);
-						}
-						else{
-							$workId = $works->addWork($work);
-							$workplaceHasWork->addRelation($workplaceId, $workId);
-							$clientHasWork->addRelation($this->_clientId, $workId);
-						}
-					}
-				}
-
-				//vložení technických zařízení
-				if($key == "technical_device" || preg_match('/newTechnicalDevice\d+/', $key)){
-					if($value['sort'] != 0 || $value['sort'] != '' || $value['new_sort'] != '' ||
-						$value['type'] != 0 || $value['type'] != '' || $value['new_type'] != ''){
-						$technicalDevice = new Application_Model_TechnicalDevice($value);
-						$technicalDevice->setSort($value['sort']);
-						$technicalDevice->setType($value['type']);
-						if(preg_match('/\d+/', $value['sort']) && $value['sort'] != 0){
-							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
-							$label = $listNameOptions[$value['sort']];
-							$technicalDevice->setSort($label);
-						}
-						elseif(($value['sort'] == 0 || $value['sort'] == '') && $value['new_sort'] == ''){
-							$technicalDevice->setSort('');
-						}
-						if($value['new_sort'] != ''){
-							$technicalDevice->setSort($value['new_sort']);
-						}
-						if(preg_match('/\d+/', $value['type']) && $value['type'] != 0){
-							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions2');
-							$label = $listNameOptions[$value['type']];
-							$technicalDevice->setType($label);
-						}
-						elseif(($value['type'] == 0 || $value['type'] == '') && $value['new_type'] == '')
-						{
-							$technicalDevice->setType('');
-						}	
-						if($value['new_type'] != ''){
-							$technicalDevice->setType($value['new_type']);
-						}
-						if($technicalDevice->getSort() == '' && $technicalDevice->getType() == ''){
-							continue;
-						}
-						$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
-						if($existingTechnicalDevice){
-							$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
-							$clientHasTechnicalDevice->addRelation($this->_clientId, $existingTechnicalDevice);
-						}
-						else{
-							$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
-							$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
-							$clientHasTechnicalDevice->addRelation($this->_clientId, $technicalDeviceId);
-						}
-					}
-				}
-				
-				//vložení chemických látek
-				if($key == "chemical" || preg_match('/newChemical\d+/', $key)){
-					if($value['chemical'] != 0 || $value['chemical'] != '' || $value['new_chemical'] != ''){
-						$chemical = new Application_Model_Chemical($value);
-						$chemical->setChemical($value['chemical']);
-						if(preg_match('/\d+/', $value['chemical']) && $value['chemical'] != 0){
-							$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
-							$label = $listNameOptions[$value['chemical']];
-							$chemical->setChemical($label);
-						}
-						//pokud jsou obě políčka prázdná
-						elseif(($value['chemical'] == 0 || $value['chemical'] == '') && $value['new_chemical'] == ''){
-							continue;
-						}
-						if($value['new_chemical'] != ''){
-							$chemical->setChemical($value['new_chemical']);
-						}
-						$existingChemical = $chemicals->existsChemical($chemical->getChemical());
-						if($existingChemical){
-							$workplaceHasChemical->addRelation($workplaceId, $existingChemical, $value['use_purpose'], $value['usual_amount']);
-							$clientHasChemical->addRelation($this->_clientId, $existingChemical);
-						}
-						else{
-							$chemicalId = $chemicals->addChemical($chemical);
-							$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $value['use_purpose'], $value['usual_amount']);
-							$clientHasChemical->addRelation($this->_clientId, $chemicalId);
-						}
-					}
-				}
-			}
+	    	$this->processCustomElements($form, $formData, $workplaceId);
 			
 			//uložení transakce
 			$adapter->commit();
@@ -648,46 +498,11 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
     		
-    		My_Debug::dump($formData);
+    		$this->processCustomElements($form, $formData, $workplaceId);
+			
+    		//uložení transakce
+			$adapter->commit();
     		
-    		$factors = new Application_Model_DbTable_WorkplaceFactor();
-    		$risks = new Application_Model_DbTable_WorkplaceRisk();
-    		foreach ($formData as $key => $value){
-    			//update FPP
-    			if(preg_match('/factor\d+/', $key)){
-    				if($value['applies'] == "1"){
-    					$factor = new Application_Model_WorkplaceFactor($value);
-    					$factor->setWorkplaceId($workplaceId);
-    					$factors->updateWorkplaceFactor($factor);
-    				}
-    				//mazání FPP
-    				else{
-    					$factors->deleteWorkplaceFactor($value['id_workplace_factor']);
-    				}
-    			}
-    			//nové FPP
-    			if(preg_match('/newFactor\d+/', $key)){
-    				if($value['applies'] == "1"){
-    					$factor = new Application_Model_WorkplaceFactor($value);
-    					$factor->setWorkplaceId($workplaceId);
-    					$factors->addWorkplaceFactor($factor);
-    				}
-    			}
-    			//update rizik
-    			if(preg_match('/risk\d+/', $key)){
-    				if($value['risk'] != ''){
-    					$risk = new Application_Model_WorkplaceRisk($value);
-    					$risk->setWorkplaceId($workplaceId);
-    					$risks->updateWorkplaceRisk($risk);
-    				}
-    			}
-    			//nová rizika
-    			if(preg_match('/newRisk\d+/', $key)){
-    				$risk = new Application_Model_WorkplaceRisk($value);
-    				$risk->setWorkplaceId($workplaceId);
-    				$risks->addWorkplaceRisk($risk);
-    			}
-    		}
     		$subsidiary = $subsidiaries->getSubsidiary($workplaceNew->getSubsidiaryId());
 	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
     		
@@ -870,6 +685,160 @@ class WorkplaceController extends Zend_Controller_Action
 			$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
     	}
 		return $form;
+    }
+    
+    private function processCustomElements($form, $formData, $workplaceId){
+    	$positions = new Application_Model_DbTable_Position();
+    	$works = new Application_Model_DbTable_Work();
+    	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
+    	$chemicals = new Application_Model_DbTable_Chemical();
+    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
+    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
+    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
+    	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
+    	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
+    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
+    	
+		foreach($formData as $key => $value){
+			//vložení pracovních pozic
+			if($key == "position" || preg_match('/newPosition\d+/', $key)){
+				//pokud je vybraná nebo vyplněná nějaká pozice
+				if($value['position'] != 0 || $value['position'] != '' || $value['new_position'] != ''){
+					$position = new Application_Model_Position($value);
+					//pokud je vypsaná v textboxu při editaci
+					$position->setPosition($value['position']);
+					//pokud pozice je vybraná v multiselectu
+					if(preg_match('/\d+/', $value['position']) && $value['position'] != 0){
+						$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
+						$label = $listNameOptions[$value['position']];
+						$position->setPosition($label);
+					}
+					//pokud jsou obě políčka prázdná
+					elseif(($value['position'] == 0 || $value['position'] == '') && $value['new_position'] == ''){
+						continue;
+					}
+					if($value['new_position'] != ''){
+						$position->setPosition($value['new_position']);
+					}
+					$position->setClientId($this->_clientId);
+					
+					$existingPosition = $positions->existsPosition($position->getPosition(), $this->_clientId);
+					if($existingPosition){
+						$workplaceHasPosition->addRelation($workplaceId, $existingPosition);
+					}
+					else{
+						$positionId = $positions->addPosition($position);
+						$workplaceHasPosition->addRelation($workplaceId, $positionId);
+					}
+				}
+			}
+			
+			//vložení pracovních činností
+			if($key == "work" || preg_match('/newWork\d+/', $key)){
+				if($value['work'] != 0 || $value['work'] != '' || $value['new_work'] != ''){
+					$work = new Application_Model_Work($value);
+					$work->setWork($value['work']);
+					if(preg_match('/\d+/', $value['work']) && $value['work'] != 0){
+						$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
+						$label = $listNameOptions[$value['work']];
+						$work->setWork($label);
+					}
+					elseif(($value['work'] == 0 || $value['work'] == '') && $value['new_work'] == ''){
+						continue;
+					}
+					if($value['new_work'] != ''){
+						$work->setWork($value['new_work']);
+					}
+					$existingWork = $works->existsWork($work->getWork());
+					if($existingWork){
+						$workplaceHasWork->addRelation($workplaceId, $existingWork);
+						$clientHasWork->addRelation($this->_clientId, $existingWork);
+					}
+					else{
+						$workId = $works->addWork($work);
+						$workplaceHasWork->addRelation($workplaceId, $workId);
+						$clientHasWork->addRelation($this->_clientId, $workId);
+					}
+				}
+			}
+
+			//vložení technických zařízení
+			if($key == "technical_device" || preg_match('/newTechnicalDevice\d+/', $key)){
+				if($value['sort'] != 0 || $value['sort'] != '' || $value['new_sort'] != '' ||
+					$value['type'] != 0 || $value['type'] != '' || $value['new_type'] != ''){
+					$technicalDevice = new Application_Model_TechnicalDevice($value);
+					$technicalDevice->setSort($value['sort']);
+					$technicalDevice->setType($value['type']);
+					if(preg_match('/\d+/', $value['sort']) && $value['sort'] != 0){
+						$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
+						$label = $listNameOptions[$value['sort']];
+						$technicalDevice->setSort($label);
+					}
+					elseif(($value['sort'] == 0 || $value['sort'] == '') && $value['new_sort'] == ''){
+						$technicalDevice->setSort('');
+					}
+					if($value['new_sort'] != ''){
+						$technicalDevice->setSort($value['new_sort']);
+					}
+					if(preg_match('/\d+/', $value['type']) && $value['type'] != 0){
+						$listNameOptions = $form->getElement($key)->getAttrib('multiOptions2');
+						$label = $listNameOptions[$value['type']];
+						$technicalDevice->setType($label);
+					}
+					elseif(($value['type'] == 0 || $value['type'] == '') && $value['new_type'] == '')
+					{
+						$technicalDevice->setType('');
+					}	
+					if($value['new_type'] != ''){
+						$technicalDevice->setType($value['new_type']);
+					}
+					if($technicalDevice->getSort() == '' && $technicalDevice->getType() == ''){
+						continue;
+					}
+					$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
+					if($existingTechnicalDevice){
+						$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
+						$clientHasTechnicalDevice->addRelation($this->_clientId, $existingTechnicalDevice);
+					}
+					else{
+						$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
+						$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
+						$clientHasTechnicalDevice->addRelation($this->_clientId, $technicalDeviceId);
+					}
+				}
+			}
+			
+			//vložení chemických látek
+			if($key == "chemical" || preg_match('/newChemical\d+/', $key)){
+				if($value['chemical'] != 0 || $value['chemical'] != '' || $value['new_chemical'] != ''){
+					$chemical = new Application_Model_Chemical($value);
+					$chemical->setChemical($value['chemical']);
+					if(preg_match('/\d+/', $value['chemical']) && $value['chemical'] != 0){
+						$listNameOptions = $form->getElement($key)->getAttrib('multiOptions');
+						$label = $listNameOptions[$value['chemical']];
+						$chemical->setChemical($label);
+					}
+					//pokud jsou obě políčka prázdná
+					elseif(($value['chemical'] == 0 || $value['chemical'] == '') && $value['new_chemical'] == ''){
+						continue;
+					}
+					if($value['new_chemical'] != ''){
+						$chemical->setChemical($value['new_chemical']);
+					}
+					$existingChemical = $chemicals->existsChemical($chemical->getChemical());
+					if($existingChemical){
+						$workplaceHasChemical->addRelation($workplaceId, $existingChemical, $value['use_purpose'], $value['usual_amount']);
+						$clientHasChemical->addRelation($this->_clientId, $existingChemical);
+					}
+					else{
+						$chemicalId = $chemicals->addChemical($chemical);
+						$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $value['use_purpose'], $value['usual_amount']);
+						$clientHasChemical->addRelation($this->_clientId, $chemicalId);
+					}
+				}
+			}
+		}
     }
     
 }
