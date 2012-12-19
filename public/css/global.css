@@ -42,6 +42,19 @@
 	background: #e5eCf9;
 }
 
+.button-anchor{
+	border:0px solid #fff;  /* needed for opera */
+	background:transparent;
+	color:#06c;
+	cursor:pointer;
+	padding:0px;
+	display: inline;
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	margin: 0px;
+	text-decoration: underline;
+}
+
 a.workplace-title{
 	font-size: 120%;
 	font-weight: bold;

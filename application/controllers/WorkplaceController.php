@@ -507,9 +507,10 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
     		
     		$this->_helper->FlashMessenger('Pracoviště ' . $workplaceNew->getName() . ' upraveno.');
-    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
     	}
     	catch (Exception $e){
+    		$adapter->rollback();
     		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora.' . $e->getMessage());
     		$defaultNamespace->formData = $formData;
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'workplaceId' => $workplaceId), 'workplaceEdit');
@@ -519,18 +520,19 @@ class WorkplaceController extends Zend_Controller_Action
     public function deleteAction()
     {
         if($this->getRequest()->getMethod() == 'POST'){
-        	$workplaceId = $this->_getParam('select');
+        	$subsidiaryId = $this->_getParam('subsidiaryId');
+        	$workplaceId = $this->_getParam('workplaceId');
         	$workplaces = new Application_Model_DbTable_Workplace();
         	$workplace = $workplaces->getWorkplace($workplaceId);
         	$name = $workplace->getName();
         	$workplaces->deleteWorkplace($workplaceId);
         	
         	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-        	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $workplace->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+        	$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
+	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $name . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $subsidiaryId);
     		
         	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
-        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId), 'clientAdmin');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
         }
         else{
         	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 500);

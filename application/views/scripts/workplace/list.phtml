@@ -40,7 +40,7 @@
 		<div>
 			&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
 			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceEdit');?>">Editovat</a>
-			| <a>Smazat</a>
+			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceDelete') ?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
 			| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
 		</div>
 		<div class="workplace-info hidden">

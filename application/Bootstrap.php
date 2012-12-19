@@ -226,6 +226,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+			'workplaceDelete',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/smazat-pracoviste/:workplaceId',
+											array('controller' => 'workplace',
+													'action' => 'delete'))
+		);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',
