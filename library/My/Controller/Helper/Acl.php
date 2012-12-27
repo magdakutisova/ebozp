@@ -42,6 +42,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, "audit:audit", array("clientlist", "get"));
 		$this->allow($client, "audit:mistake", array("get"));
+		$this->allow($client, "audit:form", array("get"));
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
@@ -50,7 +51,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
-		$this->allow($technician, "audit:audit", array("index", "create", "post", "edit", "put", "get", "techlist"));
+		$this->allow($technician, "audit:audit", array("index", "create", "post", "edit", "put", "get", "techlist", "techsubmit"));
 		$this->allow($technician, "audit:mistake", array("auditlist", "edit.html", "get", "delete", "createalone", "postalone", "edit", "delete.html", "delete", "put.html"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
@@ -58,9 +59,9 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
-		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist"));
-		$this->allow($coordinator, "audit:audit", array("coordlist", "review"));
-		$this->allow($coordinator, "audit:mistake", array("create", "post", "attach"));
+		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist", "techsubmit"));
+		$this->allow($coordinator, "audit:audit", array("coordlist", "review", "coordsubmit"));
+		$this->allow($coordinator, "audit:mistake", array("create", "post", "attach", "submit", "submit.json", "unsubmit", "unsubmit.json"));
 
 		$this->allow($admin);
 		

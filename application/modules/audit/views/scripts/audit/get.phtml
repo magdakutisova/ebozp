@@ -1,6 +1,92 @@
 <h1>Audit</h1>
 <h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
-<?php 
-echo $this->partial("audit/_commonTable.phtml", $this);
-echo $this->partial("audit/_recordTable.phtml", $this);
-?>
+<div id="tabs">
+	<ul>
+		<li><a href="#overview">Přehled auditu</a></li>
+		<li><a href="#forms">Formuláře</a></li>
+		<li><a href="#mistakes">Neshody</a>
+	</ul>
+	<div id="overview">
+	<?php 
+	echo $this->partial("audit/_commonTable.phtml", $this);
+	?>
+	</div>
+	<div id="forms">
+		<table>
+			<thead>
+				<tr>
+					<th>
+					Formulář
+					</th>
+					<th>
+					&nbsp;
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+			// sestaveni parametru
+			$params = array(
+					"clientId" => $this->audit->client_id,
+					"subsidiaryId" => $this->audit->subsidiary_id,
+					"auditId" => $this->audit->id
+			);
+			
+			foreach ($this->forms as $form) {
+				$params["formId"] = $form->id;
+				?>
+				<tr>
+					<td>
+					<?php echo $form->name; ?>
+					</td>
+					<td>
+					<?php 
+					$url = $this->url($params, "audit-form-get");
+					
+					echo "<a href='$url'>Zobrazit</a>";
+					?>
+					</td>
+				</tr>
+				<?php 
+			}
+			?>
+			</tbody>
+		</table>
+	</div>
+	<div id="mistakes">
+		<div class="box">
+			<?php 
+			echo $this->formLabel("display-mistakes", "Zobrazit : ");
+			echo $this->formSelect("display-mistakes", null, null, array("ALL" => "---Vše--", "FORM" => "Neshody z formulářů", "OTHER" => "Ostatní neshody"));
+			?>
+		</div>
+		<div id="mistakes-forms">
+			<h3>Neshody z formulářů</h3>
+			<table>
+				<?php 
+				echo $this->mistakeTable()->header();
+				$actions = array("show-mistake" => "Podrobnosti");
+				
+				foreach ($this->formMistakes as $mistake) {
+					echo $this->mistakeTable()->mistake($mistake, $actions);
+				}
+				?>
+			</table>
+		</div>
+		<div id="mistakes-others">
+			<h3>Neshody z pracovišť</h3>
+			<table>
+				<?php 
+				echo $this->mistakeTable()->header();
+				
+				$this->mistakeTable()->workIndex = $this->workplaceIndex;
+				
+				foreach ($this->otherMistakes as $mistake) {
+					echo $this->mistakeTable()->mistake($mistake, $actions);
+				}
+				?>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/js/audit/audit/get.js"></script>

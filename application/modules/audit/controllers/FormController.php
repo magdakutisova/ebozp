@@ -126,10 +126,49 @@ class Audit_FormController extends Zend_Controller_Action {
 	}
 	
 	/*
-	 * zobrazi formular pro vyplneni
+	 * zobrazi formular pro nahled
 	 */
 	public function getAction() {
+		// nastaveni layoutu
+		$this->view->layout()->setLayout("client-layout");
 		
+		// nacteni formulare
+		$formId = $this->getRequest()->getParam("formId", 0);
+		$tableForms = new Audit_Model_AuditsForms();
+		$form = $tableForms->getById($formId);
+		
+		if (!$form) throw new Zend_Exception("Form id $formId not found");
+		
+		// nacteni skupin a zaznamu
+		$groups = $form->getGroups();
+		$records = $form->getRecords();
+		
+		// indexace zaznamu dle id skupiny
+		$recordIndex = array();
+		
+		foreach ($records as $record) {
+			$groupId = $record->group_id;
+			
+			// kontrola existence slotu
+			if (!isset($recordIndex[$groupId])) {
+				$recordIndex[$groupId] = array();
+			}
+			
+			$recordIndex[$groupId][] = $record;
+		}
+		
+		// nacteni rodicovskych prvku
+		$audit = $form->getAudit();
+		$client = $audit->getClient();
+		$subsidiary = $audit->getSubsidiary();
+		
+		$this->view->form = $form;
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->audit = $audit;
+		
+		$this->view->groups = $groups;
+		$this->view->recordIndex = $recordIndex;
 	}
 	
 	/*

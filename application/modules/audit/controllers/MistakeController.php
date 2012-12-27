@@ -233,6 +233,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nastaveni dat z requestu, pokud neco je k dispozici
 		$form->isValidPartial($_REQUEST);
 		
+		// nacteni podobnych neshod
+		$this->view->similar = $this->_loadSimilarMistakes($mistake);
+		
 		$params = array(
 				"clientId" => $this->_audit->client_id,
 				"auditId" => $this->_audit->id,
@@ -460,6 +463,34 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));
 	}
 	
+	public function submitAction() {
+		// nacteni neshody
+		$mistake = $this->_loadMistakeAndCheck();
+		
+		$mistake->submit_status = Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED;
+		$mistake->save();
+		
+		$this->view->mistake = $mistake;
+	}
+	
+	public function submitJsonAction() {
+		$this->submitAction();
+	}
+	
+	public function unsubmitAction() {
+		// nacteni neshody
+		$mistake = $this->_loadMistakeAndCheck();
+		
+		$mistake->submit_status = Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED;
+		$mistake->save();
+		
+		$this->view->mistake = $mistake;
+	}
+	
+	public function unsubmitJsonAction() {
+		$this->unsubmitAction();
+	}
+	
 	/**
 	 * naplni formular pracovisti a podobne
 	 * 
@@ -494,22 +525,24 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		$this->view->categories = $list;
+		$this->view->subcategories = array();
 		
 		// kontrola kategorie
-		if (is_null($actualBase)) {
-			$this->view->subcategories = array();
-		} else {
+		if (!is_null($actualBase)) {
 			// nacteni zakladni kategorie
 			$base = $tableCategories->fetchRow(array("parent_id is null and name like " . $tableCategories->getAdapter()->quote($actualBase)));
 			
-			$subcategories = $base->getChildren();
-			$subList = array();
-			
-			foreach ($subcategories as $item) {
-				$subList[] = $item->name;
+			// kontrola, jeslti byla kategorie nalezena
+			if ($base) {
+				$subcategories = $base->getChildren();
+				$subList = array();
+				
+				foreach ($subcategories as $item) {
+					$subList[] = $item->name;
+				}
+				
+				$this->view->subcategories = $subList;
 			}
-			
-			$this->view->subcategories = $subList;
 		}
 	}
 	
@@ -539,5 +572,59 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (!$subcategoryRow) {
 			$tableCategories->createCategory($subcategory, $categoryRow);
 		}
+	}
+	
+	/**
+	 * nacteni neshody podobne dane neshode
+	 * 
+	 * @param Audit_Model_Row_AuditRecordMistake $mistake
+	 */
+	public function _loadSimilarMistakes(Audit_Model_Row_AuditRecordMistake $mistake) {
+		// ziskani tabulky
+		$tableMistakes = $mistake->getTable();
+		
+		// sestaveni dotazu pro where
+		$where = array(
+				"client_id = " . $mistake->client_id,
+				"audit_id != " . $mistake->audit_id,
+				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED
+		);
+		
+		// doplneni posledni podminky dle povahy neshody
+		if ($mistake->workplace_id) {
+			$where[] = "workplace_id = " . $mistake->workplace_id;
+		} else {
+			// vyhodnoceni nullovosti id itemu z dotazniku
+			if ($mistake->questionary_item_id) {
+				$where[] = "questionary_item_id = " . $mistake->questionary_item_id;
+			} else {
+				$where[] = "questionary_item_id = 0";
+			}
+		}
+		
+		return $tableMistakes->fetchAll($where, "created_at");
+	}
+	
+	/**
+	 * jednoucelova funkce pro nacteni a overeni nehsody
+	 * 
+	 * @return Audit_Model_Row_AuditRecordMistake
+	 */
+	private function _loadMistakeAndCheck() {
+		// nacteni neshody
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
+		
+		$mistake = $tableMistakes->getById($mistakeId);
+		
+		if (!$mistake) throw new Zend_Exception("Mistake #$mistakeId has not been found");
+		
+		// kontrola prislusnosti k auditu
+		if ($mistake->audit_id != $this->_audit->id) throw new Zend_Exception("Invalid combination of audit and mistake");
+		
+		// kontrola pristupnosti k akci
+		if ($this->_audit->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid user");
+		
+		return $mistake;
 	}
 }

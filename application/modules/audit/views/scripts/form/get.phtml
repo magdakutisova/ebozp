@@ -1,0 +1,98 @@
+<h1>Formulář <?php echo $this->form->name; ?></h1>
+<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<?php
+// vypsani navigace
+$naviSelect = array("ALL" => "---Vše---");
+
+foreach ($this->groups as $group) {
+	$naviSelect["group_" . $group->id] = $group->name;
+}
+
+// sestaveni zpatecni url
+$params = array(
+		"clientId" => $this->audit->client_id,
+		"subsidiaryId" => $this->audit->subsidiary_id,
+		"auditId" => $this->audit->id
+);
+
+$url = $this->url($params, "audit-get");
+?>
+<div class="box">
+	<?php echo "<a href='$url'>Zpět na audit</a>"; ?>
+</div>
+<div class="box">
+	<?php 
+	echo $this->formLabel("group-navi", "Skupina otázek : ");
+	echo $this->formSelect("group-navi", "all", null, $naviSelect);
+	?>
+	&nbsp;&nbsp;|&nbsp;&nbsp; 
+	<?php 
+	echo $this->formLabel("filter-navi", "Zobrazovat : ");
+	echo $this->formSelect("filter-navi", 0, null, array("Vše", "Ne", "Ano", "Netýká se"));
+	?>
+</div>
+<!-- VYPIS POLOZEK FORMULARE -->
+<div id="group-contents">
+	<?php 
+	foreach ($this->groups as $group) {
+		?>
+	<div id="<?php echo "group_" . $group->id; ?>">
+		<div class="box"><?php echo $group->name; ?></div>
+		<table>
+			<thead>
+				<tr>
+					<th>
+					Otázka
+					</th>
+					<th width="30px">
+					Váha
+					</th>
+					<th width="40px">
+					Odpověď
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+			$records = $this->recordIndex[$group->id];
+			
+			foreach ($records as $record) {
+				// vyhodnocení odpovědí
+				$answer = "NT";
+				$class = "auditformnt";
+				
+				switch ($record->score) {
+					case Audit_Model_AuditsRecords::SCORE_A:
+						$answer = "Ano";
+						$class = "auditforma";
+						break;
+						
+					case Audit_Model_AuditsRecords::SCORE_N:
+						$answer = "Ne";
+						$class = "auditformn";
+						break;
+				}
+				
+				?>
+				<tr class="<?php echo $class; ?>">
+					<td>
+					<?php echo $record->question; ?>
+					</td>
+					<td>
+					<?php echo $record->weight; ?>
+					</td>
+					<td>
+					<?php echo $answer; ?>
+					</td>
+				</tr>
+				<?php 
+			}
+			?>
+			</tbody>
+		</table>
+	</div>
+		<?php 
+	}
+	?>
+</div>
+<script type="text/javascript" src="/js/audit/form/get.js"></script>

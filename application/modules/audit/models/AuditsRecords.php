@@ -34,6 +34,12 @@ class Audit_Model_AuditsRecords extends Zend_Db_Table_Abstract {
 					"columns" => "group_id",
 					"refTableClass" => "Audit_Model_AuditsRecordsGroups",
 					"refColumns" => "id"
+			),
+			
+			"form" => array(
+					"columns" => "audit_form_id",
+					"refTableClass" => "Audit_Model_AuditsForms",
+					"refColumns" => "id"
 			)
 	);
 	

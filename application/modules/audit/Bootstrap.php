@@ -17,6 +17,28 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// odeslani auditu technikem
+		$router->addRoute(
+				"audit-technic-submit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/technic/submit",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "techsubmit"
+						))
+		);
+		
+		// odeslani auditu koordinatorem
+		$router->addRoute(
+				"audit-coordinator-submit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/coordinator/submit",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "coordsubmit"		
+						))
+		);
+		
 		// route pro update auditu
 		$router->addRoute(
 				"audit-put",
@@ -59,6 +81,17 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "audit",
 								"controller" => "form",
 								"action" => "instance"
+						))
+		);
+		
+		// zobrazeni formulare
+		$router->addRoute(
+				"audit-form-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/form/:formId/get",
+						array(
+								"module" => "audit",
+								"controller" => "form",
+								"action" => "get"
 						))
 		);
 		
@@ -252,6 +285,28 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array("module" => "audit",
 								"controller" => "mistake",
 								"action" => "delete.html"))
+		);
+		
+		// potvrzeni neshody
+		$router->addRoute(
+				"audit-mistake-submit-json",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/mistake/:mistakeId/submit.json",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "submit.json"
+						))
+		);
+		
+		// odpotvrzeni neshody
+		$router->addRoute(
+				"audit-mistake-unsubmit-json",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/mistake/:mistakeId/unsubmit.json",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "unsubmit.json"
+						))
 		);
 	}
 }

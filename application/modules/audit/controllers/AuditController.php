@@ -74,13 +74,14 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// podminky pro nacteni otevrenych a uzavrenych auditu
 		$open = array(
 				"coordinator_id = " . $this->_user->getIdUser(),
-				"coordinator_confirmed_at = 0"
+				"coordinator_confirmed_at = 0",
+				"auditor_confirmed_at > 0"
 		);
 	
 		// nactnei uzavrenych auditu
 		$closed = array(
 				"coordinator_id = " . $this->_user->getIdUser(),
-				"coordinator_confirmed_at > 0"
+				"coordinator_confirmed_at > 0 OR auditor_confirmed_at = 0"
 		);
 	
 		$this->_loadList($open, $closed);
@@ -89,6 +90,48 @@ class Audit_AuditController extends Zend_Controller_Action {
 	
 		$this->view->openRoute = "audit-review";
 		$this->view->closedRoute = "audit-get";
+	}
+	
+	/*
+	 * odeslani auditu ze strany koordinatora
+	 */
+	public function coordsubmitAction() {
+		// kontrola auditu a opravneni k pristupu
+		if (!$this->_audit) throw new Zend_Exception("Audit #$this->_auditId is not found");
+		
+		if ($this->_audit->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("You are not coordinator for this audit");
+		
+		// parametry routy
+		$params = array(
+				"clientId" => $this->_audit->client_id,
+				"subsidiaryId" => $this->_audit->subsidiary_id,
+				"auditId" => $this->_audit->id
+		);
+		
+		// kontrola dat
+		$form = new Audit_Form_AuditAuditorSubmit();
+		if (!$form->isValid($_REQUEST)) {
+			$this->_forward("review");
+			return;
+		}
+		
+		// odstraneni neodeslanych neshod
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		
+		// vygenerovani podminky smazani
+		$where = array(
+				"audit_id = " . $this->_audit->id,
+				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " or submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNUSED . ")"
+		);
+		
+		$tableMistakes->delete($where);
+		
+		// oznaceni auditu jako odeslaneho
+		$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
+		$this->_audit->save();
+		
+		// presmerovani na get
+		$this->_redirect($this->view->url($params, "audit-get"));
 	}
 	
 	public function createAction() {
@@ -133,8 +176,15 @@ class Audit_AuditController extends Zend_Controller_Action {
 	}
 	
 	public function editAction() {
+		$this->view->layout()->setLayout("client-layout");
+		
 		// kontrola dat
 		if (!$this->_audit) throw new Zend_Exception("Audit not found");
+		
+		// kotrnola pristupu
+		$zeroDate = "0000-00-00 00:00:00";
+		
+		if ($this->_audit->auditor_confirmed_at != $zeroDate) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
 		
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
@@ -188,6 +238,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		foreach ($workplaces as $item) {
 			$workIndex[$item->id_workplace] = $item;
 		}
+		
+		// formular uzavreni auditu
+		$submitForm = new Audit_Form_AuditAuditorSubmit();
+		$submitForm->setAction($this->view->url($params, "audit-technic-submit"));
+		$submitForm->populate($_REQUEST);
 
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
@@ -197,6 +252,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->audit = $this->_audit;
 		$this->view->mistakes = $mistakes;
 		$this->view->workIndex = $workIndex;
+		$this->view->submitForm = $submitForm;
 	}
 	
 	public function fillAction() {
@@ -237,19 +293,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$audit = $this->_audit;
 		
-		// nacteni zaznamu a skupin a indexace zaznamu dle skupin
-		$groups = $audit->getGroups();
-		
-		// nacteni zaznamu a indexace dle skupin
-		$records = $audit->getRecords();
-		
-		$recordIndex = array();
-		
-		// vytvoreni mist dle skupin
-		foreach ($groups as $group) {
-			$recordIndex[$group->id] = array();
-		}
-		
 		// nacteni doprovodnych informaci
 		$responsibiles = $audit->getResponsibiles();
 		$auditor = $audit->getAuditor();
@@ -257,21 +300,51 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$coordinator = $audit->getCoordinator();
 		$subsidiary = $audit->getSubsidiary();
 		
-		// zapis zaznamu
-		foreach ($records as $record) {
-			$recordIndex[$record->group_id][] = $record;
-		}
+		// nacteni formularu
+		$forms = $audit->getForms();
 		
 		$this->view->layout()->setLayout("client-layout");
 		
+		// nacteni neshod
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableRecords = new Audit_Model_AuditsRecords();
+		$nameRecords = $tableRecords->info("name");
+		
+		// sestaveni podminek
+		$where = array(
+				"id in (select `mistake_id` from `$nameRecords` where `audit_id` = $this->_auditId)",
+				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED
+		);
+		
+		// nacteni neshod z formularu
+		$formMistakes = $tableMistakes->fetchAll($where);
+		
+		// nacteni neshod mimo formulare
+		$otherMistakes = $tableMistakes->fetchAll("audit_id = " . $this->_audit->id . " and workplace_id is not null and submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED);
+		
+		// nacteni pracovist
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_auditId, "name");
+		
+		// indexace pracovist dle ud
+		$workplaceIndex = array();
+		
+		foreach ($workplaces as $item) {
+			$workplaceIndex[$item->id_workplace] = $item;
+		}
+		
 		$this->view->audit = $this->_audit;
-		$this->view->groups = $groups;
-		$this->view->recordIndex = $recordIndex;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->client = $client;
 		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
 		$this->view->responsibiles = $responsibiles;
+		$this->view->forms = $forms;
+		
+		// zapis dat neshod
+		$this->view->workplaceIndex = $workplaceIndex;
+		$this->view->formMistakes = $formMistakes;
+		$this->view->otherMistakes = $otherMistakes;
 	}
 	
 	public function indexAction() {
@@ -393,7 +466,120 @@ class Audit_AuditController extends Zend_Controller_Action {
 	}
 	
 	public function reviewAction() {
-		$this->getAction();
+		// kontrola auditu
+		if (!$this->_audit) throw new Zend_Exception("Audit #" . $this->_auditId . " has not been found");
+		
+		$audit = $this->_audit;
+		
+		// nacteni doprovodnych informaci
+		$responsibiles = $audit->getResponsibiles();
+		$auditor = $audit->getAuditor();
+		$client = $audit->getClient();
+		$coordinator = $audit->getCoordinator();
+		$subsidiary = $audit->getSubsidiary();
+		
+		// nacteni formularu
+		$forms = $audit->getForms();
+		
+		$this->view->layout()->setLayout("client-layout");
+		
+		// nacteni neshod
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableRecords = new Audit_Model_AuditsRecords();
+		$nameRecords = $tableRecords->info("name");
+		
+		// sestaveni podminek
+		$where = array(
+				"(audit_id = " . $this->_audit->id . " or id in (select mistake_id from $nameRecords where audit_id = " . $this->_audit->id . "))",
+				"workplace_id is null",
+				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " OR submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED . ")"
+		);
+		
+		// nacteni neshod z formularu
+		$formMistakes = $tableMistakes->fetchAll($where);
+		
+		// nacteni neshod mimo formulare
+		$where = array(
+				"(audit_id = " . $this->_audit->id . " or id in (select mistake_id from $nameRecords where audit_id = " . $this->_audit->id . "))",
+				"workplace_id is not null",
+				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " OR submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED . ")"
+		);
+		
+		$otherMistakes = $tableMistakes->fetchAll($where);
+		
+		// nacteni pracovist
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_auditId, "name");
+		
+		// indexace pracovist dle ud
+		$workplaceIndex = array();
+		
+		foreach ($workplaces as $item) {
+			$workplaceIndex[$item->id_workplace] = $item;
+		}
+		
+		// vytvoreni formulare pro uplne uzavreni auditu
+		$submitForm = new Audit_Form_AuditAuditorSubmit();
+		
+		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id, "auditId" => $this->_audit->id), "audit-coordinator-submit");
+		$submitForm->setAction($url);
+		
+		$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
+		
+		$this->view->audit = $this->_audit;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->client = $client;
+		$this->view->coordinator = $coordinator;
+		$this->view->auditor = $auditor;
+		$this->view->responsibiles = $responsibiles;
+		$this->view->forms = $forms;
+		$this->view->submitForm = $submitForm;
+		
+		// zapis dat neshod
+		$this->view->workplaceIndex = $workplaceIndex;
+		$this->view->formMistakes = $formMistakes;
+		$this->view->otherMistakes = $otherMistakes;
+	}
+	
+	/**
+	 * odeslani auditu ze strany technika
+	 */
+	public function techsubmitAction() {
+		// kontrola auditu
+		if (!$this->_audit) throw new Zend_Exception("Audit not found");
+		
+		if ($this->_audit->auditor_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid auditor");
+		
+		// parametry routy
+		$params = array(
+				"clientId" => $this->_audit->client_id,
+				"subsidiaryId" => $this->_audit->subsidiary_id,
+				"auditId" => $this->_audit->id
+		);
+		
+		// kontrola dat
+		$form = new Audit_Form_AuditAuditorSubmit();
+		if (!$form->isValid($_REQUEST)) {
+			$this->_forward("edit");
+			return;
+		}
+		
+		// odstraneni nepouzitych neshod
+		$where = array(
+				"audit_id = " . $this->_audit->id,
+				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNUSED
+		);
+		
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableMistakes->delete($where);
+		
+		// zapis auditu jako uzavreneho ze strany technika
+		$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
+		$this->_audit->save();
+		
+		
+		// presmerovani na cteni auditu
+		$this->_redirect($this->view->url($params, "audit-get"));
 	}
 	
 	/**
