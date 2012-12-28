@@ -233,6 +233,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+				'positionNew',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/nova-pracovni-pozice',
+						array('controller' => 'position',
+								'action' => 'new'))
+				);
+		
+		$router->addRoute(
+				'positionList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-pracovnich-pozic/:filter',
+						array('controller' => 'position',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',

@@ -22,6 +22,12 @@ class Application_Model_DbTable_EnvironmentFactor extends Zend_Db_Table_Abstract
 		return new Application_Model_EnvironmentFactor($environmentFactor);
 	}
 	
+	public function addEnvironmentFactor(Application_Model_EnvironmentFactor $environmentFactor){
+		$data = $environmentFactor->toArray();
+		$environmentFactorId = $this->insert($data);
+		return $environmentFactorId;
+	}
+	
 	public function updateEnvironmentFactor(Application_Model_EnvironmentFactor $environmentFactor){
 		$data = $environmentFactor->toArray();
 		$this->update($data, 'id_environment_factor = ' . $environmentFactor->getIdEnvironmentFactor());

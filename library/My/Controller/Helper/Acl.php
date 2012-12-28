@@ -12,6 +12,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('subs'));
 		$this->add(new Zend_Acl_Resource('private'));
 		$this->add(new Zend_Acl_Resource('workplace'));
+		$this->add(new Zend_Acl_Resource('position'));
 		$this->add(new Zend_Acl_Resource('print'));
 		
 		/*
