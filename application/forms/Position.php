@@ -32,6 +32,17 @@ class Application_Form_Position extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$elementDecoratorColspanSeparator = array(
+				'ViewHelper',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 4, 'class' => 'separator')),
+				array('Description', array('tag' => 'td')),
+				array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
+				array('Label', array()),
+				array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 1, 'class' => 'separator')),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+		);
+		
 		$this->setDecorators(array(
 				'FormElements',
 				array('HtmlTag', array('tag' => 'table')),
@@ -65,6 +76,23 @@ class Application_Form_Position extends Zend_Form{
        			'description' => $questionMarkStart . 'Uveďte název uvedený v pracovní smlouvě' . $questionMarkEnd,
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
+       	
+       	//zaměstnanci
+       	$this->addElement('hidden', 'id_employee', array(
+       			'value' => 5,
+       			'order' => 1002,
+       	));
+       	
+       	$this->addElement('hidden', 'employees', array(
+       			'label' => 'Seznam zaměstnanců:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 3,
+       			));
+       	
+       	$this->addElement('employee', 'employee', array(
+       			'order' => 4,
+       			'validators' => array(new My_Validate_Employee()),
+       			));
 	}
-	
+		
 }

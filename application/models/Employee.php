@@ -2,7 +2,7 @@
 class Application_Model_Employee{
 	
 	private $idEmployee;
-	private $name;
+	private $firstName;
 	private $surname;
 	private $title1;
 	private $title2;
@@ -12,6 +12,7 @@ class Application_Model_Employee{
 	private $workNumber;
 	private $email;
 	private $phone;
+	private $note;
 	private $private;
 	
 	public function __construct($options = array()){
@@ -28,10 +29,10 @@ class Application_Model_Employee{
 	}
 
 	/**
-	 * @return the $name
+	 * @return the $firstName
 	 */
-	public function getName() {
-		return $this->name;
+	public function getFirstName() {
+		return $this->firstName;
 	}
 
 	/**
@@ -96,6 +97,10 @@ class Application_Model_Employee{
 	public function getPhone() {
 		return $this->phone;
 	}
+	
+	public function getNote(){
+		return $this->note;
+	}
 
 	/**
 	 * @return the $private
@@ -112,10 +117,10 @@ class Application_Model_Employee{
 	}
 
 	/**
-	 * @param $name the $name to set
+	 * @param $firstName the $firstName to set
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setFirstName($firstName) {
+		$this->firstName = $firstName;
 	}
 
 	/**
@@ -180,6 +185,10 @@ class Application_Model_Employee{
 	public function setPhone($phone) {
 		$this->phone = $phone;
 	}
+	
+	public function setNote($note){
+		$this->note = $note;
+	}
 
 	/**
 	 * @param $private the $private to set
@@ -190,7 +199,7 @@ class Application_Model_Employee{
 
 	public function populate(array $data){
 		$this->idEmployee = isset($data['id_employee']) ? $data['id_employee'] : null;
-		$this->name = isset($data['name']) ? $data['name'] : null;
+		$this->firstName = isset($data['first_name']) ? $data['first_name'] : null;
 		$this->surname = isset($data['surname']) ? $data['surname'] : null;
 		$this->title1 = isset($data['title_1']) ? $data['title_1'] : null;
 		$this->title2 = isset($data['title_2']) ? $data['title_2'] : null;
@@ -200,6 +209,7 @@ class Application_Model_Employee{
 		$this->workNumber = isset($data['work_number']) ? $data['work_number'] : null;
 		$this->email = isset($data['email']) ? $data['email'] : null;
 		$this->phone = isset($data['phone']) ? $data['phone'] : null;
+		$this->note = isset($data['note']) ? $data['note'] :  null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
 
 		return $this;
@@ -210,7 +220,7 @@ class Application_Model_Employee{
 		if(!$toUpdate){
 			$data['id_employee'] = $this->idEmployee;
 		}
-		$data['name'] = $this->name;
+		$data['first_name'] = $this->firstName;
 		$data['surname'] = $this->surname;
 		$data['title_1'] = $this->title1;
 		$data['title_2'] = $this->title2;
@@ -220,6 +230,7 @@ class Application_Model_Employee{
 		$data['work_number'] = $this->workNumber;
 		$data['email'] = $this->email;
 		$data['phone'] = $this->phone;
+		$data['note'] = $this->note;
 		$data['private'] = $this->private;
 		
 		return $data;
