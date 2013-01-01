@@ -12,6 +12,18 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 		else{
 			$multiOptions = null;
 		}
+		if(isset($attribs['multiOptions2'])){
+			$multiOptions2 = $attribs['multiOptions2'];
+		}
+		else{
+			$multiOptions2 = null;
+		}
+		if(isset($attribs['multiOptions3'])){
+			$multiOptions3 = $attribs['multiOptions3'];
+		}
+		else{
+			$multiOptions3 = null;
+		}
 		
 		if($value){
 			$idEmployee = $value['id_employee'];
@@ -45,10 +57,10 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 		$this->html .= '<td>' . $helperText->formText($name . '[first_name]', $firstName) . '</td>';
 		$this->html .= '<td>' . $helperText->formText($name . '[surname]', $surname) . '</td>';
 		$this->html .= '<td>' . $helperText->formText($name . '[title_2]', $title2) . '</td>';
-		$this->html .= '<td>' . $helperText->formText($name . '[manager]', $manager) . '</td>';
-		$this->html .= '<td>' . $helperText->formText($name . '[sex]', $sex) . '</td>';
-		$this->html .= '<td>' . $helperText->formText($name . '[year_of_birth]', $yearOfBirth) . '</td>';
-		$this->html .= '</td>';
+		$this->html .= '<td>' . $helperSelect->formSelect($name . '[manager]', $manager, null, $multiOptions) . '</td>';
+		$this->html .= '<td>' . $helperSelect->formSelect($name . '[sex]', $sex, null, $multiOptions2) . '</td>';
+		$this->html .= '<td>' . $helperSelect->formSelect($name . '[year_of_birth]', $yearOfBirth, null, $multiOptions3) . '</td>';
+		$this->html .= '</td></tr>';
 		
 		return $this->html;
 	}

@@ -137,6 +137,10 @@ input[id*='factor_'], input[id*='risk_'] {width: 300px;}
 td[id*='-errors']						 {color: red; font-weight: bold;}
 form#workplace select					 {min-width: 200px;}
 
+/*Formular pracovni pozice*/
+input[id*='title']	{width: 50px;}
+input[id*='first_name'], input[id*='surname']	{width: 150px;}
+
 /*
  * CSS - PETR JINDRA
  */

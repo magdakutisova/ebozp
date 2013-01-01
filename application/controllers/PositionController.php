@@ -7,6 +7,9 @@ class PositionController extends Zend_Controller_Action{
     private $_acl = null;
     private $_user = null;
     private $_username = null;
+    private $_yesNoList = array();
+    private $_sexList = array();
+    private $_yearOfBirthList = array();
     
     public function init(){
     	//globální nastavení view
@@ -21,6 +24,19 @@ class PositionController extends Zend_Controller_Action{
     	$this->_clientId = $this->getRequest()->getParam('clientId');
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
     	$this->_headquarters = $subsidiaries->getHeadquarters($this->_clientId);
+    	
+    	//získání seznamu ano/ne
+    	$this->_yesNoList[0] = 'Ne';
+    	$this->_yesNoList[1] = 'Ano';
+    	
+    	//získání seznamu pohlaví
+    	$this->_sexList[0] = 'Muž';
+    	$this->_sexList[1] = 'Žena';
+    	
+    	//získání seznamu roků narození
+    	for ($i=1920; $i<=date('Y'); $i++){
+    		$this->_yearOfBirthList[$i] = $i;
+    	}
     	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -51,9 +67,49 @@ class PositionController extends Zend_Controller_Action{
     	}
     	$form->subsidiary_id->setValue($subsidiaryId);
     	
+    	$form = $this->fillMultiselects($form);
+    	
+    	$form->save->setLabel('Uložit');
+    	
+    	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList);
+    	
+    	//pokud formulář není odeslán, předáme formulář do view
+    	if(!$this->getRequest()->isPost()){
+    		$this->view->form = $form;
+    	
+    		// naplnění formuláře daty ze session, pokud existují
+    		if (isset ( $defaultNamespace->formData )) {
+    			$form->populate ( $defaultNamespace->formData );
+    			unset ( $defaultNamespace->formData );
+    		}
+    		return;
+    	}
+    	 
+    	//když není platný, vrátíme ho do view
+    	if(!$form->isValid($this->getRequest()->getPost())){
+    		$form->populate($this->getRequest()->getPost());
+    		$this->view->form = $form;
+    		return;
+    	}
+    	
     	//TODO odtud dále
     	
     	$this->view->form = $form;
+    }
+    
+    public function newemployeeAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newemployee', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_employee', null);
+    	
+    	$element = new My_Form_Element_Employee("newEmployee$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_yesNoList);
+    	$element->setAttrib('multiOptions2', $this->_sexList);
+    	$element->setAttrib('multiOptions3', $this->_yearOfBirthList);
+    	
+    	$this->view->field = $element->__toString();
     }
     
     public function listAction(){
@@ -138,4 +194,14 @@ class PositionController extends Zend_Controller_Action{
     	return $form;
     }
 	
+    private function fillMultiselects($form){
+    	if($form->employee != null){
+    		$form->employee->setAttrib('multiOptions', $this->_yesNoList);
+    		$form->employee->setAttrib('multiOptions2', $this->_sexList);
+    		$form->employee->setAttrib('multiOptions3', $this->_yearOfBirthList);
+    	}
+    	
+    	return $form;
+    }
+    
 }

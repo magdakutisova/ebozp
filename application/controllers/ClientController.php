@@ -119,7 +119,7 @@ class ClientController extends Zend_Controller_Action
     	
     	$this->view->subsidiaryId = $subsidiary->getIdSubsidiary();
     	  	
-		if (count($formContent) != 0) {
+		if ($formContent != 0) {
 			$form = new Application_Form_Select ();
 			$form->select->setMultiOptions ( $formContent );
 			$form->select->setLabel('Vyberte pobočku:');
@@ -135,7 +135,7 @@ class ClientController extends Zend_Controller_Action
 			}
 		}
     	else{
-			$form = "<p>Klient nemá žádné pobočky nebo k nim nemáte přístup.</p>";
+			$form = "<p>Klient má jen jednu pobočku nebo k ostatním pobočkám nemáte přístup.</p>";
 			$this->view->form = $form;
 		}
 		

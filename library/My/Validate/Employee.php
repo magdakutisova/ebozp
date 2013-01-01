@@ -11,8 +11,10 @@ class My_Validate_Employee extends Zend_Validate_Abstract{
 	 */
 	public function isValid($value) {
 		if(($value['first_name'] != "" && $value['surname'] == "") || ($value['surname'] != "" && $value['first_name'] == "")){
-			
+			$this->_error(self::INCOMPLETE_NAME);
+			return false;
 		}
+		return true;
 	}
 
 	

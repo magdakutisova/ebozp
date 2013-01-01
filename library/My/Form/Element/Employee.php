@@ -20,7 +20,7 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 			$this->addDecorator('ViewHelper')
 			->addDecorator('ErrorsHtmlTag', array(
 					'tag' => 'td',
-					'colspan' => 5,
+					'colspan' => 7,
 			));
 		}
 	}
