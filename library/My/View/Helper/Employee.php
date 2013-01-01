@@ -24,6 +24,12 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 		else{
 			$multiOptions3 = null;
 		}
+		if(isset($attribs['canViewPrivate'])){
+			$canViewPrivate = $attribs['canViewPrivate'];
+		}
+		else{
+			$canViewPrivate = false;
+		}
 		
 		if($value){
 			$idEmployee = $value['id_employee'];
@@ -34,6 +40,8 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 			$manager = $value['manager'];
 			$sex = $value['sex'];
 			$yearOfBirth = $value['year_of_birth'];
+			$note = $value['note'];
+			$private = $value['private'];
 		}
 		
 		$helperSelect = new Zend_View_Helper_FormSelect();
@@ -60,7 +68,15 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 		$this->html .= '<td>' . $helperSelect->formSelect($name . '[manager]', $manager, null, $multiOptions) . '</td>';
 		$this->html .= '<td>' . $helperSelect->formSelect($name . '[sex]', $sex, null, $multiOptions2) . '</td>';
 		$this->html .= '<td>' . $helperSelect->formSelect($name . '[year_of_birth]', $yearOfBirth, null, $multiOptions3) . '</td>';
-		$this->html .= '</td></tr>';
+		$this->html .= '</td></tr><tr>';
+		$this->html .= '<td colspan="2"><label for="' . $name . '[note]">Poznámka k zaměstnanci</label>' . $helperText->formText($name . '[note]', $note) . '</td>';
+		if($canViewPrivate){
+			$this->html .= '<td colspan="4"><label for="' . $name . '[private]">Soukromá poznámka k zaměstnanci</label>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
+		}
+		else{
+			$this->html .= '<td colspan="5"></td>';
+		}
+		$this->html .= '</tr>';
 		
 		return $this->html;
 	}

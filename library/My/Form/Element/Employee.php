@@ -10,6 +10,8 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 	protected $_manager;
 	protected $_sex;
 	protected $_yearOfBirth;
+	protected $_note;
+	protected $_private;
 	
 	public function loadDefaultDecorators(){
 		if ($this->loadDefaultDecoratorsIsDisabled()){
@@ -57,6 +59,14 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 		return $this->_yearOfBirth;
 	}
 	
+	public function getNote(){
+		return $this->_note;
+	}
+	
+	public function getPrivate(){
+		return $this->_private;
+	}
+	
 	public function setIdEmployee($_idEmployee){
 		$this->_idEmployee = $_idEmployee;
 	}
@@ -89,9 +99,18 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 		$this->_yearOfBirth = $_yearOfBirth;
 	}
 	
+	public function setNote($_note){
+		$this->_note = $_note;
+	}
+	
+	public function setPrivate($_private){
+		$this->_private = $_private;
+	}
+	
 	public function setValue($values){
 		if(isset($values['id_employee']) && isset($values['title_1']) && isset($values['first_name']) && isset($values['surname'])
-				&& isset($values['title_2']) && isset($values['manager']) && isset($values['sex']) && isset($values['year_of_birth'])){
+				&& isset($values['title_2']) && isset($values['manager']) && isset($values['sex']) && isset($values['year_of_birth'])
+				&& isset($values['note']) && isset($values['private'])){
 			$this->setIdEmployee($values['id_employee']);
 			$this->setTitle1($values['title_1']);
 			$this->setFirstName($values['first_name']);
@@ -100,6 +119,8 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 			$this->setManager($values['manager']);
 			$this->setSex($values['sex']);
 			$this->setYearOfBirth($values['year_of_birth']);
+			$this->setNote($values['note']);
+			$this->setPrivate($values['private']);
 		}
 		return $this;
 	}
@@ -114,6 +135,8 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 		$values['manager'] = $this->getManager();
 		$values['sex'] = $this->getSex();
 		$values['year_of_birth'] = $this->getYearOfBirth();
+		$values['note'] = $this->getNote();
+		$values['private'] = $this->getPrivate();
 		return $values;
 	}
 }

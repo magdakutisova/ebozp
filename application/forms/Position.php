@@ -84,20 +84,43 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
        	
+       	$this->addElement('textarea', 'note', array(
+       			'label' => 'Poznámka',
+       			'required' => false,
+       			'filters' => array('StringTrim', 'StripTags'),
+       			'decorators' => $elementDecoratorColspan,
+       			'order' => 3,
+       	));
+       	
+       	$username = Zend_Auth::getInstance()->getIdentity()->username;
+       	$users = new Application_Model_DbTable_User();
+       	$user = $users->getByUsername($username);
+       	$acl = new My_Controller_Helper_Acl();
+       	
+       	if($acl->isAllowed($user, 'private')){
+       		$this->addElement('textarea', 'private', array(
+       				'label' => 'Soukromá poznámka',
+       				'required' => false,
+       				'filters' => array('StringTrim', 'StripTags'),
+       				'decorators' => $elementDecoratorColspan,
+       				'order' => 4,
+       		));
+       	}
+       	
        	//zaměstnanci
        	$this->addElement('hidden', 'id_employee', array(
-       			'value' => 5,
+       			'value' => 7,
        			'order' => 1002,
        	));
        	
        	$this->addElement('hidden', 'employees', array(
        			'label' => 'Seznam zaměstnanců:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 3,
+       			'order' => 5,
        			));
        	
        	$this->addElement('employee', 'employee', array(
-       			'order' => 4,
+       			'order' => 6,
        			'validators' => array(new My_Validate_Employee()),
        			));
        	
@@ -113,7 +136,7 @@ class Application_Form_Position extends Zend_Form{
        	));
 	}
 	
-	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList){
+	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		
 		foreach($newEmployees as $fieldName){
@@ -125,6 +148,7 @@ class Application_Form_Position extends Zend_Form{
 					'multiOptions' => $yesNoList,
 					'multiOptions2' => $sexList,
 					'multiOptions3' => $yearOfBirthList,
+					'canViewPrivate' => $canViewPrivate,
 					));
 			$this->addElement($newEmployee);
 		}

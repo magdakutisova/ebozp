@@ -10,6 +10,7 @@ class PositionController extends Zend_Controller_Action{
     private $_yesNoList = array();
     private $_sexList = array();
     private $_yearOfBirthList = array();
+    private $_canViewPrivate = false;
     
     public function init(){
     	//globální nastavení view
@@ -44,7 +45,8 @@ class PositionController extends Zend_Controller_Action{
     	$this->_user = $users->getByUsername($this->_username);
     	
     	//soukromá poznámka
-    	$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
+    	$this->_canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
+    	$this->view->canViewPrivate = $this->_canViewPrivate;
     }
     
     public function newAction(){
@@ -71,7 +73,7 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form->save->setLabel('Uložit');
     	
-    	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList);
+    	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList, $this->_canViewPrivate);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -108,6 +110,7 @@ class PositionController extends Zend_Controller_Action{
     	$element->setAttrib('multiOptions', $this->_yesNoList);
     	$element->setAttrib('multiOptions2', $this->_sexList);
     	$element->setAttrib('multiOptions3', $this->_yearOfBirthList);
+    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	
     	$this->view->field = $element->__toString();
     }
@@ -199,6 +202,7 @@ class PositionController extends Zend_Controller_Action{
     		$form->employee->setAttrib('multiOptions', $this->_yesNoList);
     		$form->employee->setAttrib('multiOptions2', $this->_sexList);
     		$form->employee->setAttrib('multiOptions3', $this->_yearOfBirthList);
+    		$form->employee->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	}
     	
     	return $form;
