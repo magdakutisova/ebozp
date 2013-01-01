@@ -5,3 +5,4 @@
 .buildpath
 library/Zend
 *.log
+/logs
