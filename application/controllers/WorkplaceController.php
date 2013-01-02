@@ -50,20 +50,6 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
-
-		//do new může jen ten, kdo má přístup k centrále (to jsme se domluvili jednou po telefonu, kdyby
-		//byl problém
-		if(!$this->_acl->isAllowed($this->_user, $this->_headquarters)){
-			if ($action == 'new'){			
-				$this->_helper->redirector('denied', 'error');
-			}
-			else{
-				$this->view->canAddWorkplace = false;
-			}
-		}
-		else{
-			$this->view->canAddWorkplace = true;
-		}
 		
 		//soukromá poznámka
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
