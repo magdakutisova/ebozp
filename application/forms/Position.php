@@ -110,7 +110,7 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'employees', array(
        			'label' => 'Seznam zaměstnanců:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 5
+       			'order' => 5,
        	));
        	
        	//stávající zaměstnanci
@@ -162,6 +162,27 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
        			'required' => true,
+       			));
+       	
+       	$this->addElement('hidden', 'environmentFactors', array(
+       			'label' => 'Faktory pracovního prostředí:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 403,
+       	));
+       	
+       	$this->addElement('hidden', 'id_environment_factor', array(
+       			'value' => 405,
+       			'order' => 1004,
+       			));
+       	
+       	$this->addElement('environmentFactor', 'environment_factor', array(
+       			'order' => 404,
+       			));
+       	
+       	$this->addElement('button', 'new_environment_factor', array(
+       			'label' => 'Další faktor pracovního prostředí',
+       			'order' => 500,
+       			'decorators' => $elementDecorator2,
        			));
        	
        	$this->addElement('submit', 'save', array(

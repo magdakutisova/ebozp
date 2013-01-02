@@ -12,6 +12,8 @@ class PositionController extends Zend_Controller_Action{
     private $_yearOfBirthList = array();
     private $_canViewPrivate = false;
     private $_employeeList;
+    private $_environmentFactorList;
+    private $_categoryList;
     
     public function init(){
     	//globální nastavení view
@@ -43,6 +45,12 @@ class PositionController extends Zend_Controller_Action{
     	//získání seznamu zaměstnanců
     	$employees = new Application_Model_DbTable_Employee();
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
+    	
+    	//získání seznamu FPP
+    	$this->_environmentFactorList = My_EnvironmentFactor::getEnvironmentFactors();
+    	
+    	//získání kategorií FPP
+    	$this->_categoryList = My_EnvironmentFactor::getCategories();
     	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -225,6 +233,12 @@ class PositionController extends Zend_Controller_Action{
     	}
     	if($form->current_employee != null){
     		$form->current_employee->setAttrib('multiOptions', $this->_employeeList);
+    	}
+    	if($form->environment_factor != null){
+    		$form->environment_factor->setAttrib('multiOptions', $this->_environmentFactorList);
+    		$form->environment_factor->setAttrib('multiOptions2', $this->_categoryList);
+    		$form->environment_factor->setAttrib('multiOptions3', $this->_yesNoList);
+    		$form->environment_factor->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	}
     	
     	return $form;
