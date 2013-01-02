@@ -1,4 +1,3 @@
-#Wed Jul 18 12:57:59 CEST 2012
 com.zend.php.formatter.core.formatter.alignment_for_arguments_in_allocation_expression_force_split=false
 com.zend.php.formatter.core.formatter.alignment_for_arguments_in_allocation_expression_indent_policy=0
 com.zend.php.formatter.core.formatter.alignment_for_arguments_in_allocation_expression_line_wrap_policy=0

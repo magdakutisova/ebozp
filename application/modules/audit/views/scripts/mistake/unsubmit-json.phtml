@@ -1,2 +1,6 @@
 <?php
-echo $this->json($this->mistake->toArray());
+$mistake = $this->mistake;
+$mistake->assoc = $mistake->assoc->toArray();
+$mistake->mistake = $mistake->mistake->toArray();
+
+echo $this->json($mistake);

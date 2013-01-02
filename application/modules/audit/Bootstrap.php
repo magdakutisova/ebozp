@@ -199,11 +199,20 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		// nova neshoda bez zavislosti na zaznamu
 		$router->addRoute(
-				"audit-mistake-createalone",
+				"audit-mistake-createalone1",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/select-subsidiary",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "createalone1"))
+		);
+		
+		// nova neshoda bez zavislosti na zaznamu
+		$router->addRoute(
+				"audit-mistake-createalone2",
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/create-mistake",
 						array("module" => "audit",
 								"controller" => "mistake",
-								"action" => "createalone"))
+								"action" => "createalone2"))
 		);
 		
 		// nova neshoda bez zavislosti na zaznamu - vytvoreni

@@ -29,20 +29,20 @@ $(function () {
 	
 	function toggleMistakeResponse(response) {
 		// nacteni radku neshody
-		var cell = $("input[name='mistakeId']").filter("[value='" + response.id + "']").parent();
+		var cell = $("input[name='mistakeId']").filter("[value='" + response.mistake.id + "']").parent();
 		
 		// nastaveni tlacitka
 		var button = cell.find("button[name='mistake-submiter']");
 		
 		// vyhodnoceni submitu
-		if (response.submit_status == "2") {
+		if (response.assoc.submit_status == "1") {
 			button.text("Nepotvrzovat");
 		} else {
 			button.text("Potvrdit");
 		}
 		
 		// nastaveni stavu
-		cell.find(":hidden[name='submitStatus']").val(response.submit_status);
+		cell.find(":hidden[name='submitStatus']").val(response.assoc.submit_status);
 	}
 	
 	function toggleMistakeSubmit() {
@@ -58,16 +58,29 @@ $(function () {
 		
 		// vyhodnoceni stavu
 		if (status == 1) {
-			url += "/submit.json";
-		} else {
 			url += "/unsubmit.json";
+		} else {
+			url += "/submit.json";
 		}
 		
 		// odslani dat
 		$.post(url, null, toggleMistakeResponse, "json");
 	}
 	
+	// kontrola odeslani
+	function checkSubmit() {
+		// nacteni dat
+		var data = $("input[name='submitStatus'][value='0']");
+		
+		if (data.length) {
+			return confirm("Některé neshody nebyly potvrzeny. Přesto chcete audit uzavřít?");
+		}
+		
+		return true;
+	}
+	
 	$("#mistakes-forms,#mistakes-others").find("button[name='edit-mistake']").click(openMistake);
 	$("#mistakes-forms,#mistakes-others").find("button[name='mistake-submiter']").click(toggleMistakeSubmit);
+	$("#auditcoordsubmit").submit(checkSubmit);
 	$("#tabs").tabs();
 });

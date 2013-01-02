@@ -1,5 +1,10 @@
 <h1>Úprava neshody</h1>
 <?php 
+// kontrola pracoviste
+if ($this->workplace) {
+	echo "<h2>Pracoviště: <strong>" . $this->workplace->name . "</strong></h2>";
+}
+
 echo $this->form;
 echo $this->dataList("categories", $this->categories);
 echo $this->dataList("subcategories", $this->subcategories);
@@ -9,29 +14,78 @@ if ($this->deleteForm) {
 	echo "<h2>Smazat neshodu</h2>";
 	echo $this->deleteForm;
 }
+
+if ($this->similars->count()) {
+	$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id, "recordId" => $this->record->id), "audit-mistake-attach");
+	?>
+<h2>Podobné neshody</h2>
+<form action="<?php echo $url; ?>" method="post">
+	<table>
+		<thead>
+			<tr>
+				<th>
+				Kategorie
+				</th>
+				<th>
+				Podkategorie
+				</th>
+				<th>
+				Upřesnění
+				</th>
+				<th>
+				Vytvořeno
+				</th>
+				<th rowspan="2">
+				Použít
+				</th>
+			</tr>
+			<tr>
+				<th colspan="2">
+				Neshoda
+				</th>
+				<th colspan="2">
+				Návrh řešení
+				</th>
+			</tr>
+		</thead>
+		<?php 
+		foreach ($this->similars as $similar) {
+			$checked = ($this->activeAssoc->mistake_id == $similar->id) ? " checked='checked'" : "";
+			?>
+		<tbody>
+			<tr>
+				<td>
+				<?php echo $similar->category; ?>
+				</td>
+				<td>
+				<?php echo $similar->subcategory; ?>
+				</td>
+				<td>
+				<?php echo $similar->concretisation; ?>
+				</td>
+				<td>
+				<?php echo $this->sqlDate($similar->created_at); ?>
+				</td>
+				<td rowspan="2">
+				<input type="radio" name="mistake[id]" value="<?php echo $similar->id; ?>" <?php echo $checked; ?>>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2"><?php echo $similar->mistake; ?></td>
+				<td colspan="2"><?php echo $similar->suggestion?></td>
+			</tr>
+		</tbody>
+			<?php 
+		}
+		?>
+	</table>
+	<?php 
+}
 ?>
-<h2>Podobné existující neshody</h2>
-<table>
-	<thead>
-		<tr>
-			<th>
-			Kategorie
-			</th>
-			<th>
-			Podkategorie
-			</th>
-			<th>
-			Upřesnění
-			</th>
-			<th rowspan="2">
-			Vybrat
-			</th>
-		</tr>
-		<tr>
-			<th colspan="3">
-			Neshoda
-			</th>
-		</tr>
-	</thead>
-</table>
+	<p>
+	<?php
+	echo $this->formSubmit("similar-submit", "Použít"); 
+	?>
+	</p>
+</form>
 <script type="text/javascript" src="/js/audit/mistake/create.js"></script>

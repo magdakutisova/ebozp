@@ -121,9 +121,13 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 				)
 		));
 		
+		$this->addElement("hidden", "record_id", array(
+				"decorators" => $lastDecoratorOpen
+		));
+		
 		$this->addElement("submit", "submit", array(
 				"label" => "Vytvořit",
-				"decorators" => $lastDecorator
+				"decorators" => $lastDecoratorClose
 		));
 	}
 }

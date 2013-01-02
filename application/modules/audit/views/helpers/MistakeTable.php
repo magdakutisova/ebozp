@@ -19,7 +19,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		return "<thead><tr style=\"border: 1px solid black;\"><th>Kategorie</th><th>Podkategorie</th><th>Upřesnění</th><th>Pracoviště</th><th rowspan=\"2\">Akce</th></tr><tr><td colspan=\"2\">Neshoda</td><td colspan=\"2\">Návrh</td></tr></thead>";
 	}
 	
-	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $actions, array $classes = null) {
+	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $actions, array $classes = null, $submitStatus = null) {
 		// vygenerovani obsahu prvniho radku
 		$buttons = array();
 		
@@ -27,11 +27,14 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 			$classes = array();
 		}
 		
+		// vyhodnoceni submit stavu
+		if (is_null($submitStatus)) $submitStatus = $mistake->submit_status;
+		
 		foreach ($actions as $name => $label) {
 			$buttons[] = $this->view->formButton($name, $label);
 		}
 		
-		$button = implode("", $buttons) . $this->view->formHidden("mistakeId", $mistake->id) . $this->view->formHidden("submitStatus", $mistake->submit_status);
+		$button = implode("", $buttons) . $this->view->formHidden("mistakeId", $mistake->id) . $this->view->formHidden("submitStatus", $submitStatus);
 		
 		$columns = array(
 				$this->_wrapToTd($mistake->category),
