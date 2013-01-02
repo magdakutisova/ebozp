@@ -116,12 +116,23 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 		
 		// odstraneni neodeslanych neshod
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		$auditId = $this->_audit->id;
 		
 		// vygenerovani podminky smazani
 		$where = array(
-				"audit_id = " . $this->_audit->id,
-				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " or submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNUSED . ")"
+				"audit_id = " . $auditId,
+				"submit_status = 0"
+		);
+		
+		$tableAssocs->delete($where);
+		
+		// odstraneni osyrelych neshod
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$where = array(
+				"audit_id = " . $auditId,
+				"id not in (select mistake_id from $nameAssocs where audit_id = $auditId)"
 		);
 		
 		$tableMistakes->delete($where);
@@ -129,6 +140,14 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// oznaceni auditu jako odeslaneho
 		$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
 		$this->_audit->save();
+		
+		// oznaceni neshod, ktere jsou pouzity vice nez dvakrat
+		$where = array(
+				"audit_id != " . $this->_audit->id,
+				"id in (select mistake_id from `$nameAssocs` where audit_id = " . $this->_audit->id . ")"
+		);
+		
+		$tableMistakes->update(array("is_marked" => 1), $where);
 		
 		// presmerovani na get
 		$this->_redirect($this->view->url($params, "audit-get"));
@@ -292,6 +311,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if (!$this->_audit) throw new Zend_Exception("Audit #" . $this->_auditId . " has not been found");
 		
 		$audit = $this->_audit;
+		$auditId = $audit->id;
 		
 		// nacteni doprovodnych informaci
 		$responsibiles = $audit->getResponsibiles();
@@ -305,22 +325,25 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$this->view->layout()->setLayout("client-layout");
 		
-		// nacteni neshod
+		// nacteni neshod z dotazniku
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableRecords = new Audit_Model_AuditsRecords();
-		$nameRecords = $tableRecords->info("name");
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
 		
 		// sestaveni podminek
 		$where = array(
-				"id in (select `mistake_id` from `$nameRecords` where `audit_id` = $this->_auditId)",
-				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED
+				"id in (select mistake_id from `$nameAssocs` where audit_id = $auditId and record_id is not null)"
 		);
 		
 		// nacteni neshod z formularu
 		$formMistakes = $tableMistakes->fetchAll($where);
 		
 		// nacteni neshod mimo formulare
-		$otherMistakes = $tableMistakes->fetchAll("audit_id = " . $this->_audit->id . " and workplace_id is not null and submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED);
+		$where = array(
+				"id in (select mistake_id from `$nameAssocs` where audit_id = $auditId and record_id is null)"
+		);
+		
+		$otherMistakes = $tableMistakes->fetchAll($where);
 		
 		// nacteni pracovist
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -486,23 +509,38 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableRecords = new Audit_Model_AuditsRecords();
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		
 		$nameRecords = $tableRecords->info("name");
+		$nameAssocs = $tableAssocs->info("name");
 		
 		// sestaveni podminek
 		$where = array(
-				"(audit_id = " . $this->_audit->id . " or id in (select mistake_id from $nameRecords where audit_id = " . $this->_audit->id . "))",
+				"id in (select mistake_id from `$nameRecords` where audit_id = $audit->id)",
 				"workplace_id is null",
-				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " OR submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED . ")"
+				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED
 		);
 		
 		// nacteni neshod z formularu
 		$formMistakes = $tableMistakes->fetchAll($where);
 		
+		// nacteni asociaci z formularu a indexace dle id zaznamu
+		$where = array(
+				"audit_id = " . $this->_audit->id,
+				"record_id is not null"
+		);
+		
+		$assocs = $tableAssocs->fetchAll($where);
+		$assocRecordIndex = array();
+		
+		foreach ($assocs as $item) {
+			$assocRecordIndex[$item->record_id] = $item;
+		}
+		
 		// nacteni neshod mimo formulare
 		$where = array(
-				"(audit_id = " . $this->_audit->id . " or id in (select mistake_id from $nameRecords where audit_id = " . $this->_audit->id . "))",
-				"workplace_id is not null",
-				"(submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED . " OR submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED . ")"
+				"id in (select mistake_id from `$nameAssocs` where audit_id = $audit->id)",
+				"workplace_id is not null"
 		);
 		
 		$otherMistakes = $tableMistakes->fetchAll($where);
@@ -518,8 +556,17 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$workplaceIndex[$item->id_workplace] = $item;
 		}
 		
+		// nacteni a indexace asociaci
+		$assocs = $tableAssocs->getByAudit($audit);
+		$assocIndex = array();
+		
+		foreach ($assocs as $item) {
+			$assocIndex[$item->mistake_id] = $item;
+		}
+		
 		// vytvoreni formulare pro uplne uzavreni auditu
 		$submitForm = new Audit_Form_AuditAuditorSubmit();
+		$submitForm->setName("auditcoordsubmit");
 		
 		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id, "auditId" => $this->_audit->id), "audit-coordinator-submit");
 		$submitForm->setAction($url);
@@ -539,6 +586,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->workplaceIndex = $workplaceIndex;
 		$this->view->formMistakes = $formMistakes;
 		$this->view->otherMistakes = $otherMistakes;
+		$this->view->assocIndex = $assocIndex;
+		$this->view->assocRecordIndex = $assocRecordIndex;
 	}
 	
 	/**

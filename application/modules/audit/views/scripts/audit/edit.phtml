@@ -72,6 +72,8 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<h3>Neshody</h3>
 		<table id="table-mistakes">
 			<?php 
+			$this->mistakeTable()->workIndex = $this->workIndex;
+			
 			echo $this->mistakeTable()->header();
 			
 			foreach ($this->mistakes as $mistake) {
@@ -81,7 +83,7 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		</table>
 		<?php 
 		// vytvoreni neshody mimo dotaznik
-		$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone");
+		$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone1");
 		
 		echo "<div class='box'><a href='$url'>Přidat neshodu mimo dotazník</a></div>";
 		?>

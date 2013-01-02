@@ -52,7 +52,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
 		$this->allow($technician, "audit:audit", array("index", "create", "post", "edit", "put", "get", "techlist", "techsubmit"));
-		$this->allow($technician, "audit:mistake", array("auditlist", "edit.html", "get", "delete", "createalone", "postalone", "edit", "delete.html", "delete", "put.html"));
+		$this->allow($technician, "audit:mistake", array("attach", "auditlist", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
@@ -61,7 +61,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist", "techsubmit"));
 		$this->allow($coordinator, "audit:audit", array("coordlist", "review", "coordsubmit"));
-		$this->allow($coordinator, "audit:mistake", array("create", "post", "attach", "submit", "submit.json", "unsubmit", "unsubmit.json"));
+		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json"));
 
 		$this->allow($admin);
 		

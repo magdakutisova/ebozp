@@ -23,7 +23,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 					"refColumns" => "id_client"
 			),
 			
-			"workpace" => array(
+			"workplace" => array(
 					"columns" => "workplace_id",
 					"refTableClass" => "Application_Model_DbTable_Workplace",
 					"refColumns" => "id_workplace"

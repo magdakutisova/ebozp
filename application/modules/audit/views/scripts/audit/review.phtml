@@ -2,6 +2,8 @@
 echo $this->formHidden("clientId", $this->audit->client_id);
 echo $this->formHidden("subsidiaryId", $this->audit->subsidiary_id);
 echo $this->formHidden("auditId", $this->audit->id);
+
+$assocIndex = $this->assocIndex;
 ?>
 <h1>Audit</h1>
 <h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
@@ -75,13 +77,15 @@ echo $this->formHidden("auditId", $this->audit->id);
 				
 				foreach ($this->formMistakes as $mistake) {
 					// vyhodnoceni jeslti je chyba oznacena k odeslani
-					if ($mistake->submit_status == Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED) {
-						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Potvrdit");
-					} else {
+					$assoc = $this->assocRecordIndex[$mistake->record_id];
+					
+					if ($assoc->submit_status) {
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Nepotvrzovat");
+					} else {
+						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Potvrdit");
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions);
+					echo $this->mistakeTable()->mistake($mistake, $actions, null, $assoc->submit_status);
 				}
 				?>
 			</table>
@@ -96,13 +100,15 @@ echo $this->formHidden("auditId", $this->audit->id);
 				
 				foreach ($this->otherMistakes as $mistake) {
 					// vyhodnoceni jeslti je chyba oznacena k odeslani
-					if ($mistake->submit_status == Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_SUBMITED) {
+					$assoc = $assocIndex[$mistake->id];
+					
+					if ($assoc->submit_status) {
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Nepotvrzovat");
 					} else {
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Potvrdit");
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions);
+					echo $this->mistakeTable()->mistake($mistake, $actions, null, $assoc->submit_status);
 				}
 				?>
 			</table>

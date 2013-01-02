@@ -51,18 +51,20 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableItems = new Questionary_Model_QuestionariesItems();
+		$tableAuditsMistakes = new Audit_Model_AuditsMistakes();
 		
 		$nameGroups = $tableGroups->info("name");
 		$nameRecords = $tableRecords->info("name");
 		$nameMistakes = $tableMistakes->info("name");
 		$nameItems = $tableItems->info("name");
+		$nameAuditMistakes = $tableAuditsMistakes->info("name");
 		
 		// zacatek transakce a zjisteni id
 		$adapter = $this->getAdapter();
 		
 		$adapter->beginTransaction();
 		$adapter->query("set foreign_key_checks = 0;");
-		$adapter->query("lock tables `$nameGroups` write, `$nameMistakes` write, `$nameRecords` write, `$nameItems` write");
+		$adapter->query("lock tables `$nameGroups` write, `$nameMistakes` write, `$nameRecords` write, `$nameItems` write, `$nameAuditMistakes` write");
 		
 		try {
 			// nacteni poslednich id zaznamu
@@ -83,6 +85,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			$mistakes = array();
 			$groups = array();
 			$records = array();
+			$assocs = array();
 			
 			$null = new Zend_Db_Expr("NULL");
 			
@@ -138,13 +141,16 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 					
 					$mistakes[] = "(" . implode(",", $mistake) . ")";
 					
+					// zapis asociace
+					$assocs[] = "($audit->id, $mistakeId, $recordId)";
+					
 					$recordId++;
 					$mistakeId++;
 				}
 				
 				$groupId++;
 			}
-			var_dump($groups, $records, $mistakes);
+			
 			// zpis skupin
 			if ($groups) {
 				$sql = "insert into `$nameGroups` (name, audit_form_id) values " . implode(",", $groups);
@@ -173,6 +179,12 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 					$sql = $sqlBase . implode(",", $chunk);
 					$adapter->query($sql);
 				}
+			}
+			
+			// zapis asociace
+			if ($assocs) {
+				$sql = "insert into `$nameAuditMistakes` (audit_id, mistake_id, record_id) values " . implode(",", $assocs);
+				$adapter->query($sql);
 			}
 			
 			$adapter->commit();
