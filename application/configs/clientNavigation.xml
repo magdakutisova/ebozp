@@ -94,5 +94,14 @@
 				</list>
 			</pages>
 		</workplace>
+		<position>
+			<label>Databáze pracovních pozic</label>
+			<route>positionList</route>
+			<resource>position</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter>filter</filter>
+		</position>
 	</nav>
 </configdata>

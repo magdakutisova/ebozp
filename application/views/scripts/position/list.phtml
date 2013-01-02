@@ -1,0 +1,8 @@
+<?php echo $this->selectForm;?>
+<?php if ($this->subsidiaryId != null){?>
+
+	<div class="box">
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'positionNew'); ?>">Přidat pracovní pozici</a>
+	</div>
+
+<?php }?>

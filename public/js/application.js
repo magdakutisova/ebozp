@@ -203,6 +203,25 @@ $(function(){
 		});
 	}
 	
+	//dynamické přidávání zaměstnanců
+	$("#new_employee").click(function(){
+		ajaxAddEmployee();
+	});
+	
+	function ajaxAddEmployee(){
+		var id = $("#id_employee").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newemployee/format/html',
+			data: "id_employee=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_employee').parents('tr').before(newElement);
+				$('#id_employee').val(++id);
+			}
+		});
+	}
+	
 	//dynamické odebírání pracovních pozic
 	$(".remove_position").click(function(){
 		removePositionFromDb(this);

@@ -323,8 +323,7 @@ class Application_Form_Workplace extends Zend_Form
     	foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
      		$newPositionData = isset($data[$fieldName]['new_position']) ? $data[$fieldName]['new_position'] : '';
-     		$this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    		$newPosition = new My_Form_Element_Position('newPosition' . strval($order - 1), array(
+     		$newPosition = new My_Form_Element_Position('newPosition' . strval($order - 1), array(
     			'order' => $order,
     			'value' => array('id_position' => $data[$fieldName]['id_position'],
     							'position' => $data[$fieldName]['position'],
