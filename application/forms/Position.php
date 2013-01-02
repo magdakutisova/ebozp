@@ -191,9 +191,11 @@ class Application_Form_Position extends Zend_Form{
        	));
 	}
 	
-	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList){
+	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
+			$environmentFactorList, $categoryList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
+		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -218,6 +220,19 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newCurrentEmployee);
 		}
+		
+		foreach($newEnvironmentFactors as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newEnvironmentFactor = new My_Form_Element_EnvironmentFactor('newEnvironmentFactor' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'multiOptions' => $environmentFactorList,
+					'multiOptions2' => $categoryList,
+					'multiOptions3' => $yesNoList,
+					'canViewPrivate' => $canViewPrivate,
+					));
+			$this->addElement($newEnvironmentFactor);
+		}
 	}
 	
 	private function findEmployees($employee){
@@ -229,6 +244,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findCurrentEmployees($currentEmployee){
 		if(strpos($currentEmployee, 'newCurrentEmployee') !== false){
 			return $currentEmployee;
+		}
+	}
+	
+	private function findEnvironmentFactors($environmentFactor){
+		if(strpos($environmentFactor, 'newEnvironmentFactor') !== false){
+			return $environmentFactor;
 		}
 	}
 		
