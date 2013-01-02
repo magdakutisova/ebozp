@@ -233,6 +233,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "auditlist"))
 		);
 		
+		// zobrazeni vypisu neshod
+		$router->addRoute(
+				"audit-mistakes-index",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistakes",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "index"))
+		);
+		
 		// zobrazit jednu neshodu
 		$router->addRoute(
 				"audit-mistake-get",
