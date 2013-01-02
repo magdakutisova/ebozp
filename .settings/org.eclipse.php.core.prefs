@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-include_path=0;/Guardian
+include_path=0;/guardian\u00055;org.zend.php.framework.CONTAINER
 org.eclipse.php.core.phpForamtterIndentationSize=1
 org.eclipse.php.core.phpForamtterUseTabs=true
 phpVersion=php5
