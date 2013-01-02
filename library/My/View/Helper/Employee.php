@@ -6,30 +6,11 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 	public function employee($name, $value = null, $attribs = null){
 		$this->html = '';
 		$idEmployee = $title1 = $firstName = $surname = $title2 = $manager = $sex = $yearOfBirth = '';
-		if(isset($attribs['multiOptions'])){
-			$multiOptions = $attribs['multiOptions'];
-		}
-		else{
-			$multiOptions = null;
-		}
-		if(isset($attribs['multiOptions2'])){
-			$multiOptions2 = $attribs['multiOptions2'];
-		}
-		else{
-			$multiOptions2 = null;
-		}
-		if(isset($attribs['multiOptions3'])){
-			$multiOptions3 = $attribs['multiOptions3'];
-		}
-		else{
-			$multiOptions3 = null;
-		}
-		if(isset($attribs['canViewPrivate'])){
-			$canViewPrivate = $attribs['canViewPrivate'];
-		}
-		else{
-			$canViewPrivate = false;
-		}
+		
+		$multiOptions = isset($attribs['multiOptions']) ? $attribs['multiOptions'] : null;
+		$multiOptions2 = isset($attribs['multiOptions2']) ? $attribs['multiOptions2'] : null;
+		$multiOptions3 = isset($attribs['multiOptions3']) ? $attribs['multiOptions3'] : null;
+		$canViewPrivate = isset($attribs['canViewPrivate']) ? $attribs['canViewPrivate'] : null;
 		
 		if($value){
 			$idEmployee = $value['id_employee'];

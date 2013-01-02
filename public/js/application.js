@@ -222,6 +222,24 @@ $(function(){
 		});
 	}
 	
+	$("#new_current_employee").click(function(){
+		ajaxAddCurrentEmployee();
+	});
+	
+	function ajaxAddCurrentEmployee(){
+		var id = $("#id_current_employee").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newcurrentemployee/format/html',
+			data: "id_current_employee=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_current_employee').parents('tr').before(newElement);
+				$('#id_current_employee').val(++id);
+			}
+		});
+	}
+	
 	//dynamické odebírání pracovních pozic
 	$(".remove_position").click(function(){
 		removePositionFromDb(this);

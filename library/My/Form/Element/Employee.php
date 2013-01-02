@@ -108,8 +108,9 @@ class My_Form_Element_Employee extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_employee']) && isset($values['title_1']) && isset($values['first_name']) && isset($values['surname'])
-				&& isset($values['title_2']) && isset($values['manager']) && isset($values['sex']) && isset($values['year_of_birth'])
+		if(isset($values['id_employee']) && isset($values['title_1'])
+				&& isset($values['first_name'])	&& isset($values['surname']) && isset($values['title_2'])
+				&& isset($values['manager']) && isset($values['sex']) && isset($values['year_of_birth'])
 				&& isset($values['note']) && isset($values['private'])){
 			$this->setIdEmployee($values['id_employee']);
 			$this->setTitle1($values['title_1']);
