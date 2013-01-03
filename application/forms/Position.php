@@ -185,6 +185,17 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//školení
+       	$this->addElement('hidden', 'schoolings', array(
+       			'label' => 'Školení pro pracovní pozici:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 501,
+       			'description' => $questionMarkStart . 'Vyberte školení ze seznamu (možnost vybrat více možností). Pokud druh školení není uveden, doplňte jej.' . $questionMarkEnd,
+       			));
+       	$this->getElement('schoolings')->getDecorator('Description')->setEscape(false);
+       	
+       	
+       	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
        			'order' => 999,
