@@ -11,11 +11,11 @@ class Audit_Model_AuditsMistakes extends Zend_Db_Table_Abstract {
 			"audit" => array(
 					"columns" => "audit_id",
 					"refTableClass" => "Audit_Model_Audits",
-					"refcolumns" => "id"
+					"refColumns" => "id"
 			),
 			
 			"mistake" => array(
-					"columns" => "mistkae_id",
+					"columns" => "mistake_id",
 					"refTableClass" => "Audit_Model_AuditsRecordsMistakes",
 					"refColumns" => "id"
 			)
