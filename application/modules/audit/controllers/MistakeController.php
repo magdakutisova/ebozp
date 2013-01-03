@@ -401,6 +401,88 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// nacteni zaznamu a auditu, kde byla chyba zjisteni
 		$records = $mistake->findDependentRowset("Audit_Model_AuditsRecords", "mistake");
+		
+		$this->view->mistake = $mistake;
+	}
+	
+	public function getHtmlAction() {
+		$this->getAction();
+		$this->view->layout()->setLayout("floating-layout");
+	}
+	
+	public function indexAction() {
+		// nacteni dat
+		$clientId = $this->getRequest()->getParam("clientId", 0);
+	
+		// sestaveni klienta
+		$tableClients = new Application_Model_DbTable_Client();
+		$client = $tableClients->find($clientId)->current();
+	
+		if (!$client) throw new Zend_Exception("Client #$clientId has not been found");
+	
+		// sestaveni vyhledavaciho dotazu pro seznam neshod
+		$tableAudits = new Audit_Model_Audits();
+		$nameAudits = $tableAudits->info("name");
+		
+		$where = array(
+				"client_id = " . $clientId,
+				"audit_id in (select id from `$nameAudits` where client_id = $clientId and is_closed)"
+		);
+	
+		// nacteni filtracniho formulare
+		$formFilter = new Audit_Form_MistakeIndex();
+		
+		// naplneni pobocek
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll("client_id = " . $client->id_client);
+		
+		$formFilter->addSubsidiaries($subsidiaries);
+		$formFilter->populate($_REQUEST);
+		
+		// nastaveni dodatecnych filtracnich parametru
+		$subsidiaryId = $formFilter->getValue("subsidiary_id");
+		$filter = $formFilter->getValue("filter");
+		
+		// vyhodnoceni skryti pracoviste
+		if (!$subsidiaryId) {
+			// srkyti vyberu pracoviste
+			$formFilter->removeElement("workplace_id");
+		} else {
+			// nacteni a zapis pracovist
+			$tableWorkplaces = new Application_Model_DbTable_Workplace();
+			$workplaces = $tableWorkplaces->fetchAll("subsidiary_id = " . $subsidiaryId, "name");
+			
+			$formFilter->addWorkplaces($workplaces);
+		}
+		
+		$workplaceId = $formFilter->getValue("workplace_id");
+		
+		// zapis filtraci do dotazu
+		if ($subsidiaryId) {
+			$where[] = "subsidiary_id = $subsidiaryId";
+		}
+		
+		if ($workplaceId) {
+			$where[] = "workplace_id = $workplaceId";
+		}
+		
+		switch ($filter) {
+			case 1:
+				$where[] = "!is_removed";
+				break;
+				
+			case 2:
+				$where[] = "is_removed";
+				break;
+		}
+		
+		// nacteni neshod
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$mistakes = $tableMistakes->fetchAll($where);
+		
+		$this->view->formFilter = $formFilter;
+		$this->view->mistakes = $mistakes;
+		$this->view->client = $client;
 	}
 	
 	public function postAction() {
@@ -698,13 +780,16 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function _loadSimilarMistakes(Audit_Model_Row_AuditRecordMistake $mistake) {
 		// ziskani tabulky
 		$tableMistakes = $mistake->getTable();
+		$tableAudits = new Audit_Model_Audits();
+		
+		$nameAudits = $tableAudits->info("name");
 		
 		// sestaveni dotazu pro where
 		$where = array(
 				"client_id = " . $mistake->client_id,
 				"audit_id != " . $mistake->audit_id,
-				"submit_status",
-				"!is_removed"
+				"!is_removed",
+				"audit_id in (select id from `$nameAudits` where subsidiary_id = $mistake->subsidiary_id and is_closed)"
 		);
 		
 		// doplneni posledni podminky dle povahy neshody

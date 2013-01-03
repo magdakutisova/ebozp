@@ -44,6 +44,13 @@
 			<route>audit-list-technic</route>
 			<clientId>clientId</clientId>
 		</auditstech>
+		<mistakelist>
+			<label>Neshody</label>
+			<resource>audit:mistake</resource>
+			<privilege>index</privilege>
+			<route>audit-mistakes-index</route>
+			<clientId>clientId</clientId>
+		</mistakelist>
 		<auditsclient>
 			<label>Audity</label>
 			<resource>audit:audit</resource>

@@ -251,6 +251,14 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "get"))
 		);
 		
+		$router->addRoute(
+				"audit-mistake-get-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistake/:mistakeId/html",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "get.html"))
+		);
+		
 		// edituje neshodu
 		$router->addRoute(
 				"audit-mistake-edit",
