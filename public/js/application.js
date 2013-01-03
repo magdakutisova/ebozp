@@ -240,6 +240,25 @@ $(function(){
 		});
 	}
 	
+	//dynamické přidávání FPP
+	$("#new_environment_factor").click(function(){
+		ajaxAddEnvironmentFactor();
+	});
+	
+	function ajaxAddEnvironmentFactor(){
+		var id = $("#id_environment_factor").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newenvironmentfactor/format/html',
+			data: "id_environment_factor=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_environment_factor').parents('tr').before(newElement);
+				$('#id_environment_factor').val(++id);
+			}
+		});
+	};
+	
 	//dynamické odebírání pracovních pozic
 	$(".remove_position").click(function(){
 		removePositionFromDb(this);

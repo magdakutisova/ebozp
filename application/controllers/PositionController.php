@@ -87,7 +87,7 @@ class PositionController extends Zend_Controller_Action{
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
-    			$this->_canViewPrivate, $this->_employeeList);
+    			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -139,6 +139,22 @@ class PositionController extends Zend_Controller_Action{
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('multiOptions', $this->_employeeList);
     	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newenvironmentfactorAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newenvironmentfactor', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_environment_factor', null);
+    	
+    	$element = new My_Form_Element_EnvironmentFactor("newEnvironmentFactor$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_environmentFactorList);
+    	$element->setAttrib('multiOptions2', $this->_categoryList);
+    	$element->setAttrib('multiOptions3', $this->_yesNoList);
+    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	 
     	$this->view->field = $element->__toString();
     }
     
