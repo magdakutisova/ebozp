@@ -194,7 +194,32 @@ class Application_Form_Position extends Zend_Form{
        			));
        	$this->getElement('schoolings')->getDecorator('Description')->setEscape(false);
        	
+       	$this->addElement('hidden', 'id_schooling', array(
+       			'value' => 503,
+       			'order' => 1005,
+       			));
        	
+       	$this->addElement('schooling', 'schooling', array(
+       			'order' => 502,
+       			'validators' => array(new My_Validate_Schooling()),
+       			));
+       	
+       	$this->addElement('button', 'new_schooling', array(
+       			'label' => 'Další školení',
+       			'order' => 550,
+       			'decorators' => $elementDecorator2,
+       			));
+       	
+       	$this->addElement('hidden', 'id_new_schooling', array(
+       			'value' => 551,
+       			'order' => 1006
+       			));
+       	
+       	$this->addElement('button', 'new_new_schooling', array(
+       			'label' => 'Zadat neuvedené školení nebo výcvik',
+       			'order' => 600,
+       			'decorators' => $elementDecorator2,
+       			));
        	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
@@ -203,10 +228,11 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
-			$environmentFactorList, $categoryList){
+			$environmentFactorList, $categoryList, $schoolingList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
 		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
+		$newSchoolings = array_filter(array_keys($data), array($this, 'findSchoolings'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -244,6 +270,17 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newEnvironmentFactor);
 		}
+		
+		foreach($newSchoolings as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newSchooling = new My_Form_Element_Schooling('newSchooling' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'multiOptions' => $schoolingList,
+					'canViewPrivate' => $canViewPrivate,
+					));
+			$this->addElement($newSchooling);
+		}
 	}
 	
 	private function findEmployees($employee){
@@ -261,6 +298,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findEnvironmentFactors($environmentFactor){
 		if(strpos($environmentFactor, 'newEnvironmentFactor') !== false){
 			return $environmentFactor;
+		}
+	}
+	
+	private function findSchoolings($schooling){
+		if(strpos($schooling, 'newSchooling') !== false){
+			return $schooling;
 		}
 	}
 		

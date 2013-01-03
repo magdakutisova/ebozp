@@ -14,6 +14,7 @@ class PositionController extends Zend_Controller_Action{
     private $_employeeList;
     private $_environmentFactorList;
     private $_categoryList;
+    private $_schoolingList;
     
     public function init(){
     	//globální nastavení view
@@ -52,6 +53,9 @@ class PositionController extends Zend_Controller_Action{
     	//získání kategorií FPP
     	$this->_categoryList = My_EnvironmentFactor::getCategories();
     	
+    	//získání seznamu školení
+    	$this->_schoolingList = My_Schooling::getSchoolings();
+    	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
     	$users = new Application_Model_DbTable_User();
@@ -87,7 +91,8 @@ class PositionController extends Zend_Controller_Action{
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
-    			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList);
+    			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
+    			$this->_schoolingList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -155,6 +160,20 @@ class PositionController extends Zend_Controller_Action{
     	$element->setAttrib('multiOptions3', $this->_yesNoList);
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	 
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newschoolingAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newschooling', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_schooling', null);
+    	
+    	$element = new My_Form_Element_Schooling("newSchooling$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_schoolingList);
+    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
     	$this->view->field = $element->__toString();
     }
     
@@ -255,6 +274,10 @@ class PositionController extends Zend_Controller_Action{
     		$form->environment_factor->setAttrib('multiOptions2', $this->_categoryList);
     		$form->environment_factor->setAttrib('multiOptions3', $this->_yesNoList);
     		$form->environment_factor->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	}
+    	if($form->schooling != null){
+    		$form->schooling->setAttrib('multiOptions', $this->_schoolingList);
+    		$form->schooling->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	}
     	
     	return $form;

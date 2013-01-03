@@ -259,6 +259,25 @@ $(function(){
 		});
 	};
 	
+	//dynamické přidávání školení
+	$("#new_schooling").click(function(){
+		ajaxAddSchooling();
+	});
+	
+	function ajaxAddSchooling(){
+		var id = $("#id_schooling").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newschooling/format/html',
+			data: "id_schooling=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_schooling').parents('tr').before(newElement);
+				$('#id_schooling').val(++id);
+			}
+		});
+	}
+	
 	//dynamické odebírání pracovních pozic
 	$(".remove_position").click(function(){
 		removePositionFromDb(this);
