@@ -1,0 +1,19 @@
+<script type="text/javascript">
+var CLIENTID = <?php echo $this->client->id_client; ?>
+</script>
+<?php
+echo $this->formButton("toggle-filter", "Zobrazit/skrýt filtraci");
+echo $this->formFilter;
+?>
+<table id="mistake-list">
+<?php 
+echo $this->mistakeTable()->header();
+
+$actions = array("show-mistake" => "Zobrazit");
+
+foreach ($this->mistakes as $mistake) {
+	echo $this->mistakeTable()->mistake($mistake, $actions);
+}
+?>
+</table>
+<script type="text/javascript" src="/js/audit/mistake/index.js"></script>

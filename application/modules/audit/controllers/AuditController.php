@@ -139,6 +139,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// oznaceni auditu jako odeslaneho
 		$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
+		$this->_audit->is_closed = 1;
 		$this->_audit->save();
 		
 		// oznaceni neshod, ktere jsou pouzity vice nez dvakrat
@@ -148,6 +149,14 @@ class Audit_AuditController extends Zend_Controller_Action {
 		);
 		
 		$tableMistakes->update(array("is_marked" => 1), $where);
+		
+		// smazani neshod. ktere nakonec nebyly pouzity
+		$where = array(
+				"audit_id = " . $this->_audit->id,
+				"id not in (select mistake_id from `$nameAssocs` where audit_id = " . $this->_audit->id . ")"
+		);
+		
+		$tableMistakes->delete($where);
 		
 		// presmerovani na get
 		$this->_redirect($this->view->url($params, "audit-get"));

@@ -44,13 +44,11 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 */
 	public function getMistakes() {
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$nameMistakes = $tableMistakes->info("name");
 		
-		$where = array(
-				"audit_id = " . $this->id,
-				"submit_status"
-		);
+		$select = $tableMistakes->select(false)->where("`m`.submit_status");
 		
-		return $tableMistakes->fetchAll($where);
+		return $this->findManyToManyRowset(new Audit_Model_AuditsRecordsMistakes(), new Audit_Model_AuditsMistakes(), "audit", "mistake", $select);
 	}
 	
 	/**

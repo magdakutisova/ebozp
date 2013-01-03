@@ -1,0 +1,85 @@
+<?php 
+$mistake = $this->mistake;
+?>
+<h1>Detail neshody</h1>
+<table class="keyval-table">
+	<tbody>
+		<tr>
+			<td>
+			Kategorie
+			</td>
+			<td>
+			<?php echo $mistake->category; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Podkategorie
+			</td>
+			<td>
+			<?php echo $mistake->subcategory; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Upřesnění
+			</td>
+			<td>
+			<?php echo $mistake->concretisation; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Poprvé zjištěna
+			</td>
+			<td>
+			<?php echo $this->sqlDate($this->masterAudit->done_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Kritická*
+			</td>
+			<td class="<?php echo $mistkae->is_marked ? "error" : ""; ?>">
+			<?php echo $mistake->is_marked ? "Ano" : "Ne"; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Pracoviště
+			</td>
+			<td>
+			<?php echo $this->workplaceName; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Závažnost
+			</td>
+			<td>
+			<?php echo $mistake->weight; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Neshoda
+			</td>
+			<td class="pre"><?php echo $mistake->mistake;?></td>
+		</tr>
+		<tr>
+			<td>
+			Návrh řešení
+			</td>
+			<td class="pre"><?php echo $mistake->suggestion; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Komentář
+			</td>
+			<td class="pre"><?php echo $mistake->comment; ?></td>
+		</tr>
+	</tbody>
+</table>
+<em>*) Kritická neshoda je taková, která byla nalezena ve více než jednom auditu nebo prověrce</em>
+<h2>Audity a prověrky</h2>
+<!-- TODO: DODĚLAT AŽ BUDOU HOTOVÉ PROVĚRKY -->
