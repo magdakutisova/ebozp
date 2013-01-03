@@ -370,3 +370,32 @@ $(function(){
 	});
 	
 });
+
+/**
+ * otevre plovouci okno s vlozenou strankou IFRAME
+ * rozmery jsou v pixelech
+ * vraci DIV ktery je obsahem dialogu
+ */
+$.iframeDialog = function (src, width, height, title) {
+	var iframe = $("<iframe width='" + width + "px' height='" + height + "px'>").attr("src", src);
+	
+	var retVal = $("<div>").append(iframe);
+	
+	width += 20;
+	
+	if (title === undefined) title = "";
+	
+	retVal.dialog({
+		modal: true,
+		width: width,
+		height: height + 50,
+		draggable: false,
+		title : title,
+		close: function () {
+			retVal.remove();
+		}
+	});
+	
+	
+	return retVal;
+};
