@@ -6,6 +6,10 @@ $(function () {
 		// sestaveni routy
 		var url = "/klient/" + CLIENTID + "/mistake/" + mistakeId + "/html";
 		
+		$.iframeDialog(url, 730, 400, "Neshoda");
+		
+		return 
+		
 		// sestaveni dialogu
 		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
 		

@@ -399,10 +399,27 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		if (!$mistake) throw new Zend_Exception("Mistake not found");
 		
-		// nacteni zaznamu a auditu, kde byla chyba zjisteni
-		$records = $mistake->findDependentRowset("Audit_Model_AuditsRecords", "mistake");
+		// nacteni pracoviste
+		if ($mistake->workplace_id) {
+			$workplace = $mistake->getWorkplace();
+			$this->view->workplaceName = $workplace->name;
+		} else {
+			$this->view->workplaceName = "-";
+		}
+		
+		// nacteni rodicovskeho auditu
+		$tableAudits = new Audit_Model_Audits();
+		$masterAudit = $tableAudits->getById($mistake->audit_id);
+		
+		// nacteni dalsich auditu
+		$audits = $mistake->findManyToManyRowset($tableAudits, "Audit_Model_AuditsMistakes", "mistake", "audit", $tableAudits->select(false)->order("done_at"));
+		
+		/** @todo slouceni s proverkami a serazeni dle datumu */
+		$found = $audits;
 		
 		$this->view->mistake = $mistake;
+		$this->view->masterAudit = $masterAudit;
+		$this->view->found = $found;
 	}
 	
 	public function getHtmlAction() {
