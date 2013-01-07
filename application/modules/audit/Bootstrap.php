@@ -339,17 +339,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		 * PROVERKY
 		 */
 		
-		// vyber pobocky
-		$router->addRoute(
-				"audit-check-selectsub",
-				new Zend_Controller_Router_Route("/klient/:clientId/check/select-subsidiary",
-						array(
-								"module" => "audit",
-								"controller" => "check",
-								"action" => "index"
-						))
-		);
-		
 		// formular zalozeni proverky
 		$router->addRoute(
 				"audit-check-create",
@@ -380,6 +369,28 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "audit",
 								"controller" => "check",
 								"action" => "edit"
+						))
+		);
+		
+		// ulozeni proverky
+		$router->addRoute(
+				"audit-check-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/put",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "put"
+						))
+		);
+		
+		// seznam proverek
+		$router->addRoute(
+				"audit-check-list",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/checks",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "put"
 						))
 		);
 	}

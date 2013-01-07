@@ -44,13 +44,13 @@
 			<route>audit-mistakes-index</route>
 			<clientId>clientId</clientId>
 		</mistakelist>
-		<checknew>
-			<label>Nová prověrka</label>
+		<checks>
+			<label>Prověrky</label>
 			<resource>audit:check</resource>
 			<privilege>index</privilege>
-			<route>audit-check-selectsub</route>
+			<route>audit-check-list</route>
 			<clientId>clientId</clientId>
-		</checknew>
+		</checks>
 		<auditstech>
 			<label>Audity</label>
 			<resource>audit:audit</resource>
