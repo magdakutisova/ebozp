@@ -4312,7 +4312,7 @@
         <dia:point val="20.65,-13.95"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="20.6,-14;37.755,-0.9"/>
+        <dia:rectangle val="20.6,-14;37.755,-0.1"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="20.65,-13.95"/>
@@ -4321,7 +4321,7 @@
         <dia:real val="17.055"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="13"/>
+        <dia:real val="13.800000000000001"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_checks#</dia:string>
@@ -4515,6 +4515,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#identifikační číslo koordinátora#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#responsibiles#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#text#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#seznam zodpovědných osob#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>

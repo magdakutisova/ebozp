@@ -37,13 +37,6 @@
 			<privilege>list</privilege>
 			<clientId>clientId</clientId>
 		</subsidiary>
-		<auditstech>
-			<label>Audity</label>
-			<resource>audit:audit</resource>
-			<privilege>techlist</privilege>
-			<route>audit-list-technic</route>
-			<clientId>clientId</clientId>
-		</auditstech>
 		<mistakelist>
 			<label>Neshody</label>
 			<resource>audit:mistake</resource>
@@ -51,6 +44,20 @@
 			<route>audit-mistakes-index</route>
 			<clientId>clientId</clientId>
 		</mistakelist>
+		<checknew>
+			<label>Nová prověrka</label>
+			<resource>audit:check</resource>
+			<privilege>index</privilege>
+			<route>audit-check-selectsub</route>
+			<clientId>clientId</clientId>
+		</checknew>
+		<auditstech>
+			<label>Audity</label>
+			<resource>audit:audit</resource>
+			<privilege>techlist</privilege>
+			<route>audit-list-technic</route>
+			<clientId>clientId</clientId>
+		</auditstech>
 		<auditsclient>
 			<label>Audity</label>
 			<resource>audit:audit</resource>

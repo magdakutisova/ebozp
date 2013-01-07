@@ -43,15 +43,17 @@ class Audit_Model_Checks extends Zend_Db_Table_Abstract {
 	 * @param Zend_Db_Table_Row_Abstract $subsidiary pobocka
 	 * @param Zend_Db_Table_Row_Abstract $checker technik
 	 * @param Zend_Db_Table_Row_Abstract $coordinator koordinator
+	 * @param string $responsibiles seznam zodpovednych osob
 	 * @param Zend_Date $doneAt datum provedeni proverky
 	 * @return Audit_Model_Row_Check
 	 */
-	public function createCheck(Zend_Db_Table_Row_Abstract $subsidiary, Zend_Db_Table_Row_Abstract $checker, Zend_Db_Table_Row_Abstract $coordinator, Zend_Date $doneAt) {
+	public function createCheck(Zend_Db_Table_Row_Abstract $subsidiary, Zend_Db_Table_Row_Abstract $checker, Zend_Db_Table_Row_Abstract $coordinator, $responsibiles, Zend_Date $doneAt) {
 		$retVal = $this->createRow(array(
 				"checker_id" => $checker->id_user,
 				"coordinator_id" => $coordinator->id_user,
 				"subsidiary_id" => $subsidiary->id_subsidiary,
 				"client_id" => $subsidiary->client_id,
+				"responsibiles" => $responsibiles,
 				"summary" => "",
 				"progerss_note" => "",
 				"done_at" => $doneAt->get("y-MM-dd")

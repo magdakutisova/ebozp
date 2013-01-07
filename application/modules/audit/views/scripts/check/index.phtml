@@ -1,0 +1,20 @@
+<h1><?php echo $this->client->company_name; ?></h1>
+<h2>Nová prověrka</h2>
+Vyberte pobočku
+<ul class="tree" id="client-list">
+<?php
+$params = array("clientId" => $this->client->id_client);
+
+foreach ($this->subsidiaries as $item) {
+	?>
+	<li>
+	<?php 
+	$params["subsidiaryId"] = $item->id_subsidiary;
+	$url = $this->url($params, "audit-check-create");
+	echo "<a href='$url'>" . $item->subsidiary_name . "</a>";
+	?>
+	</li>
+	<?php
+}
+?>
+</ul>

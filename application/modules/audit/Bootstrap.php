@@ -334,5 +334,53 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "unsubmit.json"
 						))
 		);
+		
+		/*
+		 * PROVERKY
+		 */
+		
+		// vyber pobocky
+		$router->addRoute(
+				"audit-check-selectsub",
+				new Zend_Controller_Router_Route("/klient/:clientId/check/select-subsidiary",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "index"
+						))
+		);
+		
+		// formular zalozeni proverky
+		$router->addRoute(
+				"audit-check-create",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/create",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "create"
+						))
+		);
+		
+		// zalozeni proverky
+		$router->addRoute(
+				"audit-check-post",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/post",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "post"
+						))
+		);
+		
+		// editace proverky (technik
+		$router->addRoute(
+				"audit-check-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "edit"
+						))
+		);
 	}
 }
