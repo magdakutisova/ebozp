@@ -11,7 +11,7 @@ class Audit_Model_Checks extends Zend_Db_Table_Abstract {
 			"client" => array(
 					"columns" => "client_id",
 					"refTableClass" => "Application_Model_DbTable_Client",
-					"columns" => "id_client"
+					"refColumns" => "id_client"
 			),
 			
 			"subsidiary" => array(
