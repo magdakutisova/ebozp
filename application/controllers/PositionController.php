@@ -177,6 +177,19 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->field = $element->__toString();
     }
     
+    public function newnewschoolingAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newnewschooling', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_newSchooling');
+    	
+    	$element = new My_Form_Element_NewSchooling("newNewSchooling$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
     public function listAction(){
     	$defaultNamespace = new Zend_Session_Namespace();
     	if (isset($defaultNamespace->form)){
@@ -278,6 +291,9 @@ class PositionController extends Zend_Controller_Action{
     	if($form->schooling != null){
     		$form->schooling->setAttrib('multiOptions', $this->_schoolingList);
     		$form->schooling->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	}
+    	if($form->newSchooling != null){
+    		$form->newSchooling->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	}
     	
     	return $form;
