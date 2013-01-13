@@ -334,5 +334,64 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "unsubmit.json"
 						))
 		);
+		
+		/*
+		 * PROVERKY
+		 */
+		
+		// formular zalozeni proverky
+		$router->addRoute(
+				"audit-check-create",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/create",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "create"
+						))
+		);
+		
+		// zalozeni proverky
+		$router->addRoute(
+				"audit-check-post",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/post",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "post"
+						))
+		);
+		
+		// editace proverky (technik
+		$router->addRoute(
+				"audit-check-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "edit"
+						))
+		);
+		
+		// ulozeni proverky
+		$router->addRoute(
+				"audit-check-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/put",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "put"
+						))
+		);
+		
+		// seznam proverek
+		$router->addRoute(
+				"audit-check-list",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/checks",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "put"
+						))
+		);
 	}
 }

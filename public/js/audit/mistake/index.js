@@ -21,5 +21,10 @@ $(function () {
 		});
 	}
 	
+	function toggleFilter() {
+		$("#mistakefilter").toggle();
+	}
+	
 	$("#mistake-list button").click(openMistake);
+	$("#toggle-filter").click(toggleFilter);
 });

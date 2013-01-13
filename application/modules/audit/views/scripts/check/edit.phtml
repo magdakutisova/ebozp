@@ -1,0 +1,13 @@
+<h1><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h1>
+<h2>Prověrka</h2>
+<div id="tabs">
+	<ul>
+		<li><a href="#overview">Přehled</a></li>
+	</ul>
+	<div id="overview">
+<?php
+echo $this->editForm;
+?>
+	</div>
+</div>
+<script type="text/javascript" src="/js/audit/check/edit.js"></script>
