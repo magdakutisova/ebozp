@@ -335,6 +335,17 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// editace neshody z proverky
+		$router->addRoute(
+				"audit-mistake-checkedit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "checkedit"
+						))
+		);
+		
 		/*
 		 * PROVERKY
 		 */
@@ -390,8 +401,57 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "audit",
 								"controller" => "check",
-								"action" => "put"
+								"action" => "index"
 						))
+		);
+		
+		// uprava akce nad neshodou
+		$router->addRoute(
+				"audit-check-chaction",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/action",
+						array(
+								"module" => "audit",
+								"controller" => "check",
+								"action" => "action"
+						))
+		);
+		
+		// tvorba nove neshody
+		$router->addRoute(
+				"audit-check-createmistake",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/create",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "createalone2"
+						))
+		);
+		
+		// vytvoreni nove neshody
+		$router->addRoute(
+				"audit-check-postmistake",
+				new Zend_Controller_Router_Route("/klient/:clientId/check/:checkId/post-mistake",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "postalone"))
+		);
+		
+		// uzavreni ze strany technika
+		$router->addRoute(
+				"audit-check-techsubmit",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/check/:checkId/technic/submit",
+						array("module" => "audit",
+								"controller" => "check",
+								"action" => "techsubmit"))
+		);
+		
+		// zobrazeni proverky
+		$router->addRoute(
+				"audit-check-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/check/:checkId/get",
+						array("module" => "audit",
+								"controller" => "check",
+								"action" => "get"))
 		);
 	}
 }

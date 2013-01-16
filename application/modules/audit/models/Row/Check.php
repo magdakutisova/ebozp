@@ -64,13 +64,16 @@ class Audit_Model_Row_Check extends Zend_Db_Table_Row_Abstract {
 		}
 		
 		// sestaveni a provedeni dotazu
+		if (!$order) $order = "workplace_id";
+		
 		$sql = "select `$nameMistakes`.* from `$nameMistakes`, `$nameAssocs` where " . implode(" and ", $where) . " order by `$nameMistakes`.`$order`";
 		$result = $adapter->query($sql)->fetchAll();
 		
 		// vygenerovani navratove hodnoty
 		$retVal = new Audit_Model_Rowset_AuditsRecordsMistakes(array(
 				"table" => $tableMistakes,
-				"data" => $result
+				"data" => $result,
+				"rowClass" => "Audit_Model_Row_AuditRecordMistake"
 		));
 		
 		return $retVal;

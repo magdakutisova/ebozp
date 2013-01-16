@@ -1,0 +1,10 @@
+<h1>Neshoda</h1>
+<?php 
+if ($this->workplace) {
+	echo "<p>Pracoviště: <strong>" . $this->workplace->name . "</strong></p>";
+}
+?>
+<?php echo $this->mistakeForm; ?>
+<h2>Akce</h2>
+<?php
+echo $this->actionForm;

@@ -1,20 +1,70 @@
-<h1><?php echo $this->client->company_name; ?></h1>
-<h2>Nová prověrka</h2>
-Vyberte pobočku
-<ul class="tree" id="client-list">
-<?php
-$params = array("clientId" => $this->client->id_client);
-
-foreach ($this->subsidiaries as $item) {
-	?>
-	<li>
-	<?php 
-	$params["subsidiaryId"] = $item->id_subsidiary;
-	$url = $this->url($params, "audit-check-create");
-	echo "<a href='$url'>" . $item->subsidiary_name . "</a>";
-	?>
-	</li>
-	<?php
-}
+<?php 
+$index = $this->subsidiaryIndex;
 ?>
-</ul>
+<h1><?php echo $this->client->company_name; ?></h1>
+<h2>Prověrky</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Pobočka
+			</th>
+			<th>
+			Provedeno
+			</th>
+			<th>
+			Technik
+			</th>
+			<th>
+			Koordinátor
+			</th>
+			<th>
+			Akce
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	$roleId = $this->user->getRoleId();
+	$params = array("clientId" => $this->client->id_client);
+	
+	foreach ($this->checks as $check) {
+		$params["subsidiaryId"] = $check->subsidiary_id;
+		$params["checkId"] = $check->id;
+		?>
+		<tr>
+			<td>
+			<?php echo $index[$check->subsidiary_id]->subsidiary_name; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($check->done_at); ?>
+			</td>
+			<td>
+			<?php echo ($check->checker_confirmed_at == "0000-00-00 00:00:00") ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php echo ($check->coordinator_confirmed_at == "0000-00-00 00:00:00") ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php 
+			// vyhodnoceni odkazu
+			switch ($roleId) {
+				case My_Role::ROLE_TECHNICIAN:
+					if ($check->checker_confirmed_at == "0000-00-00 00:00:00") {
+						$url = $this->url($params, "audit-check-edit");
+						
+						echo "<a href='$url'>Upravit</a>";
+					} else {
+						
+					}
+					
+					break;
+			}
+			?>
+			</td>
+		</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
