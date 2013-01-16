@@ -210,12 +210,12 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
-       	$this->addElement('hidden', 'id_new_schooling', array(
+       	$this->addElement('hidden', 'id_newSchooling', array(
        			'value' => 551,
        			'order' => 1006
        			));
        	
-       	$this->addElement('button', 'new_new_schooling', array(
+       	$this->addElement('button', 'new_newSchooling', array(
        			'label' => 'Zadat neuvedené školení nebo výcvik',
        			'order' => 600,
        			'decorators' => $elementDecorator2,

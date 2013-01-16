@@ -278,6 +278,24 @@ $(function(){
 		});
 	}
 	
+	$("#new_newSchooling").click(function(){
+		ajaxAddNewSchooling();
+	});
+	
+	function ajaxAddNewSchooling(){
+		var id = $("#id_newSchooling").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url:baseUrl + '/position/newnewschooling/format/html',
+			data: "id_newSchooling=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_newSchooling').parents('tr').before(newElement);
+				$('#id_newSchooling').val(++id);
+			}
+		});
+	}
+	
 	//dynamické odebírání pracovních pozic
 	$(".remove_position").click(function(){
 		removePositionFromDb(this);
