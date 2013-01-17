@@ -1,14 +1,6 @@
 <?php
 class Audit_Model_ChecksMistakes extends Zend_Db_Table_Abstract {
 	
-	/*
-	 * konstanty pro oznacovani akce asociaci
-	 */
-	const DO_NOTHING = 0;
-	const DO_REMOVE = 1;
-	const DO_MARK = 2;
-	const DO_NEW = 3;
-	
 	protected $_name = "audit_checks_mistakes";
 	
 	protected $_sequence = true;

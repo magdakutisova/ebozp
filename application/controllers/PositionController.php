@@ -175,7 +175,7 @@ class PositionController extends Zend_Controller_Action{
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
     	
     	$this->view->field = $element->__toString();
-    }
+    } 
     
     public function newnewschoolingAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');

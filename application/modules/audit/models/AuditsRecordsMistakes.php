@@ -63,15 +63,14 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 			$subcategory,
 			$concretization = null,
 			Audit_Model_Row_Audit $audit = null,
-			$weight = null,
-			Audit_Model_Row_Check $check = null
+			$weight = null
 			) 
 	{	
 		// kontrola auditu a recordu
-		if (is_null($check) && is_null($audit) && is_null($record)) throw new Zend_Db_Table_Exception("Audit, check and Record can not be null both");
+		if (is_null($audit) && is_null($record)) throw new Zend_Db_Table_Exception("Audit and Record can not be null both");
 		
 		// kontrola auditu a pripadne jeho nacteni
-		if (is_null($audit) && is_null($check)) {
+		if (is_null($audit)) {
 			$audit = $record->getAudit();
 		}
 		
@@ -82,10 +81,9 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		// vytvoreni zaznamu o neshode
 		$retVal = $this->createRow(array(
 				"record_id" => $record ? $record->id : null,
-				"audit_id" => $audit ? $audit->id : null,
-				"check_id" => $check ? $check->id : null,
-				"client_id" => $audit ? $audit->client_id : $check->client_id,
-				"subsidiary_id" => $audit ? $audit->subsidiary_id : $check->subsidiary_id,
+				"audit_id" => $audit->id,
+				"client_id" => $audit->client_id,
+				"subsidiary_id" => $audit->subsidiary_id,
 				"questionary_item_id" => $record ? $record->questionary_item_id : null,
 				"weight" => $weight,
 				"question" => $question,
@@ -96,7 +94,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				"suggestion" => $suggestion,
 				"comment" => $comment,
 				"hidden_comment" => $hiddenComment,
-				"notified_at" => $audit ? $audit->done_at : $check->done_at,
+				"notified_at" => $audit->done_at,
 				"will_be_removed_at" => $willBeRemoved->get("y-MM-dd"),
 				"responsibile_name" => ""
 				
