@@ -482,6 +482,11 @@ class Audit_CheckController extends Zend_Controller_Action {
 				if ($check->coordinator_id == $this->_user->getIdUser()) $ok = true;
 			}
 			
+			if ($checkAction & self::CHECK_FOR_CLIENT) {
+				// nacteni informaci o uzivateli
+				if (in_array($check->subsidiary_id, $this->_user->getUserSubsidiaries())) $ok = true;
+			}
+			
 			if (!$ok) throw new Zend_Exception("You have not permisions for access to this check");
 		}
 		

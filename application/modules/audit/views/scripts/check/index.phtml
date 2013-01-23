@@ -68,6 +68,12 @@ $index = $this->subsidiaryIndex;
 						$url = $this->url($params, "audit-check-get");
 						echo "<a href='$url'>Zobrazit</a>";
 					}
+					break;
+					
+				case My_Role::ROLE_CLIENT:
+					$url = $this->url($params, "audit-check-get");
+					echo "<a href='$url'>Zobrazit</a>";
+					break;
 			}
 			?>
 			</td>
