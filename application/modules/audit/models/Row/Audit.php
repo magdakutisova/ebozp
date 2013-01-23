@@ -59,15 +59,6 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
-	 * vraci seznam zodpovednych ze strany klienta
-	 * 
-	 * @return Audit_Model_Rowset_AuditsResponsibiles
-	 */
-	public function getResponsibiles() {
-		return $this->findDependentRowset("Audit_Model_AuditsResponsibiles", "audit");
-	}
-	
-	/**
 	 * vraci pobocku
 	 * 
 	 * @return Zend_Db_Table_Row_Abstract

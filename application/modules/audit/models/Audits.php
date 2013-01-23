@@ -57,7 +57,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 			Zend_Db_Table_Row_Abstract $coordinator,
 			Zend_Db_Table_Row_Abstract $subsidiary,
 			Zend_Date $doneAt,
-			array $responsibiles) 
+			$responsibiles) 
 	{
 		// vytvoreni zaznamu
 		$retVal = $this->createRow(array(
@@ -67,6 +67,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 				"auditor_name" => $auditor->username,
 				"coordinator_id" => $coordinator->id_user,
 				"coordinator_name" => $coordinator->username,
+				"responsibile_name" => $responsibiles,
 				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss")
 		));
 		
@@ -74,18 +75,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		$retVal->modified_at = new Zend_Db_Expr("NOW()");
 		
 		$retVal->save();
-		
-		// zapis zodpovednych hodnot
-		$tableResp = new Audit_Model_AuditsResponsibiles();
-		
-		foreach ($responsibiles as $item) {
-			$item = trim($item);
-			
-			$tableResp->insert(array(
-					"audit_id" => $retVal->id,
-					"name" => $item
-			));
-		}
 		
 		return $retVal;
 	}

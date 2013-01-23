@@ -20,25 +20,17 @@
 			</th>
 		</tr>
 	</thead>
-	<tbody>
-<?php
+<?php 
 $subIndex = $this->subIndex;
-$respIndex = $this->openResp;
 
 foreach ($this->open as $audit) {
-	// vygenerovani seznamu zodpovednych
-	$respList = array();
-	
-	foreach ($respIndex[$audit->id] as $resp) {
-		$respList[] = $resp->name;
-	}
 	?>
 		<tr>
 			<td>
 			<a href="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $audit->id), $this->openRoute); ?>"><?php echo $subIndex[$audit->subsidiary_id]->subsidiary_name; ?></a>
 			</td>
 			<td>
-			<?php echo implode(",", $respList)?>
+			<?php echo $audit->responsibile_name; ?>
 			</td>
 			<td>
 			<?php echo $this->sqlDate($audit->done_at); ?>
@@ -54,22 +46,14 @@ foreach ($this->open as $audit) {
 }
 
 // vypsani uzavrenych auditu
-$respIndex = $this->closedResp;
-
 foreach ($this->closed as $audit) {
-	// vygenerovani seznamu zodpovednych
-	$respList = array();
-	
-	foreach ($respIndex[$audit->id] as $resp) {
-		$respList[] = $resp->name;
-	}
 	?>
 		<tr>
 			<td>
 			<a href="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $audit->id), $this->closedRoute); ?>"><?php echo $subIndex[$audit->subsidiary_id]->subsidiary_name; ?></a>
 			</td>
 			<td>
-			<?php echo implode(",", $respList)?>
+			<?php echo $audit->responsibile_name; ?>
 			</td>
 			<td>
 			<?php echo $this->sqlDate($audit->done_at); ?>

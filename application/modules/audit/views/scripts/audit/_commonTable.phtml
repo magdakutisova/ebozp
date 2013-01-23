@@ -1,13 +1,4 @@
 <?php 
-// sestaveni zodpovednych osob
-$respList = array();
-
-foreach ($this->responsibiles as $resp) {
-	$respList[] = $resp->name;
-}
-
-$responsibiles = implode(", ", $respList);
-
 $audit = $this->audit;
 ?>
 <table>
@@ -41,7 +32,7 @@ $audit = $this->audit;
 			Zodpovědná osoba klienta
 			</td>
 			<td>
-			<?php echo $responsibiles; ?>
+			<?php echo $audit->responsibile_name; ?>
 			</td>
 		</tr>
 		<tr>

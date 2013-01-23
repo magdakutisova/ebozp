@@ -219,9 +219,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$form->fillSelects();
 		$form->populate(array("audit" => $this->_audit->toArray()));
 		
-		// naplneni zodpovednych osob
-		$form->getElement("responsibile_name")->setValue($this->_audit->getResponsibiles());
-		
 		// uprava datumu
 		$doneAt = $this->_audit->done_at;
 		list($year, $month, $day) = explode("-", $doneAt);
@@ -323,7 +320,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$auditId = $audit->id;
 		
 		// nacteni doprovodnych informaci
-		$responsibiles = $audit->getResponsibiles();
 		$auditor = $audit->getAuditor();
 		$client = $audit->getClient();
 		$coordinator = $audit->getCoordinator();
@@ -370,7 +366,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->client = $client;
 		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
-		$this->view->responsibiles = $responsibiles;
 		$this->view->forms = $forms;
 		
 		// zapis dat neshod
@@ -461,7 +456,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$doneAt = new Zend_Date($form->getValue("done_at"), "MM. dd. y");
 		
 		// vytvoreni zaznamu
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, explode(",", $form->getValue("responsibile_name")));
+		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("responsibile_name"));
 		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-edit")
@@ -504,7 +499,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit = $this->_audit;
 		
 		// nacteni doprovodnych informaci
-		$responsibiles = $audit->getResponsibiles();
 		$auditor = $audit->getAuditor();
 		$client = $audit->getClient();
 		$coordinator = $audit->getCoordinator();
@@ -587,7 +581,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->client = $client;
 		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
-		$this->view->responsibiles = $responsibiles;
 		$this->view->forms = $forms;
 		$this->view->submitForm = $submitForm;
 		
@@ -663,13 +656,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nejprve nacteni probihajicich auditu, ktere nebyly uzavreny technikem nebo byly znovu utevreny
 		$open = $tableAudits->fetchAll($openCond, "done_at desc");
 		
-		// nacteni seznamu zodpovednych osob za otevrene audity
-		$openResp = self::loadResponsibiles($open);
-		
 		// nactnei uzavrenych auditu
 		$closed = $tableAudits->fetchAll($closedCond, "done_at desc");
-		
-		$closedResp = self::loadResponsibiles($closed);
 		
 		// nacteni seznamu pobocek
 		$subIndex = self::loadSubdiaryIndex($client);
@@ -678,9 +666,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$this->view->client = $client;
 		$this->view->open = $open;
-		$this->view->openResp = $openResp;
 		$this->view->closed = $closed;
-		$this->view->closedResp = $closedResp;
 		$this->view->subIndex = $subIndex;
 	}
 	
@@ -699,43 +685,5 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 		
 		return $subIndex;
-	}
-	
-	/**
-	 * sestavi rowsety zodpovednych lidi do setu
-	 * 
-	 * @param Audit_Model_Rowset_Audits $audits zkoumane audity
-	 * @return array<Audit_Model_Rowset_AuditsResponsibiles>
-	 */
-	public static function loadResponsibiles(Audit_Model_Rowset_Audits $audits) {
-		// sestaveni seznamu id a priprava pomocneho pole
-		$idList = array(0);
-		$resList = array();
-		$retVal = array();
-		
-		foreach ($audits as $audit) {
-			$idList[] = $audit->id;
-			$respList[$audit->id] = array();
-			$retVal[$audit->id] = array();
-		}
-		
-		// nactnei dat
-		$tableResp = new Audit_Model_AuditsResponsibiles();
-		$responsibiles = $tableResp->fetchAll($tableResp->getAdapter()->quoteInto("audit_id in (?)", $idList), "audit_id")->toArray();
-		
-		// zapis dat do pomocne promenne
-		foreach ($responsibiles as $item) {
-			$resList[$item["audit_id"]][] = $item;
-		}
-		
-		// vygenerovani rowsetu a jejich ulozeni do pole navratove hodnoty
-		foreach ($resList as $auditId => $item) {
-			$retVal[$auditId] = new Audit_Model_Rowset_AuditsResponsibiles(array(
-					"data" => $item,
-					"table" => $tableResp
-			));
-		}
-		
-		return $retVal;
 	}
 }
