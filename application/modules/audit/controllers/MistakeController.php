@@ -433,9 +433,16 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$this->view->workplaceName = "-";
 		}
 		
-		// nacteni rodicovskeho auditu
+		// nacteni rodicovskeho auditu nebo proverky
 		$tableAudits = new Audit_Model_Audits();
-		$masterAudit = $tableAudits->getById($mistake->audit_id);
+		$tableChecks = new Audit_Model_Checks();
+		if ($mistake->audit_id) {
+			$masterAudit = $tableAudits->getById($mistake->audit_id);
+			$masterCheck = null;
+		} else {
+			$masterCheck = $tableChecks->getById($mistake->check_id);
+			$masterAudit = null;
+		}
 		
 		// nacteni dalsich auditu
 		$audits = $mistake->findManyToManyRowset($tableAudits, "Audit_Model_AuditsMistakes", "mistake", "audit", $tableAudits->select(false)->order("done_at"));
@@ -445,6 +452,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		$this->view->mistake = $mistake;
 		$this->view->masterAudit = $masterAudit;
+		$this->view->masterCheck = $masterCheck;
 		$this->view->found = $found;
 	}
 	
@@ -953,6 +961,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	 * @return Audit_Model_Row_AuditRecordMistake
 	 */
 	private function _loadMistakeAndCheck() {
+		// vyhodnoceni jeslti se jedna o neshodu z auditu nebo z proverky
+		$auditId = $this->getRequest()->getParam("auditId", 0);
+		$checkId = $this->getRequest()->getParam("checkId", 0);
+		
 		// nacteni neshody
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
@@ -962,24 +974,37 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (!$mistake) throw new Zend_Exception("Mistake #$mistakeId has not been found");
 		
 		// nacteni asociace
-		$tableAssocs = new Audit_Model_AuditsMistakes();
-		
-		if ($mistake->record_id) {
-			$where = array(
-					"audit_id = " . $this->_audit->id,
-					"record_id = " . $mistake->record_id
-			);
+		if ($auditId) {
+			$tableAssocs = new Audit_Model_AuditsMistakes();
 			
-			$assoc = $tableAssocs->fetchRow($where);
+			if ($mistake->record_id) {
+				$where = array(
+						"audit_id = " . $this->_audit->id,
+						"record_id = " . $mistake->record_id
+				);
+				
+				$assoc = $tableAssocs->fetchRow($where);
+			} else {
+				$assoc = $tableAssocs->find($this->_audit->id, $mistake->id)->current();
+			}
 		} else {
-			$assoc = $tableAssocs->find($this->_audit->id, $mistake->id)->current();
+			$tableAssocs = new Audit_Model_ChecksMistakes();
+			
+			$assoc = $tableAssocs->find($checkId, $mistakeId)->current();
+			
+			$tableChecks = new Audit_Model_Checks();
+			$check = $tableChecks->getById($checkId);
 		}
 		
 		// kontrola prislusnosti k auditu
 		if (!$assoc) throw new Zend_Exception("Invalid combination of audit and mistake");
 		
 		// kontrola pristupnosti k akci
-		if ($this->_audit->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid user");
+		if ($auditId) {
+			if ($this->_audit->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid user");
+		} else {
+			if ($check->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid user");
+		}
 		
 		// vygenerovani navratove hodnoty
 		$retVal = (object) array("mistake" => $mistake, "assoc" => $assoc);

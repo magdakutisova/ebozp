@@ -33,7 +33,7 @@ $mistake = $this->mistake;
 			Poprvé zjištěna
 			</td>
 			<td>
-			<?php echo $this->sqlDate($this->masterAudit->done_at); ?>
+			<?php echo $this->sqlDate($this->masterAudit ? $this->masterAudit->done_at : $this->masterCheck->done_at); ?>
 			</td>
 		</tr>
 		<tr>

@@ -62,6 +62,49 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$this->_redirect($url);
 	}
 	
+	public function coordsubmitAction() {
+		// nacteni dat
+		$check = $this->_loadDataFromDb(null, self::CHECK_FOR_COORDINATOR, true, $client, $subsidiary);
+		
+		// kontrola jestli je audit uzavren
+		if ($check->checker_confirmed_at == "0000-00-00 00:00:00" || $check->coordinator_confirmed_at != "0000-00-00 00:00:00") throw new Zend_Exception("Check #$check->id can not be closed by coordinator");
+		
+		// odstraneni neakcnich neshod
+		$tableAssocs = new Audit_Model_ChecksMistakes();
+		$where = array(
+				"check_id = " . $check->id,
+				"!submit_status",
+				"`action` != " . Audit_Model_ChecksMistakes::DO_NEW
+		);
+		
+		$tableAssocs->delete($where);
+		
+		// samazani novych neshod, ktere nebyly potvrzeny
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		
+		$where = array(
+				"check_id = " . $check->id,
+				"id in (select mistake_id from `$nameAssocs` where `check_id` = $check->id and !`submit_status` and `action` = " . Audit_Model_ChecksMistakes::DO_NEW . ")"
+		);
+		
+		$tableMistakes->delete($where);
+		
+		$check->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
+		$check->save();
+		
+		// presmerovani na get
+		$params = array(
+				"checkId" => $check->id,
+				"subsidiaryId" => $check->subsidiary_id,
+				"clientId" => $check->client_id
+		);
+		
+		$url = $this->view->url($params, "audit-check-get");
+		
+		$this->_redirect($url);
+	}
+	
 	public function createAction() {
 		// nacteni dat
 		$clientId = $this->getRequest()->getParam("clientId", 0);
@@ -134,15 +177,7 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$form->setAction($url);
 		
 		// nacteni neodstranenych neshod pobocky
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		
-		$where = array(
-				"subsidiary_id = " . $check->subsidiary_id,
-				"!is_removed",
-				"submit_status"
-		);
-		
-		$mistakes = $tableMistakes->fetchAll($where, "workplace_id");
+		$mistakes = $check->getMistakes();
 		
 		// nacteni asociaci a indexace dle neshody
 		$assocs = $check->findDependentRowset("Audit_Model_ChecksMistakes");
@@ -151,7 +186,7 @@ class Audit_CheckController extends Zend_Controller_Action {
 		foreach ($assocs as $item) {
 			$assocIndex[$item->mistake_id] = $item;
 		}
-		
+		//die(var_dump(array_keys($assocIndex)));
 		// nacteni a indexace pracovist na pobocce
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		$workplaces = $tableWorkplaces->fetchAll("subsidiary_id = " . $subsidiary->id_subsidiary);
@@ -358,6 +393,24 @@ class Audit_CheckController extends Zend_Controller_Action {
 		
 		$url = $this->view->url($params, "audit-check-edit");
 		$this->_redirect($url);
+	}
+	
+	public function reviewAction() {
+		$this->editAction();
+		
+		if ($this->view->formSubmit) {
+			$this->view->formSubmit->setName("checkcoordsubmit");
+			
+			$params = array(
+					"clientId" => $this->getRequest()->getParam("clientId", 0),
+					"subsidiaryId" => $this->getRequest()->getParam("subsidiaryId", 0),
+					"checkId" => $this->getRequest()->getParam("checkId", 0)
+			);
+			
+			$url = $this->view->url($params, "audit-check-coordsubmit");
+			
+			$this->view->formSubmit->setAction($url);
+		}
 	}
 	
 	public function techsubmitAction() {

@@ -453,5 +453,44 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"controller" => "check",
 								"action" => "get"))
 		);
+		
+		// uprava ze strany koordinatora
+		$router->addRoute(
+				"audit-check-review",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/check/:checkId/review",
+						array("module" => "audit",
+								"controller" => "check",
+								"action" => "review"))
+		);
+		
+		// potvrzeni neshody ze strany proverky
+		$router->addRoute(
+				"audit-check-mistake-submit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/submit",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "submit.json"
+								))
+		);
+		
+		// odpotvrzeni neshody ze strany proverky
+		$router->addRoute(
+				"audit-check-mistake-unsubmit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/unsubmit",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "unsubmit.json"
+						))
+		);
+		
+		// odeslani proverky ze strany koordinatora
+		$router->addRoute(
+				"audit-check-coordsubmit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/coordinator/submit",
+						array("module" => "audit",
+								"controller" => "check",
+								"action" => "coordsubmit"
+						))
+		);
 	}
 }

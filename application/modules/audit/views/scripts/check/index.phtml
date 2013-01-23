@@ -52,13 +52,22 @@ $index = $this->subsidiaryIndex;
 				case My_Role::ROLE_TECHNICIAN:
 					if ($check->checker_confirmed_at == "0000-00-00 00:00:00") {
 						$url = $this->url($params, "audit-check-edit");
-						
 						echo "<a href='$url'>Upravit</a>";
 					} else {
-						
+						$url = $this->url($params, "audit-check-get");
+						echo "<a href='$url'>Zobrazit</a>";
 					}
 					
 					break;
+					
+				case My_Role::ROLE_COORDINATOR:
+					if ($check->checker_confirmed_at != "0000-00-00 00:00:00" && $check->coordinator_confirmed_at == "0000-00-00 00:00:00") {
+						$url = $this->url($params, "audit-check-review");
+						echo "<a href='$url'>Upravit</a>";
+					} else {
+						$url = $this->url($params, "audit-check-get");
+						echo "<a href='$url'>Zobrazit</a>";
+					}
 			}
 			?>
 			</td>

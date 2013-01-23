@@ -49,6 +49,22 @@ echo "var CHECK_ID=" . $this->check->id . ";";
 				</tr>
 				<tr>
 					<td>
+					Technik potvrdil
+					</td>
+					<td>
+						<strong><?php echo ($this->check->checker_confirmed_at == "0000-00-00 00:00:00") ? "Nepotvrdil" : $this->sqlDateTime($this->check->checker_confirmed_at); ?></strong>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					Koordinátor potvrdil
+					</td>
+					<td>
+						<strong><?php echo ($this->check->coordinator_confirmed_at == "0000-00-00 00:00:00") ? "Nepotvrdil" : $this->sqlDateTime($this->check->coordinator_confirmed_at); ?></strong>
+					</td>
+				</tr>
+				<tr>
+					<td>
 					Poznámka k průběhu
 					</td>
 					<td class="pre"><?php echo $this->check->progress_note; ?></td>
