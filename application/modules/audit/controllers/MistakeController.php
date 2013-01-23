@@ -447,13 +447,30 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nacteni dalsich auditu
 		$audits = $mistake->findManyToManyRowset($tableAudits, "Audit_Model_AuditsMistakes", "mistake", "audit", $tableAudits->select(false)->order("done_at"));
 		
-		/** @todo slouceni s proverkami a serazeni dle datumu */
-		$found = $audits;
+		// nacteni historie neshody
+		$found = self::getMistakeHistory($mistake);
+		
+		// nacteni lidi
+		$userIds = array(0);
+		
+		foreach ($found as $item) {
+			$userIds[] = $item["coordinator_id"];
+			$userIds[] = isset($item["checker_id"]) ? $item["checker_id"] : $item["auditor_id"];
+		}
+		
+		$tableUsers = new Application_Model_DbTable_User();
+		$users = $tableUsers->find($userIds);
+		$userIndex = array();
+		
+		foreach ($users as $user) {
+			$userIndex[$user->id_user] = $user;
+		}
 		
 		$this->view->mistake = $mistake;
 		$this->view->masterAudit = $masterAudit;
 		$this->view->masterCheck = $masterCheck;
 		$this->view->found = $found;
+		$this->view->userIndex = $userIndex;
 	}
 	
 	public function getHtmlAction() {
@@ -1010,5 +1027,33 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$retVal = (object) array("mistake" => $mistake, "assoc" => $assoc);
 		
 		return $retVal;
+	}
+	
+	public static function getMistakeHistory(Audit_Model_Row_AuditRecordMistake $mistake) {
+		// nacteni zaznamu auditu a proverek
+		$audits = $mistake->getAudits();
+		$checks = $mistake->getChecks();
+		
+		// prevod na pole, slouceni a prevedeni datumu na cislo
+		$arrData = array_merge($audits->toArray(), $checks->toArray());
+		$maxI = count($arrData);
+		
+		for ($i = 0; $i < $maxI; $i++) {
+			$numDate = (int) implode("", explode("-", $arrData[$i]["done_at"]));
+			$arrData[$i]["done_at_int"] = $numDate;
+		}
+		
+		// definice anonymni funkce callbacku
+		$callback = "self::SORT_CALLBACK";
+		
+		usort($arrData, $callback);
+		
+		return $arrData;
+	}
+	
+	private static function SORT_CALLBACK ($item1, $item2) {
+		if ($item1["done_at_int"] == $item2["done_at_int"]) return 0;
+		
+		return ($item1["done_at_int"] > $item2["done_at_int"]) ? 1 : -1;
 	}
 }

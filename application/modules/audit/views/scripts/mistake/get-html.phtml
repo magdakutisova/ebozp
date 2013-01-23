@@ -40,7 +40,7 @@ $mistake = $this->mistake;
 			<td>
 			Kritická*
 			</td>
-			<td class="<?php echo $mistkae->is_marked ? "error" : ""; ?>">
+			<td class="<?php echo $mistake->is_marked ? "error" : ""; ?>">
 			<?php echo $mistake->is_marked ? "Ano" : "Ne"; ?>
 			</td>
 		</tr>
@@ -82,4 +82,59 @@ $mistake = $this->mistake;
 </table>
 <em>*) Kritická neshoda je taková, která byla nalezena ve více než jednom auditu nebo prověrce</em>
 <h2>Audity a prověrky</h2>
-<!-- TODO: DODĚLAT AŽ BUDOU HOTOVÉ PROVĚRKY -->
+<table>
+	<thead>
+		<tr>
+			<th>
+			&nbsp;
+			</th>
+			<th>
+			Datum
+			</th>
+			<th>
+			Technik
+			</th>
+			<th>
+			Koordinátor
+			</th>
+			<th>
+			Zodpovědná osoba
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+foreach ($this->found as $item) {
+	if (isset($item["responsibiles"])) {
+		$type = "Prověrka";
+		$responsibiles = $item["responsibiles"];
+		$technic = $this->userIndex[$item["checker_id"]]->username;
+	} else {
+		$type = "Audit";
+		$responsibiles = $item["responsibile_name"];
+		$technic = $this->userIndex[$item["auditor_id"]]->username;
+	}
+	
+	?>
+		<tr>
+			<td>
+			<?php echo $type; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($item["done_at"]); ?>
+			</td>
+			<td>
+			<?php echo $technic; ?>
+			</td>
+			<td>
+			<?php echo $this->userIndex[$item["coordinator_id"]]->username; ?>
+			</td>
+			<td>
+			<?php echo $responsibiles; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>

@@ -11,12 +11,30 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
+	 * vraci seznam auditu, kde se neshoda vyskytla
+	 * 
+	 * @return Audit_Model_Rowset_Audits
+	 */
+	public function getAudits() {
+		return $this->findManyToManyRowset("Audit_Model_Audits", "Audit_Model_AuditsMistakes", "mistake", "audit");
+	}
+	
+	/**
 	 * vraci klienta
 	 *
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getClient() {
 		return $this->findParentRow("Application_Model_DbTable_Client", "client");
+	}
+	
+	/**
+	 * vraci seznam proverek, kde se neshoda vyskytuje
+	 * 
+	 * @return Audit_Model_Rowset_Checks
+	 */
+	public function getChecks() {
+		return $this->findManyToManyRowset("Audit_Model_Checks", "Audit_Model_ChecksMistakes", "mistake", "check");
 	}
 	
 	/**
