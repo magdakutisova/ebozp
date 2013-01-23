@@ -335,17 +335,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
-		// editace neshody z proverky
-		$router->addRoute(
-				"audit-mistake-checkedit",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/edit",
-						array(
-								"module" => "audit",
-								"controller" => "mistake",
-								"action" => "checkedit"
-						))
-		);
-		
 		/*
 		 * PROVERKY
 		 */
@@ -401,31 +390,10 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "audit",
 								"controller" => "check",
-								"action" => "index"
+								"action" => "put"
 						))
 		);
-		
-		// uprava akce nad neshodou
-		$router->addRoute(
-				"audit-check-chaction",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/action",
-						array(
-								"module" => "audit",
-								"controller" => "check",
-								"action" => "action"
-						))
-		);
-		
-		// tvorba nove neshody
-		$router->addRoute(
-				"audit-check-createmistake",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/create",
-						array(
-								"module" => "audit",
-								"controller" => "mistake",
-								"action" => "createalone2"
-						))
-		);
+<<<<<<< HEAD
 		
 		// vytvoreni nove neshody
 		$router->addRoute(
@@ -492,5 +460,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "coordsubmit"
 						))
 		);
+=======
+>>>>>>> d28d62044ee1e530cfd243c786ddbb6de6144f2c
 	}
 }

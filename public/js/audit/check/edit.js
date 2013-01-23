@@ -1,5 +1,6 @@
 $(function () {
 	
+<<<<<<< HEAD
 	// otevreni dialogu s editaci neshody
 	function openMistake() {
 		
@@ -53,3 +54,7 @@ $(function () {
 	buttons.filter("[name='unsubmit-mistake']").click(unsubmitMistake);
 	$("#checkcoordsubmit").submit(checkAllSubmited);
 });
+=======
+	$("#tabs").tabs();
+});
+>>>>>>> d28d62044ee1e530cfd243c786ddbb6de6144f2c

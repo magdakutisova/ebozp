@@ -2,6 +2,7 @@
 class My_Schooling{
 	
 	private static $schoolings = array(
+			0 => '-----',
 			1 => 'Požární ochrana',
 			2 => 'Bezpečnost práce',
 			3 => 'Řidiči referentských vozidel',

@@ -228,11 +228,12 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
-			$environmentFactorList, $categoryList, $schoolingList){
+		$environmentFactorList, $categoryList, $schoolingList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
 		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
 		$newSchoolings = array_filter(array_keys($data), array($this, 'findSchoolings'));
+		$newNewSchoolings = array_filter(array_keys($data), array($this, 'findNewSchoolings'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -276,10 +277,22 @@ class Application_Form_Position extends Zend_Form{
 			$newSchooling = new My_Form_Element_Schooling('newSchooling' . strval($order - 1), array(
 					'order' => $order,
 					'value' => $data[$fieldName],
+					'validators' => array(new My_Validate_Schooling()),
 					'multiOptions' => $schoolingList,
 					'canViewPrivate' => $canViewPrivate,
 					));
 			$this->addElement($newSchooling);
+		}
+		
+		foreach($newNewSchoolings as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newNewSchooling = new My_Form_Element_NewSchooling('newNewSchooling' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'validators' => array(new My_Validate_Schooling()),
+					'canViewPrivate' => $canViewPrivate,
+					));
+			$this->addElement($newNewSchooling);
 		}
 	}
 	
@@ -302,8 +315,14 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	private function findSchoolings($schooling){
-		if(strpos($schooling, 'newSchooling') !== false){
+		if(preg_match('/newSchooling\w+/', $schooling)){
 			return $schooling;
+		}
+	}
+	
+	private function findNewSchoolings($newSchooling){
+		if(strpos($newSchooling, 'newNewSchooling') !== false){
+			return $newSchooling;
 		}
 	}
 		
