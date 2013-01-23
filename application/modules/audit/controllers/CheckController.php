@@ -1,6 +1,10 @@
 <?php
 class Audit_CheckController extends Zend_Controller_Action {
 	
+	const CHECK_FOR_TECHNIC = 1;
+	const CHECK_FOR_COORDINATOR = 2;
+	const CHECK_FOR_CLIENT = 4;
+	
 	/**
 	 * 
 	 * @var Application_Model_User
@@ -25,6 +29,37 @@ class Audit_CheckController extends Zend_Controller_Action {
 			$this->_audit = $tableAudits->getById($auditId);
 			$this->_auditId = $auditId;
 		}
+		
+		$this->view->layout()->setLayout("client-layout");
+	}
+	
+	public function actionAction() {
+		// nacteni dat
+		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
+		$checkId = $this->getRequest()->getParam("checkId", 0);
+		
+		$tableAssocs = new Audit_Model_ChecksMistakes();
+		$assoc = $tableAssocs->find($checkId, $mistakeId)->current();
+		
+		if (!$assoc) throw new Zend_Exception("hovno");
+		
+		// kontrola dat
+		$form = new Audit_Form_CheckAction();
+		$form->populate($this->getRequest()->getParams());
+		
+		$assoc->action = $form->getElement("action")->getValue();
+		$assoc->save();
+		
+		// presmerovani zpet
+		$params = array(
+				"clientId" => $this->getRequest()->getParam("clientId"),
+				"subsidiaryId" => $this->getRequest()->getParam("subsidiaryId"),
+				"checkId" => $checkId,
+				"mistakeId" => $mistakeId
+		);
+		
+		$url = $this->view->url($params, "audit-mistake-checkedit");
+		$this->_redirect($url);
 	}
 	
 	public function coordsubmitAction() {
@@ -120,11 +155,16 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$subsidiary = $check->getSubsidiary();
 		
 		// vytvoreni formulare a jeho nastaveni
-		$form = new Audit_Form_CheckCreate();
+		$form = new Audit_Form_CheckEdit();
 		$form->fillSelects();
 		$data = $check->toArray();
+		
+		list($year, $month, $day) = explode("-", $data["done_at"]);
+		$data["done_at"] = "$day. $month. $year";
+		
 		$data["responsibile_name"] = $data["responsibiles"];
 		$form->populate($data);
+		$form->isValidPartial($this->getRequest()->getParams());
 		$form->getElement("submit")->setLabel("Uložit");
 		
 		$params = array(
@@ -136,7 +176,6 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$url = $this->view->url($params, "audit-check-put");
 		$form->setAction($url);
 		
-<<<<<<< HEAD
 		// nacteni neodstranenych neshod pobocky
 		$mistakes = $check->getMistakes();
 		
@@ -177,12 +216,44 @@ class Audit_CheckController extends Zend_Controller_Action {
 			$this->view->formSubmit = $formSubmit;
 		}
 		
-=======
->>>>>>> d28d62044ee1e530cfd243c786ddbb6de6144f2c
 		$this->view->check = $check;
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->editForm = $form;
+		$this->view->mistakes = $mistakes;
+		$this->view->assocIndex = $assocIndex;
+		$this->view->newMistakeForm = $newMistakeForm;
+		$this->view->workplaceIndex = $workplaceIndex;
+	}
+	
+	public function getAction() {
+		// nacteni informaci
+		$check = $this->_loadDataFromDb(null, self::CHECK_FOR_CLIENT | self::CHECK_FOR_COORDINATOR | self::CHECK_FOR_TECHNIC, true, $client, $subsidiary);
+		
+		// nacteni neshod
+		$mistakes = $check->getMistakes();
+		$assocs = $check->findDependentRowset("Audit_Model_ChecksMistakes", "check");
+		$assocIndex = array();
+		
+		foreach ($assocs as $item) {
+			$assocIndex[$item->mistake_id] = $item;
+		}
+		
+		// nacteni technika a koordinatora
+		$tableUsers = new Application_Model_DbTable_User();
+		$users = $tableUsers->find(array($check->coordinator_id, $check->checker_id));
+		$userIndex = array();
+		
+		foreach ($users as $user) {
+			$userIndex[$user->id_user] = $user;
+		}
+		
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->mistakes = $mistakes;
+		$this->view->assocIndex = $assocIndex;
+		$this->view->check = $check;
+		$this->view->userIndex = $userIndex;
 	}
 	
 	public function indexAction() {
@@ -193,25 +264,30 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$client = $tableClients->find($clientId)->current();
 		if (!$client) throw new Zend_Exception("Client #$clientId has not been found");
 		
-		// nacteni klientu a pobocek, ktere jsou k dispozici
-		$subSiDiariesIds = $this->_user->getUserSubsidiaries();
+		// nacteni proverek
+		$tableChecks = new Audit_Model_Checks();
+		$checks = $tableChecks->fetchAll(array("client_id = " . $client->id_client), "created_at desc");
 		
-		// nacteni pobocek
+		// nactnei id pobocek
+		$subsidiaryIds = array(0);
+		
+		foreach ($checks as $item) {
+			$subsidiaryIds[] = $item->subsidiary_id;
+		}
+		
+		// nctnei pobocek a jejich indexace
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$subSiDiariesIds[] = 0;
+		$subsidiaries = $tableSubsidiaries->find($subsidiaryIds);
+		$subsidiaryIndex = array();
 		
-		$where = array(
-				$tableSubsidiaries->getAdapter()->quoteInto("id_subsidiary in (?)", $subSiDiariesIds),
-				"client_id = " . $client->id_client
-		);
-		
-		$subsidiaries = $tableSubsidiaries->fetchAll(
-				$where,
-				array("subsidiary_name")
-		);
+		foreach ($subsidiaries as $item) {
+			$subsidiaryIndex[$item->id_subsidiary] = $item;
+		}
 		
 		$this->view->client = $client;
-		$this->view->subsidiaries = $subsidiaries;
+		$this->view->subsidiaryIndex = $subsidiaryIndex;
+		$this->view->checks = $checks;
+		$this->view->user = $this->_user;
 	}
 	
 	public function postAction() {
@@ -252,6 +328,25 @@ class Audit_CheckController extends Zend_Controller_Action {
 		$tableChecks = new Audit_Model_Checks();
 		$check = $tableChecks->createCheck($subsidiary, $technic, $coordinator, $form->getValue("responsibile_name"), $doneAt);
 		
+		// nacteni neshod pobocky a vytvoreni prvotnich asociaci
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$where = array("subsidiary_id = " . $subsidiary->id_subsidiary, "!is_removed");
+		$mistakes = $tableMistakes->fetchAll($where);
+		$toInsert = array();
+		
+		foreach ($mistakes as $mistake) {
+			$toInsert[] = "($check->id, $mistake->id, " . Audit_Model_ChecksMistakes::DO_NOTHING . ")";
+		}
+		
+		// pokud je co vlozit, vlozi se to
+		if ($toInsert) {
+			$tableAssocs = new Audit_Model_ChecksMistakes();
+			$nameAssocs = $tableAssocs->info("name");
+			
+			$sql = "insert into `$nameAssocs` (check_id, mistake_id, `action`) values " . implode(",", $toInsert);
+			$tableAssocs->getAdapter()->query($sql);
+		}
+		
 		// presmerovani na edit
 		$params = array(
 				"clientId" => $subsidiary->client_id,
@@ -263,7 +358,6 @@ class Audit_CheckController extends Zend_Controller_Action {
 		
 		$this->_redirect($url);
 	}
-<<<<<<< HEAD
 	
 	public function putAction() {
 		// nacteni dat
@@ -398,6 +492,3 @@ class Audit_CheckController extends Zend_Controller_Action {
 		return $check;
 	}
 }
-=======
-}
->>>>>>> d28d62044ee1e530cfd243c786ddbb6de6144f2c

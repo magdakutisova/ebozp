@@ -1,15 +1,30 @@
+<?php 
+$index = $this->subsidiaryIndex;
+?>
 <h1><?php echo $this->client->company_name; ?></h1>
-<h2>Nová prověrka</h2>
-Vyberte pobočku
-<ul class="tree" id="client-list">
-<?php
-$params = array("clientId" => $this->client->id_client);
-
-foreach ($this->subsidiaries as $item) {
-	?>
-	<li>
+<h2>Prověrky</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Pobočka
+			</th>
+			<th>
+			Provedeno
+			</th>
+			<th>
+			Technik
+			</th>
+			<th>
+			Koordinátor
+			</th>
+			<th>
+			Akce
+			</th>
+		</tr>
+	</thead>
+	<tbody>
 	<?php 
-<<<<<<< HEAD
 	$roleId = $this->user->getRoleId();
 	$params = array("clientId" => $this->client->id_client);
 	
@@ -62,14 +77,3 @@ foreach ($this->subsidiaries as $item) {
 	?>
 	</tbody>
 </table>
-=======
-	$params["subsidiaryId"] = $item->id_subsidiary;
-	$url = $this->url($params, "audit-check-create");
-	echo "<a href='$url'>" . $item->subsidiary_name . "</a>";
-	?>
-	</li>
-	<?php
-}
-?>
-</ul>
->>>>>>> d28d62044ee1e530cfd243c786ddbb6de6144f2c

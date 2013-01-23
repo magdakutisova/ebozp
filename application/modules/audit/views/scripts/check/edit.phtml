@@ -1,13 +1,45 @@
+<script type="text/javascript">
+<?php 
+echo "var CLIENT_ID=" . $this->client->id_client . ";";
+echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
+echo "var CHECK_ID=" . $this->check->id . ";";
+?>
+</script>
 <h1><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h1>
 <h2>Prověrka</h2>
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
+		<li><a href="#mistakes">Neshody</a></li>
+		<li><a href="#newmistake">Nová neshoda</a>
 	</ul>
 	<div id="overview">
 <?php
 echo $this->editForm;
 ?>
+	<em>*) Shrnutí je povinné vyplnit pouze před odesláním koordinátorovi</em>
+	<?php 
+	if ($this->formSubmit) {
+		echo "<h2>Uzavřít prověrku</h2>";
+		echo $this->formSubmit;
+	}
+	?>
+	</div>
+	<div id="mistakes">
+		<table id="mistake-table">
+			<?php 
+			echo $this->mistakeTable()->header();
+			$actions = array("edit-mistake" => "Upravit");
+			$this->mistakeTable()->workIndex = $this->workplaceIndex;
+			
+			foreach ($this->mistakes as $mistake) {
+				echo $this->mistakeTable()->mistake($mistake, $actions);
+			}
+			?>
+		</table>
+	</div>
+	<div id="newmistake">
+		<?php echo $this->newMistakeForm; ?>
 	</div>
 </div>
 <script type="text/javascript" src="/js/audit/check/edit.js"></script>

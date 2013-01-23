@@ -15,7 +15,7 @@ if ($this->deleteForm) {
 	echo $this->deleteForm;
 }
 
-if ($this->similars->count()) {
+if ($this->similars && $this->similars->count()) {
 	$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id, "recordId" => $this->record->id), "audit-mistake-attach");
 	?>
 <h2>Podobné neshody</h2>

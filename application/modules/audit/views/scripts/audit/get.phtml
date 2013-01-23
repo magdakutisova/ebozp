@@ -1,3 +1,9 @@
+<script type="text/javascript">
+<?php 
+echo "var CLIENT_ID=" . $this->client->id_client . ";";
+echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
+?>
+</script>
 <h1>Audit</h1>
 <h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
 <div id="tabs">
@@ -62,7 +68,7 @@
 		</div>
 		<div id="mistakes-forms">
 			<h3>Neshody z formulářů</h3>
-			<table>
+			<table id="tab-forms">
 				<?php 
 				echo $this->mistakeTable()->header();
 				$actions = array("show-mistake" => "Podrobnosti");
@@ -75,7 +81,7 @@
 		</div>
 		<div id="mistakes-others">
 			<h3>Neshody z pracovišť</h3>
-			<table>
+			<table id="tab-others">
 				<?php 
 				echo $this->mistakeTable()->header();
 				

@@ -2,10 +2,17 @@
 <h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
 <div class="box">
 <?php 
-$urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
-
-$url = $this->url($urlParams, "audit-edit");
-echo "<a href='$url'>Zpět na audit</a>";
+if ($this->audit) {
+	$urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
+	
+	$url = $this->url($urlParams, "audit-edit");
+	echo "<a href='$url'>Zpět na audit</a>";
+} else {
+	$urlParams = array("clientId" => $this->client->id_client, "checkId" => $this->check->id, "subsidiaryId" => $this->subsidiary->id_subsidiary);
+	
+	$url = $this->url($urlParams, "audit-check-edit");
+	echo "<a href='$url'>Zpět na prověrku</a>";
+}
 
 echo $this->dataList("categories", $this->categories);
 echo $this->dataList("subcategories", array());
