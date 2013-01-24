@@ -12,7 +12,16 @@ echo $this->mistakeTable()->header();
 $actions = array("show-mistake" => "Zobrazit");
 
 foreach ($this->mistakes as $mistake) {
-	echo $this->mistakeTable()->mistake($mistake, $actions);
+	// vyhodnoceni trid
+	$classes = array();
+	
+	if ($mistake->is_removed) {
+		$classes[] = "mistake-removed";
+	} elseif ($mistake->is_marked) {
+		$classes[] = "mistake-marked";
+	}
+	
+	echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
 }
 ?>
 </table>

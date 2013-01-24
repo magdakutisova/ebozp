@@ -74,7 +74,16 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 				$actions = array("show-mistake" => "Podrobnosti");
 				
 				foreach ($this->formMistakes as $mistake) {
-					echo $this->mistakeTable()->mistake($mistake, $actions);
+					// vyhodnoceni trid
+					$classes = array();
+					
+					if ($mistake->is_removed) {
+						$classes[] = "mistake-removed";
+					} elseif ($mistake->is_marked) {
+						$classes[] = "mistake-marked";
+					}
+					
+					echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
 				}
 				?>
 			</table>
@@ -88,7 +97,16 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 				$this->mistakeTable()->workIndex = $this->workplaceIndex;
 				
 				foreach ($this->otherMistakes as $mistake) {
-					echo $this->mistakeTable()->mistake($mistake, $actions);
+					// vyhodnoceni trid
+					$classes = array();
+					
+					if ($mistake->is_removed) {
+						$classes[] = "mistake-removed";
+					} elseif ($mistake->is_marked) {
+						$classes[] = "mistake-marked";
+					}
+					
+					echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
 				}
 				?>
 			</table>

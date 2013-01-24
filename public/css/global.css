@@ -152,3 +152,5 @@ input[id*='first_name'], input[id*='surname']	{width: 150px;}
 .multirow-table thead { background-color: #C3D9FF; }
 .multirow-table tbody:nth-child(odd) tr { background-color: #e5ecf9; }
 .multirow-table tbody:nth-child(even) tr td { background-color: #F2F5F7; }
+.mistake-marked tr td { background-color: #ff6f6f!important; color: #000000; }
+.mistake-removed tr td { background-color: #86ff8f !important; color: #000000; }
