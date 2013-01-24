@@ -68,7 +68,7 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 		</div>
 		<div id="mistakes-forms">
 			<h3>Neshody z formulářů</h3>
-			<table id="tab-forms">
+			<table id="tab-forms" class="multirow-table">
 				<?php 
 				echo $this->mistakeTable()->header();
 				$actions = array("show-mistake" => "Podrobnosti");
@@ -81,7 +81,7 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 		</div>
 		<div id="mistakes-others">
 			<h3>Neshody z pracovišť</h3>
-			<table id="tab-others">
+			<table id="tab-others" class="multirow-table">
 				<?php 
 				echo $this->mistakeTable()->header();
 				

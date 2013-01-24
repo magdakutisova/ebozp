@@ -5,7 +5,7 @@ var CLIENTID = <?php echo $this->client->id_client; ?>
 echo $this->formButton("toggle-filter", "Zobrazit/skrýt filtraci");
 echo $this->formFilter;
 ?>
-<table id="mistake-list">
+<table id="mistake-list" class="multirow-table">
 <?php 
 echo $this->mistakeTable()->header();
 
