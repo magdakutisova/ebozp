@@ -559,11 +559,13 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	
 		// sestaveni vyhledavaciho dotazu pro seznam neshod
 		$tableAudits = new Audit_Model_Audits();
+		$tableChecks = new Audit_Model_Checks();
 		$nameAudits = $tableAudits->info("name");
+		$nameChecks = $tableChecks->info("name");
 		
 		$where = array(
 				"client_id = " . $clientId,
-				"audit_id in (select id from `$nameAudits` where client_id = $clientId and is_closed)"
+				"(audit_id in (select id from `$nameAudits` where client_id = $clientId and is_closed) OR check_id IN (select id from `$nameChecks` where client_id = $clientId and coordinator_confirmed_at))"
 		);
 	
 		// nacteni filtracniho formulare
