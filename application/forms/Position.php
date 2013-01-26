@@ -221,6 +221,31 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//pracovní činnosti
+       	$this->addElement('hidden', 'works', array(
+       			'label' => 'Pracovní činnosti (prováděné práce):',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 601,
+       			'description' => $questionMarkStart . 'Doplňte postupně všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
+       			));
+       	$this->getElement('works')->getDecorator('Description')->setEscape(false);
+       	
+       	$this->addElement('hidden', 'id_work', array(
+       			'value' => 603,
+       			'order' => 1007,
+       			));
+       	
+       	$this->addElement('workComplete', 'work', array(
+       			'order' => 602,
+       			'validators' => array(new My_Validate_Work()),
+       			));
+       	
+       	$this->addElement('button', 'new_work_to_position', array(
+       			'label' => 'Další pracovní činnost',
+       			'order' => 700,
+       			'decorators' => $elementDecorator2,
+       			));
+       	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
        			'order' => 999,
