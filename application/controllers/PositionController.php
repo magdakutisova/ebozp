@@ -15,6 +15,9 @@ class PositionController extends Zend_Controller_Action{
     private $_environmentFactorList;
     private $_categoryList;
     private $_schoolingList;
+    private $_workList;
+    private $_workplaceList;
+    private $_frequencyList;
     
     public function init(){
     	//globální nastavení view
@@ -55,6 +58,16 @@ class PositionController extends Zend_Controller_Action{
     	
     	//získání seznamu školení
     	$this->_schoolingList = My_Schooling::getSchoolings();
+    	
+    	//získání seznamu pracovních činností
+    	$works = new Application_Model_DbTable_Work();
+    	$this->_workList = $works->getWorks($this->_clientId);
+    	
+    	//získání seznamu pracovišť
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+    	
+    	//získání seznamu četností
     	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
