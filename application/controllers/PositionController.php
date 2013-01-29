@@ -106,7 +106,7 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
     			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
-    			$this->_schoolingList);
+    			$this->_schoolingList, $this->_workList, $this->_workplaceList, $this->_frequencyList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -200,6 +200,21 @@ class PositionController extends Zend_Controller_Action{
     	$element = new My_Form_Element_NewSchooling("newNewSchooling$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newwork', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_work');
+    	
+    	$element = new My_Form_Element_WorkComplete("newWork$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_workList);
+    	$element->setAttrib('multiOptions2', $this->_workplaceList);
+    	$element->setAttrib('multiOptions3', $this->_frequencyList);
     	
     	$this->view->field = $element->__toString();
     }

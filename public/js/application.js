@@ -127,6 +127,28 @@ $(function(){
 		}
 	});
 	
+	//formulář pracovní pozice podmíněné zobrazování četnosti
+	$('select[id*=frequency]').change(function(){
+		toggleHiddenFrequency(this);
+	});
+
+	$(document).ready(function(){
+		var selectbox = $(document).find('select[id*=frequency]');
+		toggleHiddenFrequency(selectbox);
+	});
+	
+	function toggleHiddenFrequency(selectbox){
+		if($(selectbox).val() == 6){
+			$(selectbox).parent().next().children('label').removeClass('hidden');
+			$(selectbox).parent().next().children('input').attr('hidden', false);
+		}
+		else{
+			$(selectbox).parent().next().children('label').addClass('hidden');
+			$(selectbox).parent().next().children('input').attr('hidden', true);
+			$(selectbox).parent().next().children('input').val('');
+		}
+	}
+	
 	//dynamické přidávání pracovních pozic
 	$("#new_position").click(function(){
 		ajaxAddPosition();
@@ -160,6 +182,24 @@ $(function(){
 			data: "id_work=" + id + "&clientId=" + clientId,
 			success: function(newElement){
 				$('#new_work').parents('tr').before(newElement);
+				$('#id_work').val(++id);
+			}
+		});
+	}
+	
+	$("#new_work_to_position").click(function(){
+		ajaxAddWorkToPosition();
+	});
+	
+	function ajaxAddWorkToPosition(){
+		var id = $("#id_work").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newwork/format/html',
+			data: "id_work=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_work_to_position').parents('tr').before(newElement);
 				$('#id_work').val(++id);
 			}
 		});

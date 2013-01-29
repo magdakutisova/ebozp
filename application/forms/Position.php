@@ -253,12 +253,13 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
-		$environmentFactorList, $categoryList, $schoolingList){
+		$environmentFactorList, $categoryList, $schoolingList, $workList, $workplaceList, $frequencyList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
 		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
 		$newSchoolings = array_filter(array_keys($data), array($this, 'findSchoolings'));
 		$newNewSchoolings = array_filter(array_keys($data), array($this, 'findNewSchoolings'));
+		$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -319,6 +320,19 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newNewSchooling);
 		}
+		
+		foreach($newWorks as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newWork = new My_Form_Element_WorkComplete('newWork' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'validators' => array(new My_Validate_Work()),
+					'multiOptions' => $workList,
+					'multiOptions2' => $workplaceList,
+					'multiOptions3' => $frequencyList,
+					));
+			$this->addElement($newWork);
+		}
 	}
 	
 	private function findEmployees($employee){
@@ -348,6 +362,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findNewSchoolings($newSchooling){
 		if(strpos($newSchooling, 'newNewSchooling') !== false){
 			return $newSchooling;
+		}
+	}
+	
+	private function findWorks($work){
+		if(strpos($work, 'newWork') !== false){
+			return $work;
 		}
 	}
 		
