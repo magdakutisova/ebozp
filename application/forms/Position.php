@@ -59,12 +59,12 @@ class Application_Form_Position extends Zend_Form{
 		//elementy
 		 $this->addElement('hidden', 'client_id', array(
         	'decorators' => $elementDecorator,
-        	'order' => 1000,
+        	'order' => 10000,
         ));
        	
        	$this->addElement('hidden', 'id_position', array(
        		'decorators' => $elementDecorator,
-       		'order' => 1001,
+       		'order' => 10001,
        	));
        	
        	$this->addElement('select', 'subsidiary_id', array(
@@ -116,7 +116,8 @@ class Application_Form_Position extends Zend_Form{
        	//stávající zaměstnanci
        	$this->addElement('hidden', 'id_current_employee', array(
        			'value' => 7,
-       			'order' => 1002,
+       			'order' => 10002,
+       			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('currentEmployee', 'current_employee', array(
@@ -125,30 +126,31 @@ class Application_Form_Position extends Zend_Form{
        	
        	$this->addElement('button', 'new_current_employee', array(
        			'label' => 'Přidat dalšího existujícího zaměstnance',
-       			'order' => 100,
+       			'order' => 2000,
        			'decorators' => $elementDecorator2,
        			));
        	
        	//noví zaměstnanci
        	$this->addElement('hidden', 'id_employee', array(
-       			'value' => 202,
-       			'order' => 1003,
+       			'value' => 2002,
+       			'order' => 10003,
+       			'decorators' => $elementDecorator,
        	));      	
        	
        	$this->addElement('employee', 'employee', array(
-       			'order' => 201,
+       			'order' => 2001,
        			'validators' => array(new My_Validate_Employee()),
        			));
        	
        	$this->addElement('button', 'new_employee', array(
        			'label' => 'Přidat dalšího nového zaměstnance',
-       			'order' => 400,
+       			'order' => 3000,
        			'decorators' => $elementDecorator2,
        			));
        	
        	$this->addElement('text', 'business_hours', array(
        			'label' => 'Pracovní doba',
-       			'order' => 401,
+       			'order' => 4001,
        			'decorators' => $elementDecoratorColspanSeparator,
        			'required' => true,
        			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
@@ -158,7 +160,7 @@ class Application_Form_Position extends Zend_Form{
        	//kategorizace prací a faktory pracovního prostředí
        	$this->addElement('select', 'categorization', array(
        			'label' => 'Kategorizace prací provedena',
-       			'order' => 402,
+       			'order' => 4002,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
        			'required' => true,
@@ -167,21 +169,22 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'environmentFactors', array(
        			'label' => 'Faktory pracovního prostředí:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 403,
+       			'order' => 4003,
        	));
        	
        	$this->addElement('hidden', 'id_environment_factor', array(
-       			'value' => 405,
-       			'order' => 1004,
+       			'value' => 4005,
+       			'order' => 10004,
+       			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('environmentFactor', 'environment_factor', array(
-       			'order' => 404,
+       			'order' => 4004,
        			));
        	
        	$this->addElement('button', 'new_environment_factor', array(
        			'label' => 'Další faktor pracovního prostředí',
-       			'order' => 500,
+       			'order' => 5000,
        			'decorators' => $elementDecorator2,
        			));
        	
@@ -189,35 +192,37 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'schoolings', array(
        			'label' => 'Školení pro pracovní pozici:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 501,
+       			'order' => 5001,
        			'description' => $questionMarkStart . 'Vyberte školení ze seznamu (možnost vybrat více možností). Pokud druh školení není uveden, doplňte jej.' . $questionMarkEnd,
        			));
        	$this->getElement('schoolings')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_schooling', array(
-       			'value' => 503,
-       			'order' => 1005,
+       			'value' => 5003,
+       			'order' => 10005,
+       			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('schooling', 'schooling', array(
-       			'order' => 502,
+       			'order' => 5002,
        			'validators' => array(new My_Validate_Schooling()),
        			));
        	
        	$this->addElement('button', 'new_schooling', array(
        			'label' => 'Další školení',
-       			'order' => 550,
+       			'order' => 5500,
        			'decorators' => $elementDecorator2,
        			));
        	
        	$this->addElement('hidden', 'id_newSchooling', array(
-       			'value' => 551,
-       			'order' => 1006
+       			'value' => 5501,
+       			'order' => 10006,
+       			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('button', 'new_newSchooling', array(
        			'label' => 'Zadat neuvedené školení nebo výcvik',
-       			'order' => 600,
+       			'order' => 6000,
        			'decorators' => $elementDecorator2,
        			));
        	
@@ -225,30 +230,31 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'works', array(
        			'label' => 'Pracovní činnosti (prováděné práce):',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 601,
+       			'order' => 6001,
        			'description' => $questionMarkStart . 'Doplňte postupně všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
        			));
        	$this->getElement('works')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_work', array(
-       			'value' => 603,
-       			'order' => 1007,
+       			'value' => 6003,
+       			'order' => 10007,
+       			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('workComplete', 'work', array(
-       			'order' => 602,
+       			'order' => 6002,
        			'validators' => array(new My_Validate_Work()),
        			));
        	
        	$this->addElement('button', 'new_work_to_position', array(
        			'label' => 'Další pracovní činnost',
-       			'order' => 700,
+       			'order' => 7000,
        			'decorators' => $elementDecorator2,
        			));
        	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
-       			'order' => 999,
+       			'order' => 9999,
        	));
 	}
 	

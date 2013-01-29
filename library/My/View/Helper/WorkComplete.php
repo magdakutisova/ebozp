@@ -4,7 +4,7 @@ class My_View_Helper_WorkComplete extends Zend_View_Helper_FormElement{
 	protected $html = '';
 	
 	public function workComplete($name, $value = null, $attribs = null){
-		$this->_html = '';
+		$this->html = '';
 		$idWork = $work = $newWork = $workplaces = $newWorkplaces = $frequency = $newFrequency = '';
 		
 		$multiOptions = isset($attribs['multiOptions']) ? $attribs['multiOptions'] : null;

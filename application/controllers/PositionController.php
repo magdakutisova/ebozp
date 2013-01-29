@@ -195,7 +195,7 @@ class PositionController extends Zend_Controller_Action{
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newnewschooling', 'html')->initContext();
     	
-    	$id = $this->_getParam('id_newSchooling');
+    	$id = $this->_getParam('id_newSchooling', null);
     	
     	$element = new My_Form_Element_NewSchooling("newNewSchooling$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
@@ -208,7 +208,7 @@ class PositionController extends Zend_Controller_Action{
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newwork', 'html')->initContext();
     	
-    	$id = $this->_getParam('id_work');
+    	$id = $this->_getParam('id_work', null);
     	
     	$element = new My_Form_Element_WorkComplete("newWork$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
