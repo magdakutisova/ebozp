@@ -17,6 +17,17 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// klonovani autidu
+		$router->addRoute(
+				"audit-clone",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/clone",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "clone"
+						))
+		);
+		
 		// odeslani auditu technikem
 		$router->addRoute(
 				"audit-technic-submit",

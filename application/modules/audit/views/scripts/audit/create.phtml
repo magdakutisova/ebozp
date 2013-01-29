@@ -3,6 +3,17 @@
 echo $this->form;
 ?>
 <em>*) Pokud je potřeba zadat více osob, oddělujte čárkou</em>
+<?php 
+if ($this->cloneForm) {
+	?>
+<h2>Klonovat starý audit</h2>
+<p>
+Je možné klonovat audit ze dne <?php echo $this->sqlDate($this->oldAudit->done_at); ?>
+</p>
+	<?php
+	echo $this->cloneForm; 
+}
+?>
 <script type="text/javascript">
 $("#audit-done_at").datepicker({
 	"dateFormat" : "dd. mm. yy",
