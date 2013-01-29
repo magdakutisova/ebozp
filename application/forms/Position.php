@@ -252,6 +252,32 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//technické prostředky
+       	$this->addElement('hidden', 'technical_devices', array(
+       			'label' => 'Technické prostředky:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 7001,
+       			'description' => $questionMarkStart . 'Zadejte jednotlivé technologie, stroje, nástroje, dopravní prostředky, nářadí apod. používané nebo obsluhované při této pracovní činnosti.' . $questionMarkEnd,
+       			));
+       	$this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
+       	
+       	$this->addElement('hidden', 'id_technical_device', array(
+       			'value' => 7003,
+       			'order' => 10008,
+       			'decorators' => $elementDecorator,
+       			));
+       	
+       	$this->addElement('technicalDevice', 'technical_device', array(
+       			'order' => 7002,
+       			'validators' => array(new My_Validate_TechnicalDevice()),
+       			));
+       	
+       	$this->addElement('button', 'new_technical_device_to_position', array(
+       			'label' => 'Další technický prostředek',
+       			'order' => 8000,
+       			'decorators' => $elementDecorator2,
+       			));
+       	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
        			'order' => 9999,
@@ -259,13 +285,15 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
-		$environmentFactorList, $categoryList, $schoolingList, $workList, $workplaceList, $frequencyList){
+		$environmentFactorList, $categoryList, $schoolingList, $workList, $workplaceList, $frequencyList, $sortList,
+			$typeList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
 		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
 		$newSchoolings = array_filter(array_keys($data), array($this, 'findSchoolings'));
 		$newNewSchoolings = array_filter(array_keys($data), array($this, 'findNewSchoolings'));
 		$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
+		$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -339,6 +367,18 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newWork);
 		}
+		
+		foreach($newTechnicalDevices as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'validators' => array(new My_Validate_TechnicalDevice()),
+					'multiOptions' => $sortList,
+					'multiOptions2' => $typeList,
+					));
+			$this->addElement($newTechnicalDevice);
+		}
 	}
 	
 	private function findEmployees($employee){
@@ -374,6 +414,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findWorks($work){
 		if(strpos($work, 'newWork') !== false){
 			return $work;
+		}
+	}
+	
+	private function findTechnicalDevices($technicalDevice){
+		if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
+			return $technicalDevice;
 		}
 	}
 		

@@ -224,6 +224,24 @@ $(function(){
 		});
 	}
 	
+	$("#new_technical_device_to_position").click(function(){
+		ajaxAddTechnicalDeviceToPosition();
+	});
+	
+	function ajaxAddTechnicalDeviceToPosition(){
+		var id = $("#id_technical_device").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newtechnicaldevice/format/html',
+			data: "id_technical_device=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_technical_device_to_position').parents('tr').before(newElement);
+				$('#id_technical_device').val(++id);
+			}
+		});
+	}
+	
 	//dynamické přidávání chemických látek
 	$("#new_chemical").click(function(){
 		ajaxAddChemical();
