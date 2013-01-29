@@ -344,41 +344,6 @@ class ClientController extends Zend_Controller_Action
 			$this->view->form = $form;
 		}
 		
-		//výběr pracovišť - se momentálně nezobrazuje
-		$workplaces = new Application_Model_DbTable_Workplace();
-		$workplaceSelect = $workplaces->getWorkplaces($clientId);
-		if ($workplaceSelect != 0){
-			foreach($workplaceSelect as $key => $workplace){
-				if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($workplace[1]))){
-					unset($workplaceSelect[$key]);
-				}
-				else{
-					$workplace = $workplace[0];
-					$workplaceSelect[$key] = $workplace;
-				}
-			}
-			$formWorkplace = new Application_Form_Select();
-			$formWorkplace->select->setMultiOptions($workplaceSelect);
-			$formWorkplace->select->setLabel('Vyberte pracoviště:');
-			$formWorkplace->submit->setName('submitWorkplace');
-			$this->view->formWorkplace = $formWorkplace;
-			if($this->getRequest()->isPost()){
-				$formData = $this->getRequest()->getPost();
-				if(isset($formData['editWorkplace']) || isset($formData['deleteWorkplace'])){
-					if($formWorkplace->isValid($formData)){
-						$workplaceId = $this->getRequest()->getParam('select');
-						if(isset($formData['editWorkplace'])){
-							$this->_helper->redirector->gotoRoute(array('clientId' => $clientId, 'workplaceId' => $workplaceId), 'workplaceEdit');
-						}
-						if(isset($formData['deleteWorkplace'])){
-							//jen forward kvůli metodě POST
-							$this->_forward('delete', 'workplace');
-						}
-					}
-				}
-			}
-		}
-		
 		$defaultNamespace = new Zend_Session_Namespace();
 		$defaultNamespace->referer = $this->_request->getPathInfo();
 	

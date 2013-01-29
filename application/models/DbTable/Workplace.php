@@ -179,7 +179,6 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		$select = $this->select()->from('workplace')
 			->join('subsidiary', 'workplace.subsidiary_id = subsidiary.id_subsidiary')
 			->where('workplace.client_id = ?', $clientId)
-			->where('subsidiary.deleted = 0')
 			->order('name');
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
@@ -187,9 +186,8 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$workplaces = array();
 			foreach($results as $result){
 				$key = $result->id_workplace;
-				$workplace = $result->name . ' - ' . $result->subsidiary_name;
-				$workplaces[$key][0] = $workplace;
-				$workplaces[$key][1] = $result->subsidiary_id;
+				$workplace = $result->name;
+				$workplaces[$key] = $workplace;
 			}
 			return $workplaces;
 		}

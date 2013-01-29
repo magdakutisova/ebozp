@@ -140,6 +140,9 @@ form#workplace select					 {min-width: 200px;}
 /*Formular pracovni pozice*/
 input[id*='title']	{width: 50px;}
 input[id*='first_name'], input[id*='surname']	{width: 150px;}
+textarea[id*='new_workplaces']					{width: 330px; height: 150px; overflow: auto;}
+.multiCheckbox									{height: 150px; overflow: auto;}
+.multiCheckbox label							{font-weight: normal;}
 
 /*
  * CSS - PETR JINDRA
