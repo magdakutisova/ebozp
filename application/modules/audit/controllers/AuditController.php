@@ -200,7 +200,117 @@ class Audit_AuditController extends Zend_Controller_Action {
 				"subsidiaryId" => $subsidiaryId
 				), "audit-post"));
 		
+		// kontrola, jeslti je uzivatel opravnen kopirovat audity
+		$tableCopyables = new Audit_Model_Copyables();
+		
+		if ($tableCopyables->isCopyable($this->_user)) {
+			// kontrola, jeslti uzivatel uz vytvoril na pobocce audit
+			$tableAudits = new Audit_Model_Audits();
+			$audit = $tableAudits->fetchRow(
+					array(
+						"subsidiary_id = " . $subsidiaryId, 
+						"auditor_id = " . $this->_user->getIdUser()), 
+					"done_at desc");
+			
+			if ($audit) {
+				// protoze je uzivatel opravnen kopirovat a predchozi audit existuje, vytvori se kopirovaci formular
+				$cloneForm = new Audit_Form_Clone();
+				$cloneForm->setAction($this->view->url(array(
+						"clientId" => $diary->client_id,
+						"subsidiaryId" => $subsidiaryId,
+						"auditId" => $audit->id
+						), "audit-clone"));
+				
+				$this->view->cloneForm = $cloneForm;
+				$this->view->oldAudit = $audit;
+			}
+		}
+		
 		$this->view->form = $form;
+	}
+	
+	public function cloneAction() {
+		// protoze je klonovani omezeno na povoleni, musi se toto povoleni zkontrolovat
+		$tableCopyables = new Audit_Model_Copyables();
+		if (!$tableCopyables->isCopyable($this->_user)) throw new Zend_Exception("You are have not permision to clone audits");
+		
+		// nacteni auditu
+		$tableAudits = new Audit_Model_Audits();
+		$audit = $tableAudits->getById($this->getRequest()->getParam("auditId", 0));
+		if (!$audit) throw new Zend_Exception("Audit #" . $this->getRequest()->getParam("auditId") . " has not been found");
+		if ($audit->auditor_id != $this->_user->getIdUser()) throw new Zend_Exception("Audit #$audit->id is not belongs to you");
+		if (!$audit->is_closed) throw new Zend_Exception("Audit #$audit->id has not been closed yet");
+		
+		// prevedeni dat do pole a zapis nove pollozky do databaze
+		$auditData = array(
+				"done_at" => new Zend_Db_Expr("CURRENT_TIMESTAMP"),
+				"auditor_id" => $audit->auditor_id,
+				"coordinator_id" => $audit->coordinator_id,
+				"client_id" => $audit->client_id,
+				"subsidiary_id" => $audit->subsidiary_id,
+				"responsibile_name" => $audit->responsibile_name,
+				"progress_note" => $audit->progress_note,
+				"summary" => $audit->summary
+		);
+		
+		$newAudit = $tableAudits->createRow($auditData);
+		$newAudit->save();
+		
+		// prekopirovani formularu
+		$tableForms = new Audit_Model_AuditsForms();
+		
+		// nacteni id formularu stareho auditu
+		$oldForms = $audit->getForms();
+		$formIds = array(0);
+		$formIndex = array();
+		
+		// musi se zjistit vsechny id formularu a naindexovat se podle id definice
+		foreach ($oldForms as $form) {
+			if ($form->form_id) {
+				$formIds[] = $form->form_id;
+			}
+			
+			$formIndex[$form->form_id] = $form;
+		}
+		
+		// nacteni jmen tabulek
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableAuditsMistake = new Audit_Model_AuditsMistakes();
+		$tableRecords = new Audit_Model_AuditsRecords();
+		$nameMistakes = $tableMistakes->info("name");
+		$nameRecords = $tableRecords->info("name");
+		$nameAuditsMistake = $tableAuditsMistake->info("name");
+		
+		// nacteni radku formularu a prekopirovani dat
+		$tableFormsDefs = new Audit_Model_Forms();
+		$forms = $tableFormsDefs->find($formIds);
+		
+		$adapter = $tableAudits->getAdapter();
+		
+		// zapis formularu a zapis neshod
+		foreach ($forms as $form) {
+			$instance = $tableForms->createForm($newAudit, $form);
+			$oldFormId = $formIndex[$form->questionary_id]->id;
+			
+			// zjisteni offsetu stare a nove prvni neshody
+			$offset = $this->_getMistakeOffset($nameMistakes, $nameRecords, $oldFormId, $instance->id, $adapter);
+			$sql = "update `$nameAuditsMistake` as t1, `$nameRecords` as t2 set t1.mistake_id = t2.mistake_id where t2.mistake_id = t1.mistake_id - $offset and t1.audit_id = $newAudit->id and t2.audit_form_id = $oldFormId";
+			$adapter->query($sql);
+			
+			// update skore
+			$offset = $this->_getRecordOffset($nameRecords, $oldFormId, $instance->id, $adapter);
+			$sql = "update $nameRecords as t1, $nameRecords as t2 set t1.score = t2.score where t2.id = t1.id - $offset";
+			$adapter->query($sql);
+		}
+		
+		// presmerovani na get
+		$url = $this->view->url(array(
+				"clientId" => $newAudit->client_id,
+				"subsidiaryId" => $newAudit->subsidiary_id,
+				"auditId" => $newAudit->id
+		), "audit-edit");
+		
+		$this->_redirect($url);
 	}
 	
 	public function editAction() {
@@ -685,5 +795,27 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 		
 		return $subIndex;
+	}
+	
+	protected function _getMistakeOffset($nameMistakes, $nameRecords, $oldFormId, $newFormId, $adapter) {
+		// nacteni prvniho id stare neshody
+		$sql = "select id from `$nameMistakes` where id in (select mistake_id from `$nameRecords` where audit_form_id = $oldFormId and mistake_id is not null order by mistake_id) order by id limit 0, 1";
+		$oldId = $adapter->query($sql)->fetchColumn();
+		
+		// nacteni prvniho id nove neshody
+		$sql = "select id from `$nameMistakes` where id in (select mistake_id from `$nameRecords` where audit_form_id = $newFormId order by mistake_id) order by id limit 0, 1";
+		$newId = $adapter->query($sql)->fetchColumn();
+		
+		return $newId - $oldId;
+	}
+	
+	protected function _getRecordOffset($nameRecords, $oldFormId, $newFormId, $adapter) {
+		$sql = "select id from `$nameRecords` where audit_form_id = $oldFormId order by id limit 0, 1";
+		$oldId = $adapter->query($sql)->fetchColumn();
+		
+		$sql = "select id from `$nameRecords` where audit_form_id = $newFormId order by id limit 0, 1";
+		$newId = $adapter->query($sql)->fetchColumn();
+		
+		return $newId - $oldId;
 	}
 }
