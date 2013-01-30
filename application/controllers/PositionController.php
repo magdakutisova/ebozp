@@ -18,6 +18,8 @@ class PositionController extends Zend_Controller_Action{
     private $_workList;
     private $_workplaceList;
     private $_frequencyList;
+    private $_sortList;
+    private $_typeList;
     
     public function init(){
     	//globální nastavení view
@@ -70,6 +72,11 @@ class PositionController extends Zend_Controller_Action{
     	//získání seznamu četností
     	$this->_frequencyList = My_Frequency::getFrequencies();
     	
+    	//získání seznamů druhů a typů technických prostředků
+    	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
+    	$this->_sortList = $technicalDevices->getSorts($this->_clientId);
+    	$this->_typeList = $technicalDevices->getTypes($this->_clientId);
+    	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
     	$users = new Application_Model_DbTable_User();
@@ -106,7 +113,8 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
     			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
-    			$this->_schoolingList);
+    			$this->_schoolingList, $this->_workList, $this->_workplaceList, $this->_frequencyList, $this->_sortList,
+    			$this->_typeList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -195,11 +203,40 @@ class PositionController extends Zend_Controller_Action{
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newnewschooling', 'html')->initContext();
     	
-    	$id = $this->_getParam('id_newSchooling');
+    	$id = $this->_getParam('id_newSchooling', null);
     	
     	$element = new My_Form_Element_NewSchooling("newNewSchooling$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newwork', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_work', null);
+    	
+    	$element = new My_Form_Element_WorkComplete("newWork$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_workList);
+    	$element->setAttrib('multiOptions2', $this->_workplaceList);
+    	$element->setAttrib('multiOptions3', $this->_frequencyList);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newtechnicaldeviceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_technical_device', null);
+    	
+    	$element = new My_Form_Element_TechnicalDevice("newTechnicalDevice$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_sortList);
+    	$element->setAttrib('multiOptions2', $this->_typeList);
     	
     	$this->view->field = $element->__toString();
     }
@@ -313,6 +350,10 @@ class PositionController extends Zend_Controller_Action{
     		$form->work->setAttrib('multiOptions', $this->_workList);
     		$form->work->setAttrib('multiOptions2', $this->_workplaceList);
     		$form->work->setAttrib('multiOptions3', $this->_frequencyList);
+    	}
+    	if($form->technical_device != null){
+    		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
+    		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
     	}
     	
     	return $form;

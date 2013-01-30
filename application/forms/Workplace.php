@@ -205,6 +205,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('hidden', 'id_position', array(
        		'value' => 17,
         	'order' => 1002,
+        	'decorators' => $elementDecorator,
        	));
         
         $this->addElement('hidden', 'positions', array(
@@ -230,6 +231,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('hidden', 'id_work', array(
        		'value' => 103,
         	'order' => 1003,
+        	'decorators' => $elementDecorator,
         ));
         
         $this->addElement('hidden', 'works', array(
@@ -255,6 +257,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('hidden', 'id_technical_device', array(
         	'value' => 203,
         	'order' => 1004,
+        	'decorators' => $elementDecorator,
         ));
         
         $this->addElement('hidden', 'technical_devices', array(
@@ -280,6 +283,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('hidden', 'id_chemical', array(
         	'value' => 303,
         	'order' => 1005,
+        	'decorators' => $elementDecorator,
         ));
         
         $this->addElement('hidden', 'chemicals', array(

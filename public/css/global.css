@@ -120,6 +120,10 @@ form ul{
 	list-style-type: none;
 }
 
+form ul.errors{
+	list-style-type: disc;
+}
+
 form ul label{
 	font-weight: normal;
 }
