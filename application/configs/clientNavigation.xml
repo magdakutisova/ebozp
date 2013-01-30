@@ -44,13 +44,6 @@
 			<route>audit-mistakes-index</route>
 			<clientId>clientId</clientId>
 		</mistakelist>
-		<checks>
-			<label>Prověrky</label>
-			<resource>audit:check</resource>
-			<privilege>index</privilege>
-			<route>audit-check-list</route>
-			<clientId>clientId</clientId>
-		</checks>
 		<auditstech>
 			<label>Audity</label>
 			<resource>audit:audit</resource>
