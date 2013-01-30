@@ -2,20 +2,20 @@
 echo $this->formHidden("auditId", $this->audit->id);
 echo $this->formHidden("clientId", $this->client->id_client);
 ?>
-<h1>Audit</h1>
-<h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
+<?php echo $this->auditInfo()->header($this->audit, $this->client, $this->subsidiary); ?>
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#forms">Formuláře</a></li>
 		<li><a href="#mistakes">Neshody</a></li>
+		<li><a href="#newmistake">Nová neshoda</a></li>
 	</ul>
 	<div id="overview" class="tab">
 		<h3>Přehled</h3>
 		<?php
 		echo $this->form;
 		?>
-		<em>*)Shrnutí musí být vyplněno než bude audit uzavřen a odeslán koordinátorovi</em>
+		<em>*)Shrnutí musí být vyplněno než bude audit/prověrka uzavřena a odeslána koordinátorovi</em>
 		<?php 
 		// vyhodnoceni zobrazeni uzavreni auditu
 		if ($this->form->getElement("summary")->getValue()) {
@@ -69,24 +69,35 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<?php echo $this->instanceForm; ?>
 	</div>
 	<div id="mistakes" class="tab">
-		<h3>Neshody</h3>
+		<h3>Neshody zahrnuté v <?php echo $this->audit->is_check ? "prověrce" : "auditu"; ?></h3>
 		<table id="table-mistakes" class="multirow-table">
 			<?php 
 			$this->mistakeTable()->workIndex = $this->workIndex;
 			
 			echo $this->mistakeTable()->header();
 			
-			foreach ($this->mistakes as $mistake) {
-				echo $this->mistakeTable()->mistake($mistake, array("edit-mistake" => "Upravit"));
+			foreach ($this->mistakes[0] as $mistake) {
+				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => 0));
 			}
 			?>
 		</table>
-		<?php 
-		// vytvoreni neshody mimo dotaznik
-		$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone1");
-		
-		echo "<div class='box'><a href='$url'>Přidat neshodu mimo dotazník</a></div>";
-		?>
+		<h3>Neshody z jinch auditů a prověrek</h3>
+		<table id="table-mistakes" class="multirow-table">
+			<?php 
+			$this->mistakeTable()->workIndex = $this->workIndex;
+			
+			echo $this->mistakeTable()->header();
+			
+			foreach ($this->mistakes[1] as $mistake) {
+				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit")));
+			}
+			?>
+		</table>
+	</div>
+	<div id="newmistake">
+	<?php 
+	echo $this->selectWorkplace;
+	?>
 	</div>
 </div>
 <script type="text/javascript" src="/js/audit/audit/edit.js"></script>

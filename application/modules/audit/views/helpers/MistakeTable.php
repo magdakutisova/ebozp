@@ -19,29 +19,47 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		return "<thead><tr style=\"border: 1px solid black;\"><th>Kategorie</th><th>Podkategorie</th><th>Upřesnění</th><th>Pracoviště</th><th rowspan=\"2\">Akce</th></tr><tr><td colspan=\"2\">Neshoda</td><td colspan=\"2\">Návrh</td></tr></thead>";
 	}
 	
-	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $actions, array $classes = null, $submitStatus = null) {
+	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = null) {
+		// vytvoreni zakladni konfigurace a slouceni s predanou
+		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->submit_status, "actions" => array(), "semaphore" => false);
+		$config = array_merge($baseConfig, (array) $config);
+		
 		// vygenerovani obsahu prvniho radku
 		$buttons = array();
 		
-		if (is_null($classes)) {
-			$classes = array();
-		}
-		
-		// vyhodnoceni submit stavu
-		if (is_null($submitStatus)) $submitStatus = $mistake->submit_status;
-		
-		foreach ($actions as $name => $label) {
+		foreach ($config["actions"] as $name => $label) {
 			$buttons[] = $this->view->formButton($name, $label);
 		}
 		
-		$button = implode("", $buttons) . $this->view->formHidden("mistakeId", $mistake->id) . $this->view->formHidden("submitStatus", $submitStatus);
+		// vygenerovani semaforu
+		if ($config["semaphore"] !== false) {
+			switch ($config["semaphore"]) {
+				case 0:
+					$color = "sem-green";
+					break;
+					
+				case 1:
+					$color = "sem-yellow";
+					break;
+					
+				case 2:
+				default:
+					$color = "sem-red";
+			}
+			
+			$semaphore = "<div class='semaphore $color'><div></div><div></div><div></div></div>";
+		} else {
+			$semaphore = "";
+		}
+		
+		$button = implode("", $buttons) . $this->view->formHidden("mistakeId", $mistake->id) . $this->view->formHidden("submitStatus", $config["submitStatus"]);
 		
 		$columns = array(
 				$this->_wrapToTd($mistake->category),
 				$this->_wrapToTd($mistake->subcategory),
 				$this->_wrapToTd($mistake->concretisation),
 				$this->_wrapToTd($mistake->workplace_id ? (isset($this->workIndex[$mistake->workplace_id]) ? $this->workIndex[$mistake->workplace_id]->name : "?") : "-"),
-				$this->_wrapToTag($button, "td", array("rowspan" => 2, "width" => "50px"))
+				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 2, "width" => "50px"))
 		);
 		
 		$row1 = $this->_wrapToTag(implode("", $columns), "tr", array());
@@ -57,7 +75,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		// slouceni a vraceni vysledku
 		$content = $row1 . $row2;
 		
-		return $this->_wrapToTag($content, "tbody", array("class" => implode(" ", $classes)));
+		return $this->_wrapToTag($content, "tbody", array("class" => implode(" ", $config["classes"])));
 	}
 	
 	private function _wrapToTd($content, $colspan = 1, $pre = false) {

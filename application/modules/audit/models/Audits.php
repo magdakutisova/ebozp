@@ -50,6 +50,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 * @param Zend_Db_Table_Row_Abstract $coordinator uzivatel koordinatora
 	 * @param Zend_Db_Table_Row_Abstract $subsidiary pobocka
 	 * @param Zend_Date $date datum provedeni auditu
+	 * @param bool $isCheck prepinac audit - proverka 
 	 * @param array $responsibiles seznam zodpovednych
 	 * @return Audit_Model_Row_Audit
 	 */
@@ -57,6 +58,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 			Zend_Db_Table_Row_Abstract $coordinator,
 			Zend_Db_Table_Row_Abstract $subsidiary,
 			Zend_Date $doneAt,
+			$isCheck,
 			$responsibiles) 
 	{
 		// vytvoreni zaznamu
@@ -68,7 +70,8 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 				"coordinator_id" => $coordinator->id_user,
 				"coordinator_name" => $coordinator->username,
 				"responsibile_name" => $responsibiles,
-				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss")
+				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss"),
+				"is_check" => $isCheck
 		));
 		
 		// zapis posledni modifikace a ulozeni dat

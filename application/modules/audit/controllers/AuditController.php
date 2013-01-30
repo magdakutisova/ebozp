@@ -362,17 +362,23 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$instanceForm->setAction($url);
 		
 		// nacteni neshod tykajicich se auditu
-		$mistakes = $this->_audit->getMistakes();
+		$mistakes = $this->_loadAuditMistakes($this->_audit);
 		
 		// nacteni seznamu pracovist na pobocce
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		
 		$workplaces = $tableWorkplaces->fetchAll("subsidiary_id = " . $this->_audit->subsidiary_id, "name");
 		$workIndex = array();
+		$workSelect = array();
+		$selectWorkplace = new Audit_Form_MistakeCreateSubsidiarySelect();
 		
 		foreach ($workplaces as $item) {
 			$workIndex[$item->id_workplace] = $item;
+			$workSelect[$item->id_workplace] = $item->name;
 		}
+		
+		$selectWorkplace->getElement("workplace_id")->setMultiOptions($workSelect);
+		$selectWorkplace->setAction($this->view->url($params, "audit-mistake-createalone2"));
 		
 		// formular uzavreni auditu
 		$submitForm = new Audit_Form_AuditAuditorSubmit();
@@ -385,9 +391,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->instanceForm = $instanceForm;
 		$this->view->formInstances = $formInstances;
 		$this->view->audit = $this->_audit;
-		$this->view->mistakes = $mistakes;
 		$this->view->workIndex = $workIndex;
 		$this->view->submitForm = $submitForm;
+		$this->view->selectWorkplace = $selectWorkplace;
+		$this->view->mistakes = $mistakes;
 	}
 	
 	public function fillAction() {
@@ -566,7 +573,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$doneAt = new Zend_Date($form->getValue("done_at"), "MM. dd. y");
 		
 		// vytvoreni zaznamu
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("responsibile_name"));
+		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("is_check"), $form->getValue("responsibile_name"));
 		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-edit")
@@ -588,9 +595,12 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableAudits = new Audit_Model_Audits();
 		$audit = $tableAudits->getById($form->getValue("id"));
 		
+		// datum je ve spatnem formatu - musi se prepsat na SQL standard
+		list($day, $month, $year) = explode(". ", $form->getValue("done_at"));
+		$form->getElement("done_at")->setValue("$year-$month-$day");
+		
 		// zapis poznamek a shrnuti
-		$audit->summary = $form->getValue("summary");
-		$audit->progress_note = $form->getValue("progress_note");
+		$audit->setFromArray($form->getValues(true));
 		
 		// nastaveni ostanich dat
 		
@@ -817,5 +827,29 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$newId = $adapter->query($sql)->fetchColumn();
 		
 		return $newId - $oldId;
+	}
+	
+	protected function _loadAuditMistakes(Audit_Model_Row_Audit $audit) {
+		// nacteni vsech neshod vazanych k pobocce, ktere nejsou odstranne
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$mistakesAll = $tableMistakes->fetchAll("submit_status and subsidiary_id = " . $audit->subsidiary_id, "created_at");
+		
+		// je potreba roztridit neshody podle tho, jestli jsou zahrnuty v auditu nebo jestli se poze vezou z predchoziho auditu
+		$assocs = $audit->findDependentRowset("Audit_Model_AuditsMistakes", "audit");
+		$auditMistakesIds = array();
+		
+		foreach ($assocs as $assoc) {
+			$auditMistakesIds[] = $assoc->mistake_id;
+		}
+		
+		// konecne rozrazeni neshod
+		$thisAudit = array();
+		$otherAudits = array();
+		
+		foreach ($mistakesAll as $mistake) {
+			in_array($mistake->id, $auditMistakesIds) ? ($thisAudit[] = $mistake) : ($otherAudits[] = $mistake);
+		}
+		
+		return array($thisAudit, $otherAudits);
 	}
 }

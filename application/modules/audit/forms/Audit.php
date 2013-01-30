@@ -76,6 +76,13 @@ class Audit_Form_Audit extends Zend_Form {
 				"label" => "Koordinátor auditu"
 		));
 		
+		// audit nebo proverka
+		$this->addElement("select", "is_check", array(
+				"decorators" => $elementDecorator,
+				"label" => "Audit / Prověrka",
+				"multiOptions" => array("Audit", "Prověrka")
+		));
+		
 		// skryta pole, tlacitka a tak
 		$this->addElement("hidden", "subsidiary_id", array(
 				"decorators" => $lastDecoratorOpen
