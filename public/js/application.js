@@ -436,3 +436,54 @@ $.iframeDialog = function (src, width, height, title) {
 	
 	return retVal;
 };
+
+(function ($) {
+	
+	var availableStatuses = ["green", "yellow", "red"];
+	var actualStatus = 0;
+	
+	function removeStatus(sem) {
+		for (var i in availableStatuses) sem.removeClass("sem-" + availableStatuses[i]);
+	}
+	
+	function setValue() {
+		// zjisteni pozice
+		var i = 0;
+		var item = $(this);
+		var currItem = item;
+		while (currItem.prev().length) {
+			i++;
+			currItem = currItem.prev();
+		}
+		
+		var sem = item.parent();
+		removeStatus(sem);
+		sem.addClass("sem-" + availableStatuses[i]);
+	}
+	
+	var methods = {
+		"set" : function (value) {
+			var sem = $(this);
+			removeStatus(sem);
+			
+			sem.addClass("sem-" + availableStatuses[value]);
+		},
+		
+		"status" : function () {
+			return actualStatus;
+		}
+	};
+	
+	$.fn.semaphore = function (option, value) {
+		if (option === undefined || option.constructor == Object) {
+			options = $.extend({
+				"status" : 0,
+				"click" : $.noop
+			}, option);
+			
+			$(this).children().click(setValue);
+			
+			return;
+		}
+	};
+})(jQuery);

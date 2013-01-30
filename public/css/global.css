@@ -157,3 +157,12 @@ textarea[id*='new_workplaces']					{width: 330px; height: 150px; overflow: auto;
 .multirow-table tbody:nth-child(even) tr td { background-color: #F2F5F7; }
 .mistake-marked tr td { background-color: #ff6f6f!important; color: #000000; }
 .mistake-removed tr td { background-color: #86ff8f !important; color: #000000; }
+
+/*
+ * semafory
+ */
+ .semaphore { background-image: url(/images/lights.png); width: 64px; height: 24px; }
+ .semaphore div { width: 19px; height: 19px; cursor: hand; cursor: pointer; float: left; margin: 3px 0 0 2px;}
+ .sem-red { background-position: 0 0;}
+ .sem-green { background-position: 0 48px;}
+ .sem-yellow { background-position: 0 24px; }
