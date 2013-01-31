@@ -278,6 +278,32 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//chemické látky
+       	$this->addElement('hidden', 'chemicals', array(
+       			'label' => 'Chemické látky:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 8001,
+       			'description' => $questionMarkStart . 'Zadejte název chemické látky a její expozici na pracovní pozici.' . $questionMarkEnd,
+       			));
+       	$this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
+       	
+       	$this->addElement('hidden', 'id_chemical', array(
+       			'value' => 8003,
+       			'order' => 10009,
+       			'decorators' => $elementDecorator,
+       			));
+       	
+       	$this->addElement('chemical', 'chemical', array(
+       			'order' => 8002,
+       			'validators' => array(new My_Validate_Chemical()),
+       			));
+       	
+       	$this->addElement('button', 'new_chemical_to_position', array(
+       			'label' => 'Další chemická látka',
+       			'order' => 9000,
+       			'decorators' => $elementDecorator2,
+       			));
+       	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
        			'order' => 9999,
@@ -286,7 +312,7 @@ class Application_Form_Position extends Zend_Form{
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
 		$environmentFactorList, $categoryList, $schoolingList, $workList, $workplaceList, $frequencyList, $sortList,
-			$typeList){
+			$typeList, $chemicalList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
 		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
@@ -294,6 +320,7 @@ class Application_Form_Position extends Zend_Form{
 		$newNewSchoolings = array_filter(array_keys($data), array($this, 'findNewSchoolings'));
 		$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
 		$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
+		$newChemicals = array_filter(array_keys($data), array($this, 'findChemicals'));
 		
 		foreach($newEmployees as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -379,6 +406,17 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newTechnicalDevice);
 		}
+		
+		foreach($newChemicals as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newChemical = new My_Form_Element_Chemical('newChemical' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'validators' => array(new My_Validate_Chemical()),
+					'multiOptions' => $chemicalList,
+					));
+			$this->addElement($newChemical);
+		}
 	}
 	
 	private function findEmployees($employee){
@@ -420,6 +458,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findTechnicalDevices($technicalDevice){
 		if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
 			return $technicalDevice;
+		}
+	}
+	
+	private function findChemicals($chemical){
+		if(strpos($chemical, 'newChemical') !== false){
+			return $chemical;
 		}
 	}
 		

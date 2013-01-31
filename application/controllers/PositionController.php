@@ -20,6 +20,7 @@ class PositionController extends Zend_Controller_Action{
     private $_frequencyList;
     private $_sortList;
     private $_typeList;
+    private $_chemicalList;
     
     public function init(){
     	//globální nastavení view
@@ -77,6 +78,10 @@ class PositionController extends Zend_Controller_Action{
     	$this->_sortList = $technicalDevices->getSorts($this->_clientId);
     	$this->_typeList = $technicalDevices->getTypes($this->_clientId);
     	
+    	//získání seznamu chemických látek
+    	$chemicals = new Application_Model_DbTable_Chemical();
+    	$this->_chemicalList = $chemicals->getChemicals($this->_clientId);
+    	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
     	$users = new Application_Model_DbTable_User();
@@ -114,7 +119,7 @@ class PositionController extends Zend_Controller_Action{
     	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
     			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
     			$this->_schoolingList, $this->_workList, $this->_workplaceList, $this->_frequencyList, $this->_sortList,
-    			$this->_typeList);
+    			$this->_typeList, $this->_chemicalList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -241,6 +246,19 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->field = $element->__toString();
     }
     
+    public function newchemicalAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newchemical', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_chemical', null);
+    	
+    	$element = new My_Form_Element_Chemical("newChemical$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_chemicalList);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
     public function listAction(){
     	$defaultNamespace = new Zend_Session_Namespace();
     	if (isset($defaultNamespace->form)){
@@ -354,6 +372,9 @@ class PositionController extends Zend_Controller_Action{
     	if($form->technical_device != null){
     		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
     		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
+    	}
+    	if($form->chemical != null){
+    		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
     	}
     	
     	return $form;

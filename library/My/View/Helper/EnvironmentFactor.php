@@ -41,12 +41,12 @@ class My_View_Helper_EnvironmentFactor extends Zend_View_Helper_FormElement{
 		$this->html .= '<td colspan="2">' . $helperText->formText($name . '[protection_measures]', $protectionMeasures) . '</td>';
 		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions3) . '</td>';
 		$this->html .= '</tr><tr>';
-		$this->html .= '<td colspan="2"><label for="' . $name . '[note]">Poznámka k FPP</label>' . $helperText->formText($name . '[note]', $note) . '</td>';
+		$this->html .= '<td colspan="3"><label for="' . $name . '[note]">Poznámka k FPP</label><br/>' . $helperText->formText($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
-			$this->html .= '<td colspan="4"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label></br>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
+			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label><br/>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
 		}
 		else{
-			$this->html .= '<td colspan="5"></td>';
+			$this->html .= '<td colspan="3"></td>';
 		}
 		$this->html .= '</tr>';
 		
