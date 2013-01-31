@@ -261,6 +261,24 @@ $(function(){
 		});
 	}
 	
+	$("#new_chemical_to_position").click(function(){
+		ajaxAddChemicalToPosition();
+	});
+	
+	function ajaxAddChemicalToPosition(){
+		var id = $("#id_chemical").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/newchemical/format/html',
+			data: "id_chemical=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_chemical_to_position').parents('tr').before(newElement);
+				$('#id_chemical').val(++id);
+			}
+		});
+	}
+	
 	//dynamické přidávání zaměstnanců
 	$("#new_employee").click(function(){
 		ajaxAddEmployee();

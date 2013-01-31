@@ -50,12 +50,12 @@ class My_View_Helper_Employee extends Zend_View_Helper_FormElement{
 		$this->html .= '<td>' . $helperSelect->formSelect($name . '[sex]', $sex, null, $multiOptions2) . '</td>';
 		$this->html .= '<td>' . $helperSelect->formSelect($name . '[year_of_birth]', $yearOfBirth, null, $multiOptions3) . '</td>';
 		$this->html .= '</tr><tr>';
-		$this->html .= '<td colspan="2"><label for="' . $name . '[note]">Poznámka k zaměstnanci</label>' . $helperText->formText($name . '[note]', $note) . '</td>';
+		$this->html .= '<td colspan="3"><label for="' . $name . '[note]">Poznámka k zaměstnanci</label><br/>' . $helperText->formText($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
-			$this->html .= '<td colspan="4"><label for="' . $name . '[private]">Soukromá poznámka k zaměstnanci</br></label>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
+			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka k zaměstnanci</br></label>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
 		}
 		else{
-			$this->html .= '<td colspan="5"></td>';
+			$this->html .= '<td colspan="3"></td>';
 		}
 		$this->html .= '</tr>';
 		
