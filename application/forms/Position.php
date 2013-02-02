@@ -84,12 +84,23 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
        	
+       	$this->addElement('text', 'business_hours', array(
+       			'label' => 'Pracovní doba',
+       			'order' => 3,
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'required' => true,
+       			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
+       	));
+       	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
+       	
+       	//pracoviště order 4
+       	
        	$this->addElement('textarea', 'note', array(
        			'label' => 'Poznámka',
        			'required' => false,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspan,
-       			'order' => 3,
+       			'order' => 5,
        	));
        	
        	$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -103,69 +114,19 @@ class Application_Form_Position extends Zend_Form{
        				'required' => false,
        				'filters' => array('StringTrim', 'StripTags'),
        				'decorators' => $elementDecoratorColspan,
-       				'order' => 4,
+       				'order' => 6,
        		));
        	}
        	
-       	$this->addElement('hidden', 'employees', array(
-       			'label' => 'Seznam zaměstnanců:',
-       			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 5,
-       	));
-       	
-       	//stávající zaměstnanci
-       	$this->addElement('hidden', 'id_current_employee', array(
-       			'value' => 7,
-       			'order' => 10002,
-       			'decorators' => $elementDecorator,
-       			));
-       	
-       	$this->addElement('currentEmployee', 'current_employee', array(
-       			'order' => 6,
-       			));
-       	
-       	$this->addElement('button', 'new_current_employee', array(
-       			'label' => 'Přidat dalšího existujícího zaměstnance',
-       			'order' => 2000,
-       			'decorators' => $elementDecorator2,
-       			));
-       	
-       	//noví zaměstnanci
-       	$this->addElement('hidden', 'id_employee', array(
-       			'value' => 2002,
-       			'order' => 10003,
-       			'decorators' => $elementDecorator,
-       	));      	
-       	
-       	$this->addElement('employee', 'employee', array(
-       			'order' => 2001,
-       			'validators' => array(new My_Validate_Employee()),
-       			));
-       	
-       	$this->addElement('button', 'new_employee', array(
-       			'label' => 'Přidat dalšího nového zaměstnance',
-       			'order' => 3000,
-       			'decorators' => $elementDecorator2,
-       			));
-       	
-       	$this->addElement('text', 'business_hours', array(
-       			'label' => 'Pracovní doba',
-       			'order' => 4001,
-       			'decorators' => $elementDecoratorColspanSeparator,
-       			'required' => true,
-       			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
-       			));
-       	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
-       	
-       	//kategorizace prací a faktory pracovního prostředí
        	$this->addElement('select', 'categorization', array(
        			'label' => 'Kategorizace prací provedena',
-       			'order' => 4002,
+       			'order' => 7,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
        			'required' => true,
-       			));
+       	));
        	
+       	//faktory pracovního prostředí       	
        	$this->addElement('hidden', 'environmentFactors', array(
        			'label' => 'Faktory pracovního prostředí:',
        			'decorators' => $elementDecoratorColspanSeparator,
@@ -303,6 +264,48 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 9000,
        			'decorators' => $elementDecorator2,
        			));
+       	
+       	//PŘEŘADIT
+       	$this->addElement('hidden', 'employees', array(
+       			'label' => 'Seznam zaměstnanců:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 5,
+       	));
+       	
+       	//stávající zaměstnanci
+       	$this->addElement('hidden', 'id_current_employee', array(
+       			'value' => 7,
+       			'order' => 10002,
+       			'decorators' => $elementDecorator,
+       	));
+       	
+       	$this->addElement('currentEmployee', 'current_employee', array(
+       			'order' => 6,
+       	));
+       	
+       	$this->addElement('button', 'new_current_employee', array(
+       			'label' => 'Přidat dalšího existujícího zaměstnance',
+       			'order' => 2000,
+       			'decorators' => $elementDecorator2,
+       	));
+       	
+       	//noví zaměstnanci
+       	$this->addElement('hidden', 'id_employee', array(
+       			'value' => 2002,
+       			'order' => 10003,
+       			'decorators' => $elementDecorator,
+       	));
+       	
+       	$this->addElement('employee', 'employee', array(
+       			'order' => 2001,
+       			'validators' => array(new My_Validate_Employee()),
+       	));
+       	
+       	$this->addElement('button', 'new_employee', array(
+       			'label' => 'Přidat dalšího nového zaměstnance',
+       			'order' => 3000,
+       			'decorators' => $elementDecorator2,
+       	));
        	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
