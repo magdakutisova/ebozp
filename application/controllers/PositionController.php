@@ -97,6 +97,12 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->subtitle = "Zadat pracovní pozici";
     	$form = $this->loadOrCreateForm($defaultNamespace);
     	
+    	$formEmployee = new Application_Form_Employee(array('yearOfBirthList' => $this->_yearOfBirthList,
+    			'yesNoList' => $this->_yesNoList,
+    			'sexList' => $this->_sexList,
+    			'clientId' => $this->_clientId));
+    	$this->view->formEmployee = $formEmployee;
+    	
     	//získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
@@ -156,6 +162,23 @@ class PositionController extends Zend_Controller_Action{
     	$element->setAttrib('multiOptions', $this->_employeeList);
     	
     	$this->view->field = $element->__toString();
+    }
+    
+    public function addemployeeAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addemployee', 'html')->initContext();
+    	
+    	$data = $this->_getAllParams();
+    	$employee = new Application_Model_Employee($data);
+    	$employees = new Application_Model_DbTable_Employee();
+    	$employees->addEmployee($employee);
+    	
+    	//vyčistit formulář
+    	
+    	//aktualizovat employeeList DODĚLAT
+    	$this->_employeeList = $employees->getEmployees($this->_clientId);
+    	
+    	//přihodit element do formuláře
     }
     
     public function newenvironmentfactorAction(){

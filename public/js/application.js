@@ -149,6 +149,35 @@ $(function(){
 		}
 	}
 	
+	//dialogové okno pro přidání zaměstnance
+	$('#new_employee').click(function(){
+		$('#new_employee_form').dialog("open");
+	});
+	
+	$('#new_employee_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 600,
+		modal: true,
+		title: 'Vyplňte údaje nového zaměstnance',
+	});
+	
+	$("#save_employee").click(function(){
+		ajaxSaveEmployee();
+	});
+	
+	function ajaxSaveEmployee(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/addemployee/format/html',
+			data: $("#employee").serializeArray(),
+			success: function(){
+				console.log("OK");
+				$('#new_employee_form').dialog("close");
+			}
+		});
+	}
+	
 	//dynamické přidávání pracovních pozic
 	$("#new_position").click(function(){
 		ajaxAddPosition();

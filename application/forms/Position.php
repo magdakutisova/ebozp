@@ -127,7 +127,6 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 7,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
-       			'required' => true,
        	));
        	
        	//faktory pracovního prostředí       	
@@ -297,6 +296,12 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 7000,
        			'decorators' => $elementDecorator2,
        	));
+       	
+       	$this->addElement('button', 'new_employee', array(
+       			'label' => 'Přidat nového zaměstnance',
+       			'order' => 7001,
+       			'decorators' => $elementDecorator2,
+       			));
        	
        	//přidat modál pro vložení nových zaměstnanců
        	
