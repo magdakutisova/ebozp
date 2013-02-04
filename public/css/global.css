@@ -145,7 +145,7 @@ form#workplace select					 {min-width: 200px;}
 input[id*='title']	{width: 50px;}
 input[id*='first_name'], input[id*='surname']	{width: 150px;}
 textarea[id*='new_workplaces']					{width: 330px; height: 150px; overflow: auto;}
-textarea[id*='protection_measures']				{width: 95%; height: 200px; overflow: auto;}
+textarea[id*='protection_measures']				{width: 90%; height: 200px; overflow: auto;}
 .multiCheckbox									{height: 150px; overflow: auto;}
 .multiCheckbox label							{font-weight: normal;}
 

@@ -20,7 +20,7 @@ class My_View_Helper_Workplace extends Zend_View_Helper_FormElement{
 		$helperTextarea->setView($this->view);
 		
 		$this->html .= '<tr id="' . $name . '">';
-		$this->html .= '<td colspan="3"><label for="' . $name . '[workplaces]">Vyberte pracoviště, kde je pracovní pozice vykonávána</label><br/>';
+		$this->html .= '<td colspan="2"><label for="' . $name . '[workplaces]">Vyberte pracoviště, kde je pracovní pozice vykonávána</label><br/>';
 		if($multiOptions != 0){
 			$this->html .= '<div class="multiCheckbox">' . $helperMultiCheckbox->formMultiCheckbox($name . '[workplaces]', $workplaces, null, $multiOptions) . '</div></td>';
 		}

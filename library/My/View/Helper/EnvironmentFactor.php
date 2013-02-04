@@ -35,11 +35,11 @@ class My_View_Helper_EnvironmentFactor extends Zend_View_Helper_FormElement{
 		$this->html .= $helperHidden->formHidden($name . '[id_environment_factor]', $idEnvironmentFactor);
 		$this->html .= '<td colspan="2"><label for="' . $name . '[factor]">Faktor pracovního prostředí</label></td>';
 		$this->html .= '<td colspan="2"><label for="' . $name . '[category]">Zařazeno do kategorie</label></td>';
-		$this->html .= '<td colspan="2"><label for="' . $name . '[measurement_taken]">Měření provedeno</label></td>';
+		$this->html .= '<td><label for="' . $name . '[measurement_taken]">Měření provedeno</label></td>';
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[factor]', $factor, null, $multiOptions) . '</td>';
 		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[category]', $category, null, $multiOptions2) . '</td>';
-		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions3) . '</td>';
+		$this->html .= '<td>' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions3) . '</td>';
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="6"><label for="' . $name . '[protection_measures]">Ochranná opatření proti FPP</label><br/>' . $helperTextarea->formTextarea($name . '[protection_measures]', $protectionMeasures) . '</td>';
 		$this->html .= '</tr><tr>';

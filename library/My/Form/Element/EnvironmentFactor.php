@@ -19,7 +19,7 @@ class My_Form_Element_EnvironmentFactor extends Zend_Form_Element_Xhtml{
 			$this->addDecorator('ViewHelper')
 			->addDecorator('ErrorsHtmlTag', array(
 					'tag' => 'td',
-					'colspan' => 7,
+					'colspan' => 6,
 			));
 		}
 	}

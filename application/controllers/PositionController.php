@@ -116,10 +116,10 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form->save->setLabel('Uložit');
     	
-    	$form->preValidation($this->getRequest()->getPost(), $this->_yesNoList, $this->_sexList, $this->_yearOfBirthList,
+    	$form->preValidation($this->getRequest()->getPost(),
     			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
     			$this->_schoolingList, $this->_workList, $this->_workplaceList, $this->_frequencyList, $this->_sortList,
-    			$this->_typeList, $this->_chemicalList);
+    			$this->_typeList, $this->_chemicalList, $this->_yesNoList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -143,22 +143,6 @@ class PositionController extends Zend_Controller_Action{
     	//TODO odtud dále
     	
     	$this->view->form = $form;
-    }
-    
-    public function newemployeeAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newemployee', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_employee', null);
-    	
-    	$element = new My_Form_Element_Employee("newEmployee$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_yesNoList);
-    	$element->setAttrib('multiOptions2', $this->_sexList);
-    	$element->setAttrib('multiOptions3', $this->_yearOfBirthList);
-    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
-    	
-    	$this->view->field = $element->__toString();
     }
     
     public function newcurrentemployeeAction(){
@@ -341,12 +325,6 @@ class PositionController extends Zend_Controller_Action{
     }
 	
     private function fillMultiselects($form){
-    	if($form->employee != null){
-    		$form->employee->setAttrib('multiOptions', $this->_yesNoList);
-    		$form->employee->setAttrib('multiOptions2', $this->_sexList);
-    		$form->employee->setAttrib('multiOptions3', $this->_yearOfBirthList);
-    		$form->employee->setAttrib('canViewPrivate', $this->_canViewPrivate);
-    	}
     	if($form->current_employee != null){
     		$form->current_employee->setAttrib('multiOptions', $this->_employeeList);
     	}
@@ -359,6 +337,18 @@ class PositionController extends Zend_Controller_Action{
     	if($form->schooling != null){
     		$form->schooling->setAttrib('multiOptions', $this->_schoolingList);
     		$form->schooling->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    		$form->schooling->setValue(array('id_schooling' => '',
+    				'schooling' => '1',
+    				'note' => '',
+    				'private' => ''));
+    	}
+    	if($form->schooling2 != null){
+    		$form->schooling2->setAttrib('multiOptions', $this->_schoolingList);
+    		$form->schooling2->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    		$form->schooling2->setValue(array('id_schooling' => '',
+    				'schooling' => '2',
+    				'note' => '',
+    				'private' => ''));
     	}
     	if($form->newSchooling != null){
     		$form->newSchooling->setAttrib('canViewPrivate', $this->_canViewPrivate);
