@@ -93,7 +93,11 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
        	
-       	//pracoviště order 4
+       	$this->addElement('workplace', 'workplace', array(
+       			'label' => 'Pracoviště',
+       			'order' => 4,
+       			'multiOptions' => $this->getAttrib('workplaceList'),
+       			));
        	
        	$this->addElement('textarea', 'note', array(
        			'label' => 'Poznámka',
@@ -314,7 +318,7 @@ class Application_Form_Position extends Zend_Form{
 	}
 	
 	public function preValidation(array $data, $yesNoList, $sexList, $yearOfBirthList, $canViewPrivate, $employeeList,
-		$environmentFactorList, $categoryList, $schoolingList, $workList, $workplaceList, $frequencyList, $sortList,
+		$environmentFactorList, $categoryList, $schoolingList, $workList, $frequencyList, $sortList,
 			$typeList, $chemicalList){
 		$newEmployees = array_filter(array_keys($data), array($this,'findEmployees'));
 		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
@@ -392,8 +396,7 @@ class Application_Form_Position extends Zend_Form{
 					'value' => $data[$fieldName],
 					'validators' => array(new My_Validate_Work()),
 					'multiOptions' => $workList,
-					'multiOptions2' => $workplaceList,
-					'multiOptions3' => $frequencyList,
+					'multiOptions2' => $frequencyList,
 					));
 			$this->addElement($newWork);
 		}

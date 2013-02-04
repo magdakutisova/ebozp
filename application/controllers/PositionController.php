@@ -226,8 +226,7 @@ class PositionController extends Zend_Controller_Action{
     	$element = new My_Form_Element_WorkComplete("newWork$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	$element->setAttrib('multiOptions', $this->_workList);
-    	$element->setAttrib('multiOptions2', $this->_workplaceList);
-    	$element->setAttrib('multiOptions3', $this->_frequencyList);
+    	$element->setAttrib('multiOptions2', $this->_frequencyList);
     	
     	$this->view->field = $element->__toString();
     }
@@ -336,7 +335,7 @@ class PositionController extends Zend_Controller_Action{
     	}
     	//jinak se vytvoří nový
     	else{
-    		$form = new Application_Form_Position();
+    		$form = new Application_Form_Position(array('workplaceList' => $this->_workplaceList));
     	}
     	return $form;
     }
@@ -366,8 +365,7 @@ class PositionController extends Zend_Controller_Action{
     	}
     	if($form->work != null){
     		$form->work->setAttrib('multiOptions', $this->_workList);
-    		$form->work->setAttrib('multiOptions2', $this->_workplaceList);
-    		$form->work->setAttrib('multiOptions3', $this->_frequencyList);
+    		$form->work->setAttrib('multiOptions2', $this->_frequencyList);
     	}
     	if($form->technical_device != null){
     		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
