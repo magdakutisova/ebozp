@@ -123,7 +123,7 @@ class Application_Form_Position extends Zend_Form{
        	}
        	
        	$this->addElement('select', 'categorization', array(
-       			'label' => 'Kategorizace prací provedena',
+       			'label' => 'Kategorizace prací pro tuto pracovní pozici provedena',
        			'order' => 7,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
