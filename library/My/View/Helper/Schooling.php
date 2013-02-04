@@ -35,7 +35,7 @@ class My_View_Helper_Schooling extends Zend_View_Helper_FormElement{
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="3"><label for="' . $name . '[note]">Poznámka ke školení</label><br/>' . $helperText->formText($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
-			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka ke školení</label></br>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
+			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka ke školení</label></br>' . $helperText->formText($name . '[private]', $private) . '</td>';
 		}
 		else{
 			$this->html .= '<td colspan="3"></td>';
