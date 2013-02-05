@@ -178,7 +178,7 @@ class PositionController extends Zend_Controller_Action{
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	
     	//přihodit element do formuláře
-    	$id = $this->_getParam('id_current_employee', null);
+    	$id = $this->_getParam('id_new_employee', null);
     	 
     	$element = new My_Form_Element_CurrentEmployee("newCurrentEmployee$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');

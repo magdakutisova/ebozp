@@ -194,7 +194,7 @@ $(function(){
 	});
 	
 	function ajaxSaveEmployee(){
-		var id = $("#id_current_employee").val();
+		var id = $("#id_new_employee").val();
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/position/addemployee/format/html',
@@ -202,8 +202,8 @@ $(function(){
 			success: function(newElement){
 				console.log("OK");
 				$('#new_employee_form').dialog("close");
-				$('#new_current_employee').parents('tr').before(newElement);
-				$('#id_current_employee').val(++id);
+				$('#new_employee').parents('tr').before(newElement);
+				$('#id_new_employee').val(++id);
 			}
 		});
 	}

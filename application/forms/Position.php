@@ -285,6 +285,10 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 6002,
        	));
        	
+       	$this->addElement('hidden', 'id_current_employee', array(
+       			'value' => 6003,
+       	));
+       	
        	$this->addElement('button', 'new_current_employee', array(
        			'label' => 'Přidat dalšího existujícího zaměstnance',
        			'order' => 7000,
