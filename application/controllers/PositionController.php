@@ -170,15 +170,23 @@ class PositionController extends Zend_Controller_Action{
     	
     	$data = $this->_getAllParams();
     	$employee = new Application_Model_Employee($data);
+    	$employee->setClientId($this->_getParam('clientId'));
     	$employees = new Application_Model_DbTable_Employee();
-    	$employees->addEmployee($employee);
-    	
-    	//vyčistit formulář
+    	$employeeId = $employees->addEmployee($employee);
     	
     	//aktualizovat employeeList DODĚLAT
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	
     	//přihodit element do formuláře
+    	$id = $this->_getParam('id_current_employee', null);
+    	 
+    	$element = new My_Form_Element_CurrentEmployee("newCurrentEmployee$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_employeeList);
+    	$element->setValue(array('id_employee' => $employeeId,
+    				'full_name' => $employeeId));
+    	
+    	$this->view->field = $element->__toString();    	
     }
     
     public function newenvironmentfactorAction(){

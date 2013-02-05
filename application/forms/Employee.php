@@ -114,6 +114,10 @@ class Application_Form_Employee extends Zend_Form{
 				'value' => $this->getAttrib('clientId'),
 				));
 		
+		$this->addElement('hidden', 'id_current_employee', array(
+				'value' => 6003,
+		));
+		
 	}
 	
 }

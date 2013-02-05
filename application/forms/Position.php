@@ -280,13 +280,7 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 6001,
        	));
        	
-       	//stávající zaměstnanci
-       	$this->addElement('hidden', 'id_current_employee', array(
-       			'value' => 6003,
-       			'order' => 10002,
-       			'decorators' => $elementDecorator,
-       	));
-       	
+       	//stávající zaměstnanci       	
        	$this->addElement('currentEmployee', 'current_employee', array(
        			'order' => 6002,
        	));

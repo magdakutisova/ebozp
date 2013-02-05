@@ -150,30 +150,60 @@ $(function(){
 	}
 	
 	//dialogové okno pro přidání zaměstnance
+	var validator = $('#employee').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
+	
 	$('#new_employee').click(function(){
+		$('#new_employee_form input[type=text]').val('');
+		$('#new_employee_form textarea').val('');
+		$('#new_employee_form select#year_of_birth').val('1960');
+		$('#new_employee_form select#manager').val('0');
+		$('#new_employee_form select#sex').val('0');
+		validator.resetForm();
 		$('#new_employee_form').dialog("open");
 	});
 	
 	$('#new_employee_form').dialog({
 		autoOpen: false,
 		height: 500,
-		width: 600,
+		width: 700,
 		modal: true,
 		title: 'Vyplňte údaje nového zaměstnance',
 	});
 	
 	$("#save_employee").click(function(){
-		ajaxSaveEmployee();
+		if($('#employee').valid()){
+			ajaxSaveEmployee();
+		}
 	});
 	
 	function ajaxSaveEmployee(){
+		var id = $("#id_current_employee").val();
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/position/addemployee/format/html',
 			data: $("#employee").serializeArray(),
-			success: function(){
+			success: function(newElement){
 				console.log("OK");
 				$('#new_employee_form').dialog("close");
+				$('#new_current_employee').parents('tr').before(newElement);
+				$('#id_current_employee').val(++id);
 			}
 		});
 	}
