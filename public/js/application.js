@@ -190,6 +190,8 @@ $(function(){
 	$("#save_employee").click(function(){
 		if($('#employee').valid()){
 			ajaxSaveEmployee();
+			$("select[id*='full_name']").empty();
+			ajaxPopulateSelects();
 		}
 	});
 	
@@ -204,6 +206,23 @@ $(function(){
 				$('#new_employee_form').dialog("close");
 				$('#new_employee').parents('tr').before(newElement);
 				$('#id_new_employee').val(++id);
+			}
+		});
+	}
+	
+	function ajaxPopulateSelects(){
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/position/populateselects',
+			data: "clientId=" + clientId,
+			success: function(json){
+				var el = $("select[id*='full_name']");
+				$.each(json, function(key, value){
+					el.append($("<option></option>")
+					  .attr("value", key).text(value));
+				});
 			}
 		});
 	}

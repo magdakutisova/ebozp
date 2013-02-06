@@ -186,7 +186,13 @@ class PositionController extends Zend_Controller_Action{
     	$element->setValue(array('id_employee' => $employeeId,
     				'full_name' => $employeeId));
     	
-    	$this->view->field = $element->__toString();    	
+    	$this->view->field = $element->__toString();	
+    }
+    
+    public function populateselectsAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	echo Zend_Json::encode($this->_employeeList);
     }
     
     public function newenvironmentfactorAction(){

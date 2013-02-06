@@ -297,7 +297,7 @@ class Application_Form_Position extends Zend_Form{
        	
        	$this->addElement('button', 'new_employee', array(
        			'label' => 'Přidat nového zaměstnance',
-       			'order' => 7001,
+       			'order' => 8000,
        			'decorators' => $elementDecorator2,
        			));
        	
