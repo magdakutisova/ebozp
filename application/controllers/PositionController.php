@@ -141,7 +141,7 @@ class PositionController extends Zend_Controller_Action{
     	 
     	//když není platný, vrátíme ho do view
     	if(!$form->isValid($this->getRequest()->getPost())){
-    		$form->populate($this->getRequest()->getPost());
+    		$form->populate($form->getValues());
     		$this->view->form = $form;
     		return;
     	}

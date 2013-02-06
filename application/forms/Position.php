@@ -87,6 +87,7 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('text', 'business_hours', array(
        			'label' => 'Pracovní doba',
        			'order' => 3,
+       			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspanSeparator,
        			'required' => true,
        			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
@@ -273,7 +274,6 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
-       	//PŘEŘADIT
        	$this->addElement('hidden', 'employees', array(
        			'label' => 'Seznam zaměstnanců:',
        			'decorators' => $elementDecoratorColspanSeparator,

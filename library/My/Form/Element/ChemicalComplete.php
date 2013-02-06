@@ -63,13 +63,11 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_chemical']) && isset($values['chemical']) && isset($values['new_chemical']) && isset($values['use_purpose']) && isset($values['usual_amount'])){
-			$this->setIdChemical($values['id_chemical']);
-			$this->setChemical($values['chemical']);
-			$this->setNewChemical($values['new_chemical']);
-			$this->setUsePurpose($values['use_purpose']);
-			$this->setUsualAmount($values['usual_amount']);
-		}
+		$this->setIdChemical($values['id_chemical']);
+		$this->setChemical($values['chemical']);
+		$this->setNewChemical($values['new_chemical']);
+		$this->setUsePurpose($values['use_purpose']);
+		$this->setUsualAmount($values['usual_amount']);
 		return $this;
 	}
 	
@@ -81,6 +79,14 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 		$values['use_purpose'] = $this->getUsePurpose();
 		$values['usual_amount'] = $this->getUsualAmount();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

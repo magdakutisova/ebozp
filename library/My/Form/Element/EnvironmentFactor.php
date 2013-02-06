@@ -81,18 +81,13 @@ class My_Form_Element_EnvironmentFactor extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_environment_factor']) && isset($values['factor']) && isset($values['category'])
-				&&($values['protection_measures']) && isset($values['measurement_taken']) && isset($values['note'])
-				&&($values['private'])){
-			$this->setIdEnvironmentFactor($values['id_environment_factor']);
-			$this->setFactor($values['factor']);
-			$this->setCategory($values['category']);
-			$this->setProtectionMeasures($values['protection_measures']);
-			$this->setMeasurementTaken($values['measurement_taken']);
-			$this->setNote($values['note']);
-			$this->setPrivate($values['private']);
-		}
-		
+		$this->setIdEnvironmentFactor($values['id_environment_factor']);
+		$this->setFactor($values['factor']);
+		$this->setCategory($values['category']);
+		$this->setProtectionMeasures($values['protection_measures']);
+		$this->setMeasurementTaken($values['measurement_taken']);
+		$this->setNote($values['note']);
+		$this->setPrivate($values['private']);	
 		return $this;
 	}
 	
@@ -106,6 +101,14 @@ class My_Form_Element_EnvironmentFactor extends Zend_Form_Element_Xhtml{
 		$values['note'] = $this->getNote();
 		$values['private'] = $this->getPrivate();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

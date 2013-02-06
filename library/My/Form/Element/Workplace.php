@@ -36,10 +36,8 @@ class My_Form_Element_Workplace extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['workplaces'])	&& isset($values['new_workplaces'])){
-			$this->setWorkplaces($values['workplaces']);
-			$this->setNewWorkplaces($values['new_workplaces']);
-		}
+		$this->setWorkplaces($values['workplaces']);
+		$this->setNewWorkplaces($values['new_workplaces']);
 		return $this;
 	}
 	
@@ -48,6 +46,14 @@ class My_Form_Element_Workplace extends Zend_Form_Element_Xhtml{
 		$values['workplaces'] = $this->getWorkplaces();
 		$values['new_workplaces'] = $this->getNewWorkplaces();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

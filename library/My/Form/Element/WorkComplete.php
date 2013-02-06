@@ -63,14 +63,11 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_work']) && isset($values['work']) && isset($values['new_work'])
-				&& isset($values['frequency']) && isset($values['new_frequency'])){
-			$this->setIdWork($values['id_work']);
-			$this->setWork($values['work']);
-			$this->setNewWork($values['new_work']);
-			$this->setFrequency($values['frequency']);
-			$this->setNewFrequency($values['new_frequency']);
-		}
+		$this->setIdWork($values['id_work']);
+		$this->setWork($values['work']);
+		$this->setNewWork($values['new_work']);
+		$this->setFrequency($values['frequency']);
+		$this->setNewFrequency($values['new_frequency']);
 		return $this;
 	}
 	
@@ -82,6 +79,14 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 		$values['frequency'] = $this->getFrequency();
 		$values['new_frequency'] = $this->getNewFrequency();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

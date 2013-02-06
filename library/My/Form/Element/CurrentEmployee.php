@@ -36,10 +36,8 @@ class My_Form_Element_CurrentEmployee extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_employee']) && isset($values['full_name'])){
-			$this->setIdEmployee($values['id_employee']);
-			$this->setFullName($values['full_name']);
-		}
+		$this->setIdEmployee($values['id_employee']);
+		$this->setFullName($values['full_name']);
 		return $this;
 	}
 	
@@ -48,6 +46,14 @@ class My_Form_Element_CurrentEmployee extends Zend_Form_Element_Xhtml{
 		$values['id_employee'] = $this->getIdEmployee();
 		$values['full_name'] = $this->getFullName();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

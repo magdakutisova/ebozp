@@ -54,13 +54,10 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_schooling']) && isset($values['schooling'])
-				&& isset($values['note']) && isset($values['private'])){
-			$this->setIdSchooling($values['id_schooling']);
-			$this->setSchooling($values['schooling']);
-			$this->setNote($values['note']);
-			$this->setPrivate($values['private']);
-		}
+		$this->setIdSchooling($values['id_schooling']);
+		$this->setSchooling($values['schooling']);
+		$this->setNote($values['note']);
+		$this->setPrivate($values['private']);
 		return $this;
 	}
 	
@@ -71,6 +68,14 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 		$values['note'] = $this->getNote();
 		$values['private'] = $this->getPrivate();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }
