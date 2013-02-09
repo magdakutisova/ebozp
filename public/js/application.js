@@ -190,22 +190,19 @@ $(function(){
 	$("#save_employee").click(function(){
 		if($('#employee').valid()){
 			ajaxSaveEmployee();
-			$("select[id*='full_name']").empty();
 			ajaxPopulateSelects();
 		}
 	});
 	
 	function ajaxSaveEmployee(){
-		var id = $("#id_new_employee").val();
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/position/addemployee/format/html',
 			data: $("#employee").serializeArray(),
+			async: false,
 			success: function(newElement){
 				console.log("OK");
 				$('#new_employee_form').dialog("close");
-				$('#new_employee').parents('tr').before(newElement);
-				$('#id_new_employee').val(++id);
 			}
 		});
 	}
@@ -217,11 +214,37 @@ $(function(){
 			dataType: 'json',
 			url: baseUrl + '/position/populateselects',
 			data: "clientId=" + clientId,
-			success: function(json){
-				var el = $("select[id*='full_name']");
+			async: false,
+			success: function(json){	
+				var checkedItems = $("div.multiCheckboxEmployees label input:checked");
+				var vals = [];
+				var i = 0;
+				checkedItems.each(function(){
+					vals[i++] = $(this).val();
+				});
+				var labels = $("div.multiCheckboxEmployees label");
+				var labelArray = [];
+				var j = 0;
+				labels.each(function(){
+					labelArray[j++] = $(this).text();
+				});
+				$("div.multiCheckboxEmployees").empty();
 				$.each(json, function(key, value){
-					el.append($("<option></option>")
-					  .attr("value", key).text(value));
+					if($.inArray(value, labelArray) == -1){
+						$("div.multiCheckboxEmployees").append('<label><input id=\"employeeList-' +
+								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
+								+ '\" name=\"employeeList[]\">' + value
+								+ '</label><br/>');
+					}
+					else if($.inArray(key, vals) == -1){
+						$("div.multiCheckboxEmployees").append('<label><input id=\"employeeList-' +
+							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"employeeList[]\">' + value + '</label><br/>');	
+					}
+					else{
+						$("div.multiCheckboxEmployees").append('<label><input id=\"employeeList-' +
+								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"employeeList[]\">' + value
+								+ '</label><br/>');
+					}
 				});
 			}
 		});

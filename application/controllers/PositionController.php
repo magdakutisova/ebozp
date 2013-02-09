@@ -151,47 +151,23 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->form = $form;
     }
     
-    public function newcurrentemployeeAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newcurrentemployee', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_current_employee', null);
-    	
-    	$element = new My_Form_Element_CurrentEmployee("newCurrentEmployee$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_employeeList);
-    	
-    	$this->view->field = $element->__toString();
-    }
-    
     public function addemployeeAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addemployee', 'html')->initContext();
     	
     	$data = $this->_getAllParams();
     	$employee = new Application_Model_Employee($data);
-    	$employee->setClientId($this->_getParam('clientId'));
     	$employees = new Application_Model_DbTable_Employee();
+    	$employee->setClientId($this->_getParam('clientId'));
     	$employeeId = $employees->addEmployee($employee);
-    	
-    	//aktualizovat employeeList DODĚLAT
-    	$this->_employeeList = $employees->getEmployees($this->_clientId);
-    	
-    	//přihodit element do formuláře
-    	$id = $this->_getParam('id_new_employee', null);
-    	 
-    	$element = new My_Form_Element_CurrentEmployee("newCurrentEmployee$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_employeeList);
-    	$element->setValue(array('id_employee' => $employeeId,
-    				'full_name' => $employeeId));
-    	
-    	$this->view->field = $element->__toString();	
     }
     
     public function populateselectsAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
+    	//aktualizovat employeeList
+    	$employees = new Application_Model_DbTable_Employee();
+    	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	echo Zend_Json::encode($this->_employeeList);
     }
     
@@ -362,8 +338,8 @@ class PositionController extends Zend_Controller_Action{
     }
 	
     private function fillMultiselects($form){
-    	if($form->current_employee != null){
-    		$form->current_employee->setAttrib('multiOptions', $this->_employeeList);
+    	if($form->employeeList != null){
+    		$form->employeeList->setMultiOptions($this->_employeeList);
     	}
     	if($form->environment_factor != null){
     		$form->environment_factor->setAttrib('multiOptions', $this->_environmentFactorList);

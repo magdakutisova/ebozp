@@ -35,11 +35,10 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		$select = $this->select()
 			->from('employee')
 			->where('client_id = ?', $clientId)
-			->order('employee.surname')
+			->order('employee.surname', 'employee.first_name')
 			->group('employee.id_employee');
 		$results = $this->fetchAll($select);
 		$employees = array();
-		$employees[0] = '------';
 		if(count($results) > 0){
 			foreach ($results as $result){
 				$key = $result->id_employee;

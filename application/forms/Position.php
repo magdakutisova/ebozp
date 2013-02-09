@@ -50,6 +50,14 @@ class Application_Form_Position extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$elementDecorator3 = array(
+				'ViewHelper',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckboxEmployees')),
+				array(array('td' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+		);
+		
 		$this->setDecorators(array(
 				'FormElements',
 				array('HtmlTag', array('tag' => 'table')),
@@ -280,28 +288,31 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 6001,
        	));
        	
-       	//stávající zaměstnanci       	
-       	$this->addElement('currentEmployee', 'current_employee', array(
+       	$this->addElement('multiCheckbox', 'employeeList', array(
+       			'decorators' => $elementDecorator3,
        			'order' => 6002,
-       	));
+       			));
        	
-       	$this->addElement('hidden', 'id_current_employee', array(
-       			'value' => 6003,
-       	));
+//        	//stávající zaměstnanci       	
+//        	$this->addElement('currentEmployee', 'current_employee', array(
+//        			'order' => 6002,
+//        	));
        	
-       	$this->addElement('button', 'new_current_employee', array(
-       			'label' => 'Přidat dalšího existujícího zaměstnance',
-       			'order' => 7000,
-       			'decorators' => $elementDecorator2,
-       	));
+//        	$this->addElement('hidden', 'id_current_employee', array(
+//        			'value' => 6003,
+//        	));
+       	
+//        	$this->addElement('button', 'new_current_employee', array(
+//        			'label' => 'Přidat dalšího existujícího zaměstnance',
+//        			'order' => 7000,
+//        			'decorators' => $elementDecorator2,
+//        	));
        	
        	$this->addElement('button', 'new_employee', array(
        			'label' => 'Přidat nového zaměstnance',
        			'order' => 8000,
        			'decorators' => $elementDecorator2,
        			));
-       	
-       	//přidat modál pro vložení nových zaměstnanců
        	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,

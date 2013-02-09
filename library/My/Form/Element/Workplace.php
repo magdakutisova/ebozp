@@ -36,7 +36,9 @@ class My_Form_Element_Workplace extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		$this->setWorkplaces($values['workplaces']);
+		if(isset($values['workplaces'])){
+			$this->setWorkplaces($values['workplaces']);
+		}
 		$this->setNewWorkplaces($values['new_workplaces']);
 		return $this;
 	}
