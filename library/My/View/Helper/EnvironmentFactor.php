@@ -28,22 +28,24 @@ class My_View_Helper_EnvironmentFactor extends Zend_View_Helper_FormElement{
 		$helperHidden->setView($this->view);
 		$helperText = new Zend_View_Helper_FormText();
 		$helperText->setView($this->view);
+		$helperTextarea = new Zend_View_Helper_FormTextarea();
+		$helperTextarea->setView($this->view);
 		
 		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_environment_factor]', $idEnvironmentFactor);
 		$this->html .= '<td colspan="2"><label for="' . $name . '[factor]">Faktor pracovního prostředí</label></td>';
-		$this->html .= '<td><label for="' . $name . '[category]">Zařazeno do kategorie</label></td>';
-		$this->html .= '<td colspan="2"><label for="' . $name . '[protection_measures]">Ochranná opatření proti FPP</label></td>';
-		$this->html .= '<td colspan="2"><label for="' . $name . '[measurement_taken]">Měření provedeno</label></td>';
+		$this->html .= '<td colspan="2"><label for="' . $name . '[category]">Zařazeno do kategorie</label></td>';
+		$this->html .= '<td><label for="' . $name . '[measurement_taken]">Měření provedeno</label></td>';
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[factor]', $factor, null, $multiOptions) . '</td>';
-		$this->html .= '<td>' . $helperSelect->formSelect($name . '[category]', $category, null, $multiOptions2) . '</td>';
-		$this->html .= '<td colspan="2">' . $helperText->formText($name . '[protection_measures]', $protectionMeasures) . '</td>';
-		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions3) . '</td>';
+		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[category]', $category, null, $multiOptions2) . '</td>';
+		$this->html .= '<td>' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions3) . '</td>';
+		$this->html .= '</tr><tr>';
+		$this->html .= '<td colspan="6"><label for="' . $name . '[protection_measures]">Ochranná opatření proti FPP</label><br/>' . $helperTextarea->formTextarea($name . '[protection_measures]', $protectionMeasures) . '</td>';
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="3"><label for="' . $name . '[note]">Poznámka k FPP</label><br/>' . $helperText->formText($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
-			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label><br/>' . $helperText->formText($name . '[private]', $private) . '</td><td></td>';
+			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label><br/>' . $helperText->formText($name . '[private]', $private) . '</td>';
 		}
 		else{
 			$this->html .= '<td colspan="3"></td>';

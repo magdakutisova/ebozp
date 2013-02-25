@@ -14,6 +14,8 @@ class Application_Model_Employee{
 	private $phone;
 	private $note;
 	private $private;
+	private $positionId;
+	private $clientId;
 	
 	public function __construct($options = array()){
 		if(!empty($options)){
@@ -109,6 +111,14 @@ class Application_Model_Employee{
 		return $this->private;
 	}
 
+	public function getPositionId(){
+		return $this->positionId;
+	}
+	
+	public function getClientId(){
+		return $this->clientId;
+	}
+	
 	/**
 	 * @param $idEmployee the $idEmployee to set
 	 */
@@ -196,6 +206,14 @@ class Application_Model_Employee{
 	public function setPrivate($private) {
 		$this->private = $private;
 	}
+	
+	public function setPositionId($positionId){
+		$this->positionId = $positionId;
+	}
+	
+	public function setClientId($clientId){
+		$this->clientId = $clientId;
+	}
 
 	public function populate(array $data){
 		$this->idEmployee = isset($data['id_employee']) ? $data['id_employee'] : null;
@@ -211,6 +229,8 @@ class Application_Model_Employee{
 		$this->phone = isset($data['phone']) ? $data['phone'] : null;
 		$this->note = isset($data['note']) ? $data['note'] :  null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
+		$this->positionId = isset($data['position_id']) ? $data['position_id'] : null;
+		$this->clientId = isset($data['client_id']) ? $data['client_id'] : null;
 
 		return $this;
 	}
@@ -232,6 +252,8 @@ class Application_Model_Employee{
 		$data['phone'] = $this->phone;
 		$data['note'] = $this->note;
 		$data['private'] = $this->private;
+		$data['position_id'] = $this->positionId;
+		$data['client_id'] = $this->clientId;
 		
 		return $data;
 	}

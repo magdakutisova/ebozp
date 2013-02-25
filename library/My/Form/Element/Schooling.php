@@ -4,7 +4,6 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 	public $helper = 'schooling';
 	protected $_idSchooling;
 	protected $_schooling;
-	protected $_lastExecution;
 	protected $_note;
 	protected $_private;
 	
@@ -17,7 +16,7 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 			$this->addDecorator('ViewHelper')
 			->addDecorator('ErrorsHtmlTag', array(
 					'tag' => 'td',
-					'colspan' => 7,
+					'colspan' => 6,
 			));
 		}
 	}
@@ -28,10 +27,6 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 	
 	public function getSchooling(){
 		return $this->_schooling;
-	}
-	
-	public function getLastExecution(){
-		return $this->_lastExecution;
 	}
 	
 	public function getNote(){
@@ -50,10 +45,6 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 		$this->_schooling = $_schooling;
 	}
 	
-	public function setLastExecution($_lastExecution){
-		$this->_lastExecution = $_lastExecution;
-	}
-	
 	public function setNote($_note){
 		$this->_note = $_note;
 	}
@@ -63,14 +54,10 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_schooling']) && isset($values['schooling']) && isset($values['last_execution'])
-				&& isset($values['note']) && isset($values['private'])){
-			$this->setIdSchooling($values['id_schooling']);
-			$this->setSchooling($values['schooling']);
-			$this->setLastExecution($values['last_execution']);
-			$this->setNote($values['note']);
-			$this->setPrivate($values['private']);
-		}
+		$this->setIdSchooling($values['id_schooling']);
+		$this->setSchooling($values['schooling']);
+		$this->setNote($values['note']);
+		$this->setPrivate($values['private']);
 		return $this;
 	}
 	
@@ -78,10 +65,17 @@ class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
 		$values = array();
 		$values['id_schooling'] = $this->getIdSchooling();
 		$values['schooling'] = $this->getSchooling();
-		$values['last_execution'] = $this->getLastExecution();
 		$values['note'] = $this->getNote();
 		$values['private'] = $this->getPrivate();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

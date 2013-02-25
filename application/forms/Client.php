@@ -59,7 +59,7 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'PSČ',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
+        	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max' => 6)),
         		new Zend_Validate_PostCode('cs_CZ')),
         	'decorators' => $elementDecorator,
         ));

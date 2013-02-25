@@ -34,15 +34,11 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 	public function getEmployees($clientId){
 		$select = $this->select()
 			->from('employee')
-			->join('position_has_employee', 'employee.id_employee = position_has_employee.id_employee')
-			->join('position', 'position_has_employee.id_position = position.id_position')
-			->where('position.client_id = ?', $clientId)
-			->order('employee.surname')
+			->where('client_id = ?', $clientId)
+			->order('employee.surname', 'employee.first_name')
 			->group('employee.id_employee');
-		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$employees = array();
-		$employees[0] = '------';
 		if(count($results) > 0){
 			foreach ($results as $result){
 				$key = $result->id_employee;

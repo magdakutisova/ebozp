@@ -63,13 +63,11 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 	}
 	
 	public function setValue($values){
-		if(isset($values['id_technical_device']) && isset($values['sort']) && isset($values['new_sort']) && isset($values['type']) && isset($values['new_type'])){
-			$this->setIdTechnicalDevice($values['id_technical_device']);
-			$this->setSort($values['sort']);
-			$this->setNewSort($values['new_sort']);
-			$this->setType($values['type']);
-			$this->setNewType($values['new_type']);
-		}
+		$this->setIdTechnicalDevice($values['id_technical_device']);
+		$this->setSort($values['sort']);
+		$this->setNewSort($values['new_sort']);
+		$this->setType($values['type']);
+		$this->setNewType($values['new_type']);
 		return $this;
 	}
 	
@@ -81,6 +79,14 @@ class My_Form_Element_TechnicalDevice extends Zend_Form_Element_Xhtml{
 		$values['type'] = $this->getType();
 		$values['new_type'] = $this->getNewType();		
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }

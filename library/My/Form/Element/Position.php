@@ -50,11 +50,9 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 	}
 		
 	public function setValue($values){
-		if(isset($values['id_position']) && isset($values['position']) && isset($values['new_position'])){
-			$this->setIdPosition($values['id_position']);
-			$this->setPosition($values['position']);
-			$this->setNewPosition($values['new_position']);
-		}
+		$this->setIdPosition($values['id_position']);
+		$this->setPosition($values['position']);
+		$this->setNewPosition($values['new_position']);
 		return $this;
 	}
 	
@@ -64,6 +62,14 @@ class My_Form_Element_Position extends Zend_Form_Element_Xhtml{
 		$values['position'] = $this->getPosition();
 		$values['new_position'] = $this->getNewPosition();
 		return $values;
+	}
+	
+	public function isValid($value){
+		$filter = new My_Filter_CustomElementStrings();
+		$value = $filter->filter($value);
+		$this->setValue($value);
+		$result = parent::isValid($value);
+		return $result;
 	}
 	
 }
