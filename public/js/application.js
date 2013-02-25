@@ -600,6 +600,7 @@ $.iframeDialog = function (src, width, height, title) {
 	
 	var availableStatuses = ["green", "yellow", "red"];
 	var actualStatus = 0;
+	var element = null;
 	
 	function removeStatus(sem) {
 		for (var i in availableStatuses) sem.removeClass("sem-" + availableStatuses[i]);
@@ -618,14 +619,15 @@ $.iframeDialog = function (src, width, height, title) {
 		var sem = item.parent();
 		removeStatus(sem);
 		sem.addClass("sem-" + availableStatuses[i]);
+		actualStatus = i;
 	}
 	
 	var methods = {
 		"set" : function (value) {
-			var sem = $(this);
-			removeStatus(sem);
+			removeStatus(element);
+			actualStatus = value;
 			
-			sem.addClass("sem-" + availableStatuses[value]);
+			element.addClass("sem-" + availableStatuses[value]);
 		},
 		
 		"status" : function () {
@@ -641,6 +643,8 @@ $.iframeDialog = function (src, width, height, title) {
 				"click" : $.noop
 			}, option);
 			
+			element = $(this);
+			
 			options.status = Number(options.status);
 			
 			for (var i = 0; i < 3; i++) {
@@ -651,7 +655,7 @@ $.iframeDialog = function (src, width, height, title) {
 			}
 			
 			$(this).click(options.click);
-			
+			actualStatus = options.status;
 			
 			
 			return;
@@ -659,8 +663,11 @@ $.iframeDialog = function (src, width, height, title) {
 		
 		switch (option) {
 		case "set":
-			
+			methods["set"](Number(value));
 			break;
+			
+		case "status":
+			return methods["status"]();
 		}
 	};
 })(jQuery);
