@@ -557,9 +557,17 @@ $.iframeDialog = function (src, width, height, title) {
 				"click" : $.noop
 			}, option);
 			
-			$(this).children().click(setValue);
+			for (var i = 0; i < 3; i++) {
+				$(this).append($("<div></div>").click(setValue));
+			}
 			
 			return;
+		}
+		
+		switch (option) {
+		case "set":
+			
+			break;
 		}
 	};
 })(jQuery);

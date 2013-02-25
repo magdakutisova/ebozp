@@ -29,5 +29,11 @@ $(function () {
 	
 	$("#table-mistakes button[name='edit-mistake']").click(openMistake);
 	$("#tabs").tabs();
-	$(".semaphore").semaphore();
+	
+	var semaphores = $(".semaphore");
+	semaphores.semaphore();
+	semaphores.each(function () {
+		var input = $(this).next();
+		$(this).semaphore("set", input.val());
+	});
 });

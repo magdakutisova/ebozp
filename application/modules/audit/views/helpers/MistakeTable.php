@@ -36,18 +36,21 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 			switch ($config["semaphore"]) {
 				case 0:
 					$color = "sem-green";
+					$colorId = 0;
 					break;
 					
 				case 1:
 					$color = "sem-yellow";
+					$colorId = 1;
 					break;
 					
 				case 2:
 				default:
 					$color = "sem-red";
+					$colorId = 2;
 			}
 			
-			$semaphore = "<div class='semaphore $color'><div></div><div></div><div></div></div>";
+			$semaphore = "<div class='semaphore'></div><input type='hidden' name='semaphore_val' value='$colorId'>";
 		} else {
 			$semaphore = "";
 		}
