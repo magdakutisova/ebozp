@@ -635,14 +635,24 @@ $.iframeDialog = function (src, width, height, title) {
 	
 	$.fn.semaphore = function (option, value) {
 		if (option === undefined || option.constructor == Object) {
+			
 			options = $.extend({
 				"status" : 0,
 				"click" : $.noop
 			}, option);
 			
+			options.status = Number(options.status);
+			
 			for (var i = 0; i < 3; i++) {
-				$(this).append($("<div></div>").click(setValue));
+				var patch = $("<div></div>").click(setValue);
+				$(this).append(patch);
+				
+				if (i == options.status) patch.click();
 			}
+			
+			$(this).click(options.click);
+			
+			
 			
 			return;
 		}
