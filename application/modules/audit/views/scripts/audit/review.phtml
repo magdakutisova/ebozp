@@ -79,20 +79,29 @@ $assocIndex = $this->assocIndex;
 					// vyhodnoceni jeslti je chyba oznacena k odeslani
 					$assoc = $this->assocRecordIndex[$mistake->record_id];
 					
+					// vyhodnoceni semaforu
+					if ($mistake->is_removed) {
+						$semaphore = 0;
+					} elseif ($mistake->is_marked) {
+						$semaphore = 2;
+					} else {
+						$semaphore = 1;
+					}
+					
 					if ($assoc->submit_status) {
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Nepotvrzovat");
 					} else {
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Potvrdit");
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions, null, $assoc->submit_status);
+					echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "semaphore" => $semaphore, "submitStatus" => $assoc->submit_status));
 				}
 				?>
 			</table>
 		</div>
 		<div id="mistakes-others">
 			<h3>Neshody z pracovišť</h3>
-			<table>
+			<table class="multirow-table">
 				<?php 
 				echo $this->mistakeTable()->header();
 				
@@ -108,7 +117,7 @@ $assocIndex = $this->assocIndex;
 						$actions = array("edit-mistake" => "Upravit", "mistake-submiter" => "Potvrdit");
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions, null, $assoc->submit_status);
+					echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "semaphore" => $semaphore, "submitStatus" => $assoc->submit_status));
 				}
 				?>
 			</table>

@@ -83,4 +83,12 @@ $(function () {
 	$("#mistakes-forms,#mistakes-others").find("button[name='mistake-submiter']").click(toggleMistakeSubmit);
 	$("#auditcoordsubmit").submit(checkSubmit);
 	$("#tabs").tabs();
+	
+	var semaphores = $(".semaphore");
+	semaphores.semaphore();
+	semaphores.each(function () {
+		var input = $(this).next();
+		
+		$(this).semaphore("set", input.val());
+	});
 });

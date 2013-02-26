@@ -27,6 +27,28 @@ $(function () {
 		});
 	}
 	
+	function sendMistakes() {
+		/**
+		 * vygenerovani seznamu zmen
+		 */
+		var changes = {};
+		
+		$(".semaphore").each(function () {
+			var newState = $(this).semaphore("status");
+			var oldState = $(this).next().val();
+			
+			if (Number(newState) != Number(oldState)) {
+				// nacteni id mistake
+				var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
+				
+				changes[mistakeId] = newState;
+			}
+		});
+		
+		// odeslani na server
+		$.post("/klient/" + clientId + "/pobocka/" + subsidiaryId + "/audit/" + auditId + "/mistakes/setstatus", { status: changes });
+	}
+	
 	$("#table-mistakes button[name='edit-mistake']").click(openMistake);
 	$("#tabs").tabs();
 	
@@ -37,4 +59,6 @@ $(function () {
 		
 		$(this).semaphore("set", input.val());
 	});
+	
+	$("#save-mistakes").click(sendMistakes);
 });

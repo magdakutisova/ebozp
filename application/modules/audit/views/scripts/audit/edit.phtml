@@ -77,7 +77,16 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			echo $this->mistakeTable()->header();
 			
 			foreach ($this->mistakes[0] as $mistake) {
-				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => 0));
+				// vyhodnoceni semaforu
+				if ($mistake->is_removed) {
+					$semaphore = 0;
+				} elseif ($mistake->is_marked) {
+					$semaphore = 2;
+				} else {
+					$semaphore = 1;
+				}
+				
+				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => $semaphore));
 			}
 			?>
 		</table>
@@ -93,6 +102,9 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			}
 			?>
 		</table>
+		<p>
+			<?php echo $this->formButton("save-mistakes", "Uložit změny"); ?>
+		</p>
 	</div>
 	<div id="newmistake">
 	<?php 

@@ -832,7 +832,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 	protected function _loadAuditMistakes(Audit_Model_Row_Audit $audit) {
 		// nacteni vsech neshod vazanych k pobocce, ktere nejsou odstranne
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistakesAll = $tableMistakes->fetchAll("submit_status and subsidiary_id = " . $audit->subsidiary_id, "created_at");
+		$mistakesAll = $tableMistakes->fetchAll("submit_status and (subsidiary_id != $audit->subsidiary_id and is_removed = 0 or subsidiary_id = " . $audit->subsidiary_id . ")", "created_at");
 		
 		// je potreba roztridit neshody podle tho, jestli jsou zahrnuty v auditu nebo jestli se poze vezou z predchoziho auditu
 		$assocs = $audit->findDependentRowset("Audit_Model_AuditsMistakes", "audit");

@@ -35,18 +35,15 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		if ($config["semaphore"] !== false) {
 			switch ($config["semaphore"]) {
 				case 0:
-					$color = "sem-green";
 					$colorId = 0;
 					break;
 					
 				case 1:
-					$color = "sem-yellow";
 					$colorId = 1;
 					break;
 					
 				case 2:
 				default:
-					$color = "sem-red";
 					$colorId = 2;
 			}
 			
