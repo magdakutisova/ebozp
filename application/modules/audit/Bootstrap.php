@@ -346,14 +346,14 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
-		// editace neshody z proverky
+		// nastaveni stavu skupiny neshod
 		$router->addRoute(
-				"audit-mistake-checkedit",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/check/:checkId/mistake/:mistakeId/edit",
+				"audit-mistake-setstates",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/mistakes/setstatus",
 						array(
 								"module" => "audit",
 								"controller" => "mistake",
-								"action" => "checkedit"
+								"action" => "setstatus.json"
 						))
 		);
 	}
