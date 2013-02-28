@@ -27,7 +27,7 @@ $saveUrl = $this->url($params, "audit-form-save");
 ?>
 <h3><?php echo $this->actualGroup->name; ?></h3>
 <form action="<?php echo $saveUrl?>" method="post" id="form-fill-group">
-	<table>
+	<table class="multirow-table">
 		<thead>
 			<tr>
 				<th>
@@ -50,7 +50,6 @@ $saveUrl = $this->url($params, "audit-form-save");
 				</th>
 			</tr>
 		</thead>
-		<tbody>
 		<?php 
 		// hodnoty pro radio
 		$values = array(
@@ -65,29 +64,29 @@ $saveUrl = $this->url($params, "audit-form-save");
 		foreach ($this->records as $record) {
 			$name = "record[$record->id]";
 			?>
+		<tbody>
 			<tr>
 				<td style="white-space: pre; width: 300px"><?php echo $record->question; ?></td>
 				<td>
 				<?php echo $this->formRadio($name . "[score]", $record->score, null, $values, "</td><td>"); ?>
 				</td>
 				<td>
-				<?php echo $this->formTextarea($name . "[note]", $record->note, array("style" => "width: 100px")); ?>
+				<?php echo $this->formTextarea($name . "[note]", $record->note, array("style" => "width: 100px; float: right;")); ?>
 				</td>
 				<td>
 				<?php 
 				// vyhodnoceni zobrazeni tlacitka pro neshodu
 				$style = ($record->score == Audit_Model_AuditsRecords::SCORE_N) ? null : array("style" => "visibility: hidden;");
 				
-				echo $this->formButton($name . "[comment-button]", "Zvětšit/zmenšit komentář");
 				echo $this->formButton($name . "[mistake]", "Neshoda", $style);
 				echo $this->formHidden($name . "[mistake_id]", $record->mistake_id);
 				?>
 				</td>
 			</tr>
+		</tbody>
 			<?php 
 		}
 		?>
-		</tbody>
 	</table>
 	<p>
 		<?php echo $this->formSubmit("submit", "Uložit"); ?>

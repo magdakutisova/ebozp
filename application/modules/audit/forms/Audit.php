@@ -1,6 +1,25 @@
 <?php
 class Audit_Form_Audit extends Zend_Form {
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see Zend_Form::setDefaults()
+	 * @return Audit_Form_Audit
+	 */
+	public function setDefaults($defaults) {
+		// kontrola a prepis datumu
+		if (isset($defaults["done_at"])) {
+			if (strpos($defaults["done_at"], "-")) {
+				list($year, $month, $day) = explode("-", $defaults["done_at"]);
+				$defaults["done_at"] = "$day. $month. $year";
+			}
+		}
+		
+		parent::setDefaults($defaults);
+		
+		return $this;
+	}
+	
 	public function fillSelects() {
 		// nactei koordinatoru
 		$tableUsers = new Application_Model_DbTable_User();
@@ -10,6 +29,8 @@ class Audit_Form_Audit extends Zend_Form {
 		foreach ($coordinators as $coord) {
 			$this->getElement("coordinator_id")->addMultiOption($coord->id_user, $coord->username);
 		}
+		
+		return $this;
 	}
 	
 	public function init() {

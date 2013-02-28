@@ -9,13 +9,21 @@ foreach ($this->groups as $group) {
 }
 
 // sestaveni zpatecni url
+$user = Zend_Auth::getInstance()->getIdentity();
+
 $params = array(
 		"clientId" => $this->audit->client_id,
 		"subsidiaryId" => $this->audit->subsidiary_id,
 		"auditId" => $this->audit->id
 );
 
-$url = $this->url($params, "audit-get");
+if ($user->id_user == $this->audit->coordinator_id && $this->audit->coordinator_confirmed_at == "0000-00-00 00:00:00") {
+	$route = "audit-review";
+} else {
+	$route = "audit-get";
+}
+
+$url = $this->url($params, $route);
 ?>
 <div class="box">
 	<?php echo "<a href='$url'>Zpět na audit</a>"; ?>

@@ -14,6 +14,8 @@ $(function () {
 			button.css("visibility", "visible");
 		} else {
 			button.css("visibility", "hidden");
+			$(this).parents("tbody:first").find(">tr:gt(0)").remove();
+			$(this).parents("tr:first").find("button[name$='[mistake]']").text("Neshoda");
 		}
 	};
 	
@@ -34,32 +36,39 @@ $(function () {
 	}
 	
 	function openMistake() {
+		
+		// kontrola jeslti je neshoda zobrazena
+		var tbody = $(this).parents("tbody:first");
+		var trs = tbody.find("tr:gt(0)");
+		
+		if (trs.length) {
+			trs.remove();
+			$(this).text("Neshoda");
+			return;
+		}
+		
+		// zmena popisku
+		$(this).text("Skrýt neshodu");
+		
 		var mistakeId = $(this).parent().find(":hidden").val();
 		
 		// sestaveni routy
 		var url = "/klient/" + clientId + "/audit/" + auditId + "/mistake/" + mistakeId + "/html";
 		
 		// sestaveni dialogu
-		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
+		var iframe = $("<iframe width='700px' height='750px'>").attr("src", url);
+		var tr = $("<tr></tr>").appendTo(tbody);
+		$("<td></td>").attr("colspan", 6).appendTo(tr).append(iframe);
 		
-		$("<div>").append(iframe).dialog({
-			modal: true,
-			width: "730px",
-			draggable: false,
-			title : "Neshoda"
-		});
 	}
 	
 	function toggleComment() {
 		// nacteni potrebnych dat
-		var row = $(this).parents("tr:first");
-		
-		var comment = row.find("td:nth-child(5)");
-		var radios = row.find(":radio").parents("td");
-		radios = radios.add(row.find("td:first"));
+		var comment = $(this).parent();
+		var radios = comment.parent().find(":radio").parent().parent();
 		
 		// vyhodnoceni jestli se jedna o zobrazeni nebo skryti
-		if (comment.attr("colspan") == 5) {
+		if (comment.attr("colspan") == 4) {
 			// bude se zmensovat
 			comment.attr("colspan", 1).find("textarea").css("width", "100px");
 			
@@ -67,7 +76,7 @@ $(function () {
 		} else {
 			// bude se zvetsovat
 			radios.hide("fast", false, function () {
-				comment.attr("colspan", 5).find("textarea").css("width", "556px");
+				comment.attr("colspan", 4).find("textarea").css("width", "556px");
 			});
 		}
 	}
@@ -75,5 +84,5 @@ $(function () {
 	$("#form-fill-group").find(":radio").click(setVisibility);
 	$("#navigation-page").change(changePage);
 	$("#form-fill-group button[name$='[mistake]']").click(openMistake);
-	$("#form-fill-group button[name$='[comment-button]']").click(toggleComment);
+	$("#form-fill-group textarea").focus(toggleComment).blur(toggleComment);
 });

@@ -846,6 +846,36 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function submitJsonAction() {
 		$this->submitAction();
 	}
+	
+	/**
+	 * akce (od)submitne neshody dle seznamu
+	 */
+	public function submitsJsonAction() {
+		$data = (array) $this->getRequest()->getParam("submit", array());
+		$data = array_merge(array("status" => 0, "items" => array()), $data);
+		
+		$this->view->response = array("ok" => false);
+		
+		if (!$data["items"]) {
+			// zadne itemy se nebudou menit
+			return ;
+		}
+		
+		// provedeni kontroly dat
+		if (!$this->_audit) return;
+		if ($this->_audit->coordinator_id != $this->_user->getIdUser() && $this->_user->getRoleId() != My_Role::ROLE_ADMIN) return;
+		
+		// vygenerovani updatovaciho dotazu
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		$adapter = $tableAssocs->getAdapter();
+		
+		$sql = "update `$nameAssocs` set submit_status = " . $adapter->quote($data["status"]) . " where ";
+		$sql .= "audit_id = " . $this->_audit->id . " and mistake_id in (" . $adapter->quote($data["items"]) . ")";
+		$adapter->query($sql);
+		
+		$this->view->response = array("ok" => true, "status" => $data["status"]);
+	}
 
 	public function unsubmitAction() {
 		// nacteni neshody

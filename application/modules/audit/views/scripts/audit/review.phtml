@@ -15,9 +15,9 @@ $assocIndex = $this->assocIndex;
 	</ul>
 	<div id="overview">
 	<?php 
-	echo $this->partial("audit/_commonTable.phtml", $this);
+	echo $this->auditForm;
 	?>
-	<h3>Uzavření auditu</h3>
+		<h3>Uzavření auditu</h3>
 		<?php echo $this->submitForm; ?>
 	</div>
 	<div id="forms">
@@ -71,6 +71,8 @@ $assocIndex = $this->assocIndex;
 		</div>
 		<div id="mistakes-forms">
 			<h3>Neshody z formulářů</h3>
+			<button type="button" id="sfa" value="1">Nastavit všechny neshody z formulářů jako potvrzené</button>
+			<button type="button" id="ufa" value="0">Nastavit všechny neshody z formulářů jako nepotvrzené</button>
 			<table class="multirow-table">
 				<?php 
 				echo $this->mistakeTable()->header();
@@ -101,6 +103,8 @@ $assocIndex = $this->assocIndex;
 		</div>
 		<div id="mistakes-others">
 			<h3>Neshody z pracovišť</h3>
+			<button type="button" id="swa" value="1">Nastavit všechny neshody z pracovišť jako potvrzené</button>
+			<button type="button" id="uwa" value="0">Nastavit všechny neshody z pracovišť jako nepotvrzené</button>
 			<table class="multirow-table">
 				<?php 
 				echo $this->mistakeTable()->header();

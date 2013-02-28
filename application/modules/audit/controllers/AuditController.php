@@ -606,10 +606,14 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$audit->save();
 		
-		// presmerovani na fill
-		$this->_redirect(
-				$this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-edit")
-		);
+		// presmerovani na fill nebo review, dle role
+		if ($this->_user->getRoleId() == My_Role::ROLE_TECHNICIAN) {
+			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-edit");
+		} else {
+			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-review");
+		}
+		
+		$this->_redirect($url);
 	}
 	
 	public function reviewAction() {
@@ -696,6 +700,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
 		
+		// formular auditu
+		$auditForm = new Audit_Form_AuditFill();
+		$auditData = $this->_audit->toArray();
+		$auditForm->fillSelects()->setDefaults($auditData);
+		
 		$this->view->audit = $this->_audit;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->client = $client;
@@ -703,6 +712,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->auditor = $auditor;
 		$this->view->forms = $forms;
 		$this->view->submitForm = $submitForm;
+		$this->view->auditForm = $auditForm;
 		
 		// zapis dat neshod
 		$this->view->workplaceIndex = $workplaceIndex;

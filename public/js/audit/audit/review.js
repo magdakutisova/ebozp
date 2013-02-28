@@ -79,6 +79,32 @@ $(function () {
 		return true;
 	}
 	
+	// odesle na server pozadavek na zmenu stavu odeslani vsech neshod v dane skupine
+	function sendChangeAll() {
+		var context = $(this);
+		var newStatus = context.val();
+		var ids = new Array();
+		
+		context.parent().find("table :hidden[name='mistakeId']").each(function () {
+			ids.push($(this).val());
+		});
+		
+		var url = "/klient/" + clientId + "/pobocka/" + subsidiaryId + "/audit/" + auditId + "/mistakes/setstatus";
+		var data = { submit : { status : newStatus, items : ids }};
+		
+		$.post(url, data, function (response) {
+			var buttons = context.parent().find("table button[name='mistake-submiter']");
+			
+			if (Number(response.status)) {
+				buttons.text("Nepotvrzovat");
+			} else {
+				buttons.text("Potvrdit");
+			}
+			
+			context.parent().find("table :hidden[name='submitStatus']").val(response.status);
+		}, "json");
+	}
+	
 	$("#mistakes-forms,#mistakes-others").find("button[name='edit-mistake']").click(openMistake);
 	$("#mistakes-forms,#mistakes-others").find("button[name='mistake-submiter']").click(toggleMistakeSubmit);
 	$("#auditcoordsubmit").submit(checkSubmit);
@@ -91,4 +117,6 @@ $(function () {
 		
 		$(this).semaphore("set", input.val());
 	});
+	
+	$("#sfa,#ufa,#swa,#uwa").click(sendChangeAll);
 });
