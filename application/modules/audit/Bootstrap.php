@@ -353,7 +353,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "audit",
 								"controller" => "mistake",
-								"action" => "setstatus.json"
+								"action" => "submits.json"
 						))
 		);
 	}
