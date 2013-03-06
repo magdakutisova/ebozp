@@ -170,6 +170,7 @@ $(function(){
 	});
 	
 	$('#new_employee').click(function(){
+		alert('works');
 		$('#new_employee_form input[type=text]').val('');
 		$('#new_employee_form textarea').val('');
 		$('#new_employee_form select#year_of_birth').val('1960');
@@ -184,7 +185,7 @@ $(function(){
 		height: 500,
 		width: 700,
 		modal: true,
-		title: 'Vyplňte údaje nového zaměstnance',
+		title: 'Vyplňte údaje nového zaměstnance.',
 	});
 	
 	$("#save_employee").click(function(){
