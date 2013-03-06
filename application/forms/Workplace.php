@@ -63,6 +63,14 @@ class Application_Form_Workplace extends Zend_Form
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
        	
+       	$elementDecoratorPositions = array(
+       			'ViewHelper',
+       			array('Errors'),
+       			array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckboxPositions')),
+       			array(array('td' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
+       			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+       	);
+       	
        	$this->setDecorators(array(
         	'FormElements',
         	array('HtmlTag', array('tag' => 'table')),
@@ -202,11 +210,11 @@ class Application_Form_Workplace extends Zend_Form
         ));
         
         //pracovní pozice
-        $this->addElement('hidden', 'id_position', array(
-       		'value' => 17,
-        	'order' => 1002,
-        	'decorators' => $elementDecorator,
-       	));
+//         $this->addElement('hidden', 'id_position', array(
+//        		'value' => 17,
+//         	'order' => 1002,
+//         	'decorators' => $elementDecorator,
+//        	));
         
         $this->addElement('hidden', 'positions', array(
         	'label' => 'Pracovní pozice:',
@@ -216,13 +224,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('positions')->getDecorator('Description')->setEscape(false);
         
-        $this->addElement('position', 'position', array(
-        	'order' => 16,
-        	'validators' => array(new My_Validate_Position()),
-        ));
+//         $this->addElement('position', 'position', array(
+//         	'order' => 16,
+//         	'validators' => array(new My_Validate_Position()),
+//         ));
+
+        $this->addElement('multiCheckbox', 'positionList', array(
+        		'decorators' => $elementDecoratorPositions,
+        		'order' => 16,
+        		));
         
         $this->addElement('button', 'new_position', array(
-        	'label' => 'Další pracovní pozice',
+        	'label' => 'Přidat novou pracovní pozici',
         	'order' => 100,
         	'decorators' => $elementDecorator2,
         ));

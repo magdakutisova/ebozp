@@ -50,7 +50,7 @@ class Application_Form_Position extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
-		$elementDecorator3 = array(
+		$elementDecoratorEmployees = array(
 				'ViewHelper',
 				array('Errors'),
 				array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckboxEmployees')),
@@ -282,6 +282,7 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//zaměstnanci       	
        	$this->addElement('hidden', 'employees', array(
        			'label' => 'Seznam zaměstnanců:',
        			'decorators' => $elementDecoratorColspanSeparator,
@@ -289,7 +290,7 @@ class Application_Form_Position extends Zend_Form{
        	));
        	
        	$this->addElement('multiCheckbox', 'employeeList', array(
-       			'decorators' => $elementDecorator3,
+       			'decorators' => $elementDecoratorEmployees,
        			'order' => 6002,
        			));
        	

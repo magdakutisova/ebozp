@@ -149,8 +149,8 @@ $(function(){
 		}
 	}
 	
-	//dialogové okno pro přidání zaměstnance
-	var validator = $('#employee').validate({
+	//PŘIDÁVÁNÍ ZAMĚSTNANCE
+	var validatorEmployee = $('#employee').validate({
 		rules: {
 			first_name: {
 				required: true
@@ -170,13 +170,12 @@ $(function(){
 	});
 	
 	$('#new_employee').click(function(){
-		alert('works');
 		$('#new_employee_form input[type=text]').val('');
 		$('#new_employee_form textarea').val('');
 		$('#new_employee_form select#year_of_birth').val('1960');
 		$('#new_employee_form select#manager').val('0');
 		$('#new_employee_form select#sex').val('0');
-		validator.resetForm();
+		validatorEmployee.resetForm();
 		$('#new_employee_form').dialog("open");
 	});
 	
@@ -251,7 +250,7 @@ $(function(){
 		});
 	}
 	
-	//dynamické přidávání pracovních pozic
+	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
 	$("#new_position").click(function(){
 		ajaxAddPosition();
 	});
