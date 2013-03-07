@@ -150,9 +150,9 @@ $(function(){
 	}
 	
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
-	$("#new_position").click(function(){
+	/*$("#new_position").click(function(){
 		ajaxAddPosition();
-	});
+	});*/
 	
 	function ajaxAddPosition(){
 		var id = $("#id_position").val();

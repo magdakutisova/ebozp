@@ -40,6 +40,19 @@ $(function(){
 		title: 'Vyplňte údaje nového zaměstnance.',
 	});
 	
+	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
+	$('#new_position').click(function(){
+		$('#new_position_form').dialog("open");
+	});
+	
+	$('#new_position_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte oficiální název pracovní pozice tak, jak je uveden v pracovní smlouvě.',
+	});
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');

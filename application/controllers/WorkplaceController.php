@@ -13,6 +13,8 @@ class WorkplaceController extends Zend_Controller_Action
     private $_sortList = null;
     private $_typeList = null;
     private $_chemicalList = null;
+    private $_employeeList = null;
+    private $_workplaceList = null;
 
     public function init()
     {
@@ -46,6 +48,14 @@ class WorkplaceController extends Zend_Controller_Action
         $chemicals = new Application_Model_DbTable_Chemical();
         $this->_chemicalList = $chemicals->getChemicals($this->_clientId);
         
+        //získání seznamu zaměstnanců
+        $employees = new Application_Model_DbTable_Employee();
+        $this->_employeeList = $employees->getEmployees($this->_clientId);
+        
+        //získání seznamu pracovišť
+        $workplaces = new Application_Model_DbTable_Workplace();
+        $this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+        
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
@@ -67,6 +77,10 @@ class WorkplaceController extends Zend_Controller_Action
     	$form = $this->loadOrCreateForm($defaultNamespace);
     	
     	$formPosition = new Application_Form_Position();
+    	$formPosition->clientId->setValue($this->_clientId);
+    	$formPosition->workplace->setAttrib('multiOptions', $this->_workplaceList);
+    	$formPosition->employeeList->setMultiOptions($this->_employeeList);
+    	$formPosition->save->setAttrib('class', array('position', 'ajaxSave'));
     	$this->view->formPosition = $formPosition;
 		
 		//získání parametrů ID klienta a pobočky

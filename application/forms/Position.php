@@ -69,6 +69,10 @@ class Application_Form_Position extends Zend_Form{
         	'decorators' => $elementDecorator,
         	'order' => 10000,
         ));
+		 
+		$this->addElement('hidden', 'clientId', array(
+				'value' => $this->getAttrib('clientId'),
+				));
        	
        	$this->addElement('hidden', 'id_position', array(
        		'decorators' => $elementDecorator,
@@ -105,7 +109,6 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('workplace', 'workplace', array(
        			'label' => 'Pracoviště',
        			'order' => 4,
-       			'multiOptions' => $this->getAttrib('workplaceList'),
        			));
        	
        	$this->addElement('textarea', 'note', array(

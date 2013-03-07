@@ -97,10 +97,11 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->subtitle = "Zadat pracovní pozici";
     	$form = $this->loadOrCreateForm($defaultNamespace);
     	
-    	$formEmployee = new Application_Form_Employee(array('yearOfBirthList' => $this->_yearOfBirthList,
-    			'yesNoList' => $this->_yesNoList,
-    			'sexList' => $this->_sexList,
-    			'clientId' => $this->_clientId));
+    	$formEmployee = new Application_Form_Employee();
+    	$formEmployee->clientId->setValue($this->_clientId);
+    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
+    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
+    	$formEmployee->sex->setMultiOptions($this->_sexList);
     	$formEmployee->save_employee->setAttrib('class', array('employee', 'ajaxSave'));
     	$this->view->formEmployee = $formEmployee;
     	
@@ -166,7 +167,6 @@ class PositionController extends Zend_Controller_Action{
     public function populateemployeesAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
-    	//aktualizovat employeeList
     	$employees = new Application_Model_DbTable_Employee();
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	echo Zend_Json::encode($this->_employeeList);
@@ -333,12 +333,15 @@ class PositionController extends Zend_Controller_Action{
     	}
     	//jinak se vytvoří nový
     	else{
-    		$form = new Application_Form_Position(array('workplaceList' => $this->_workplaceList));
+    		$form = new Application_Form_Position();
     	}
     	return $form;
     }
 	
     private function fillMultiselects($form){
+    	if($form->workplace != null){
+    		$form->workplace->setAttrib('multiOptions', $this->_workplaceList);
+    	}
     	if($form->employeeList != null){
     		$form->employeeList->setMultiOptions($this->_employeeList);
     	}

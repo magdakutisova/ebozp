@@ -56,20 +56,17 @@ class Application_Form_Employee extends Zend_Form{
 		$this->addElement('select', 'year_of_birth', array(
 				'label' => 'Rok narození',
 				'decorators' => $elementDecorator,
-				'multiOptions' => $this->getAttrib('yearOfBirthList'),
 				'value' => 1960,
 				));
 		
 		$this->addElement('select', 'manager', array(
 				'label' => 'Vedoucí',
 				'decorators' => $elementDecorator,
-				'multiOptions' => $this->getAttrib('yesNoList'),
 				));
 		
 		$this->addElement('select', 'sex', array(
 				'label' => 'Pohlaví',
 				'decorators' => $elementDecorator,
-				'multiOptions' => $this->getAttrib('sexList'),
 				));
 		
 		$this->addElement('text', 'email', array(
@@ -111,12 +108,7 @@ class Application_Form_Employee extends Zend_Form{
 		));
 		
 		$this->addElement('hidden', 'clientId', array(
-				'value' => $this->getAttrib('clientId'),
 				));
-		
-		$this->addElement('hidden', 'id_new_employee', array(
-				'value' => 7000,
-		));
 		
 	}
 	
