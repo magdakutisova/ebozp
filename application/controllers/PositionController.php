@@ -101,6 +101,7 @@ class PositionController extends Zend_Controller_Action{
     			'yesNoList' => $this->_yesNoList,
     			'sexList' => $this->_sexList,
     			'clientId' => $this->_clientId));
+    	$formEmployee->save_employee->setAttrib('class', array('employee', 'ajaxSave'));
     	$this->view->formEmployee = $formEmployee;
     	
     	//získání parametrů ID klienta a pobočky
@@ -162,7 +163,7 @@ class PositionController extends Zend_Controller_Action{
     	$employeeId = $employees->addEmployee($employee);
     }
     
-    public function populateselectsAction(){
+    public function populateemployeesAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	//aktualizovat employeeList
