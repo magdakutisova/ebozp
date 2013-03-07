@@ -81,6 +81,7 @@ class WorkplaceController extends Zend_Controller_Action
     	$formPosition->workplace->setAttrib('multiOptions', $this->_workplaceList);
     	$formPosition->employeeList->setMultiOptions($this->_employeeList);
     	$formPosition->save->setAttrib('class', array('position', 'ajaxSave'));
+    	$formPosition->save->setLabel('Uložit');
     	$this->view->formPosition = $formPosition;
 		
 		//získání parametrů ID klienta a pobočky
