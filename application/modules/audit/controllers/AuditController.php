@@ -521,10 +521,19 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$tableMistakes->delete($where);
 			
 			// aktualizace stavu neshod
-			$update = array()
+			$begin = "update `$nameAssocs`, `$nameMistakes` set ";
+			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 0 and id = mistake_id";
+			$sql2 = "$begin is_marked = 1 where `$nameAssocs`.`status` = 2 and id = mistake_id";
+			$sql3 = "$begin is_removed = 0, is_marked = 0 where `$nameAssocs`.`status` = 1 and id = mistake_id";
+			$tableMistakes->getAdapter()->query("$sql1;$sql2;$sql3");
+			
+			// odeslani neshod, ktere se maji odeslat
+			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
+			$tableMistakes->getAdapter()->query($sql);
 			
 			// potvrdi se audit
 			$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
+			$this->_audit->is_closed = 1;
 			$this->_audit->save();
 			
 			// presmerovani na get

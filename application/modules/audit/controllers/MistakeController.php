@@ -316,12 +316,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (!$client) throw new Zend_Exception("Client #$clientId has not been found");
 
 		// sestaveni vyhledavaciho dotazu pro seznam neshod
-		$tableAudits = new Audit_Model_Audits();
-		$nameAudits = $tableAudits->info("name");
-
 		$where = array(
 				"client_id = " . $clientId,
-				"audit_id in (select id from `$nameAudits` where client_id = $clientId and is_closed)"
+				"is_submited"
 		);
 
 		// nacteni filtracniho formulare
