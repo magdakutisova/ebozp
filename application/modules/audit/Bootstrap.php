@@ -142,18 +142,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				)
 		);
 		
-		// routa na zobrazeni auditu klientovi pro potvrezeni
-		$router->addRoute(
-				"audit-review",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/review",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "review"
-						)
-				)
-		);
-		
 		// nova neshoda bez zavislosti na zaznamu
 		$router->addRoute(
 				"audit-mistake-createalone1",
@@ -268,7 +256,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "audit",
 								"controller" => "mistake",
-								"action" => "submits.json"
+								"action" => "setstatus.json"
 						))
 		);
 	}
