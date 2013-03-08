@@ -65,6 +65,9 @@ class WorkplaceController extends Zend_Controller_Action
     	$defaultNamespace = new Zend_Session_Namespace();
     	$this->view->subtitle = "Zadat pracoviště";
     	$form = $this->loadOrCreateForm($defaultNamespace);
+    	
+    	$formPosition = new Application_Form_Position();
+    	$this->view->formPosition = $formPosition;
 		
 		//získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
@@ -659,8 +662,8 @@ class WorkplaceController extends Zend_Controller_Action
     }
     
     private function fillMultiselects($form){
-    	if($form->position != null){
-    		$form->position->setAttrib('multiOptions', $this->_positionList);
+    	if($form->positionList != null){
+    		$form->positionList->setMultiOptions($this->_positionList);
     	}
     	if($form->work != null){
 			$form->work->setAttrib('multiOptions', $this->_workList);

@@ -38,7 +38,6 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 			->order('position');
 		$results = $this->fetchAll($select);
 		$positions = array();
-		$positions[0] = '-----';
 		if(count($results) > 0){
 			foreach ($results as $result){
 				$key = $result->id_position;
