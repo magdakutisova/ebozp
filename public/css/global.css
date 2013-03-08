@@ -146,9 +146,10 @@ input[id*='title']	{width: 50px;}
 input[id*='first_name'], input[id*='surname']	{width: 150px}
 textarea[id*='new_workplaces']					{width: 330px; height: 150px; overflow: auto;}
 textarea[id*='protection_measures']				{width: 90%; height: 200px; overflow: auto;}
-.multiCheckbox, .multiCheckboxEmployees, .multiCheckboxPositions
+.multiCheckbox, .multiCheckboxEmployees, .multiCheckboxPositions, .multiCheckboxWorks, .multiCheckboxSubsidiaries
 	{height: 150px; overflow: auto; max-width: 400px;}
-.multiCheckbox label, .multiCheckboxEmployees label, .multiCheckboxPositions label
+.multiCheckbox label, .multiCheckboxEmployees label, .multiCheckboxPositions label, .multiCheckboxWorks label,
+	.multiCheckboxSubsidiaries label
 	{font-weight: normal;}
 
 /*

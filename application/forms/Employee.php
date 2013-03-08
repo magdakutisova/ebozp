@@ -110,6 +110,10 @@ class Application_Form_Employee extends Zend_Form{
 		$this->addElement('hidden', 'clientId', array(
 				));
 		
+		$this->addElement('hidden', 'belongsTo', array(
+				'value' => 'position',
+				));
+		
 	}
 	
 }

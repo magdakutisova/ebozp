@@ -41,7 +41,6 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$works = array();
-		$works[0] = '------';
 		if(count($results) > 0){
 			foreach($results as $result){
 				$key = $result->id_work;

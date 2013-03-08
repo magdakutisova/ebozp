@@ -53,11 +53,39 @@ $(function(){
 		title: 'Zadejte oficiální název pracovní pozice tak, jak je uveden v pracovní smlouvě.',
 	});
 	
+	//PŘIDÁVÁNÍ PRACOVNÍ ČINNOSTI
+	var validatorWork = $('#work').validate({
+		rules: {
+			work: {
+				required: true
+			},
+		},
+		messages: {
+			work: "Uveďte název pracovní pozice.",
+		}
+	});
+	
+	$('#new_work').click(function(){
+		$('#new_work_form input[type=text]').val('');
+		validatorWork.resetForm();
+		$('#new_work_form').dialog("open");
+	});
+	
+	$('#new_work_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název pracovní činnosti',
+	});
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');
 		var identifier = elementClass[0];
-		var controller = $("h2").next("form").attr('id');
+		var controller = $("#" + identifier + ' dd #belongsTo').val();
+		//alert(identifier +' '+ controller);
+		//alert($('#' + identifier).html());
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
 			ajaxPopulateSelects(identifier, controller);

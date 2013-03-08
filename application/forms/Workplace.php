@@ -61,15 +61,7 @@ class Application_Form_Workplace extends Zend_Form
        		array('Errors'),
        		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
-       	);
-       	
-       	$elementDecoratorPositions = array(
-       			'ViewHelper',
-       			array('Errors'),
-       			array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckboxPositions')),
-       			array(array('td' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
-       			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
-       	);
+       	);     	
        	
        	$this->setDecorators(array(
         	'FormElements',
@@ -230,7 +222,7 @@ class Application_Form_Workplace extends Zend_Form
 //         ));
 
         $this->addElement('multiCheckbox', 'positionList', array(
-        		'decorators' => $elementDecoratorPositions,
+        		'decorators' => $this->generateCheckboxListDecorator('Positions'),
         		'order' => 16,
         		));
         
@@ -241,11 +233,11 @@ class Application_Form_Workplace extends Zend_Form
         ));
         
         //pracovní činnosti
-        $this->addElement('hidden', 'id_work', array(
+        /* $this->addElement('hidden', 'id_work', array(
        		'value' => 103,
         	'order' => 1003,
         	'decorators' => $elementDecorator,
-        ));
+        )); */
         
         $this->addElement('hidden', 'works', array(
         	'label' => 'Pracovní činnosti:',
@@ -255,13 +247,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('works')->getDecorator('Description')->setEscape(false);
         
-        $this->addElement('work', 'work', array(
+       /*  $this->addElement('work', 'work', array(
         	'order' => 102,
         	'validators' => array(new My_Validate_Work()),
-        ));
+        )); */
+        
+        $this->addElement('multiCheckbox', 'workList', array(
+        		'decorators' => $this->generateCheckboxListDecorator('Works'),
+        		'order' => 102,
+        		));
         
         $this->addElement('button', 'new_work', array(
-        	'label' => 'Další pracovní činnost',
+        	'label' => 'Přidat novou pracovní činnost',
         	'order' => 200,
         	'decorators' => $elementDecorator2,
         ));
@@ -434,6 +431,16 @@ class Application_Form_Workplace extends Zend_Form
     	if(strpos($chemical, 'newChemical') !== false){
     		return $chemical;
     	}
+    }
+    
+    private function generateCheckboxListDecorator($name){
+    	return array(
+    			'ViewHelper',
+    			array('Errors'),
+    			array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckbox' . $name)),
+    			array(array('td' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
+    			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+    	);
     }
 
 }

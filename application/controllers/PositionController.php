@@ -116,9 +116,9 @@ class PositionController extends Zend_Controller_Action{
     	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
     	if ($formContent != 0){
     		$formContent = $this->filterSubsidiarySelect($formContent);
-    		$form->subsidiary_id->setMultiOptions ( $formContent );
+    		$form->subsidiaryList->setMultiOptions ( $formContent );
     	}
-    	$form->subsidiary_id->setValue($subsidiaryId);
+    	$form->subsidiaryList->setValue($subsidiaryId);
     	
     	$form = $this->fillMultiselects($form);
     	
@@ -156,6 +156,8 @@ class PositionController extends Zend_Controller_Action{
     public function addemployeeAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addemployee', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
     	
     	$data = $this->_getAllParams();
     	$employee = new Application_Model_Employee($data);

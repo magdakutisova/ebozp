@@ -15,6 +15,9 @@ class WorkplaceController extends Zend_Controller_Action
     private $_chemicalList = null;
     private $_employeeList = null;
     private $_workplaceList = null;
+    private $_yesNoList = array();
+    private $_sexList = array();
+    private $_yearOfBirthList = array();
 
     public function init()
     {
@@ -56,6 +59,19 @@ class WorkplaceController extends Zend_Controller_Action
         $workplaces = new Application_Model_DbTable_Workplace();
         $this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
         
+        //získání seznamu ano/ne
+        $this->_yesNoList[0] = 'Ne';
+        $this->_yesNoList[1] = 'Ano';
+         
+        //získání seznamu pohlaví
+        $this->_sexList[0] = 'Muž';
+        $this->_sexList[1] = 'Žena';
+         
+        //získání seznamu roků narození
+        for ($i=1920; $i<=date('Y'); $i++){
+        	$this->_yearOfBirthList[$i] = $i;
+        }
+        
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
@@ -76,28 +92,45 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->view->subtitle = "Zadat pracoviště";
     	$form = $this->loadOrCreateForm($defaultNamespace);
     	
+    	//získání parametrů ID klienta a pobočky
+    	$clientId = $this->getRequest()->getParam('clientId');
+    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+    	 
+    	$form->client_id->setValue($clientId);
+    	
+    	//naplnění multiselectu pobočkami
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+    	if ($formContent != 0){
+    		$formContent = $this->filterSubsidiarySelect($formContent);
+    		$form->subsidiary_id->setMultiOptions ( $formContent );
+    	}
+    	$form->subsidiary_id->setValue($subsidiaryId);
+    	
+    	//inicializace plovoucích formulářů
     	$formPosition = new Application_Form_Position();
     	$formPosition->clientId->setValue($this->_clientId);
+    	$formPosition->subsidiaryList->setMultiOptions($formContent);
+    	$formPosition->subsidiaryList->setValue($subsidiaryId);
     	$formPosition->workplace->setAttrib('multiOptions', $this->_workplaceList);
     	$formPosition->employeeList->setMultiOptions($this->_employeeList);
     	$formPosition->save->setAttrib('class', array('position', 'ajaxSave'));
     	$formPosition->save->setLabel('Uložit');
     	$this->view->formPosition = $formPosition;
-		
-		//získání parametrů ID klienta a pobočky
-    	$clientId = $this->getRequest()->getParam('clientId');
-    	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
     	
-    	$form->client_id->setValue($clientId);
+    	$formEmployee = new Application_Form_Employee();
+    	$formEmployee->clientId->setValue($this->_clientId);
+    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
+    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
+    	$formEmployee->sex->setMultiOptions($this->_sexList);
+    	$formEmployee->save_employee->setAttrib('class', array('employee', 'ajaxSave'));
+    	$this->view->formEmployee = $formEmployee;
     	
-    	//naplnění multiselectu pobočkami
-    	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
-		if ($formContent != 0){
-			$formContent = $this->filterSubsidiarySelect($formContent);
-			$form->subsidiary_id->setMultiOptions ( $formContent );
-		}
-		$form->subsidiary_id->setValue($subsidiaryId);
+    	$formWork = new Application_Form_Work();
+    	$formWork->clientId->setValue($this->_clientId);
+    	$formWork->belongsTo->setValue('workplace');
+    	$formWork->save_work->setAttrib('class', array('work', 'ajaxSave'));
+    	$this->view->formWork = $formWork;
 		
 		$form = $this->fillMultiselects($form);
 		
@@ -187,7 +220,7 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->view->field = $element->__toString();
     }
     
-    public function newworkAction(){
+    /* public function newworkAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newwork', 'html')->initContext();
     	
@@ -198,6 +231,29 @@ class WorkplaceController extends Zend_Controller_Action
     	$element->setAttrib('multiOptions', $this->_workList);
     	
     	$this->view->field = $element->__toString();
+    } */
+    
+    public function addworkAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addwork', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$work = new Application_Model_Work($data);
+    	//$work->setWork($this->_getParam('name'));
+    	$works = new Application_Model_DbTable_Work();
+    	$workId = $works->addWork($work);
+    	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
+    	$clientHasWork->addRelation($this->_getParam('clientId'), $workId);    	
+    }
+    
+    public function populateworksAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$works = new Application_Model_DbTable_Work();
+    	$this->_workList = $works->getWorks($this->_clientId);
+    	echo Zend_Json::encode($this->_workList);
     }
     
     public function newtechnicaldeviceAction(){
@@ -680,8 +736,8 @@ class WorkplaceController extends Zend_Controller_Action
     	if($form->positionList != null){
     		$form->positionList->setMultiOptions($this->_positionList);
     	}
-    	if($form->work != null){
-			$form->work->setAttrib('multiOptions', $this->_workList);
+    	if($form->workList != null){
+			$form->workList->setMultiOptions($this->_workList);
     	}
     	if($form->technical_device != null){
 			$form->technical_device->setAttrib('multiOptions', $this->_sortList);

@@ -169,9 +169,9 @@ $(function(){
 	}
 	
 	//dynamické přidávání pracovních činností
-	$("#new_work").click(function(){
+	/*$("#new_work").click(function(){
 		ajaxAddWork();
-	});
+	});*/
 	
 	function ajaxAddWork(){
 		var id = $("#id_work").val();
