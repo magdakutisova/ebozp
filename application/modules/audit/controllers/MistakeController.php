@@ -420,24 +420,14 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		// nastaveni id pracoviste
 		$mistake->workplace_id = $form->getValue("workplace_id");
-		$mistake->submit_status = Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED;
 
 		// nastaveni zodpovedne osoby
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
 		$mistake->save();
 
 		// zaneseni zaznamu o asociaci
-		if ($checkId) {
-			$tableAssoc = new Audit_Model_ChecksMistakes();
-			$tableAssoc->createRow(array(
-					"check_id" => $checkId,
-					"mistake_id" => $mistake->id,
-					"action" => Audit_Model_ChecksMistakes::DO_NEW
-			))->save();
-		} else {
-			$tableAssocs = new Audit_Model_AuditsMistakes();
-			$tableAssocs->createAssoc($this->_audit, $mistake);
-		}
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$tableAssocs->createAssoc($this->_audit, $mistake);
 
 		// kontrola kategorii
 		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
@@ -554,32 +544,32 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 
 		// priprava zakladniho SQL dotazu
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAssocs = new Audit_Model_AuditsMistakes();
-		$nameMistakes = $tableMistakes->info("name");
 		$nameAssocs = $tableAssocs->info("name");
 
-		$sqlBegin = "update `$nameMistakes`, `$nameAssocs` set ";
-		$sqlEnd = " where `$nameAssocs`.audit_id = $this->_auditId and `$nameMistakes`.id = `$nameAssocs`.mistake_id and `$nameMistakes`.id in (";
+		$sqlBegin = "update `$nameAssocs` set ";
+		$sqlEnd = " where `$nameAssocs`.audit_id = $this->_auditId and mistake_id in (";
 
 		// vygenerovani specifickych dotazu pro jednotlive seznamy a jejich odeslani
 		// pokud neni potreba odesilat, nic se neprovede
 		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		if ($new) {
-			$sql = $sqlBegin . "is_marked = 0, is_removed = 0 " . $sqlEnd . $adapter->quote($new) . ")";
+			$sql = $sqlBegin . "`status` = 1 " . $sqlEnd . $adapter->quote($new) . ")";
 			$adapter->query($sql);
 		}
 
 		if ($ok) {
-			$sql = $sqlBegin . "is_removed = 1 " . $sqlEnd . $adapter->quote($ok) . ")";
+			$sql = $sqlBegin . "`status` = 0 " . $sqlEnd . $adapter->quote($ok) . ")";
 			$adapter->query($sql);
 		}
 		
 		if ($fail) {
-			$sql = $sqlBegin . "is_marked = 1 " . $sqlEnd . $adapter->quote($fail) . ")";
+			$sql = $sqlBegin . "`status` = 2 " . $sqlEnd . $adapter->quote($fail) . ")";
 			$adapter->query($sql);
 		}
+		
+		$this->view->response = true;
 	}
 
 	/**

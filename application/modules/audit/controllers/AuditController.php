@@ -201,7 +201,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// kotrnola pristupu
 		$zeroDate = "0000-00-00 00:00:00";
 		
-		if ($this->_audit->auditor_confirmed_at != $zeroDate) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
+		// kontrola pristupu
+		$userId = $this->_user->getIdUser();
+		if ($this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->auditor_id == $userId 
+				|| ($this->_audit->auditor_confirmed_at[0] == '0' || $this->_audit->coordinator_confirmed_at[0] != '0') && $this->_audit->coordinator_id == $userId
+				|| $this->_audit->coordinator_id != $userId && $this->_audit->auditor_id != $userId) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
 		
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
@@ -261,9 +265,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$selectWorkplace->setAction($this->view->url($params, "audit-mistake-createalone2"));
 		
 		// formular uzavreni auditu
-		$submitForm = new Audit_Form_AuditAuditorSubmit();
+		$submitForm =new Audit_Form_AuditAuditorSubmit();
 		$submitForm->setAction($this->view->url($params, "audit-submit"));
 		$submitForm->populate($_REQUEST);
+		
+		if ($this->_user->getRoleId() == My_Role::ROLE_COORDINATOR) {
+			$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
+		}
 
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
@@ -471,110 +479,62 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->_redirect($url);
 	}
 	
-	public function reviewAction() {
-		// kontrola auditu
-		if (!$this->_audit) throw new Zend_Exception("Audit #" . $this->_auditId . " has not been found");
+	public function submitAction() {
+		// kontrola dat
+		$form = new Audit_Form_AuditAuditorSubmit();
 		
-		$audit = $this->_audit;
-		
-		// nacteni doprovodnych informaci
-		$auditor = $audit->getAuditor();
-		$client = $audit->getClient();
-		$coordinator = $audit->getCoordinator();
-		$subsidiary = $audit->getSubsidiary();
-		
-		// nacteni formularu
-		$forms = $audit->getForms();
-		
-		$this->view->layout()->setLayout("client-layout");
-		
-		// nacteni neshod
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableRecords = new Audit_Model_AuditsRecords();
-		$tableAssocs = new Audit_Model_AuditsMistakes();
-		
-		$nameRecords = $tableRecords->info("name");
-		$nameAssocs = $tableAssocs->info("name");
-		
-		// sestaveni podminek
-		$where = array(
-				"id in (select mistake_id from `$nameRecords` where audit_id = $audit->id)",
-				"workplace_id is null",
-				"submit_status = " . Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED
-		);
-		
-		// nacteni neshod z formularu
-		$formMistakes = $tableMistakes->fetchAll($where);
-		
-		// nacteni asociaci z formularu a indexace dle id zaznamu
-		$where = array(
-				"audit_id = " . $this->_audit->id,
-				"record_id is not null"
-		);
-		
-		$assocs = $tableAssocs->fetchAll($where);
-		$assocRecordIndex = array();
-		
-		foreach ($assocs as $item) {
-			$assocRecordIndex[$item->record_id] = $item;
+		if (!$form->isValid($this->getRequest()->getParams())) {
+			// neni zaskrtnuto potvrzovaci policko
+			$this->_forward("edit");
+			
+			return;
 		}
 		
-		// nacteni neshod mimo formulare
-		$where = array(
-				"id in (select mistake_id from `$nameAssocs` where audit_id = $audit->id)",
-				"workplace_id is not null"
-		);
+		// kontrola opravneni pristupu
+		$userId = $this->_user->getIdUser();
+		$roleId = $this->_user->getRoleId();
 		
-		$otherMistakes = $tableMistakes->fetchAll($where);
-		
-		// nacteni pracovist
-		$tableWorkplaces = new Application_Model_DbTable_Workplace();
-		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_auditId, "name");
-		
-		// indexace pracovist dle ud
-		$workplaceIndex = array();
-		
-		foreach ($workplaces as $item) {
-			$workplaceIndex[$item->id_workplace] = $item;
+		// provedeni akci dle typu uzivatele, ktery odeslal audit
+		if ($roleId == My_Role::ROLE_TECHNICIAN && $this->_audit->auditor_id == $userId && $this->_audit->auditor_confirmed_at[0] == '0') {
+			// odeslal to technik - jen se to podepise jinak se nic nedeje
+			$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
+			$this->_audit->save();
+			
+			// presmerovani na get
+			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-get");
+			$this->_redirect($url);
+			
+			return;
+		} else if ($roleId == My_Role::ROLE_COORDINATOR && $this->_audit->coordinator_id == $userId && $this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->coordinator_confirmed_at[0] == '0') {
+			// odstrani se neshody, ktere nakonec nebyly pouzity
+			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+			$tableAssocs = new Audit_Model_AuditsMistakes();
+			$nameMistakes = $tableMistakes->info("name");
+			$nameAssocs = $tableAssocs->info("name");
+			$auditId = $this->_audit->id;
+			
+			$where = array(
+					"audit_id = $auditId",
+					"id not in (select mistake_id from `$nameAssocs` where audit_id = $auditId)"
+			);
+			
+			$tableMistakes->delete($where);
+			
+			// aktualizace stavu neshod
+			$update = array()
+			
+			// potvrdi se audit
+			$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
+			$this->_audit->save();
+			
+			// presmerovani na get
+			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-get");
+			$this->_redirect($url);
+				
+			return;
 		}
 		
-		// nacteni a indexace asociaci
-		$assocs = $tableAssocs->getByAudit($audit);
-		$assocIndex = array();
-		
-		foreach ($assocs as $item) {
-			$assocIndex[$item->mistake_id] = $item;
-		}
-		
-		// vytvoreni formulare pro uplne uzavreni auditu
-		$submitForm = new Audit_Form_AuditAuditorSubmit();
-		$submitForm->setName("auditcoordsubmit");
-		
-		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id, "auditId" => $this->_audit->id), "audit-coordinator-submit");
-		$submitForm->setAction($url);
-		
-		$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
-		
-		// formular auditu
-		$auditForm = new Audit_Form_AuditFill();
-		$auditData = $this->_audit->toArray();
-		$auditForm->fillSelects()->setDefaults($auditData);
-		
-		$this->view->audit = $this->_audit;
-		$this->view->subsidiary = $subsidiary;
-		$this->view->client = $client;
-		$this->view->coordinator = $coordinator;
-		$this->view->auditor = $auditor;
-		$this->view->forms = $forms;
-		$this->view->submitForm = $submitForm;
-		$this->view->auditForm = $auditForm;
-		
-		// zapis dat neshod
-		$this->view->workplaceIndex = $workplaceIndex;
-		$this->view->formMistakes = $formMistakes;
-		$this->view->otherMistakes = $otherMistakes;
-		$this->view->assocIndex = $assocIndex;
-		$this->view->assocRecordIndex = $assocRecordIndex;
+		throw new Zend_Exception("Unknouwn action for this role and audit");
 	}
 	
 	/**

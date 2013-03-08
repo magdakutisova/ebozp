@@ -49,7 +49,7 @@
 				
 			case My_Role::ROLE_COORDINATOR:
 				if ($audit->auditor_confirmed_at[0] != '0' && $audit->coordinator_confirmed_at[0] == '0') {
-					$route = "audit-review";
+					$route = "audit-edit";
 					$caption = "Upravit";
 				}
 				break;

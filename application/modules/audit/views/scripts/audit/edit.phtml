@@ -84,6 +84,9 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			}
 			?>
 		</table>
+		<p>
+			<?php echo $this->formButton("save-mistakes", "Uložit změny"); ?>
+		</p>
 		<h3>Neshody z jinch auditů a prověrek</h3>
 		<table id="table-mistakes" class="multirow-table">
 			<?php 
@@ -98,9 +101,6 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			}
 			?>
 		</table>
-		<p>
-			<?php echo $this->formButton("save-mistakes", "Uložit změny"); ?>
-		</p>
 	</div>
 	<div id="newmistake">
 	<?php 
