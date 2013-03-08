@@ -46,7 +46,9 @@ $(function () {
 		});
 		
 		// odeslani na server
-		$.post("/klient/" + clientId + "/pobocka/" + subsidiaryId + "/audit/" + auditId + "/mistakes/setstatus", { status: changes });
+		$.post("/klient/" + clientId + "/pobocka/" + subsidiaryId + "/audit/" + auditId + "/mistakes/setstatus", { status: changes }, function () {
+			alert("Neshody byly uloženy");
+		});
 	}
 	
 	$("#table-mistakes button[name='edit-mistake']").click(openMistake);

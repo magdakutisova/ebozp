@@ -33,7 +33,7 @@ class Audit_Model_AuditsMistakes extends Zend_Db_Table_Abstract {
 	 * @param unknown_type $status vychozi stav
 	 * @return Audit_Model_Row_AuditMistake
 	 */
-	public function createAssoc(Audit_Model_Row_Audit $audit, Audit_Model_Row_AuditRecordMistake $mistake, $status = 0) {
+	public function createAssoc(Audit_Model_Row_Audit $audit, Audit_Model_Row_AuditRecordMistake $mistake, $status = 1) {
 		$retVal = $this->createRow(array(
 				"audit_id" => $audit->id,
 				"mistake_id" => $mistake->id,

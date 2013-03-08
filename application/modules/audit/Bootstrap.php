@@ -6,6 +6,17 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		$frontController = $this->getResource('FrontController');
 		$router = $frontController->getRouter();
 		
+		// seznam auditu
+		$router->addRoute(
+				"audit-list",
+				new Zend_Controller_Router_Route("/klient/:clientId/adits",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "list"
+						))
+		);
+		
 		// route pro post auditu
 		$router->addRoute(
 				"audit-post",
@@ -28,28 +39,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
-		// odeslani auditu technikem
-		$router->addRoute(
-				"audit-technic-submit",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/technic/submit",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "techsubmit"
-						))
-		);
-		
-		// odeslani auditu koordinatorem
-		$router->addRoute(
-				"audit-coordinator-submit",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/coordinator/submit",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "coordsubmit"		
-						))
-		);
-		
 		// route pro update auditu
 		$router->addRoute(
 				"audit-put",
@@ -58,6 +47,17 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "audit",
 								"controller" => "audit",
 								"action" => "put"
+						))
+		);
+		
+		// odesle audit ke zpracovani vyssi instanci
+		$router->addRoute(
+				"audit-submit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/submit",
+						array(
+								"module" => "audit",
+								"controller" => "audit",
+								"action" => "submit"
 						))
 		);
 		
@@ -142,72 +142,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				)
 		);
 		
-		// routa na zobrazeni auditu klientovi pro potvrezeni
-		$router->addRoute(
-				"audit-review",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/review",
-						array(
-								"module" => "audit",
-								"controller" => "audit",
-								"action" => "review"
-						)
-				)
-		);
-		
-		// routa na prehled auditu technika
-		$router->addRoute(
-				"audit-list-technic",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/list/technic",
-						array("module" => "audit",
-								"controller" => "audit",
-								"action" => "techlist"))
-		);
-		
-		// routa na prehled auditu technika
-		$router->addRoute(
-				"audit-list-client",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/list/client",
-						array("module" => "audit",
-								"controller" => "audit",
-								"action" => "clientlist"))
-		);
-		
-		// routa na prehled auditu koordinatora
-		$router->addRoute(
-				"audit-list-coord",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/list/coordinator",
-						array("module" => "audit",
-								"controller" => "audit",
-								"action" => "coordlist"))
-		);
-		
-		// vytvoreni neshod koordinatorem
-		$router->addRoute(
-				"audit-mistake-create",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/create-mistake",
-						array("module" => "audit",
-								"controller" => "mistake",
-								"action" => "create"))
-		);
-		
-		// nova neshoda
-		$router->addRoute(
-				"audit-mistake-post",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/post-mistake",
-						array("module" => "audit",
-								"controller" => "mistake",
-								"action" => "post"))
-		);
-		
-		// nova neshoda
-		$router->addRoute(
-				"audit-mistake-attach",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/attach-mistake",
-						array("module" => "audit",
-								"controller" => "mistake",
-								"action" => "attach"))
-		);
-		
 		// nova neshoda bez zavislosti na zaznamu
 		$router->addRoute(
 				"audit-mistake-createalone1",
@@ -233,15 +167,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array("module" => "audit",
 								"controller" => "mistake",
 								"action" => "postalone"))
-		);
-		
-		// zobrazit vypis neshod, ktere nejsou vazany k zadne otazce auditu s motnosti pridani
-		$router->addRoute(
-				"audit-mistakes-auditlist",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/ungrouped-mistakes",
-						array("module" => "audit",
-								"controller" => "mistake",
-								"action" => "auditlist"))
 		);
 		
 		// zobrazeni vypisu neshod
@@ -324,28 +249,6 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "delete.html"))
 		);
 		
-		// potvrzeni neshody
-		$router->addRoute(
-				"audit-mistake-submit-json",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/mistake/:mistakeId/submit.json",
-						array(
-								"module" => "audit",
-								"controller" => "mistake",
-								"action" => "submit.json"
-						))
-		);
-		
-		// odpotvrzeni neshody
-		$router->addRoute(
-				"audit-mistake-unsubmit-json",
-				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/mistake/:mistakeId/unsubmit.json",
-						array(
-								"module" => "audit",
-								"controller" => "mistake",
-								"action" => "unsubmit.json"
-						))
-		);
-		
 		// nastaveni stavu skupiny neshod
 		$router->addRoute(
 				"audit-mistake-setstates",
@@ -353,7 +256,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "audit",
 								"controller" => "mistake",
-								"action" => "submits.json"
+								"action" => "setstatus.json"
 						))
 		);
 	}
