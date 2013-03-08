@@ -78,13 +78,7 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			
 			foreach ($this->mistakes[0] as $mistake) {
 				// vyhodnoceni semaforu
-				if ($mistake->is_removed) {
-					$semaphore = 0;
-				} elseif ($mistake->is_marked) {
-					$semaphore = 2;
-				} else {
-					$semaphore = 1;
-				}
+				$semaphore = $this->assocIndex[$mistake->id]->status;
 				
 				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => $semaphore));
 			}
@@ -98,7 +92,9 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			echo $this->mistakeTable()->header();
 			
 			foreach ($this->mistakes[1] as $mistake) {
-				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit")));
+				// vyhodnoceni semaforu
+				
+				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("add-mistake" => "Zahrnout do auditu")));
 			}
 			?>
 		</table>

@@ -21,7 +21,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 	
 	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = null) {
 		// vytvoreni zakladni konfigurace a slouceni s predanou
-		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->submit_status, "actions" => array(), "semaphore" => false);
+		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->is_submited, "actions" => array(), "semaphore" => false);
 		$config = array_merge($baseConfig, (array) $config);
 		
 		// vygenerovani obsahu prvniho radku

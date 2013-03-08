@@ -42,8 +42,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace', 'print'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
-		$this->allow($client, "audit:audit", array("clientlist", "get"));
-		$this->allow($client, "audit:check", array("get", "index"));
+		$this->allow($client, "audit:audit", array("list", "get"));
 		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
 		$this->allow($client, "audit:form", array("get"));
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
@@ -54,17 +53,16 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
-		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "techlist", "techsubmit"));
-		$this->allow($technician, "audit:mistake", array("attach", "auditlist", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "checkedit", "delete.html", "delete", "put.html", "setstatus.json"));
+		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get"));
+		$this->allow($technician, "audit:mistake", array("attach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "checkedit", "delete.html", "delete", "put.html", "setstatus.json"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
-		$this->allow($technician, "audit:check", array("index", "create", "clone", "post", "edit", "put", "techsubmit", "action", "get"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
-		$this->deny($coordinator, "audit:audit", array("fill", "post", "create", "techlist", "techsubmit"));
-		$this->allow($coordinator, "audit:audit", array("coordlist", "review", "coordsubmit"));
+		$this->deny($coordinator, "audit:audit", array("fill", "post", "create"));
+		$this->allow($coordinator, "audit:audit", array("coordlist", "review"));
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json"));
 		
 		$this->allow($admin);

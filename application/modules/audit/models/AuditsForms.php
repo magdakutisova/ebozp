@@ -141,9 +141,6 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 					
 					$mistakes[] = "(" . implode(",", $mistake) . ")";
 					
-					// zapis asociace
-					$assocs[] = "($audit->id, $mistakeId, $recordId)";
-					
 					$recordId++;
 					$mistakeId++;
 				}
@@ -179,12 +176,6 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 					$sql = $sqlBase . implode(",", $chunk);
 					$adapter->query($sql);
 				}
-			}
-			
-			// zapis asociace
-			if ($assocs) {
-				$sql = "insert into `$nameAuditMistakes` (audit_id, mistake_id, record_id) values " . implode(",", $assocs);
-				$adapter->query($sql);
 			}
 			
 			$adapter->commit();

@@ -351,7 +351,8 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		// zapis dat
 		$toUpdate = array();
-		$activatedMistakeIds = array();
+		$activatedMistakeIds = array(0);
+		$activatedMistakesPairs = array();
 		$recordIds = array(0);
 		
 		// prochazeni zaznamu a tvorba dotazu
@@ -374,6 +375,7 @@ class Audit_FormController extends Zend_Controller_Action {
 			// vyhodnoceni aktivace neshody
 			if ($item["score"] == Audit_Model_AuditsRecords::SCORE_N) {
 				$activatedMistakeIds[] = $item["mistake_id"];
+				$activatedMistakesPairs[] = array($item["mistake_id"], $index);
 			}
 		}
 		
@@ -383,20 +385,28 @@ class Audit_FormController extends Zend_Controller_Action {
 			$adapter->query($sql);
 		}
 		
-		// zaneseni zaznamu o chybach
-		$where = array(
-				"audit_id = " . $audit->id,
-				"record_id in (" . $adapter->quote($recordIds) . ")"
-		);
+		// vygenerovani SQL pro nastaveni prirazeni neshod
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
 		
-		// deaktivace chyb
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableMistakes->update(array("submit_status" => Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNUSED), $where);
+		$quotedRecords = $adapter->quote($recordIds);
+		$quotedMistakes = $adapter->quote($activatedMistakeIds);
 		
-		// aktivace chyb
-		if ($activatedMistakeIds) {
-			$where[1] = "id in (" . $adapter->quote($activatedMistakeIds) . ")";
-			$tableMistakes->update(array("submit_status" => Audit_Model_AuditsRecordsMistakes::SUBMITED_VAL_UNSUBMITED), $where);
+		// smazani nepouzitych neshod
+		$sql = "delete from `$nameAssocs` where audit_id = $audit->id and record_id in ($quotedRecords) and mistake_id not in ($quotedMistakes)";
+		$adapter->query($sql);
+		
+		// vlozeni novych neshod
+		$toInsert = array();
+		
+		foreach ($activatedMistakesPairs as $item) {
+			$toInsert[] = "($auditId, " . $adapter->quote($item[0]) . "," . $adapter->quote($item[1]) . ")";
+		}
+		
+		if ($toInsert) {
+			$sql = "insert ignore into `$nameAssocs` (audit_id, mistake_id, record_id) values " . implode(",", $toInsert) . "";
+			
+			$adapter->query($sql);
 		}
 		
 		// presmerovani zpet na editaci
