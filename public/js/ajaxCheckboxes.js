@@ -131,7 +131,8 @@ $(function(){
 		title: 'Zadejte název chemické látky.',
 	});
 	
-	$("input[id*='chemicalList']").click(function(){
+	$(".multiCheckboxChemicals").on("click", "input[id*='chemicalList']", function(){
+		alert("!");
 		var checkbox = $(this);
 		var id = checkbox.val();
 		var label = checkbox.parent().text();
@@ -158,7 +159,6 @@ $(function(){
 	}
 	
 	function ajaxRemoveChemicalDetail(id, label){
-		//nefunkční selektor
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().next().remove();
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
 	}
@@ -217,16 +217,22 @@ $(function(){
 				});
 				$("div.multiCheckbox" + identifierCap + "s").empty();
 				$.each(json, function(key, value){
+					// nová hodnota
 					if($.inArray(value, labelArray) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
+						if(identifier == 'chemical'){
+							ajaxAddChemicalDetail(key, value);
+						}
 					}
+					// nezaškrtnutá hodnota
 					else if($.inArray(key, vals) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');	
 					}
+					// ostatní hodnoty
 					else{
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value
