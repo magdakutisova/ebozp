@@ -131,6 +131,36 @@ $(function(){
 		title: 'Zadejte název chemické látky.',
 	});
 	
+	$("input[id*='chemicalList']").click(function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddChemicalDetail(id, label);
+		}
+		else{
+			ajaxRemoveChemicalDetail(id, label);
+		}
+	});
+	
+	function ajaxAddChemicalDetail(id, label){
+		var elementId = $("#id_chemical").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/chemicaldetail/format/html',
+			data: "id_chemical=" + elementId + "&clientId=" + clientId + "&idChemical=" + id + "&chemical=" + label,
+			success: function(newElement){
+				$('#new_chemical').parents('tr').before(newElement);
+				$('#id_chemical').val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveChemicalDetail(id, label){
+		
+	}
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');

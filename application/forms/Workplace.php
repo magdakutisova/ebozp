@@ -295,11 +295,11 @@ class Application_Form_Workplace extends Zend_Form
         ));
               	
         //chemické látky
-       /*  $this->addElement('hidden', 'id_chemical', array(
+        $this->addElement('hidden', 'id_chemical', array(
         	'value' => 303,
         	'order' => 1005,
         	'decorators' => $elementDecorator,
-        )); */
+        ));
         
         $this->addElement('hidden', 'chemicals', array(
         	'label' => 'Chemické látky:',
@@ -339,12 +339,22 @@ class Application_Form_Workplace extends Zend_Form
     }
 
     public function preValidation(array $data, $positionList, $workList, $sortList, $typeList, $chemicalList, $toEdit = false){
-    	$newPositions = array_filter(array_keys($data), array($this, 'findPositions'));
-    	$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
-    	$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
-    	$newChemicals = array_filter(array_keys($data), array($this, 'findChemicals'));
+    	//$newPositions = array_filter(array_keys($data), array($this, 'findPositions'));
+    	//$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
+    	//$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
+    	//$newChemicals = array_filter(array_keys($data), array($this, 'findChemicals'));
+    	$chemicalDetails = array_filter(array_keys($data), array($this, 'findChemicalDetails'));
+    	
+    	foreach($chemicalDetails as $fieldName){
+    		$order = preg_replace('/\D/', '', $fieldName) + 1;
+    		$chemicalDetail = new My_Form_Element_ChemicalDetail('chemicalDetail' . strval($order - 1), array(
+    				'order' => $order,
+    				'value' => $data[$fieldName],
+    				));
+    		$this->addElement($chemicalDetail);
+    	}
 
-    	foreach($newPositions as $fieldName){
+    	/* foreach($newPositions as $fieldName){
      		$order = preg_replace('/\D/', '' , $fieldName) + 1;
      		$newPositionData = isset($data[$fieldName]['new_position']) ? $data[$fieldName]['new_position'] : '';
      		$newPosition = new My_Form_Element_Position('newPosition' . strval($order - 1), array(
@@ -416,10 +426,16 @@ class Application_Form_Workplace extends Zend_Form
     			$newChemical->setAttrib('toEdit', true);
     		}
     		$this->addElement($newChemical);
+    	} */
+    }
+    
+    private function findChemicalDetails($chemicalDetail){
+    	if(strpos($chemicalDetail, "chemicalDetail") !== false){
+    		return $chemicalDetail;
     	}
     }
     
-	private function findPositions($position){
+	/* private function findPositions($position){
     	if(strpos($position, 'newPosition') !== false){
     		return $position;
     	}
@@ -441,7 +457,7 @@ class Application_Form_Workplace extends Zend_Form
     	if(strpos($chemical, 'newChemical') !== false){
     		return $chemical;
     	}
-    }
+    }*/
     
     private function generateCheckboxListDecorator($name){
     	return array(

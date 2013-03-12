@@ -315,6 +315,20 @@ class WorkplaceController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_chemicalList);
     }
     
+    public function chemicaldetailAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('chemicaldetail', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_chemical', null);
+    	
+    	$element = new My_Form_Element_ChemicalDetail("chemicalDetail$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setIdChemical($this->_getParam('idChemical'));
+    	$element->setChemical($this->_getParam('chemical'));
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
     public function newtechnicaldeviceAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
