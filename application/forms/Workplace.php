@@ -295,11 +295,11 @@ class Application_Form_Workplace extends Zend_Form
         ));
               	
         //chemické látky
-        $this->addElement('hidden', 'id_chemical', array(
+       /*  $this->addElement('hidden', 'id_chemical', array(
         	'value' => 303,
         	'order' => 1005,
         	'decorators' => $elementDecorator,
-        ));
+        )); */
         
         $this->addElement('hidden', 'chemicals', array(
         	'label' => 'Chemické látky:',
@@ -309,13 +309,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
         
-        $this->addElement('chemicalComplete', 'chemical', array(
+        /* $this->addElement('chemicalComplete', 'chemical', array(
         	'order' => 302,
         	'validators' => array(new My_Validate_Chemical()),
-        ));
+        )); */
+        
+        $this->addElement('multiCheckbox', 'chemicalList', array(
+        		'decorators' => $this->generateCheckboxListDecorator('Chemicals'),
+        		'order' => 302,
+        		));
         
         $this->addElement('button', 'new_chemical', array(
-        	'label' => 'Další chemická látka',
+        	'label' => 'Přidat novou chemickou látku',
         	'order' => 400,
         	'decorators' => $elementDecorator2,
         ));

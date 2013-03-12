@@ -243,9 +243,9 @@ $(function(){
 	}
 	
 	//dynamické přidávání chemických látek
-	$("#new_chemical").click(function(){
+	/*$("#new_chemical").click(function(){
 		ajaxAddChemical();
-	});
+	});*/
 	
 	function ajaxAddChemical(){
 		var id = $("#id_chemical").val();

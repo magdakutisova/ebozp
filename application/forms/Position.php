@@ -274,10 +274,10 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('chemical', 'chemical', array(
+       	/* $this->addElement('chemical', 'chemical', array(
        			'order' => 5002,
        			'validators' => array(new My_Validate_Chemical()),
-       			));
+       			)); */
        	
        	$this->addElement('button', 'new_chemical_to_position', array(
        			'label' => 'Další chemická látka',

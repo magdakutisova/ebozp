@@ -105,6 +105,32 @@ $(function(){
 		title: 'Zadejte druh a typ technického prostředku.',
 	});
 	
+	//PŘIDÁVÁNÍ CHEMICKÝCH LÁTEK
+	var validatorChemical = $('#chemical').validate({
+		rules: {
+			chemical: {
+				required: true
+			},
+		},
+		messages: {
+			chemical: "Uveďte název chemické látky.",
+		}
+	});
+	
+	$('#new_chemical').click(function(){
+		$('#new_chemical_form input[type=text]').val('');
+		validatorChemical.resetForm();
+		$('#new_chemical_form').dialog("open");
+	});
+	
+	$('#new_chemical_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název chemické látky.',
+	});
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');

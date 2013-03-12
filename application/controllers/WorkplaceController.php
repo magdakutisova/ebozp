@@ -139,6 +139,12 @@ class WorkplaceController extends Zend_Controller_Action
     	$formTechnicalDevice->belongsTo->setValue('workplace');
     	$formTechnicalDevice->save_technicaldevice->setAttrib('class', array('technicaldevice', 'ajaxSave'));
     	$this->view->formTechnicalDevice = $formTechnicalDevice;
+    	
+    	$formChemical = new Application_Form_Chemical();
+    	$formChemical->clientId->setValue($this->_clientId);
+    	$formChemical->belongsTo->setValue('workplace');
+    	$formChemical->save_chemical->setAttrib('class', array('chemical', 'ajaxSave'));
+    	$this->view->formChemical = $formChemical;
 		
     	//naplnění formuláře hodnotami z DB
 		$form = $this->fillMultiselects($form);
@@ -285,6 +291,28 @@ class WorkplaceController extends Zend_Controller_Action
     	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
     	$this->_technicalDeviceList = $technicalDevices->getTechnicalDevices($this->_clientId);
     	echo Zend_Json::encode($this->_technicalDeviceList);
+    }
+    
+    public function addchemicalAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addchemical', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$chemical = new Application_Model_Chemical($data);
+    	$chemicals = new Application_Model_DbTable_Chemical();
+    	$chemicalId = $chemicals->addChemical($chemical);
+    	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
+    	$clientHasChemical->addRelation($this->_getParam('clientId'), $chemicalId);
+    }
+    
+    public function populatechemicalsAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$chemicals = new Application_Model_DbTable_Chemical();
+    	$this->_chemicalList = $chemicals->getChemicals($this->_clientId);
+    	echo Zend_Json::encode($this->_chemicalList);
     }
     
     public function newtechnicaldeviceAction(){
@@ -773,8 +801,8 @@ class WorkplaceController extends Zend_Controller_Action
     	if($form->technicaldeviceList != null){
 			$form->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	}
-    	if($form->chemical != null){
-			$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
+    	if($form->chemicalList != null){
+			$form->chemicalList->setMultiOptions($this->_chemicalList);
     	}
 		return $form;
     }

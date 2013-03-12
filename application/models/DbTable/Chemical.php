@@ -41,7 +41,6 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$chemicals = array();
-		$chemicals[0] = '------';
 		if(count($results) > 0){
 			foreach($results as $result){
 				$key = $result->id_chemical;
