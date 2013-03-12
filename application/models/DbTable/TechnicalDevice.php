@@ -78,6 +78,28 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		return $technicalDevices;
 	}
 	
+	/******
+	 * Vrací seznam ID - technický prostředek.
+	 */
+	public function getTechnicalDevices($clientId){
+		$select = $this->select()
+			->from('technical_device')
+			->join('client_has_technical_device', 'technical_device.id_technical_device = client_has_technical_device.id_technical_device')
+			->where('client_has_technical_device.id_client = ?', $clientId)
+			->order('technical_device.sort')
+			->group(array('technical_device.sort', 'technical_device.type'));
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$technicalDevices = array();
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_technical_device;
+				$technicalDevices[$key] = $result->sort . ' ' . $result->type;
+			}
+		}
+		return $technicalDevices;
+	}
+	
 	public function getByWorkplace($workplaceId){
 		$select = $this->select()
 			->from('technical_device')

@@ -206,9 +206,9 @@ $(function(){
 	}
 	
 	//dynamické přidávání technických prostředků
-	$("#new_technical_device").click(function(){
+	/*$("#new_technical_device").click(function(){
 		ajaxAddTechnicalDevice();
-	});
+	});*/
 	
 	function ajaxAddTechnicalDevice(){
 		var id = $("#id_technical_device").val();

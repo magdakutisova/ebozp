@@ -264,11 +264,11 @@ class Application_Form_Workplace extends Zend_Form
         ));
         
         //technické prostředky
-        $this->addElement('hidden', 'id_technical_device', array(
+        /* $this->addElement('hidden', 'id_technical_device', array(
         	'value' => 203,
         	'order' => 1004,
         	'decorators' => $elementDecorator,
-        ));
+        )); */
         
         $this->addElement('hidden', 'technical_devices', array(
         	'label' => 'Technické prostředky:',
@@ -278,13 +278,18 @@ class Application_Form_Workplace extends Zend_Form
         ));
         $this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
         
-        $this->addElement('technicalDevice', 'technical_device', array(
+       /*  $this->addElement('technicalDevice', 'technical_device', array(
         	'order' => 202,
         	'validators' => array(new My_Validate_TechnicalDevice()),
-        ));
+        )); */
         
-        $this->addElement('button', 'new_technical_device', array(
-        	'label' => 'Další technický prostředek',
+        $this->addElement('multiCheckbox', 'technicaldeviceList', array(
+        		'decorators' => $this->generateCheckboxListDecorator('Technicaldevices'),
+        		'order' => 202,
+        		));
+        
+        $this->addElement('button', 'new_technicaldevice', array(
+        	'label' => 'Přidat nový technický prostředek',
         	'order' => 300,
         	'decorators' => $elementDecorator2,
         ));

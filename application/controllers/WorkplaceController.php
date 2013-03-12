@@ -18,6 +18,7 @@ class WorkplaceController extends Zend_Controller_Action
     private $_yesNoList = array();
     private $_sexList = array();
     private $_yearOfBirthList = array();
+    private $_technicalDeviceList = array();
 
     public function init()
     {
@@ -46,6 +47,7 @@ class WorkplaceController extends Zend_Controller_Action
         $technicalDevices = new Application_Model_DbTable_TechnicalDevice();
         $this->_sortList = $technicalDevices->getSorts($this->_clientId);
         $this->_typeList = $technicalDevices->getTypes($this->_clientId);
+        $this->_technicalDeviceList = $technicalDevices->getTechnicalDevices($this->_clientId);
         
         //získání seznamu chemických látek
         $chemicals = new Application_Model_DbTable_Chemical();
@@ -131,7 +133,14 @@ class WorkplaceController extends Zend_Controller_Action
     	$formWork->belongsTo->setValue('workplace');
     	$formWork->save_work->setAttrib('class', array('work', 'ajaxSave'));
     	$this->view->formWork = $formWork;
+    	
+    	$formTechnicalDevice = new Application_Form_TechnicalDevice();
+    	$formTechnicalDevice->clientId->setValue($this->_clientId);
+    	$formTechnicalDevice->belongsTo->setValue('workplace');
+    	$formTechnicalDevice->save_technicaldevice->setAttrib('class', array('technicaldevice', 'ajaxSave'));
+    	$this->view->formTechnicalDevice = $formTechnicalDevice;
 		
+    	//naplnění formuláře hodnotami z DB
 		$form = $this->fillMultiselects($form);
 		
 		$form->save->setLabel('Uložit');
@@ -254,6 +263,28 @@ class WorkplaceController extends Zend_Controller_Action
     	$works = new Application_Model_DbTable_Work();
     	$this->_workList = $works->getWorks($this->_clientId);
     	echo Zend_Json::encode($this->_workList);
+    }
+    
+    public function addtechnicaldeviceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addtechnicaldevice', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$technicalDevice = new Application_Model_TechnicalDevice($data);
+    	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
+    	$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
+    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
+    	$clientHasTechnicalDevice->addRelation($this->_getParam('clientId'), $technicalDeviceId);
+    }
+    
+    public function populatetechnicaldevicesAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
+    	$this->_technicalDeviceList = $technicalDevices->getTechnicalDevices($this->_clientId);
+    	echo Zend_Json::encode($this->_technicalDeviceList);
     }
     
     public function newtechnicaldeviceAction(){
@@ -739,9 +770,8 @@ class WorkplaceController extends Zend_Controller_Action
     	if($form->workList != null){
 			$form->workList->setMultiOptions($this->_workList);
     	}
-    	if($form->technical_device != null){
-			$form->technical_device->setAttrib('multiOptions', $this->_sortList);
-			$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
+    	if($form->technicaldeviceList != null){
+			$form->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	}
     	if($form->chemical != null){
 			$form->chemical->setAttrib('multiOptions', $this->_chemicalList);

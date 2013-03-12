@@ -79,6 +79,32 @@ $(function(){
 		title: 'Zadejte název pracovní činnosti',
 	});
 	
+	//PŘIDÁVÁNÍ TECHNICKÉHO PROSTŘEDKU
+	var validatorTechnicalDevice = $('#technicaldevice').validate({
+		rules: {
+			sort: {
+				required: true
+			},
+		},
+		messages: {
+			sort: "Uveďte druh technického prostředku.",
+		}
+	});
+	
+	$('#new_technicaldevice').click(function(){
+		$('#new_technicaldevice_form input[type=text]').val('');
+		validatorTechnicalDevice.resetForm();
+		$('#new_technicaldevice_form').dialog("open");
+	});
+	
+	$('#new_technicaldevice_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte druh a typ technického prostředku.',
+	});
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');
