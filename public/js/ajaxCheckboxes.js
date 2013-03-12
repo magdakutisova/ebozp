@@ -158,7 +158,9 @@ $(function(){
 	}
 	
 	function ajaxRemoveChemicalDetail(id, label){
-		
+		//nefunkční selektor
+		$("input[id*='chemicalDetail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
 	}
 	
 	//VŠEOBECNÉ FUNKCE
