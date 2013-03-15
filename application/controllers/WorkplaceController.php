@@ -10,8 +10,6 @@ class WorkplaceController extends Zend_Controller_Action
     private $_username = null;    
     private $_positionList = null;
     private $_workList = null;
-    private $_sortList = null;
-    private $_typeList = null;
     private $_chemicalList = null;
     private $_employeeList = null;
     private $_workplaceList = null;
@@ -19,6 +17,7 @@ class WorkplaceController extends Zend_Controller_Action
     private $_sexList = array();
     private $_yearOfBirthList = array();
     private $_technicalDeviceList = array();
+    private $_folderList = array();
 
     public function init()
     {
@@ -43,10 +42,8 @@ class WorkplaceController extends Zend_Controller_Action
         $works = new Application_Model_DbTable_Work();
         $this->_workList = $works->getWorks($this->_clientId);
         
-        //získání seznamů druhů a typů technických prostředků
+        //získání seznamu technických prostředků
         $technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-        $this->_sortList = $technicalDevices->getSorts($this->_clientId);
-        $this->_typeList = $technicalDevices->getTypes($this->_clientId);
         $this->_technicalDeviceList = $technicalDevices->getTechnicalDevices($this->_clientId);
         
         //získání seznamu chemických látek
@@ -60,6 +57,10 @@ class WorkplaceController extends Zend_Controller_Action
         //získání seznamu pracovišť
         $workplaces = new Application_Model_DbTable_Workplace();
         $this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+        
+        //získání seznamu umístění
+        $folders = new Application_Model_DbTable_Folder();
+        $this->_folderList = $folders->getFolders($this->_clientId);
         
         //získání seznamu ano/ne
         $this->_yesNoList[0] = 'Ne';
@@ -109,6 +110,8 @@ class WorkplaceController extends Zend_Controller_Action
     	}
     	$form->subsidiary_id->setValue($subsidiaryId);
     	
+    	$form->folder_id->setMultiOptions($this->_folderList);
+    	
     	//inicializace plovoucích formulářů
     	$formPosition = new Application_Form_Position();
     	$formPosition->clientId->setValue($this->_clientId);
@@ -145,6 +148,12 @@ class WorkplaceController extends Zend_Controller_Action
     	$formChemical->belongsTo->setValue('workplace');
     	$formChemical->save_chemical->setAttrib('class', array('chemical', 'ajaxSave'));
     	$this->view->formChemical = $formChemical;
+    	
+    	$formFolder = new Application_Form_Folder();
+    	$formFolder->clientId->setValue($this->_clientId);
+    	$formFolder->belongsTo->setValue('workplace');
+    	$formFolder->save_folder->setAttrib('class', array('folder', 'ajaxSave'));
+    	$this->view->formFolder = $formFolder;
 		
     	//naplnění formuláře hodnotami z DB
 		$form = $this->fillMultiselects($form);
@@ -152,9 +161,9 @@ class WorkplaceController extends Zend_Controller_Action
 		$form->save->setLabel('Uložit');
     	
     	//zmapujeme nové prvky
-    	$form->preValidation($this->getRequest()->getPost(), $this->_positionList, $this->_workList, $this->_sortList, $this->_typeList, $this->_chemicalList);
+    	$form->preValidation($this->getRequest()->getPost());
     	
-    	//pokud formulář není odeslán, předáme formulář do view
+    	//pokud formulář není odeslán, předáme formulář do view - REVIDOVAT
     	if(!$this->getRequest()->isPost()){
     		$this->view->form = $form;
     		
@@ -221,32 +230,6 @@ class WorkplaceController extends Zend_Controller_Action
     	
     }
 
-    public function newpositionAction()
-    {
-		$ajaxContext = $this->_helper->getHelper('AjaxContext');
-		$ajaxContext->addActionContext('newposition', 'html')->initContext();
-		
-		$id = $this->_getParam('id_position', null);
-		
-		$element = new My_Form_Element_Position("newPosition$id");
-		$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-		$element->setAttrib('multiOptions', $this->_positionList);
-		
-		$this->view->field = $element->__toString();
-    }
-    
-    /* public function newworkAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newwork', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_work', null);
-    	
-    	$element = new My_Form_Element_Work("newWork$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_workList);
-    	
-    	$this->view->field = $element->__toString();
-    } */
     
     public function addworkAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
@@ -293,6 +276,27 @@ class WorkplaceController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_technicalDeviceList);
     }
     
+    public function addfolderAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addfolder', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$folder = new Application_Model_Folder($data);
+    	$folders = new Application_Model_DbTable_Folder();
+    	$folder->setClientId($this->_getParam('clientId'));
+    	$folders->addFolder($folder);
+    }
+    
+    public function populatefoldersAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$folders = new Application_Model_DbTable_Folder();
+    	$this->_folderList = $folders->getFolders($this->_clientId);
+    	echo Zend_Json::encode($this->_folderList);
+    }
+    
     public function addchemicalAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addchemical', 'html')->initContext();
@@ -327,77 +331,6 @@ class WorkplaceController extends Zend_Controller_Action
     	$element->setChemical($this->_getParam('chemical'));
     	
     	$this->view->field = $element->__toString();
-    }
-    
-    public function newtechnicaldeviceAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_technical_device', null);
-    	
-    	$element = new My_Form_Element_TechnicalDevice("newTechnicalDevice$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_sortList);
-    	$element->setAttrib('multiOptions2', $this->_typeList);
-    	
-    	$this->view->field = $element->__toString();
-    }
-    
-    public function newchemicalAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newchemical', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_chemical', null);
-    	
-    	$element = new My_Form_Element_ChemicalComplete("newChemical$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_chemicalList);
-    	
-    	$this->view->field = $element->__toString();
-    }
-    
-    public function removepositionAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('removeposition', 'html')->initContext();
-    	
-    	$workplaceId = $this->_getParam('workplaceId', null);
-    	$positionId = $this->_getParam('positionId', null);
-
-    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
-    	$workplaceHasPosition->removeRelation($workplaceId, $positionId);
-    }
-    
-	public function removeworkAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('removework', 'html')->initContext();
-    	
-    	$workplaceId = $this->_getParam('workplaceId', null);
-    	$workId = $this->_getParam('workId', null);
-
-    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
-    	$workplaceHasWork->removeRelation($workplaceId, $workId);
-    }
-    
-	public function removetechnicaldeviceAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('removetechnicaldevice', 'html')->initContext();
-    	
-    	$workplaceId = $this->_getParam('workplaceId', null);
-    	$technicalDeviceId = $this->_getParam('technicalDeviceId', null);
-
-    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
-    	$workplaceHasTechnicalDevice->removeRelation($workplaceId, $technicalDeviceId);
-    }
-    
-	public function removechemicalAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('removechemical', 'html')->initContext();
-    	
-    	$workplaceId = $this->_getParam('workplaceId', null);
-    	$chemicalId = $this->_getParam('chemicalId', null);
-
-    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
-    	$workplaceHasChemical->removeRelation($workplaceId, $chemicalId);
     }
 
     public function listAction()
@@ -830,9 +763,6 @@ class WorkplaceController extends Zend_Controller_Action
     	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
     	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
     	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
-    	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
-    	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
-    	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
     	
 		foreach($formData as $key => $value){
 			//vložení pracovních pozic
@@ -887,12 +817,10 @@ class WorkplaceController extends Zend_Controller_Action
 					$existingWork = $works->existsWork($work->getWork());
 					if($existingWork){
 						$workplaceHasWork->addRelation($workplaceId, $existingWork);
-						$clientHasWork->addRelation($this->_clientId, $existingWork);
 					}
 					else{
 						$workId = $works->addWork($work);
 						$workplaceHasWork->addRelation($workplaceId, $workId);
-						$clientHasWork->addRelation($this->_clientId, $workId);
 					}
 				}
 			}
@@ -933,12 +861,10 @@ class WorkplaceController extends Zend_Controller_Action
 					$existingTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
 					if($existingTechnicalDevice){
 						$workplaceHasTechnicalDevice->addRelation($workplaceId, $existingTechnicalDevice);
-						$clientHasTechnicalDevice->addRelation($this->_clientId, $existingTechnicalDevice);
 					}
 					else{
 						$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
 						$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
-						$clientHasTechnicalDevice->addRelation($this->_clientId, $technicalDeviceId);
 					}
 				}
 			}
@@ -963,12 +889,10 @@ class WorkplaceController extends Zend_Controller_Action
 					$existingChemical = $chemicals->existsChemical($chemical->getChemical());
 					if($existingChemical){
 						$workplaceHasChemical->addRelation($workplaceId, $existingChemical, $value['use_purpose'], $value['usual_amount']);
-						$clientHasChemical->addRelation($this->_clientId, $existingChemical);
 					}
 					else{
 						$chemicalId = $chemicals->addChemical($chemical);
 						$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $value['use_purpose'], $value['usual_amount']);
-						$clientHasChemical->addRelation($this->_clientId, $chemicalId);
 					}
 				}
 			}

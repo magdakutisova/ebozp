@@ -105,6 +105,32 @@ $(function(){
 		title: 'Zadejte druh a typ technického prostředku.',
 	});
 	
+	//PŘIDÁVÁNÍ UMÍSTĚNÍ
+	var validatorFolder = $('#folder').validate({
+		rules: {
+			folder: {
+				required: true
+			},
+		},
+		messages: {
+			folder: "Uveďte název umístění.",
+		}
+	});
+	
+	$('#new_folder').click(function(){
+		$('#new_folder_form input[type=text]').val('');
+		validatorFolder.resetForm();
+		$('#new_folder_form').dialog('open');
+	});
+	
+	$('#new_folder_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte nové umístění pro pracoviště',
+	});
+	
 	//PŘIDÁVÁNÍ CHEMICKÝCH LÁTEK
 	var validatorChemical = $('#chemical').validate({
 		rules: {
@@ -132,7 +158,6 @@ $(function(){
 	});
 	
 	$(".multiCheckboxChemicals").on("click", "input[id*='chemicalList']", function(){
-		alert("!");
 		var checkbox = $(this);
 		var id = checkbox.val();
 		var label = checkbox.parent().text();
@@ -172,7 +197,12 @@ $(function(){
 		//alert($('#' + identifier).html());
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
-			ajaxPopulateSelects(identifier, controller);
+			if(identifier == 'folder'){
+				ajaxPopulateSelect(identifier, controller);
+			}
+			else{
+				ajaxPopulateSelects(identifier, controller);
+			}			
 		}
 	});
 	
@@ -182,7 +212,7 @@ $(function(){
 			url: baseUrl + '/' + controller + '/add' + identifier + '/format/html',
 			data: $("#" + identifier).serializeArray(),
 			async: false,
-			success: function(newElement){
+			success: function(){
 				console.log("OK");
 				$('#new_' + identifier + '_form').dialog("close");
 			}
@@ -191,6 +221,34 @@ $(function(){
 	
 	function capitalizeFirstLetter(string){
 		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+	
+	function ajaxPopulateSelect(identifier, controller){
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/' + controller + '/populate' + identifier + 's',
+			data: "clientId=" + clientId,
+			async: false,
+			success: function(json){
+				var el = $("select[id*='folder_id']");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				el.empty();
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						el.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
 	}
 	
 	function ajaxPopulateSelects(identifier, controller){
