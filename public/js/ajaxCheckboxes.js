@@ -169,20 +169,6 @@ $(function(){
 		}
 	});
 	
-	$(document).ready(function(){
-		$("input[id*='chemicalList']").each(function(){
-			var checkbox = $(this);
-			var id = checkbox.val();
-			var label = checkbox.parent().text();
-			if(checkbox.is(':checked')){
-				ajaxAddChemicalDetail(id, label);
-			}
-			else{
-				ajaxRemoveChemicalDetail(id, label);
-			}
-		});
-	});
-	
 	function ajaxAddChemicalDetail(id, label){
 		var elementId = $("#id_chemical").val();
 		var clientId = $("#client_id").val();

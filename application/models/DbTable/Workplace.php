@@ -244,17 +244,21 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		}
 		
 		$select = $this->select()->from('workplace_has_chemical')
-			->where('id_workplace = ?', $workplaceId);
+			->where('id_workplace = ?', $workplaceId)
+			->join('chemical', 'workplace_has_chemical.id_chemical = chemical.id_chemical');
 		$select->setIntegrityCheck(false);
 		$chemicals = $this->fetchAll($select);
 		if(count($chemicals) > 0){
 			$i = 0;
 			foreach($chemicals as $chemical){
 				$workplace['chemicalList'][$i] = $chemical->id_chemical;
+				$workplace['chemicalDetails'][$i]['id_chemical'] = $chemical->id_chemical;
+				$workplace['chemicalDetails'][$i]['chemical'] = $chemical->chemical;
+				$workplace['chemicalDetails'][$i]['use_purpose'] = $chemical->use_purpose;
+				$workplace['chemicalDetails'][$i]['usual_amount'] = $chemical->usual_amount;
 				$i++;
 			}
 		}
-		
 		return $workplace;
 	}
 	

@@ -16,6 +16,17 @@ class Application_Model_DbTable_WorkplaceHasPosition extends Zend_Db_Table_Abstr
 		),
 	);
 	
+	public function getPositions($workplaceId){
+		$select = $this->select()
+			->where('id_workplace = ?', $workplaceId);
+		$results = $this->fetchAll($select);
+		$positions = array();
+		foreach($results as $result){
+			$positions[] = $result->id_position;
+		}
+		return $positions;
+	}
+	
 	public function addRelation($workplaceId, $positionId){
 		try{
 			$data['id_workplace'] = $workplaceId;

@@ -390,6 +390,19 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->initFloatingForms($formContent, $subsidiaryId);
 		
 		$form = $this->fillMultiselects($form);
+		
+		//přidat chemical details
+		if(isset($workplace['chemicalDetails'])){
+			$order = $form->getValue('id_chemical');
+			foreach($workplace['chemicalDetails'] as $detail){
+				$form->addElement('chemicalDetail', 'chemicalDetail' . $order, array(
+						'value' => $detail,
+						'order' => $order,
+						));
+				$order++;
+			}
+		}
+		
 		$form->removeElement('other');
 		$form->getElement('save')->setLabel('Uložit');
 		
@@ -406,94 +419,6 @@ class WorkplaceController extends Zend_Controller_Action
 			else{
 				//naplnění základních polí pro pracoviště
 				$form->populate($workplace);
-				/* $positions = new Application_Model_DbTable_Position();
-				$works = new Application_Model_DbTable_Work();
-				$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-				$chemicals = new Application_Model_DbTable_Chemical();
-				
-				//přidání pracovních pozic
-				$order = 16;
-				$positionData = $positions->getByWorkplace($workplaceId);
-				if(count($positionData) > 0){
-					foreach($positionData as $position){
-						$newPosition = new My_Form_Element_Position('newPosition' . $order, array(
-							'order' => $order,
-							'validators' => array(new My_Validate_Position()),
-							'toEdit' => true,
-						));
-						$value = array('id_position' => $position->getIdPosition(),
-										'position' => $position->getPosition(),
-										'new_position' => '');
-						$newPosition->setValue($value);
-						$form->addElement($newPosition);
-						$order++;
-					}
-				}
-				$form->getElement('id_position')->setValue($order);
-				
-				//přidání pracovních činností
-				$order = 102;
-				$workData = $works->getByWorkplace($workplaceId);
-				if(count($workData) > 0){
-					foreach($workData as $work){
-						$newWork = new My_Form_Element_Work('newWork' . $order, array(
-							'order' => $order,
-							'validators' => array(new My_Validate_Work()),
-							'toEdit' => true,
-						));
-						$value = array('id_work' => $work->getIdWork(),
-										'work' => $work->getWork(),
-										'new_work' => '');
-						$newWork->setValue($value);
-						$form->addElement($newWork);
-						$order++;
-					}
-				}
-				$form->getElement('id_work')->setValue($order);
-				
-				//přidání technických prostředků
-				$order = 202;
-				$technicalDeviceData = $technicalDevices->getByWorkplace($workplaceId);
-				if(count($technicalDeviceData) > 0){
-					foreach($technicalDeviceData as $technicalDevice){
-						$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . $order, array(
-							'order' => $order,
-							'validators' => array(new My_Validate_TechnicalDevice()),
-							'toEdit' => true,
-						));
-						$value = array('id_technical_device' => $technicalDevice->getIdTechnicalDevice(),
-										'sort' => $technicalDevice->getSort(),
-										'type' => $technicalDevice->getType(),
-										'new_sort' => '',
-										'new_type' => '');
-						$newTechnicalDevice->setValue($value);
-						$form->addElement($newTechnicalDevice);
-						$order++;
-					}
-				}
-				$form->getElement('id_technical_device')->setValue($order);
-				
-				//přidání chemických látek
-				$order = 302;
-				$chemicalData = $chemicals->getByWorkplace($workplaceId);
-				if(count($chemicalData) > 0){
-					foreach($chemicalData as $chemical){
-						$newChemical = new My_Form_Element_ChemicalComplete('newChemical' . $order, array(
-							'order' => $order,
-							'validators' => array(new My_Validate_Chemical()),
-							'toEdit' => true,
-						));
-						$value = array('id_chemical' => $chemical['chemical']->getIdChemical(),
-										'chemical' => $chemical['chemical']->getChemical(),
-										'usual_amount' => $chemical['usual_amount'],
-										'use_purpose' => $chemical['use_purpose'],
-										'new_chemical' => '');
-						$newChemical->setValue($value);
-						$form->addElement($newChemical);
-						$order++;
-					}
-				}
-				$form->getElement('id_chemical')->setValue($order); */
 			}
 			return;
 		}
@@ -518,8 +443,11 @@ class WorkplaceController extends Zend_Controller_Action
 	    	
     		//update pracoviště
     		$workplaceNew = new Application_Model_Workplace($formData);
+    		if($formData['folder_id'] == 0){
+    			$workplaceNew->setFolderId(null);
+    		}
     		$differentName = true;
-    		if($workplace->getName() == $workplaceNew->getName()){
+    		if($workplace['name'] == $workplaceNew->getName()){
     			$differentName = false;
     		}
     		if(!$workplaces->updateWorkplace($workplaceNew, $differentName)){
@@ -527,7 +455,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
     		
-    		$this->processCustomElements($form, $formData, $workplaceId);
+    		$this->processCustomElements($form, $formData, $workplaceId, true);
 			
     		//uložení transakce
 			$adapter->commit();
@@ -717,7 +645,7 @@ class WorkplaceController extends Zend_Controller_Action
 		return $form;
     }
     
-    private function processCustomElements($form, $formData, $workplaceId){
+    private function processCustomElements($form, $formData, $workplaceId, $toEdit = false){
     	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
     	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
     	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
@@ -728,7 +656,7 @@ class WorkplaceController extends Zend_Controller_Action
 		}
 		foreach ($formData['workList'] as $workId){
 			$workplaceHasWork->addRelation($workplaceId, $workId);
-		}
+		}	
 		foreach ($formData['technicaldeviceList'] as $technicalDeviceId){
 			$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
 		}
@@ -737,14 +665,41 @@ class WorkplaceController extends Zend_Controller_Action
 			$usualAmount = "";
 			$chemicalDetails = array_filter(array_keys($formData), array($this, 'findChemicalDetails'));
 			foreach($chemicalDetails as $detail){
-				if($detail['id_chemical'] == $chemicalId){
-					$usePurpose = $detail['use_purpose'];
-					$usualAmount = $detail['usual_amount'];
+				if($formData[$detail]['id_chemical'] == $chemicalId){
+					$usePurpose = $formData[$detail]['use_purpose'];
+					$usualAmount = $formData[$detail]['usual_amount'];
 					break 1;
 				}
 			}
 			$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount);
-		}		
+		}
+
+		if($toEdit){
+			$positions = $workplaceHasPosition->getPositions($workplaceId);
+			foreach ($positions as $position){
+				if(!in_array($position, $formData['positionList'])){
+					$workplaceHasPosition->removeRelation($workplaceId, $position);
+				}
+			}
+			$works = $workplaceHasWork->getWorks($workplaceId);
+			foreach ($works as $work){
+				if(!in_array($work, $formData['workList'])){
+					$workplaceHasWork->removeRelation($workplaceId, $work);
+				}
+			}
+			$technicalDevices = $workplaceHasTechnicalDevice->getTechnicalDevices($workplaceId);
+			foreach ($technicalDevices as $technicalDevice){
+				if(!in_array($technicalDevice, $formData['technicaldeviceList'])){
+					$workplaceHasTechnicalDevice->removeRelation($workplaceId, $technicalDevice);
+				}
+			}
+			$chemicals = $workplaceHasChemical->getChemicals($workplaceId);
+			foreach ($chemicals as $chemical){
+				if(!in_array($chemical, $formData['chemicalList'])){
+					$workplaceHasChemical->removeRelation($workplaceId, $chemical);
+				}
+			}
+		}
     }
     
     private function findChemicalDetails($chemicalDetail){
