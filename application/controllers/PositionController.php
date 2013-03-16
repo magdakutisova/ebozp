@@ -341,8 +341,8 @@ class PositionController extends Zend_Controller_Action{
     }
 	
     private function fillMultiselects($form){
-    	if($form->workplace != null){
-    		$form->workplace->setAttrib('multiOptions', $this->_workplaceList);
+    	if($form->workplaceList != null){
+    		$form->workplaceList->setMultiOptions($this->_workplaceList);
     	}
     	if($form->employeeList != null){
     		$form->employeeList->setMultiOptions($this->_employeeList);

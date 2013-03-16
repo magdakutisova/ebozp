@@ -201,7 +201,7 @@ class Application_Form_Workplace extends Zend_Form
         	'order' => 14,
         ));
         
-$this->addElement('hidden', 'positions', array(
+		$this->addElement('hidden', 'positions', array(
         	'label' => 'Pracovní pozice:',
         	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 15,
@@ -335,6 +335,7 @@ $this->addElement('hidden', 'positions', array(
     			array(array('data' => 'HtmlTag'), array('tag' => 'div', 'class' => 'multiCheckbox' . $name)),
     			array(array('td' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 6)),
     			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+    			array('Label', array()),
     	);
     }
 
