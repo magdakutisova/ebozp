@@ -330,6 +330,13 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator2,
        			));
        	
+       	//zbytek
+       	$this->addElement('checkbox', 'other', array(
+       			'label' => 'Po uložení vložit další pracovní pozici',
+       			'order' => 9998,
+       			'decorators' => $elementDecoratorColspan,
+       	));
+       	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,
        			'order' => 9999,

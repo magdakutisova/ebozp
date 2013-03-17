@@ -713,9 +713,11 @@ class WorkplaceController extends Zend_Controller_Action
     	$formPosition->clientId->setValue($this->_clientId);
     	$formPosition->subsidiaryList->setMultiOptions($formContent);
     	$formPosition->subsidiaryList->setValue($subsidiaryId);
-    	$formPosition->workplace->setAttrib('multiOptions', $this->_workplaceList);
+    	$formPosition->workplaceList->setMultiOptions($this->_workplaceList);
     	$formPosition->employeeList->setMultiOptions($this->_employeeList);
-    	$formPosition->save->setAttrib('class', array('position', 'ajaxSave'));
+    	$formPosition->removeElement('new_workplace');
+    	$formPosition->removeElement('other');
+    	$formPosition->save->setAttrib('class', array('position', 'workplace', 'ajaxSave'));
     	$formPosition->save->setLabel('Uložit');
     	$this->view->formPosition = $formPosition;
     	 
@@ -724,31 +726,27 @@ class WorkplaceController extends Zend_Controller_Action
     	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
     	$formEmployee->manager->setMultiOptions($this->_yesNoList);
     	$formEmployee->sex->setMultiOptions($this->_sexList);
-    	$formEmployee->save_employee->setAttrib('class', array('employee', 'ajaxSave'));
+    	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
     	$this->view->formEmployee = $formEmployee;
     	 
     	$formWork = new Application_Form_Work();
     	$formWork->clientId->setValue($this->_clientId);
-    	$formWork->belongsTo->setValue('workplace');
-    	$formWork->save_work->setAttrib('class', array('work', 'ajaxSave'));
+    	$formWork->save_work->setAttrib('class', array('work', 'workplace', 'ajaxSave'));
     	$this->view->formWork = $formWork;
     	 
     	$formTechnicalDevice = new Application_Form_TechnicalDevice();
     	$formTechnicalDevice->clientId->setValue($this->_clientId);
-    	$formTechnicalDevice->belongsTo->setValue('workplace');
-    	$formTechnicalDevice->save_technicaldevice->setAttrib('class', array('technicaldevice', 'ajaxSave'));
+    	$formTechnicalDevice->save_technicaldevice->setAttrib('class', array('technicaldevice', 'workplace', 'ajaxSave'));
     	$this->view->formTechnicalDevice = $formTechnicalDevice;
     	 
     	$formChemical = new Application_Form_Chemical();
     	$formChemical->clientId->setValue($this->_clientId);
-    	$formChemical->belongsTo->setValue('workplace');
-    	$formChemical->save_chemical->setAttrib('class', array('chemical', 'ajaxSave'));
+    	$formChemical->save_chemical->setAttrib('class', array('chemical', 'workplace', 'ajaxSave'));
     	$this->view->formChemical = $formChemical;
     	 
     	$formFolder = new Application_Form_Folder();
     	$formFolder->clientId->setValue($this->_clientId);
-    	$formFolder->belongsTo->setValue('workplace');
-    	$formFolder->save_folder->setAttrib('class', array('folder', 'ajaxSave'));
+    	$formFolder->save_folder->setAttrib('class', array('folder', 'workplace', 'ajaxSave'));
     	$this->view->formFolder = $formFolder;
     }
     

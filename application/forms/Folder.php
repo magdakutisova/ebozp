@@ -39,9 +39,7 @@ class Application_Form_Folder extends Zend_Form{
 		
 		$this->addElement('hidden', 'clientId', array(
 		));
-		
-		$this->addElement('hidden', 'belongsTo', array(
-		));
+
 	}
 	
 }

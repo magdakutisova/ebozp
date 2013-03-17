@@ -131,6 +131,50 @@ $(function(){
 		title: 'Zadejte nové umístění pro pracoviště',
 	});
 	
+	//PŘIDÁVÁNÍ PRACOVIŠTĚ
+	var validatorWorkplace = $('#workplace').validate({
+		rules: {
+			name: {
+				required: true
+			},
+			business_hours: {
+				required: true
+			},
+			description: {
+				required: true
+			},
+			boss_email: {
+				email: true
+			},
+		},
+		messages: {
+			name: "Uveďte jméno pracoviště.",
+			business_hours: "Uveďte pracovní dobu.",
+			description: "Uveďte popis pracoviště.",
+			boss_email: "Uveďte platnou emailovou adresu.",
+		}
+	});
+	
+	$('#new_workplace').click(function(){
+		var subsidiary = $(this).attr('class');
+		$('#new_workplace_form select#subsidiary_id').val(subsidiary);
+		$('#new_workplace_form input[type=text]').val('');
+		$('#new_workplace_form textarea').val('');
+		$('#new_workplace_form input[type=checkbox]').attr('checked', false);
+		$('#new_workplace_form tr[id*="chemicalDetail"]').remove();
+		$('#new_workplace_form select#folder_id').val('0');
+		validatorWorkplace.resetForm();
+		$('#new_workplace_form').dialog('open');
+	});
+	
+	$('#new_workplace_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového pracoviště',
+	});
+	
 	//PŘIDÁVÁNÍ CHEMICKÝCH LÁTEK
 	var validatorChemical = $('#chemical').validate({
 		rules: {
@@ -192,9 +236,7 @@ $(function(){
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');
 		var identifier = elementClass[0];
-		var controller = $("#" + identifier + ' dd #belongsTo').val();
-		//alert(identifier +' '+ controller);
-		//alert($('#' + identifier).html());
+		var controller = elementClass[1];
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
 			if(identifier == 'folder'){

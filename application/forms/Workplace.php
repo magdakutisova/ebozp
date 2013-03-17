@@ -74,6 +74,11 @@ class Application_Form_Workplace extends Zend_Form
         	'decorators' => $elementDecorator,
         	'order' => 10000,
         ));
+        
+        $this->addElement('hidden', 'clientId', array(
+        	'value' => $this->getAttrib('clientId'),
+        	'order' => 10003,
+        ));
        	
        	$this->addElement('hidden', 'id_workplace', array(
        		'decorators' => $elementDecorator,
@@ -197,6 +202,7 @@ class Application_Form_Workplace extends Zend_Form
         $this->addElement('text', 'boss_email', array(
         	'label' => 'E-mail',
         	'filters' => array('StringTrim', 'StripTags'),
+        	'validators' => array('EmailAddress'),
         	'decorators' => $elementDecoratorColspan,
         	'order' => 14,
         ));

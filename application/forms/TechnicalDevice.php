@@ -45,9 +45,6 @@ class Application_Form_TechnicalDevice extends Zend_Form{
 		
 		$this->addElement('hidden', 'clientId', array(
 				));
-		
-		$this->addElement('hidden', 'belongsTo', array(
-				));
 	}
 	
 }

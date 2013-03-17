@@ -40,8 +40,6 @@ class Application_Form_Chemical extends Zend_Form{
 		$this->addElement('hidden', 'clientId', array(
 				));
 		
-		$this->addElement('hidden', 'belongsTo', array(
-				));
 	}
 	
 }
