@@ -275,6 +275,10 @@ class PositionController extends Zend_Controller_Action{
     		}
     		$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount);
     	}
+    	
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+    	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
+    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
     }
     
     public function populateworkplacesAction(){
