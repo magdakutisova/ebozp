@@ -19,9 +19,9 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		return "<thead><tr style=\"border: 1px solid black;\"><th>Kategorie</th><th>Podkategorie</th><th>Upřesnění</th><th>Pracoviště</th><th rowspan=\"2\">Akce</th></tr><tr><td colspan=\"2\">Neshoda</td><td colspan=\"2\">Návrh</td></tr></thead>";
 	}
 	
-	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = null) {
+	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = array()) {
 		// vytvoreni zakladni konfigurace a slouceni s predanou
-		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->is_submited, "actions" => array(), "semaphore" => false);
+		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->is_submited, "actions" => array(), "semaphore" => false, "selector" => false);
 		$config = array_merge($baseConfig, (array) $config);
 		
 		// vygenerovani obsahu prvniho radku
@@ -29,6 +29,10 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		
 		foreach ($config["actions"] as $name => $label) {
 			$buttons[] = $this->view->formButton($name, $label);
+		}
+		
+		if ($config["selector"]) {
+			$buttons[] = $this->view->formLabel("mistake[$mistake->id][select]", "Vybrat") . $this->view->formCheckbox("mistake[$mistake->id][select]", 1);
 		}
 		
 		// vygenerovani semaforu

@@ -14,12 +14,12 @@ if ($this->deleteForm) {
 	echo $this->deleteForm;
 }
 
-if ($this->similars && $this->similars->count()) {
-	$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id, "recordId" => $this->record->id), "audit-mistake-attach");
+if ($this->similars && $this->similars->count() && $this->mistake->record_id) {
+	$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id, "recordId" => $this->record->id, "mistakeId" => $this->mistake->id), "audit-mistake-switch");
 	?>
 <h2>Podobné neshody</h2>
 <form action="<?php echo $url; ?>" method="post">
-	<table>
+	<table class="multirow-table">
 		<thead>
 			<tr>
 				<th>
@@ -48,6 +48,20 @@ if ($this->similars && $this->similars->count()) {
 			</tr>
 		</thead>
 		<?php 
+		$checked = ($this->activeAssoc->mistake_id == $this->mistake->id) ? " checked='checked'" : "";
+		?>
+		<tbody>
+			<tr>
+				<td colspan="4">
+					<strong style="font-size: large; font-variant: small-caps;">Použít tuto neshodu</strong>
+				</td>
+				<td>
+					<input type="radio" name="mistake[id]" value="<?php echo $this->mistake->id; ?>" <?php echo $checked; ?>>
+				</td>
+			</tr>
+		</tbody>
+		<?php 
+		
 		foreach ($this->similars as $similar) {
 			$checked = ($this->activeAssoc->mistake_id == $similar->id) ? " checked='checked'" : "";
 			?>

@@ -72,9 +72,14 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 				<?php 
 				echo $this->mistakeTable()->header();
 				$actions = array("show-mistake" => "Podrobnosti");
+				$workplaceMistakes = array();
 				
-				foreach ($this->formMistakes as $mistake) {
+				foreach ($this->mistakes as $mistake) {
 					// vyhodnoceni trid
+					if ($mistake->workplace_id) {
+						$workplaceMistakes[] = $mistake;
+						continue;
+					}
 					$classes = array();
 					
 					if ($mistake->is_removed) {
@@ -96,7 +101,7 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 				
 				$this->mistakeTable()->workIndex = $this->workplaceIndex;
 				
-				foreach ($this->otherMistakes as $mistake) {
+				foreach ($workplaceMistakes as $mistake) {
 					// vyhodnoceni trid
 					$classes = array();
 					

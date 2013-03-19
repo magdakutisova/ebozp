@@ -142,6 +142,18 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				)
 		);
 		
+		// ulozi komentar k pracovisti
+		$router->addRoute(
+				"audit-post-wcomment",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/post-comment", 
+						array(
+								"module" => "audit",
+								"controller" => "workplace",
+								"action" => "comment"
+						)
+				)
+		);
+		
 		// nova neshoda bez zavislosti na zaznamu
 		$router->addRoute(
 				"audit-mistake-createalone1",
@@ -257,6 +269,39 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "audit",
 								"controller" => "mistake",
 								"action" => "setstatus.json"
+						))
+		);
+		
+		// pripojeni neshody k auditu
+		$router->addRoute(
+				"audit-mistake-attach",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistakes/attach",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "attach"
+						))
+		);
+		
+		// odpojeni neshody od auditu
+		$router->addRoute(
+				"audit-mistake-detach",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistakes/detach",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "detach"
+						))
+		);
+		
+		// prepnuti neshody vazne k zaznamu
+		$router->addRoute(
+				"audit-mistake-switch",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/record/:recordId/mistake/:mistakeId/switch",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "switch"
 						))
 		);
 	}

@@ -246,7 +246,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// nacteni neshod tykajicich se auditu
 		$assocIndex = null;
-		$mistakes = $this->_loadAuditMistakes($this->_audit, &$assocIndex);
+		$mistakes = $this->_loadAuditMistakes($this->_audit, $assocIndex);
 		
 		// nacteni seznamu pracovist na pobocce
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -263,6 +263,21 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$selectWorkplace->getElement("workplace_id")->setMultiOptions($workSelect);
 		$selectWorkplace->setAction($this->view->url($params, "audit-mistake-createalone2"));
+		
+		// nacteni zaznamu o komentarich k pracovistim a vygenerovani seznamu formularu
+		$tableComments = new Audit_Model_AuditsWorkcomments();
+		$nameComments = $tableComments->info("name");
+		$nameWorkplaces = $tableWorkplaces->info("name");
+		$sql = "select name, id_workplace as workplace_id, comment, comment is null as `create` from `$nameWorkplaces` left join `$nameComments` on (id_workplace = workplace_id and audit_id = " . $this->_audit->id . ") where subsidiary_id = " . $this->_audit->subsidiary_id . " order by name";
+		$result = Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
+		$commentForms = array();
+		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id), "audit-post-wcomment");
+		
+		while ($record = $result->fetch()) {
+			$commentForm = new Audit_Form_WorkplaceComment();
+			$commentForm->populate($record)->setAction($url);
+			$commentForms[] = $commentForm;
+		}
 		
 		// formular uzavreni auditu
 		$submitForm =new Audit_Form_AuditAuditorSubmit();
@@ -282,8 +297,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->workIndex = $workIndex;
 		$this->view->submitForm = $submitForm;
 		$this->view->selectWorkplace = $selectWorkplace;
+		$this->view->workSelect = $workSelect;
 		$this->view->mistakes = $mistakes;
 		$this->view->assocIndex = $assocIndex;
+		$this->view->commentForms = $commentForms;
 	}
 	
 	public function getAction() {
@@ -307,22 +324,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nacteni neshod z dotazniku
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAssocs = new Audit_Model_AuditsMistakes();
-		$nameAssocs = $tableAssocs->info("name");
 		
 		// sestaveni podminek
-		$where = array(
-				"id in (select mistake_id from `$nameAssocs` where audit_id = $auditId and record_id is not null)"
-		);
-		
-		// nacteni neshod z formularu
-		$formMistakes = $tableMistakes->fetchAll($where);
-		
-		// nacteni neshod mimo formulare
-		$where = array(
-				"id in (select mistake_id from `$nameAssocs` where audit_id = $auditId and record_id is null)"
-		);
-		
-		$otherMistakes = $tableMistakes->fetchAll($where);
+		$nameAssocs = $tableAssocs->info("name");
+		$mistakes = $tableMistakes->fetchAll(array("is_submited", "id in (select mistake_id from $nameAssocs where audit_id = $audit->id)"));
 		
 		// nacteni pracovist
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -344,8 +349,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// zapis dat neshod
 		$this->view->workplaceIndex = $workplaceIndex;
-		$this->view->formMistakes = $formMistakes;
-		$this->view->otherMistakes = $otherMistakes;
+		$this->view->mistakes = $mistakes;
 	}
 	
 	public function indexAction() {

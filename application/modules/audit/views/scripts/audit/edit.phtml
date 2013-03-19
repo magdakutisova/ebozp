@@ -8,7 +8,8 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#forms">Formuláře</a></li>
 		<li><a href="#mistakes">Neshody</a></li>
-		<li><a href="#newmistake">Nová neshoda</a></li>
+		<li><a href="#newmistake">Neshody z pracovišť</a></li>
+		<li><a href="#workcomments">Kontrola pracovišť</a></li>
 	</ul>
 	<div id="overview" class="tab">
 		<h3>Přehled</h3>
@@ -70,6 +71,7 @@ echo $this->formHidden("clientId", $this->client->id_client);
 	</div>
 	<div id="mistakes" class="tab">
 		<h3>Neshody zahrnuté v <?php echo $this->audit->is_check ? "prověrce" : "auditu"; ?></h3>
+		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-detach"); ?>" method="post">
 		<table id="table-mistakes" class="multirow-table">
 			<?php 
 			$this->mistakeTable()->workIndex = $this->workIndex;
@@ -78,34 +80,48 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			
 			foreach ($this->mistakes[0] as $mistake) {
 				// vyhodnoceni semaforu
-				$semaphore = $this->assocIndex[$mistake->id]->status;
+				$assoc = $this->assocIndex[$mistake->id];
+				$semaphore = $assoc->status;
+				$selector = $mistake->audit_id != $this->audit->id;
 				
-				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => $semaphore));
+				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => $semaphore, "selector" => $selector));
 			}
 			?>
 		</table>
 		<p>
-			<?php echo $this->formButton("save-mistakes", "Uložit změny"); ?>
-		</p>
-		<h3>Neshody z jinch auditů a prověrek</h3>
-		<table id="table-mistakes" class="multirow-table">
 			<?php 
-			$this->mistakeTable()->workIndex = $this->workIndex;
-			
-			echo $this->mistakeTable()->header();
-			
-			foreach ($this->mistakes[1] as $mistake) {
-				// vyhodnoceni semaforu
-				
-				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("add-mistake" => "Zahrnout do auditu")));
-			}
+			echo $this->formButton("save-mistakes", "Uložit semafory"); 
+			echo $this->formSubmit("submit-detach", "Odebrat označené neshody z auditu");
 			?>
-		</table>
+		</p>
+		</form>
+		<h3>Neshody z jinch auditů a prověrek</h3>
+		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-attach"); ?>" method="post">
+			<table id="table-mistakes2" class="multirow-table">
+				<?php 
+				$this->mistakeTable()->workIndex = $this->workIndex;
+				
+				echo $this->mistakeTable()->header();
+				
+				foreach ($this->mistakes[1] as $mistake) {
+					// vyhodnoceni semaforu
+					
+					echo $this->mistakeTable()->mistake($mistake, array("actions" => array("show" => "Zobrazit"), "selector" => true));
+				}
+				?>
+			</table>
+			<p>
+			<?php echo $this->formSubmit("attach-submit", "Připojit označené neshody k auditu"); ?>
+			</p>
+		</form>
 	</div>
 	<div id="newmistake">
 	<?php 
 	echo $this->selectWorkplace;
 	?>
+	</div>
+	<div id="workcomments">
+		<?php echo $this->action("get", "workplace", "audit", array("auditId" => $this->audit)); ?>
 	</div>
 </div>
 <script type="text/javascript" src="/js/audit/audit/edit.js"></script>

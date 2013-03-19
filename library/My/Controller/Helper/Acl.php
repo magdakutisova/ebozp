@@ -24,6 +24,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:audit"));
 		$this->add(new Zend_Acl_Resource("audit:mistake"));
 		$this->add(new Zend_Acl_Resource("audit:check"));
+		$this->add(new Zend_Acl_Resource("audit:workplace"));
 		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
@@ -54,10 +55,11 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
 		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "submit"));
-		$this->allow($technician, "audit:mistake", array("attach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json"));
+		$this->allow($technician, "audit:mistake", array("attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
+		$this->allow($technician, "audit:workplace", "comment");
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));

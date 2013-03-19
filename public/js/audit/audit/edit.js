@@ -27,6 +27,23 @@ $(function () {
 		});
 	}
 	
+	function showMistake() {
+		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
+		
+		// sestaveni routy
+		var url = "/klient/" + clientId + "/mistake/" + mistakeId + "/html";
+		
+		// sestaveni dialogu
+		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
+		
+		$("<div>").append(iframe).dialog({
+			modal: true,
+			width: "730px",
+			draggable: false,
+			title : "Neshoda"
+		});
+	}
+	
 	function sendMistakes() {
 		/**
 		 * vygenerovani seznamu zmen
@@ -51,7 +68,8 @@ $(function () {
 		});
 	}
 	
-	$("#table-mistakes button[name='edit-mistake']").click(openMistake);
+	$("#table-mistakes button[name='edit-mistake'],#workplace-mistakes button[name='edit']").click(openMistake);
+	$("#table-mistakes2 button[name='show'],#workplace-mistakes button[name='show']").click(showMistake);
 	$("#tabs").tabs();
 	
 	var semaphores = $(".semaphore");

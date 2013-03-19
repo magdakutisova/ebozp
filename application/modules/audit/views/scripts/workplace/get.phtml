@@ -1,0 +1,42 @@
+<table>
+	<tr>
+		<td width="30%" align="left">
+		
+		</td>
+		<td>
+			<center>
+			<?php echo $this->formSelect("paginator", $this->workplace->id_workplace, array(), $this->pagination->select); ?>
+			</center>
+		</td>
+		<td width="30%" align="right">
+			<?php 
+			if ($this->pagination->next) {
+				$caption = $this->pagination->select[$this->pagination->next];
+			}
+			?>
+		</td>
+	</tr>
+</table>
+<?php
+echo $this->commentForm;
+?>
+<form method="post" action="<?php echo $this->url(array("clientId" => $this->workplace->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone2"); ?>">
+	<p>
+	<?php 
+	echo $this->formHidden("workplace_id", $this->workplace->id_workplace);
+	echo $this->formSubmit("submit", "Přidat neshodu");
+	?>
+	</p>
+</form>
+<table class="multirow-table" id="workplace-mistakes">
+	<?php 
+	echo $this->mistakeTable()->header(); 
+	$config = array("actions" => array(), "semaphore" => 0);
+	foreach ($this->mistakes as $mistake) {
+		// vyhodnoceni semaforu
+		$config["semaphore"] = $mistake->status;
+		$config["actions"] = ($mistake->audit_id == $this->audit->id) ? array("edit" => "Upravit") : array("show" => "Zobrazit");
+		echo $this->mistakeTable()->mistake($mistake, $config);
+	}
+	?>
+</table>
