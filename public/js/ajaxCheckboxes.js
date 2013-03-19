@@ -79,16 +79,172 @@ $(function(){
 		title: 'Zadejte název pracovní činnosti',
 	});
 	
+	//PŘIDÁVÁNÍ TECHNICKÉHO PROSTŘEDKU
+	var validatorTechnicalDevice = $('#technicaldevice').validate({
+		rules: {
+			sort: {
+				required: true
+			},
+		},
+		messages: {
+			sort: "Uveďte druh technického prostředku.",
+		}
+	});
+	
+	$('#new_technicaldevice').click(function(){
+		$('#new_technicaldevice_form input[type=text]').val('');
+		validatorTechnicalDevice.resetForm();
+		$('#new_technicaldevice_form').dialog("open");
+	});
+	
+	$('#new_technicaldevice_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte druh a typ technického prostředku.',
+	});
+	
+	//PŘIDÁVÁNÍ UMÍSTĚNÍ
+	var validatorFolder = $('#folder').validate({
+		rules: {
+			folder: {
+				required: true
+			},
+		},
+		messages: {
+			folder: "Uveďte název umístění.",
+		}
+	});
+	
+	$('#new_folder').click(function(){
+		$('#new_folder_form input[type=text]').val('');
+		validatorFolder.resetForm();
+		$('#new_folder_form').dialog('open');
+	});
+	
+	$('#new_folder_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte nové umístění pro pracoviště',
+	});
+	
+	//PŘIDÁVÁNÍ PRACOVIŠTĚ
+	var validatorWorkplace = $('#workplace').validate({
+		rules: {
+			name: {
+				required: true
+			},
+			business_hours: {
+				required: true
+			},
+			description: {
+				required: true
+			},
+			boss_email: {
+				email: true
+			},
+		},
+		messages: {
+			name: "Uveďte jméno pracoviště.",
+			business_hours: "Uveďte pracovní dobu.",
+			description: "Uveďte popis pracoviště.",
+			boss_email: "Uveďte platnou emailovou adresu.",
+		}
+	});
+	
+	$('#new_workplace').click(function(){
+		var subsidiary = $(this).attr('class');
+		$('#new_workplace_form select#subsidiary_id').val(subsidiary);
+		$('#new_workplace_form input[type=text]').val('');
+		$('#new_workplace_form textarea').val('');
+		$('#new_workplace_form input[type=checkbox]').attr('checked', false);
+		$('#new_workplace_form tr[id*="chemicalDetail"]').remove();
+		$('#new_workplace_form select#folder_id').val('0');
+		validatorWorkplace.resetForm();
+		$('#new_workplace_form').dialog('open');
+	});
+	
+	$('#new_workplace_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového pracoviště',
+	});
+	
+	//PŘIDÁVÁNÍ CHEMICKÝCH LÁTEK
+	var validatorChemical = $('#chemical').validate({
+		rules: {
+			chemical: {
+				required: true
+			},
+		},
+		messages: {
+			chemical: "Uveďte název chemické látky.",
+		}
+	});
+	
+	$('#new_chemical').click(function(){
+		$('#new_chemical_form input[type=text]').val('');
+		validatorChemical.resetForm();
+		$('#new_chemical_form').dialog("open");
+	});
+	
+	$('#new_chemical_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název chemické látky.',
+	});
+	
+	$(".multiCheckboxChemicals").on("click", "input[id*='chemicalList']", function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddChemicalDetail(id, label);
+		}
+		else{
+			ajaxRemoveChemicalDetail(id, label);
+		}
+	});
+	
+	function ajaxAddChemicalDetail(id, label){
+		var elementId = $("#id_chemical").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/workplace/chemicaldetail/format/html',
+			data: "id_chemical=" + elementId + "&clientId=" + clientId + "&idChemical=" + id + "&chemical=" + label,
+			success: function(newElement){
+				$('#new_chemical').parents('tr').before(newElement);
+				$('#id_chemical').val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveChemicalDetail(id, label){
+		$("input[id*='chemicalDetail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
+	}
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');
 		var identifier = elementClass[0];
-		var controller = $("#" + identifier + ' dd #belongsTo').val();
-		//alert(identifier +' '+ controller);
-		//alert($('#' + identifier).html());
+		var controller = elementClass[1];
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
-			ajaxPopulateSelects(identifier, controller);
+			if(identifier == 'folder'){
+				ajaxPopulateSelect(identifier, controller);
+			}
+			else{
+				ajaxPopulateSelects(identifier, controller);
+			}			
 		}
 	});
 	
@@ -98,7 +254,7 @@ $(function(){
 			url: baseUrl + '/' + controller + '/add' + identifier + '/format/html',
 			data: $("#" + identifier).serializeArray(),
 			async: false,
-			success: function(newElement){
+			success: function(){
 				console.log("OK");
 				$('#new_' + identifier + '_form').dialog("close");
 			}
@@ -107,6 +263,34 @@ $(function(){
 	
 	function capitalizeFirstLetter(string){
 		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+	
+	function ajaxPopulateSelect(identifier, controller){
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/' + controller + '/populate' + identifier + 's',
+			data: "clientId=" + clientId,
+			async: false,
+			success: function(json){
+				var el = $("select[id*='folder_id']");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				el.empty();
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						el.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
 	}
 	
 	function ajaxPopulateSelects(identifier, controller){
@@ -133,16 +317,22 @@ $(function(){
 				});
 				$("div.multiCheckbox" + identifierCap + "s").empty();
 				$.each(json, function(key, value){
+					// nová hodnota
 					if($.inArray(value, labelArray) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
+						if(identifier == 'chemical'){
+							ajaxAddChemicalDetail(key, value);
+						}
 					}
+					// nezaškrtnutá hodnota
 					else if($.inArray(key, vals) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');	
 					}
+					// ostatní hodnoty
 					else{
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value

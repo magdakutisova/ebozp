@@ -16,6 +16,17 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 		),
 	);
 	
+	public function getChemicals($workplaceId){
+		$select = $this->select()
+			->where('id_workplace = ?', $workplaceId);
+		$results = $this->fetchAll($select);
+		$chemicals = array();
+		foreach($results as $result){
+			$chemicals[] = $result->id_chemical;
+		}
+		return $chemicals;
+	}
+	
 	public function addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount){
 		try{
 			$data['id_workplace'] = $workplaceId;
@@ -25,7 +36,12 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 			$this->insert($data);
 		}
 		catch(Exception $e){
-			//pokud dojde k porušení integrity, ignoruje se (chem. látka je již na pracovišti vložena)
+			$data['use_purpose'] = $usePurpose;
+			$data['usual_amount'] = $usualAmount;
+			$this->update($data, array(
+					'id_workplace = ?' => $workplaceId,
+					'id_chemical = ?' => $chemicalId,
+					));
 		}
 	}
 	

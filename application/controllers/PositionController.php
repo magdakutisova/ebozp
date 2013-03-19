@@ -21,6 +21,9 @@ class PositionController extends Zend_Controller_Action{
     private $_sortList;
     private $_typeList;
     private $_chemicalList;
+    private $_positionList;
+    private $_technicalDeviceList;
+    private $_folderList;
     
     public function init(){
     	//globální nastavení view
@@ -73,14 +76,23 @@ class PositionController extends Zend_Controller_Action{
     	//získání seznamu četností
     	$this->_frequencyList = My_Frequency::getFrequencies();
     	
-    	//získání seznamů druhů a typů technických prostředků
+    	//získání seznamu technických prostředků    	   
     	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
     	$this->_sortList = $technicalDevices->getSorts($this->_clientId);
     	$this->_typeList = $technicalDevices->getTypes($this->_clientId);
+    	$this->_technicalDeviceList = $technicalDevices->getTechnicalDevices($this->_clientId);   	
     	
     	//získání seznamu chemických látek
     	$chemicals = new Application_Model_DbTable_Chemical();
     	$this->_chemicalList = $chemicals->getChemicals($this->_clientId);
+    	
+    	//získání seznamu pracovních pozic
+    	$positions = new Application_Model_DbTable_Position();
+    	$this->_positionList = $positions->getPositions($this->_clientId);
+    	
+    	//získání seznamu umístění
+    	$folders = new Application_Model_DbTable_Folder();
+    	$this->_folderList = $folders->getFolders($this->_clientId);
     	
     	//přístupová práva
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -97,14 +109,6 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->subtitle = "Zadat pracovní pozici";
     	$form = $this->loadOrCreateForm($defaultNamespace);
     	
-    	$formEmployee = new Application_Form_Employee();
-    	$formEmployee->clientId->setValue($this->_clientId);
-    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
-    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
-    	$formEmployee->sex->setMultiOptions($this->_sexList);
-    	$formEmployee->save_employee->setAttrib('class', array('employee', 'ajaxSave'));
-    	$this->view->formEmployee = $formEmployee;
-    	
     	//získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
     	$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
@@ -119,6 +123,61 @@ class PositionController extends Zend_Controller_Action{
     		$form->subsidiaryList->setMultiOptions ( $formContent );
     	}
     	$form->subsidiaryList->setValue($subsidiaryId);
+    	
+    	$formWorkplace = new Application_Form_Workplace();
+    	$formWorkplace->clientId->setValue($this->_clientId);
+    	$formWorkplace->subsidiary_id->setMultiOptions($formContent);
+    	$formWorkplace->subsidiary_id->setValue($subsidiaryId);
+    	$formWorkplace->positionList->setMultiOptions($this->_positionList);
+    	$formWorkplace->workList->setMultiOptions($this->_workList);
+    	$formWorkplace->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
+    	$formWorkplace->chemicalList->setMultiOptions($this->_chemicalList);
+    	$formWorkplace->folder_id->setMultiOptions($this->_folderList);
+    	$formWorkplace->removeElement('new_position');
+    	$formWorkplace->removeElement('other');
+    	$formWorkplace->removeElement('save');
+    	$formWorkplace->addElement('button', 'save', array(
+    			'decorators' => array(
+       				'ViewHelper',
+       				array('Errors'),
+       				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
+       				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+       			),
+    			'order' => 2004,
+    			'class' => array('workplace', 'position', 'ajaxSave'),
+    			'label' => 'Uložit',
+    			));
+    	$this->view->formWorkplace = $formWorkplace;
+    	
+    	$form->new_workplace->setAttrib('class', $subsidiaryId);
+    	
+    	$formWork = new Application_Form_Work();
+    	$formWork->clientId->setValue($this->_clientId);
+    	$formWork->save_work->setAttrib('class', array('work', 'workplace', 'ajaxSave'));
+    	$this->view->formWork = $formWork;
+    	
+    	$formTechnicalDevice = new Application_Form_TechnicalDevice();
+    	$formTechnicalDevice->clientId->setValue($this->_clientId);
+    	$formTechnicalDevice->save_technicaldevice->setAttrib('class', array('technicaldevice', 'workplace', 'ajaxSave'));
+    	$this->view->formTechnicalDevice = $formTechnicalDevice;
+    	
+    	$formChemical = new Application_Form_Chemical();
+    	$formChemical->clientId->setValue($this->_clientId);
+    	$formChemical->save_chemical->setAttrib('class', array('chemical', 'workplace', 'ajaxSave'));
+    	$this->view->formChemical = $formChemical;
+    	
+    	$formFolder = new Application_Form_Folder();
+    	$formFolder->clientId->setValue($this->_clientId);
+    	$formFolder->save_folder->setAttrib('class', array('folder', 'workplace', 'ajaxSave'));
+    	$this->view->formFolder = $formFolder;
+    	 
+    	$formEmployee = new Application_Form_Employee();
+    	$formEmployee->clientId->setValue($this->_clientId);
+    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
+    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
+    	$formEmployee->sex->setMultiOptions($this->_sexList);
+    	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
+    	$this->view->formEmployee = $formEmployee;
     	
     	$form = $this->fillMultiselects($form);
     	
@@ -172,6 +231,62 @@ class PositionController extends Zend_Controller_Action{
     	$employees = new Application_Model_DbTable_Employee();
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	echo Zend_Json::encode($this->_employeeList);
+    }
+    
+    public function addworkplaceAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addworkplace', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$workplace = new Application_Model_Workplace($data);
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$workplace->setClientId($this->_getParam('clientId'));
+    	if($data['folder_id'] == 0){
+    		$workplace->setFolderId(null);
+    	}
+    	$workplaceId = $workplaces->addWorkplace($workplace);
+    	
+    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
+    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
+    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
+    	 
+    	foreach ($data['positionList'] as $positionId){
+    		$workplaceHasPosition->addRelation($workplaceId, $positionId);
+    	}
+    	foreach ($data['workList'] as $workId){
+    		$workplaceHasWork->addRelation($workplaceId, $workId);
+    	}
+    	foreach ($data['technicaldeviceList'] as $technicalDeviceId){
+    		$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
+    	}
+    	foreach ($data['chemicalList'] as $chemicalId){
+    		$usePurpose = "";
+    		$usualAmount = "";
+    		$chemicalDetails = array_filter(array_keys($data), array($this, 'findChemicalDetails'));
+    		foreach($chemicalDetails as $detail){
+    			if($data[$detail]['id_chemical'] == $chemicalId){
+    				$usePurpose = $data[$detail]['use_purpose'];
+    				$usualAmount = $data[$detail]['usual_amount'];
+    				break 1;
+    			}
+    		}
+    		$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount);
+    	}
+    	
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+    	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
+    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+    }
+    
+    public function populateworkplacesAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+    	echo Zend_Json::encode($this->_workplaceList);
     }
     
     public function newenvironmentfactorAction(){
@@ -341,8 +456,8 @@ class PositionController extends Zend_Controller_Action{
     }
 	
     private function fillMultiselects($form){
-    	if($form->workplace != null){
-    		$form->workplace->setAttrib('multiOptions', $this->_workplaceList);
+    	if($form->workplaceList != null){
+    		$form->workplaceList->setMultiOptions($this->_workplaceList);
     	}
     	if($form->employeeList != null){
     		$form->employeeList->setMultiOptions($this->_employeeList);
@@ -385,6 +500,12 @@ class PositionController extends Zend_Controller_Action{
     	}
     	
     	return $form;
+    }
+    
+    private function findChemicalDetails($chemicalDetail){
+    	if(strpos($chemicalDetail, "chemicalDetail") !== false){
+    		return $chemicalDetail;
+    	}
     }
     
 }

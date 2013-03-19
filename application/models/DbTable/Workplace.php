@@ -196,6 +196,72 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		}
 	}
 	
+	/*********************************************************************
+	 * Vrací kompletní pole pro populate formuláře.
+	 */
+	public function getWorkplaceComplete($workplaceId){
+		$select = $this->select()->from('workplace')
+			->where('id_workplace = ?', $workplaceId);
+		$workplace = $this->fetchAll($select);
+		if(count($workplace) > 0){
+			$workplace = $workplace->current()->toArray();			
+		}
+		
+		$select = $this->select()->from('workplace_has_position')
+			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
+		$positions = $this->fetchAll($select);
+		if(count($positions) > 0){
+			$i = 0;
+			foreach($positions as $position){
+				$workplace['positionList'][$i] = $position->id_position;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('workplace_has_work')
+			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
+		$works = $this->fetchAll($select);
+		if(count($works) > 0){
+			$i = 0;
+			foreach($works as $work){
+				$workplace['workList'][$i] = $work->id_work;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('workplace_has_technical_device')
+			->where('id_workplace = ?', $workplaceId);
+		$select->setIntegrityCheck(false);
+		$technicalDevices = $this->fetchAll($select);
+		if(count($technicalDevices) > 0){
+			$i = 0;
+			foreach($technicalDevices as $technicalDevice){
+				$workplace['technicaldeviceList'][$i] = $technicalDevice->id_technical_device;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('workplace_has_chemical')
+			->where('id_workplace = ?', $workplaceId)
+			->join('chemical', 'workplace_has_chemical.id_chemical = chemical.id_chemical');
+		$select->setIntegrityCheck(false);
+		$chemicals = $this->fetchAll($select);
+		if(count($chemicals) > 0){
+			$i = 0;
+			foreach($chemicals as $chemical){
+				$workplace['chemicalList'][$i] = $chemical->id_chemical;
+				$workplace['chemicalDetails'][$i]['id_chemical'] = $chemical->id_chemical;
+				$workplace['chemicalDetails'][$i]['chemical'] = $chemical->chemical;
+				$workplace['chemicalDetails'][$i]['use_purpose'] = $chemical->use_purpose;
+				$workplace['chemicalDetails'][$i]['usual_amount'] = $chemical->usual_amount;
+				$i++;
+			}
+		}
+		return $workplace;
+	}
+	
 	private function process($result){
 		if ($result->count()){
 			$workplaces = array();

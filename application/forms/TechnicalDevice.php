@@ -1,8 +1,8 @@
 <?php
-class Application_Form_Work extends Zend_Form{
+class Application_Form_TechnicalDevice extends Zend_Form{
 	
 	public function init(){
-		$this->setName('work');
+		$this->setName('technicaldevice');
 		$this->setMethod('post');
 		
 		$this->setDecorators(array(
@@ -26,20 +26,25 @@ class Application_Form_Work extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
-		$this->addElement('text', 'work', array(
-				'label' => 'Název pracovní činnosti',
+		$this->addElement('text', 'sort', array(
+				'label' => 'Druh technického prostředku',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
 				));
 		
-		$this->addElement('button', 'save_work', array(
+		$this->addElement('text', 'type', array(
+				'label' => 'Typ technického prostředku',
+				'filters' => array('StripTags', 'StringTrim'),
+				'decorators' => $elementDecorator,
+				));
+		
+		$this->addElement('button', 'save_technicaldevice', array(
 				'decorators' => $elementDecorator2,
-				'label' => 'Uložit pracovní činnost',
+				'label' => 'Uložit technický prostředek',
 				));
 		
 		$this->addElement('hidden', 'clientId', array(
 				));
-		
 	}
 	
 }

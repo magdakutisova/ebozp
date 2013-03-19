@@ -1,10 +1,9 @@
 <?php
-class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
+class My_Form_Element_ChemicalDetail extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'chemicalComplete';
+	public $helper = 'chemicalDetail';
 	protected $_idChemical;
-	protected $_chemical;
-	protected $_newChemical;
+	protected $_chemical; 
 	protected $_usePurpose;
 	protected $_usualAmount;
 	
@@ -30,10 +29,6 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 		return $this->_chemical;
 	}
 	
-	public function getNewChemical(){
-		return $this->_newChemical;
-	}
-	
 	public function getUsePurpose(){
 		return $this->_usePurpose;
 	}
@@ -50,10 +45,6 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 		$this->_chemical = $_chemical;
 	}
 	
-	public function setNewChemical($_newChemical){
-		$this->_newChemical = $_newChemical;
-	}
-	
 	public function setUsePurpose($_usePurpose){
 		$this->_usePurpose = $_usePurpose;
 	}
@@ -65,7 +56,6 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 	public function setValue($values){
 		$this->setIdChemical($values['id_chemical']);
 		$this->setChemical($values['chemical']);
-		$this->setNewChemical($values['new_chemical']);
 		$this->setUsePurpose($values['use_purpose']);
 		$this->setUsualAmount($values['usual_amount']);
 		return $this;
@@ -75,7 +65,6 @@ class My_Form_Element_ChemicalComplete extends Zend_Form_Element_Xhtml{
 		$values = array();
 		$values['id_chemical'] = $this->getIdChemical();
 		$values['chemical'] = $this->getChemical();
-		$values['new_chemical'] = $this->getNewChemical();
 		$values['use_purpose'] = $this->getUsePurpose();
 		$values['usual_amount'] = $this->getUsualAmount();
 		return $values;

@@ -1,8 +1,8 @@
 <?php
-class Application_Form_Work extends Zend_Form{
+class Application_Form_Folder extends Zend_Form{
 	
 	public function init(){
-		$this->setName('work');
+		$this->setName('folder');
 		$this->setMethod('post');
 		
 		$this->setDecorators(array(
@@ -26,20 +26,20 @@ class Application_Form_Work extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
-		$this->addElement('text', 'work', array(
-				'label' => 'Název pracovní činnosti',
+		$this->addElement('text', 'folder', array(
+				'label' => 'Nové umístění',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
 				));
 		
-		$this->addElement('button', 'save_work', array(
+		$this->addElement('button', 'save_folder', array(
 				'decorators' => $elementDecorator2,
-				'label' => 'Uložit pracovní činnost',
+				'label' => 'Uložit umístění',
 				));
 		
 		$this->addElement('hidden', 'clientId', array(
-				));
-		
+		));
+
 	}
 	
 }

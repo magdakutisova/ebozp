@@ -16,6 +16,17 @@ class Application_Model_DbTable_WorkplaceHasTechnicalDevice extends Zend_Db_Tabl
 		),
 	);
 	
+	public function getTechnicalDevices($workplaceId){
+		$select = $this->select()
+			->where('id_workplace = ?', $workplaceId);
+		$results = $this->fetchAll($select);
+		$technicalDevices = array();
+		foreach($results as $result){
+			$technicalDevices[] = $result->id_technical_device;
+		}
+		return $technicalDevices;
+	}
+	
 	public function addRelation($workplaceId, $technicalDeviceId){
 		try{
 			$data['id_workplace'] = $workplaceId;

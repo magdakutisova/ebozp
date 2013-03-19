@@ -106,9 +106,21 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('workplace', 'workplace', array(
-       			'label' => 'Pracoviště',
-       			'order' => 4,
+       	$this->addElement('hidden', 'workplaces', array(
+        	'label' => 'Pracoviště:',
+        	'decorators' => $elementDecoratorColspanSeparator,
+        	'order' => 4,
+       	));
+       	
+       	$this->addElement('multiCheckbox', 'workplaceList', array(
+       			'decorators' => $this->generateCheckboxListDecorator('Workplaces'),
+       			'order' => 5,
+       			));
+       	
+       	$this->addElement('button', 'new_workplace', array(
+       			'label' => 'Přidat nové pracoviště',
+       			'order' => 6,
+       			'decorators' => $elementDecorator2,
        			));
        	
        	$this->addElement('textarea', 'note', array(
@@ -116,7 +128,7 @@ class Application_Form_Position extends Zend_Form{
        			'required' => false,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspan,
-       			'order' => 5,
+       			'order' => 7,
        	));
        	
        	$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -130,13 +142,13 @@ class Application_Form_Position extends Zend_Form{
        				'required' => false,
        				'filters' => array('StringTrim', 'StripTags'),
        				'decorators' => $elementDecoratorColspan,
-       				'order' => 6,
+       				'order' => 8,
        		));
        	}
        	
        	$this->addElement('select', 'categorization', array(
        			'label' => 'Kategorizace prací pro tuto pracovní pozici provedena',
-       			'order' => 7,
+       			'order' => 9,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
        	));
@@ -274,10 +286,10 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('chemical', 'chemical', array(
+       	/* $this->addElement('chemical', 'chemical', array(
        			'order' => 5002,
        			'validators' => array(new My_Validate_Chemical()),
-       			));
+       			)); */
        	
        	$this->addElement('button', 'new_chemical_to_position', array(
        			'label' => 'Další chemická látka',
@@ -317,6 +329,13 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 8000,
        			'decorators' => $elementDecorator2,
        			));
+       	
+       	//zbytek
+       	$this->addElement('checkbox', 'other', array(
+       			'label' => 'Po uložení vložit další pracovní pozici',
+       			'order' => 9998,
+       			'decorators' => $elementDecoratorColspan,
+       	));
        	
        	$this->addElement('submit', 'save', array(
        			'decorators' => $elementDecorator2,

@@ -16,6 +16,17 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 		),
 	);
 	
+	public function getWorks($workplaceId){
+		$select = $this->select()
+			->where('id_workplace = ?', $workplaceId);
+		$results = $this->fetchAll($select);
+		$works = array();
+		foreach($results as $result){
+			$works[] = $result->id_work;
+		}
+		return $works;
+	}
+	
 	public function addRelation($workplaceId, $workId){
 		try{
 			$data['id_workplace'] = $workplaceId;
