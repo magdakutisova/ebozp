@@ -290,6 +290,7 @@ class Application_Form_Workplace extends Zend_Form
         	'decorators' => $elementDecorator2,
         ));
         
+        //umístění
         $this->addElement('select', 'folder_id', array(
         		'label' => 'Zvolte umístění pracoviště',
         		'order' => 2001,

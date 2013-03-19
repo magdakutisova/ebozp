@@ -154,26 +154,21 @@ class Application_Form_Position extends Zend_Form{
        	));
        	
        	//faktory pracovního prostředí       	
-       	$this->addElement('hidden', 'environmentFactors', array(
-       			'label' => 'Faktory pracovního prostředí:',
-       			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 1001,
-       	));
-       	
        	$this->addElement('hidden', 'id_environment_factor', array(
        			'value' => 1003,
        			'order' => 10004,
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('environmentFactor', 'environment_factor', array(
-       			'order' => 1002,
+       	$this->addElement('hidden', 'environmentFactors', array(
+       			'label' => 'Faktory pracovního prostředí:',
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 1001,
        			));
        	
-       	$this->addElement('button', 'new_environment_factor', array(
-       			'label' => 'Další faktor pracovního prostředí',
-       			'order' => 2000,
-       			'decorators' => $elementDecorator2,
+       	$this->addElement('multiCheckbox', 'environmentfactorList', array(
+       			'decorators' => $this->generateCheckboxListDecorator('Environmentfactors'),
+       			'order' => 1002,
        			));
        	
        	//školení

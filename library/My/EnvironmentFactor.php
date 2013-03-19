@@ -1,7 +1,6 @@
 <?php
 class My_EnvironmentFactor{
 	
-	const NONE = 0;
 	const DUST = 1;
 	const CHEMICALS = 2;
 	const NOISE = 3;
@@ -17,7 +16,6 @@ class My_EnvironmentFactor{
 	const HIGH_AIR_PRESSURE = 13;
 	
 	private static $environmentFactors = array(
-			self::NONE => '------',
 			self::DUST => 'Prach',
 			self::CHEMICALS => 'Chemické látky',
 			self::NOISE => 'Hluk',

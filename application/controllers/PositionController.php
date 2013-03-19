@@ -462,11 +462,8 @@ class PositionController extends Zend_Controller_Action{
     	if($form->employeeList != null){
     		$form->employeeList->setMultiOptions($this->_employeeList);
     	}
-    	if($form->environment_factor != null){
-    		$form->environment_factor->setAttrib('multiOptions', $this->_environmentFactorList);
-    		$form->environment_factor->setAttrib('multiOptions2', $this->_categoryList);
-    		$form->environment_factor->setAttrib('multiOptions3', $this->_yesNoList);
-    		$form->environment_factor->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	if($form->environmentfactorList != null){
+    		$form->environmentfactorList->setMultiOptions($this->_environmentFactorList);
     	}
     	if($form->schooling != null){
     		$form->schooling->setAttrib('multiOptions', $this->_schoolingList);
