@@ -183,10 +183,8 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form->save->setLabel('Uložit');
     	
-    	$form->preValidation($this->getRequest()->getPost(),
-    			$this->_canViewPrivate, $this->_employeeList, $this->_environmentFactorList, $this->_categoryList,
-    			$this->_schoolingList, $this->_workList, $this->_workplaceList, $this->_frequencyList, $this->_sortList,
-    			$this->_typeList, $this->_chemicalList, $this->_yesNoList);
+    	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
+    			$this->_yesNoList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
@@ -289,22 +287,23 @@ class PositionController extends Zend_Controller_Action{
     	echo Zend_Json::encode($this->_workplaceList);
     }
     
-    public function newenvironmentfactorAction(){
+    public function environmentfactordetailAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newenvironmentfactor', 'html')->initContext();
+    	$ajaxContext->addActionContext('environmentfactordetail', 'html')->initContext();
     	
-    	$id = $this->_getParam('id_environment_factor', null);
+    	$id = $this->getParam('id_environment_factor', null);
     	
-    	$element = new My_Form_Element_EnvironmentFactor("newEnvironmentFactor$id");
+    	$element = new My_Form_Element_EnvironmentFactorDetail("environmentFactorDetail$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_environmentFactorList);
-    	$element->setAttrib('multiOptions2', $this->_categoryList);
-    	$element->setAttrib('multiOptions3', $this->_yesNoList);
+    	$element->setIdEnvironmentFactor($this->_getParam('idEnvironmentFactor'));
+    	$element->setFactor($this->_getParam('environmentFactor'));
+    	$element->setAttrib('multiOptions', $this->_categoryList);
+    	$element->setAttrib('multiOptions2', $this->_yesNoList);
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
-    	 
+    	
     	$this->view->field = $element->__toString();
     }
-    
+       
     public function newschoolingAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newschooling', 'html')->initContext();

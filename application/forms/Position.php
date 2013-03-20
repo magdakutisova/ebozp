@@ -338,138 +338,25 @@ class Application_Form_Position extends Zend_Form{
        	));
 	}
 	
-	public function preValidation(array $data, $canViewPrivate, $employeeList,
-		$environmentFactorList, $categoryList, $schoolingList, $workList, $frequencyList, $sortList,
-			$typeList, $chemicalList, $yesNoList){
-		$newCurrentEmployees = array_filter(array_keys($data), array($this, 'findCurrentEmployees'));
-		$newEnvironmentFactors = array_filter(array_keys($data), array($this, 'findEnvironmentFactors'));
-		$newSchoolings = array_filter(array_keys($data), array($this, 'findSchoolings'));
-		$newNewSchoolings = array_filter(array_keys($data), array($this, 'findNewSchoolings'));
-		$newWorks = array_filter(array_keys($data), array($this, 'findWorks'));
-		$newTechnicalDevices = array_filter(array_keys($data), array($this, 'findTechnicalDevices'));
-		$newChemicals = array_filter(array_keys($data), array($this, 'findChemicals'));
+	public function preValidation(array $data, $canViewPrivate, $categoryList, $yesNoList){
+		$newEnvironmentFactorDetails = array_filter(array_keys($data), array($this, 'findEnvironmentFactorDetails'));
 		
-		foreach($newCurrentEmployees as $fieldName){
+		foreach ($newEnvironmentFactorDetails as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newCurrentEmployee = new My_Form_Element_CurrentEmployee('newCurrentEmployee' . strval($order - 1), array(
+			$newEnvironmentFactorDetail = new My_Form_Element_EnvironmentFactorDetail('environmentFactorDetail' . strval($order - 1), array(
 					'order' => $order,
 					'value' => $data[$fieldName],
-					'multiOptions' => $employeeList,
-					));
-			$this->addElement($newCurrentEmployee);
-		}
-		
-		foreach($newEnvironmentFactors as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newEnvironmentFactor = new My_Form_Element_EnvironmentFactor('newEnvironmentFactor' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'multiOptions' => $environmentFactorList,
-					'multiOptions2' => $categoryList,
-					'multiOptions3' => $yesNoList,
+					'multiOptions' => $categoryList,
+					'multiOptions2' => $yesNoList,
 					'canViewPrivate' => $canViewPrivate,
 					));
-			$this->addElement($newEnvironmentFactor);
-		}
-		
-		foreach($newSchoolings as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newSchooling = new My_Form_Element_Schooling('newSchooling' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'validators' => array(new My_Validate_Schooling()),
-					'multiOptions' => $schoolingList,
-					'canViewPrivate' => $canViewPrivate,
-					));
-			$this->addElement($newSchooling);
-		}
-		
-		foreach($newNewSchoolings as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newNewSchooling = new My_Form_Element_NewSchooling('newNewSchooling' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'validators' => array(new My_Validate_Schooling()),
-					'canViewPrivate' => $canViewPrivate,
-					));
-			$this->addElement($newNewSchooling);
-		}
-		
-		foreach($newWorks as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newWork = new My_Form_Element_WorkComplete('newWork' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'validators' => array(new My_Validate_Work()),
-					'multiOptions' => $workList,
-					'multiOptions2' => $frequencyList,
-					));
-			$this->addElement($newWork);
-		}
-		
-		foreach($newTechnicalDevices as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newTechnicalDevice = new My_Form_Element_TechnicalDevice('newTechnicalDevice' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'validators' => array(new My_Validate_TechnicalDevice()),
-					'multiOptions' => $sortList,
-					'multiOptions2' => $typeList,
-					));
-			$this->addElement($newTechnicalDevice);
-		}
-		
-		foreach($newChemicals as $fieldName){
-			$order = preg_replace('/\D/', '', $fieldName) + 1;
-			$newChemical = new My_Form_Element_Chemical('newChemical' . strval($order - 1), array(
-					'order' => $order,
-					'value' => $data[$fieldName],
-					'validators' => array(new My_Validate_Chemical()),
-					'multiOptions' => $chemicalList,
-					));
-			$this->addElement($newChemical);
+			$this->addElement($newEnvironmentFactorDetail);
 		}
 	}
 	
-	private function findCurrentEmployees($currentEmployee){
-		if(strpos($currentEmployee, 'newCurrentEmployee') !== false){
-			return $currentEmployee;
-		}
-	}
-	
-	private function findEnvironmentFactors($environmentFactor){
-		if(strpos($environmentFactor, 'newEnvironmentFactor') !== false){
-			return $environmentFactor;
-		}
-	}
-	
-	private function findSchoolings($schooling){
-		if(preg_match('/newSchooling\w+/', $schooling)){
-			return $schooling;
-		}
-	}
-	
-	private function findNewSchoolings($newSchooling){
-		if(strpos($newSchooling, 'newNewSchooling') !== false){
-			return $newSchooling;
-		}
-	}
-	
-	private function findWorks($work){
-		if(strpos($work, 'newWork') !== false){
-			return $work;
-		}
-	}
-	
-	private function findTechnicalDevices($technicalDevice){
-		if(strpos($technicalDevice, 'newTechnicalDevice') !== false){
-			return $technicalDevice;
-		}
-	}
-	
-	private function findChemicals($chemical){
-		if(strpos($chemical, 'newChemical') !== false){
-			return $chemical;
+	private function findEnvironmentFactorDetails($environmentFactorDetail){
+		if(strpos($environmentFactorDetail, 'environmentFactorDetail') !== false){
+			return $environmentFactorDetail;
 		}
 	}
 	

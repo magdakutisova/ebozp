@@ -232,6 +232,41 @@ $(function(){
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
 	}
 	
+	//DETAILY FAKTORŮ PRACOVNÍHO PROSTŘEDÍ
+	$(".multiCheckboxEnvironmentfactors").on("click", "input[id*='environmentfactorList']", function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddEnvironmentFactorDetail(id, label);
+		}
+		else{
+			ajaxRemoveEnvironmentFactorDetail(id, label);
+		}
+	});
+	
+	function ajaxAddEnvironmentFactorDetail(id, label){
+		var elementId = $("#id_environment_factor").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/environmentfactordetail/format/html',
+			data: "id_environment_factor=" + elementId + "&clientId=" + clientId + "&idEnvironmentFactor=" + id + "&environmentFactor=" + label,
+			success: function(newElement){
+				$('#schoolings').parents('tr').before(newElement);
+				$('#id_environment_factor').val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveEnvironmentFactorDetail(id, label){
+		$("input[id*='environmentFactorDetail'][value='" + id + "']").parent().next().next().next().next().remove();
+		$("input[id*='environmentFactorDetail'][value='" + id + "']").parent().next().next().next().remove();
+		$("input[id*='environmentFactorDetail'][value='" + id + "']").parent().next().next().remove();
+		$("input[id*='environmentFactorDetail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='environmentFactorDetail'][value='" + id + "']").parent().remove();
+	}
+	
 	//VŠEOBECNÉ FUNKCE
 	$(".ajaxSave").click(function(){
 		var elementClass = $(this).attr('class').split(' ');

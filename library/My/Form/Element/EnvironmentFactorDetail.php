@@ -1,7 +1,7 @@
 <?php
-class My_Form_Element_EnvironmentFactor extends Zend_Form_Element_Xhtml{
+class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'environmentFactor';
+	public $helper = 'environmentFactorDetail';
 	protected $_idEnvironmentFactor;
 	protected $_factor;
 	protected $_category;

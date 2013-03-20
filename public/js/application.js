@@ -149,6 +149,37 @@ $(function(){
 		}
 	}
 	
+	//formulář pracovní pozice podmíněné zobrazování FPP
+	$('select[id=categorization]').change(function(){
+		toggleHiddenFactors(this);
+	});
+	
+	$(document).ready(function(){
+		var selectbox = $(document).find('select[id=categorization]');
+		toggleHiddenFactors(selectbox);
+	});
+	
+	function toggleHiddenFactors(selectbox){
+		if($(selectbox).val() == 0){
+			$(selectbox).parent().parent().next().next().addClass('hidden');
+			$(selectbox).parent().parent().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').addClass('hidden');
+		}
+		else{
+			$(selectbox).parent().parent().next().next().removeClass('hidden');
+			$(selectbox).parent().parent().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').removeClass('hidden');
+		}
+	}
+	
 });
 
 /**
