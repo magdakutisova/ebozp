@@ -181,35 +181,18 @@ class Application_Form_Position extends Zend_Form{
        	$this->getElement('schoolings')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_schooling', array(
-       			'value' => 2004,
+       			'value' => 2003,
        			'order' => 10005,
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('schooling', 'schooling', array(
+       	$this->addElement('multiCheckbox', 'schoolingList', array(
        			'order' => 2002,
-       			'validators' => array(new My_Validate_Schooling()),
-       			));
-       	
-       	$this->addElement('schooling', 'schooling2', array(
-       			'order' => 2003,
-       			'validators' => array(new My_Validate_Schooling()),
+       			'decorators' => $this->generateCheckboxListDecorator('Schoolings'),
        			));
        	
        	$this->addElement('button', 'new_schooling', array(
-       			'label' => 'Další školení',
-       			'order' => 2500,
-       			'decorators' => $elementDecorator2,
-       			));
-       	
-       	$this->addElement('hidden', 'id_newSchooling', array(
-       			'value' => 2501,
-       			'order' => 10006,
-       			'decorators' => $elementDecorator,
-       			));
-       	
-       	$this->addElement('button', 'new_newSchooling', array(
-       			'label' => 'Zadat neuvedené školení nebo výcvik',
+       			'label' => 'Přidat nové školení',
        			'order' => 3000,
        			'decorators' => $elementDecorator2,
        			));
@@ -228,11 +211,6 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 10007,
        			'decorators' => $elementDecorator,
        			));
-       	
-       /* 	$this->addElement('workComplete', 'work', array(
-       			'order' => 3002,
-       			'validators' => array(new My_Validate_Work()),
-       			)); */
        	
        	$this->addElement('button', 'new_work_to_position', array(
        			'label' => 'Další pracovní činnost',
@@ -281,11 +259,6 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	/* $this->addElement('chemical', 'chemical', array(
-       			'order' => 5002,
-       			'validators' => array(new My_Validate_Chemical()),
-       			)); */
-       	
        	$this->addElement('button', 'new_chemical_to_position', array(
        			'label' => 'Další chemická látka',
        			'order' => 6000,
@@ -304,22 +277,7 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 6002,
        			));
        	
-//        	//stávající zaměstnanci       	
-//        	$this->addElement('currentEmployee', 'current_employee', array(
-//        			'order' => 6002,
-//        	));
-       	
-//        	$this->addElement('hidden', 'id_current_employee', array(
-//        			'value' => 6003,
-//        	));
-       	
-//        	$this->addElement('button', 'new_current_employee', array(
-//        			'label' => 'Přidat dalšího existujícího zaměstnance',
-//        			'order' => 7000,
-//        			'decorators' => $elementDecorator2,
-//        	));
-       	
-       	$this->addElement('button', 'new_employee', array(
+		$this->addElement('button', 'new_employee', array(
        			'label' => 'Přidat nového zaměstnance',
        			'order' => 8000,
        			'decorators' => $elementDecorator2,
