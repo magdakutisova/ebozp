@@ -22,7 +22,7 @@ class My_Schooling{
 			18 => 'Obsluha křovinořezů',
 			19 => 'Obsluha plynových zařízení do 50 kW',
 			20 => 'Obsluha stavebních a zemních strojů',
-			21 => 'Pracovníci pracují s chemickými látkami',
+			21 => 'Pracovníci pracující s chemickými látkami',
 			22 => 'Topiči nízkotlakých kotelen nad 50 kW',
 			23 => 'Topiči parních a horkovodních kotlů',
 			);
