@@ -180,6 +180,11 @@ $(function(){
 		}
 	}
 	
+	//povinná školení
+	$(document).ready(function(){
+		
+	});
+	
 });
 
 /**

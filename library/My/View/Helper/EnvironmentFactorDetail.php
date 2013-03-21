@@ -32,22 +32,22 @@ class My_View_Helper_EnvironmentFactorDetail extends Zend_View_Helper_FormElemen
 		
 		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_environment_factor]', $idEnvironmentFactor);
-		$this->html .= '<td colspan="6"><label for="' . $name . '[factor]">' . $value['factor'] . '</label></td>'
+		$this->html .= '<td colspan="5"><label for="' . $name . '[factor]">' . $value['factor'] . '</label></td>'
 				. $helperHidden->formHidden($name . '[factor]', $factor);
 		$this->html .= '</tr><tr>';
-		$this->html .= '<td><label for="' . $name . '[category]">Zařazeno do kategorie</label></td>';
-		$this->html .= '<td colspan="2">' . $helperSelect->formSelect($name . '[category]', $category, null, $multiOptions) . '</td>';
-		$this->html .= '<td><label for="' . $name . '[measurement_taken]">Měření provedeno</label></td>';
-		$this->html .= '<td>' . $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions2) . '</td>';
+		$this->html .= '<td colspan="3"><label for="' . $name . '[category]">Zařazeno do kategorie</label><br/>';
+		$this->html .= $helperSelect->formSelect($name . '[category]', $category, null, $multiOptions) . '</td>';
+		$this->html .= '<td colspan="2"><label for="' . $name . '[measurement_taken]">Měření provedeno</label><br/>';
+		$this->html .= $helperSelect->formSelect($name . '[measurement_taken]', $measurementTaken, null, $multiOptions2) . '</td>';
 		$this->html .= '</tr><tr>';
-		$this->html .= '<td colspan="6"><label for="' . $name . '[protection_measures]">Ochranná opatření proti FPP</label><br/>' . $helperTextarea->formTextarea($name . '[protection_measures]', $protectionMeasures) . '</td>';
+		$this->html .= '<td colspan="5"><label for="' . $name . '[protection_measures]">Ochranná opatření proti FPP</label><br/>' . $helperTextarea->formTextarea($name . '[protection_measures]', $protectionMeasures) . '</td>';
 		$this->html .= '</tr><tr>';
 		$this->html .= '<td colspan="3"><label for="' . $name . '[note]">Poznámka k FPP</label><br/>' . $helperTextarea->formTextarea($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
-			$this->html .= '<td colspan="3"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label><br/>' . $helperTextarea->formTextarea($name . '[private]', $private) . '</td>';
+			$this->html .= '<td colspan="2"><label for="' . $name . '[private]">Soukromá poznámka k FPP</label><br/>' . $helperTextarea->formTextarea($name . '[private]', $private) . '</td>';
 		}
 		else{
-			$this->html .= '<td colspan="3"></td>';
+			$this->html .= '<td coslpan="2"></td>';
 		}
 		$this->html .= '</tr>';
 		
