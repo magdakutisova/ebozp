@@ -118,10 +118,30 @@ echo $this->formHidden("clientId", $this->client->id_client);
 	<div id="newmistake">
 	<?php 
 	echo $this->selectWorkplace;
+	echo $this->formButton("new-workplace", "Přidat pracoviště (zobrazit/skrýt formulář)", array("class" => $this->audit->subsidiary_id));
 	?>
+		<div class="hidden" id="new-workplace-form">
+			<?php echo $this->placeForm; ?>
+		</div>
 	</div>
 	<div id="workcomments">
 		<?php echo $this->action("get", "workplace", "audit", array("auditId" => $this->audit)); ?>
 	</div>
+</div>
+<div class="multiCheckboxWorkplaces"></div>
+<div class="hidden" id="new_position_form">
+	<?php echo $this->postForm; ?>
+</div>
+<div class="hidden" id="new_work_form">
+	<?php echo $this->workForm; ?>
+</div>
+<div class="hidden" id="new_chemical_form">
+	<?php echo $this->chemForm; ?>
+</div>
+<div class="hidden" id="new_technicaldevice_form">
+	<?php echo $this->techForm; ?>
+</div>
+<div class="hidden" id="new_folder_form">
+	<?php echo $this->folderForm; ?>
 </div>
 <script type="text/javascript" src="/js/audit/audit/edit.js"></script>

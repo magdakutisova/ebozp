@@ -1,17 +1,31 @@
 <table>
 	<tr>
 		<td width="30%" align="left">
-		
+			<?php 
+			$auditId = $this->audit->id;
+			$clientId = $this->audit->client_id;
+			$subsidiaryId = $this->audit->subsidiary_id;
+			
+			if ($this->pagination->prev) {
+				$caption = "Předchozí";
+				$href = "/audit/workplace/setplace?clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->prev;
+				
+				echo "<a href='$href'>$caption</a>";
+			}
+			?>
 		</td>
 		<td>
 			<center>
-			<?php echo $this->formSelect("paginator", $this->workplace->id_workplace, array(), $this->pagination->select); ?>
+			<?php echo $this->formSelect("paginator-workplace", $this->workplace->id_workplace, array(), $this->pagination->select); ?>
 			</center>
 		</td>
 		<td width="30%" align="right">
 			<?php 
 			if ($this->pagination->next) {
-				$caption = $this->pagination->select[$this->pagination->next];
+				$caption = "Další";
+				$href = "/audit/workplace/setplace?clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->next;
+				
+				echo "<a href='$href'>$caption</a>";
 			}
 			?>
 		</td>

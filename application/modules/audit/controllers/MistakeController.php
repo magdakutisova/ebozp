@@ -105,18 +105,22 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		$workplace = $tableWorkplaces->find($workplaceId)->current();
 
-		if (!$workplace) {
+		if (!$workplace && $workplaceId != 0) {
 			// pracoviste nebylo nalezeno - vraceni zpatky
 			$this->_forward("edit", "audit");
 			return;
 		}
 		
 		// nacteni neshod, ktere nejsou pripojeny k auditu a ktere nalezi k pracovisti a nebyly jeste odstraneny
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableAssocs = new Audit_Model_AuditsMistakes();
-		$nameAssocs = $tableAssocs->info("name");
-		$mistakes = $tableMistakes->fetchAll(array("is_submited", "!is_removed", "workplace_id = " . $workplace->id_workplace, "id not in (select mistake_id from `$nameAssocs` where audit_id = " . $this->_audit->id . ")"));
-
+		if ($workplace) {
+			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+			$tableAssocs = new Audit_Model_AuditsMistakes();
+			$nameAssocs = $tableAssocs->info("name");
+			$mistakes = $tableMistakes->fetchAll(array("is_submited", "!is_removed", "workplace_id = " . $workplace->id_workplace, "id not in (select mistake_id from `$nameAssocs` where audit_id = " . $this->_audit->id . ")"));
+		} else {
+			$mistakes = new Zend_Db_Table_Rowset(array("data" => array()));
+		}
+		
 		$this->view->form = $form;
 		$this->view->audit = $this->_audit;
 		$this->view->client = $client;
@@ -480,7 +484,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				null);
 
 		// nastaveni id pracoviste
-		$mistake->workplace_id = $form->getValue("workplace_id");
+		$mistake->workplace_id = ($workpalceId = $form->getValue("workplace_id")) ? $workplaceId : null;
 
 		// nastaveni zodpovedne osoby
 		$mistake->responsibile_name = $form->getValue("responsibile_name");

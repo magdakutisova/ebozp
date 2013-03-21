@@ -68,6 +68,17 @@ $(function () {
 		});
 	}
 	
+	function workplaceSelect() {
+		var workplaceId = $(this).val();
+		var url = "/audit/workplace/setplace?workplaceId=" + workplaceId + "&clientId=" + clientId + "&auditId=" + auditId;
+		
+		location.href = url;
+	}
+	
+	function toggleWorkplace() {
+		$("#new-workplace-form").toggle();
+	}
+	
 	$("#table-mistakes button[name='edit-mistake'],#workplace-mistakes button[name='edit']").click(openMistake);
 	$("#table-mistakes2 button[name='show'],#workplace-mistakes button[name='show']").click(showMistake);
 	$("#tabs").tabs();
@@ -81,4 +92,6 @@ $(function () {
 	});
 	
 	$("#save-mistakes").click(sendMistakes);
+	$("#paginator-workplace").change(workplaceSelect);
+	$("#new-workplace").click(toggleWorkplace);
 });

@@ -261,7 +261,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$workSelect[$item->id_workplace] = $item->name;
 		}
 		
-		$selectWorkplace->getElement("workplace_id")->setMultiOptions($workSelect);
+		$selectWorkplace->getElement("workplace_id")->setMultiOptions(array_merge(array("0" => "---MIMO PRACOVIŠTĚ---"), $workSelect));
 		$selectWorkplace->setAction($this->view->url($params, "audit-mistake-createalone2"));
 		
 		// nacteni zaznamu o komentarich k pracovistim a vygenerovani seznamu formularu
@@ -287,7 +287,9 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if ($this->_user->getRoleId() == My_Role::ROLE_COORDINATOR) {
 			$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
 		}
-
+		
+		$this->_initWorkForms();
+		
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
 		$this->view->form = $form;
@@ -665,5 +667,56 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 		
 		return array($thisAudit, $otherAudits);
+	}
+	
+	protected function _initWorkForms() {
+		$placeForm = new Application_Form_Workplace();
+		$this->view->placeForm = $placeForm;
+		$placeForm->setAction($this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-workplace-post"));
+		
+		// nacteni seznamu pobocek
+		$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiary->fetchAll("client_id = " . $this->_audit->client_id);
+		$placeForm->getElement("subsidiary_id")->setMultiOptions($this->generateIndex($subsidiaries, "subsidiary_name", "id_subsidiary"));
+		$placeForm->save->setLabel("Uložit");
+		
+		// nacteni pracovnich pozic
+		$tablePositions = new Application_Model_DbTable_Position();
+		$placeForm->getElement("positionList")->setMultiOptions($tablePositions->getPositions($this->_audit->client_id));
+		
+		// nacteni cinnosti
+		$tableWorks = new Application_Model_DbTable_Work();
+		$placeForm->getElement("workList")->setMultiOptions($tableWorks->getWorks($this->_audit->client_id));
+		
+		// technicke prostredky
+		$tableDevices = new Application_Model_DbTable_TechnicalDevice();
+		$placeForm->getElement("technicaldeviceList")->setOptions($tableDevices->getTechnicalDevices($this->_audit->client_id));
+		
+		// chemicke latky
+		$tableChems = new Application_Model_DbTable_Chemical();
+		$placeForm->getElement("chemicalList")->setMultiOptions($tableChems->getChemicals($this->_audit->client_id));
+		
+		$postForm = new Application_Form_Position();
+		$this->view->postForm = $postForm;
+		$postForm->removeElement("new_workplace");
+		$postForm->removeElement("workplaces");
+		$postForm->removeElement("workplaceList");
+		$workForm = new Application_Form_Work();
+		$this->view->workForm = $workForm;
+		$techForm = new Application_Form_TechnicalDevice();
+		$this->view->techForm = $techForm;
+		$chemForm = new Application_Form_Chemical();
+		$this->view->chemForm = $chemForm;
+		$folderForm = new Application_Form_Folder();
+		$this->view->folderForm = $folderForm;
+		
+	}
+	
+	public function generateIndex($rowset, $name, $id) {
+		$retVal = array();
+		foreach ($rowset as $item) {
+			$retVal[$item[$id]] = $item[$name];
+		}
+		return $retVal;
 	}
 }

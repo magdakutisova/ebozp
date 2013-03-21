@@ -16,6 +16,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 	
 	public function init() {
 		$this->_auditId = $this->getRequest()->getParam("auditId", 0);
+		$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
 		
 		// kontrola jestli neni poslan primo objekt auditu
 		if (is_object($this->_auditId)) {
@@ -64,6 +65,12 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$this->_redirect($url);
 	}
 	
+	public function createAction() {
+		$form = new Application_Form_Workplace();
+		
+		$this->view->form = $form;
+	}
+	
 	public function getAction() {
 		if (!$this->_audit) throw new Zend_Exception("Audit must be set");
 		$session = $this->_updateSession();
@@ -77,6 +84,27 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$this->view->mistakes = $info->mistakes;
 		$this->view->commentForm = $info->commentForm;
 		$this->view->audit = $this->_audit;
+	}
+	
+	public function postAction() {
+		try {
+			$this->view->action("new", "workplace", "default", $this->getRequest()->getParams());
+		} catch (Exception $e) {
+			/**
+			 * @todo ODSTRANIT TENHLE HOVNOKOD
+			 */
+		}
+		
+		// presmerovani zpet na editaci auditu
+		$url = $this->view->url($this->getRequest()->getParams(), "audit-edit") . "#newmistake";
+		$this->_redirect($url);
+	}
+	
+	public function setplaceAction() {
+		$this->_updateSession(false);
+		
+		$url = $this->view->url($this->getRequest()->getParams(), "audit-edit") . "#workcomments";
+		$this->_redirect($url);
 	}
 	
 	/**
@@ -180,7 +208,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 			if ($record["id_workplace"] == $workplaceId) {
 				// zpracovavane pracoviste je aktivni -> nastavi se rychla navigace
 				$prev = ($i > 0) ? $result[$i - 1]["id_workplace"] : 0;
-				$next = (($i + 1) < count($result)) ? $result[$i + 1] : 0;
+				$next = (($i + 1) < count($result)) ? $result[$i + 1]["id_workplace"] : 0;
 			}
 		}
 		
