@@ -232,6 +232,32 @@ $(function(){
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
 	}
 	
+	//PŘIDÁVÁNÍ ŠKOLENÍ
+	var validatorSchooling = $('#schooling').validate({
+		rules: {
+			schooling: {
+				required: true
+			},
+		},
+		messages: {
+			schooling: "Uveďte název školení.",
+		}
+	});
+	
+	$('#new_schooling').click(function(){
+		$('#new_schooling_form input[type=text]').val('');
+		validatorSchooling.resetForm();
+		$('#new_schooling_form').dialog("open");
+	});
+	
+	$('#new_schooling_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název školení.',
+	});
+	
 	//DETAILY FAKTORŮ PRACOVNÍHO PROSTŘEDÍ
 	$(".multiCheckboxEnvironmentfactors").on("click", "input[id*='environmentfactorList']", function(){
 		var checkbox = $(this);
@@ -278,8 +304,13 @@ $(function(){
 				ajaxPopulateSelect(identifier, controller);
 			}
 			else{
-				ajaxPopulateSelects(identifier, controller);
-			}			
+				if(identifier == 'schooling'){
+					ajaxAppendCheckbox(identifier, controller);
+				}
+				else{
+					ajaxPopulateSelects(identifier, controller);
+				}			
+			}
 		}
 	});
 	
@@ -374,6 +405,25 @@ $(function(){
 								+ '</label><br/>');
 					}
 				});
+			}
+		});
+	}
+	
+	function ajaxAppendCheckbox(identifier, controller){
+		var clientId = $('#client_id').val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/' + controller + '/populate' + identifier + 's',
+			data: "clientId=" + clientId,
+			async: false,
+			success: function(json){
+				var newKey = json[Object.keys(json).sort().pop()];
+				var newValue = json.newKey;
+				var identifierCap = capitalizeFirstLetter(identifier);
+				$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' + newKey +
+						'\" type=\"checkbox\" checked=\"checked\" value\"' + newKey + '\" name=\"' + identifier + 'List[]\">' +
+						newValue + '</label><br/>');
 			}
 		});
 	}

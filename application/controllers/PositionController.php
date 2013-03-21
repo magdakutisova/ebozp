@@ -66,7 +66,7 @@ class PositionController extends Zend_Controller_Action{
     	$defaultSchoolings = My_Schooling::getSchoolings();
     	$schoolings = new Application_Model_DbTable_Schooling();
     	$extraSchoolings = $schoolings->getExtraSchoolings($this->_clientId);
-    	$this->_schoolingList = array_merge($defaultSchoolings, $extraSchoolings);
+    	$this->_schoolingList = $defaultSchoolings + $extraSchoolings;
     	
     	//získání seznamu pracovních činností
     	$works = new Application_Model_DbTable_Work();
@@ -173,6 +173,11 @@ class PositionController extends Zend_Controller_Action{
     	$formFolder->clientId->setValue($this->_clientId);
     	$formFolder->save_folder->setAttrib('class', array('folder', 'workplace', 'ajaxSave'));
     	$this->view->formFolder = $formFolder;
+    	
+    	$formSchooling = new Application_Form_Schooling();
+    	$formSchooling->clientId->setValue($this->_clientId);
+    	$formSchooling->save_schooling->setAttrib('class', array('schooling', 'position', 'ajaxSave'));
+    	$this->view->formSchooling = $formSchooling;
     	 
     	$formEmployee = new Application_Form_Employee();
     	$formEmployee->clientId->setValue($this->_clientId);
@@ -307,31 +312,26 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->field = $element->__toString();
     }
        
-    public function newschoolingAction(){
+    public function addschoolingAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newschooling', 'html')->initContext();
+    	$ajaxContext->addActionContext('addschooling', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
     	
-    	$id = $this->_getParam('id_schooling', null);
-    	
-    	$element = new My_Form_Element_Schooling("newSchooling$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_schoolingList);
-    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
-    	
-    	$this->view->field = $element->__toString();
-    } 
+    	$data = $this->_getAllParams();
+    	$schooling = new Application_Model_Schooling($data);
+    	$schoolings = new Application_Model_DbTable_Schooling();
+    	$schoolings->addSchooling($schooling);
+    }
     
-    public function newnewschoolingAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newnewschooling', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_newSchooling', null);
-    	
-    	$element = new My_Form_Element_NewSchooling("newNewSchooling$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
-    	
-    	$this->view->field = $element->__toString();
+    public function populateschoolingsAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$defaultSchoolings = My_Schooling::getSchoolings();
+    	$schoolings = new Application_Model_DbTable_Schooling();
+    	$extraSchoolings = $schoolings->getExtraSchoolings($this->_clientId);
+    	$this->_schoolingList = $defaultSchoolings + $extraSchoolings;
+    	echo Zend_Json::encode($this->_schoolingList);
     }
     
     public function newworkAction(){
