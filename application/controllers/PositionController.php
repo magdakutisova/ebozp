@@ -63,7 +63,10 @@ class PositionController extends Zend_Controller_Action{
     	$this->_categoryList = My_EnvironmentFactor::getCategories();
     	
     	//získání seznamu školení
-    	$this->_schoolingList = My_Schooling::getSchoolings();
+    	$defaultSchoolings = My_Schooling::getSchoolings();
+    	$schoolings = new Application_Model_DbTable_Schooling();
+    	$extraSchoolings = $schoolings->getExtraSchoolings($this->_clientId);
+    	$this->_schoolingList = array_merge($defaultSchoolings, $extraSchoolings);
     	
     	//získání seznamu pracovních činností
     	$works = new Application_Model_DbTable_Work();
