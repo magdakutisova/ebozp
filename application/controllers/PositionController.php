@@ -350,20 +350,6 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->field = $element->__toString();
     }
     
-    public function newworkAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newwork', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_work', null);
-    	
-    	$element = new My_Form_Element_WorkComplete("newWork$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_workList);
-    	$element->setAttrib('multiOptions2', $this->_frequencyList);
-    	
-    	$this->view->field = $element->__toString();
-    }
-    
     public function newtechnicaldeviceAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
@@ -486,9 +472,8 @@ class PositionController extends Zend_Controller_Action{
     	if($form->schoolingList != null){
     		$form->schoolingList->setMultiOptions($this->_schoolingList);
     	}
-    	if($form->work != null){
-    		$form->work->setAttrib('multiOptions', $this->_workList);
-    		$form->work->setAttrib('multiOptions2', $this->_frequencyList);
+    	if($form->workList != null){
+    		$form->workList->setMultiOptions($this->_workList);
     	}
     	if($form->technical_device != null){
     		$form->technical_device->setAttrib('multiOptions', $this->_sortList);

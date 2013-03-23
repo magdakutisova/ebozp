@@ -150,11 +150,12 @@ textarea[id*='schoolingDetail']					{width: 300px;}
 
 .multiCheckbox, .multiCheckboxEmployees, .multiCheckboxPositions, .multiCheckboxWorks, .multiCheckboxSubsidiaries,
 	.multiCheckboxTechnicaldevices, .multiCheckboxChemicals, .multiCheckboxWorkplaces, .multiCheckboxEnvironmentfactors,
-	.multiCheckboxSchoolings
+	.multiCheckboxSchoolings, .multiCheckboxBackgroundWorks
 	{height: 150px; overflow: auto; max-width: 400px;}
 .multiCheckbox label, .multiCheckboxEmployees label, .multiCheckboxPositions label, .multiCheckboxWorks label,
 	.multiCheckboxSubsidiaries label, .multiCheckboxTechnicaldevices label, .multiCheckboxChemicals label,
-	.multiCheckboxWorkplaces label, .multiCheckboxEnvironmentfactors label, .multiCheckboxSchoolings label
+	.multiCheckboxWorkplaces label, .multiCheckboxEnvironmentfactors label, .multiCheckboxSchoolings label,
+	.multiCheckboxBackgroundWorks label
 	{font-weight: normal;}
 
 /*

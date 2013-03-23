@@ -65,7 +65,7 @@ $(function(){
 		}
 	});
 	
-	$('#new_work').click(function(){
+	$('.new_work').click(function(){
 		$('#new_work_form input[type=text]').val('');
 		validatorWork.resetForm();
 		$('#new_work_form').dialog("open");
@@ -424,8 +424,12 @@ $(function(){
 				$.each(json, function(key, value){
 					// nová hodnota
 					if($.inArray(value, labelArray) == -1){
-						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
+						$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
+								+ '\" name=\"' + identifier + 'List[]\">' + value
+								+ '</label><br/>');
+						$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
+								key + '\" type=\"checkbox\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
 						if(identifier == 'chemical'){
@@ -435,7 +439,7 @@ $(function(){
 					// nezaškrtnutá hodnota
 					else if($.inArray(key, vals) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
-							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');	
+							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');
 					}
 					// ostatní hodnoty
 					else{

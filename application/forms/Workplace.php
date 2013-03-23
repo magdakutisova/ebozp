@@ -226,6 +226,7 @@ class Application_Form_Workplace extends Zend_Form
         	'decorators' => $elementDecorator2,
         ));
         
+        //pracovní činnosti
         $this->addElement('hidden', 'works', array(
         	'label' => 'Pracovní činnosti:',
         	'decorators' => $elementDecoratorColspanSeparator,
@@ -235,16 +236,18 @@ class Application_Form_Workplace extends Zend_Form
         $this->getElement('works')->getDecorator('Description')->setEscape(false);
         
         $this->addElement('multiCheckbox', 'workList', array(
-        		'decorators' => $this->generateCheckboxListDecorator('Works'),
+        		'decorators' => $this->generateCheckboxListDecorator('Works workplace'),
         		'order' => 19,
         		));
         
         $this->addElement('button', 'new_work', array(
-        	'label' => 'Přidat novou pracovní činnost',
-        	'order' => 20,
-        	'decorators' => $elementDecorator2,
+        		'label' => 'Přidat novou pracovní činnost',
+        		'order' => 20,
+        		'decorators' => $elementDecorator2,
+        		'class' => 'new_work',
         ));
         
+        //technické prostředky
         $this->addElement('hidden', 'technical_devices', array(
         	'label' => 'Technické prostředky:',
         	'decorators' => $elementDecoratorColspanSeparator,

@@ -202,7 +202,7 @@ class Application_Form_Position extends Zend_Form{
        			'label' => 'Pracovní činnosti (prováděné práce):',
        			'decorators' => $elementDecoratorColspanSeparator,
        			'order' => 3001,
-       			'description' => $questionMarkStart . 'Doplňte postupně všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
+       			'description' => $questionMarkStart . 'Vyberte všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
        			));
        	$this->getElement('works')->getDecorator('Description')->setEscape(false);
        	
@@ -212,10 +212,16 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('button', 'new_work_to_position', array(
-       			'label' => 'Další pracovní činnost',
+       	$this->addElement('multiCheckbox', 'workList', array(
+       			'decorators' => $this->generateCheckboxListDecorator('Works position'),
+       			'order' => 3002,
+       			));
+       	
+       	$this->addElement('button', 'new_work', array(
+       			'label' => 'Přidat novou pracovní činnost',
        			'order' => 4000,
        			'decorators' => $elementDecorator2,
+       			'class' => 'new_work',
        			));
        	
        	//technické prostředky

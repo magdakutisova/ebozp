@@ -202,7 +202,6 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$data = $this->_getAllParams();
     	$work = new Application_Model_Work($data);
-    	//$work->setWork($this->_getParam('name'));
     	$works = new Application_Model_DbTable_Work();
     	$workId = $works->addWork($work);
     	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
