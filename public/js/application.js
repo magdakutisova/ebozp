@@ -180,12 +180,6 @@ $(function(){
 		}
 	}
 	
-	//povinná školení
-	$(document).ready(function(){
-		$('input#schoolingList-1').attr('checked', true).attr('disabled', true);
-		$('input#schoolingList-2').attr('checked', true).attr('disabled', true);
-	});
-	
 });
 
 /**

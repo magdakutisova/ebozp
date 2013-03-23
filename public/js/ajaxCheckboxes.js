@@ -258,6 +258,45 @@ $(function(){
 		title: 'Zadejte název školení.',
 	});
 	
+	$(".multiCheckboxSchoolings").on("click", "input[id*='schoolingList']", function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddSchoolingDetail(id, label);
+		}
+		else{
+			ajaxRemoveSchoolingDetail(id, label);
+		}
+	});
+	
+	function ajaxAddSchoolingDetail(id, label){
+		var elementId = $("#id_schooling").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/schoolingdetail/format/html',
+			data: "id_schooling=" + elementId + "&clientId=" + clientId + "&idSchooling=" + id + "&schooling=" + label,
+			success: function(newElement){
+				$('#new_schooling').parents('tr').before(newElement);
+				$('#id_schooling').val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveSchoolingDetail(id, label){
+		$("input[id*='schoolingDetail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='schoolingDetail'][value='" + id + "']").parent().remove();
+	}
+	
+	//povinná školení
+	$(document).ready(function(){
+		$('input#schoolingList-1').attr('checked', true).attr('disabled', true);
+		$('input#schoolingList-2').attr('checked', true).attr('disabled', true);
+		ajaxAddSchoolingDetail(1, 'Požární ochrana');
+		ajaxAddSchoolingDetail(2, 'Bezpečnost práce');
+	});
+	
 	//DETAILY FAKTORŮ PRACOVNÍHO PROSTŘEDÍ
 	$(".multiCheckboxEnvironmentfactors").on("click", "input[id*='environmentfactorList']", function(){
 		var checkbox = $(this);
@@ -418,12 +457,20 @@ $(function(){
 			data: "clientId=" + clientId,
 			async: false,
 			success: function(json){
-				var newKey = json[Object.keys(json).sort().pop()];
-				var newValue = json.newKey;
 				var identifierCap = capitalizeFirstLetter(identifier);
-				$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' + newKey +
-						'\" type=\"checkbox\" checked=\"checked\" value\"' + newKey + '\" name=\"' + identifier + 'List[]\">' +
-						newValue + '</label><br/>');
+				var oldItems = $("div.multiCheckbox" + identifierCap + "s label input");
+				var vals = [];
+				var i = 0;
+				oldItems.each(function(){
+					vals[i++] = $(this).val();
+				});				
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) == -1){
+						$("div.multiCheckbox" + identifierCap + "s").append('<br/><label><input id=\"' + identifier + 'List-' + key +
+								'\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' +
+								value + '</label>');
+					}
+				});
 			}
 		});
 	}

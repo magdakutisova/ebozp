@@ -320,6 +320,7 @@ class PositionController extends Zend_Controller_Action{
     	
     	$data = $this->_getAllParams();
     	$schooling = new Application_Model_Schooling($data);
+    	$schooling->setClientId($this->_getParam('clientId'));
     	$schoolings = new Application_Model_DbTable_Schooling();
     	$schoolings->addSchooling($schooling);
     }
@@ -332,6 +333,21 @@ class PositionController extends Zend_Controller_Action{
     	$extraSchoolings = $schoolings->getExtraSchoolings($this->_clientId);
     	$this->_schoolingList = $defaultSchoolings + $extraSchoolings;
     	echo Zend_Json::encode($this->_schoolingList);
+    }
+    
+    public function schoolingdetailAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('schoolingdetail', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_schooling', null);
+    	
+    	$element = new My_Form_Element_SchoolingDetail("schoolingDetail$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setIdSchooling($this->_getParam('idSchooling'));
+    	$element->setSchooling($this->_getParam('schooling'));
+    	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
+    	$this->view->field = $element->__toString();
     }
     
     public function newworkAction(){
