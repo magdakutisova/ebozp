@@ -286,8 +286,7 @@ class Application_Form_Position extends Zend_Form{
        			'label' => 'Přidat nového zaměstnance',
        			'order' => 8000,
        			'decorators' => $elementDecorator2,
-				'class' => 'position',
-       			));
+				));
        	
        	//zbytek
        	$this->addElement('checkbox', 'other', array(

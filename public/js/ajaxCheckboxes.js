@@ -476,6 +476,7 @@ $(function(){
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
+						//tohle pak smazat
 						if(identifier == 'chemical'){
 							ajaxAddChemicalDetail(key, value);
 						}
@@ -615,6 +616,9 @@ $(function(){
 						$("div.multiCheckbox" + identifierCap + "s").append('<br/><label><input id=\"' + identifier + 'List-' + key +
 								'\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' +
 								value + '</label>');
+						if(identifier == 'schooling'){
+							ajaxAddSchoolingDetail(key, value);
+						}
 					}
 				});
 			}
