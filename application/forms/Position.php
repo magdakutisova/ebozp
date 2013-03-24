@@ -221,6 +221,7 @@ class Application_Form_Position extends Zend_Form{
        			'label' => 'Přidat novou pracovní činnost',
        			'order' => 4000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_work', 'position', 'background'),
        			));
        	
        	//technické prostředky
@@ -244,9 +245,10 @@ class Application_Form_Position extends Zend_Form{
        			));
        	
        	$this->addElement('button', 'new_technicaldevice', array(
-       			'label' => 'Další technický prostředek',
+       			'label' => 'Přidat nový technický prostředek',
        			'order' => 5000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_technicaldevice', 'position', 'background'),
        			));
        	
        	//chemické látky
@@ -258,16 +260,22 @@ class Application_Form_Position extends Zend_Form{
        			));
        	$this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('hidden', 'id_chemical', array(
+       	$this->addElement('hidden', 'id_chemical2', array(
        			'value' => 5003,
        			'order' => 10009,
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('button', 'new_chemical_to_position', array(
-       			'label' => 'Další chemická látka',
+       	$this->addElement('multiCheckbox', 'chemicalList', array(
+       			'order' => 5002,
+       			'decorators' => $this->generateCheckboxListDecorator('Chemicals position'),
+       			));
+       	
+       	$this->addElement('button', 'new_chemical', array(
+       			'label' => 'Přidat novou chemickou látku',
        			'order' => 6000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_chemical', 'position', 'background')
        			));
        	
        	//zaměstnanci       	
@@ -305,6 +313,7 @@ class Application_Form_Position extends Zend_Form{
 		$newEnvironmentFactorDetails = array_filter(array_keys($data), array($this, 'findEnvironmentFactorDetails'));
 		$newSchoolingDetails = array_filter(array_keys($data), array($this, 'findSchoolingDetails'));
 		$newWorkDetails = array_filter(array_keys($data), array($this, 'findWorkDetails'));
+		$newChemical2Details = array_filter(array_keys($data), array($this, 'findChemical2Details'));
 		
 		foreach ($newEnvironmentFactorDetails as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -337,6 +346,15 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newWorkDetail);
 		}
+		
+		foreach ($newChemical2Details as $fieldName){
+			$order = preg_replace('/chemical2Detail/', '', $fieldName) + 1;
+			$newChemical2Detail = new My_Form_Element_Chemical2Detail('chemical2Detail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					));
+			$this->addElement($newChemical2Detail);
+		}
 	}
 	
 	private function findEnvironmentFactorDetails($environmentFactorDetail){
@@ -354,6 +372,12 @@ class Application_Form_Position extends Zend_Form{
 	private function findWorkDetails($workDetail){
 		if(strpos($workDetail, 'workDetail') !== false){
 			return $workDetail;
+		}
+	}
+	
+	private function findChemical2Details($chemical2Detail){
+		if(strpos($chemical2Detail, 'chemical2Detail') !== false){
+			return $chemical2Detail;
 		}
 	}
 	

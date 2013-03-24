@@ -206,6 +206,7 @@ $(function(){
 		$('#new_workplace_form textarea').val('');
 		$('#new_workplace_form input[type=checkbox]').attr('checked', false);
 		$('#new_workplace_form tr[id*="chemicalDetail"]').remove();
+		$('#new_workplace_form td[id*="chemicalDetail"]').parent().remove();
 		$('#new_workplace_form select#folder_id').val('0');
 		validatorWorkplace.resetForm();
 		$('#new_workplace_form').dialog('open');
@@ -231,9 +232,15 @@ $(function(){
 		}
 	});
 	
-	$('#new_chemical').click(function(){
+	$('.new_chemical').click(function(){
 		$('#new_chemical_form input[type=text]').val('');
 		validatorChemical.resetForm();
+		if($(this).hasClass('background')){
+			$("#save_chemical").addClass('calledFromBackground');
+		}
+		else{
+			$("#save_chemical").removeClass('calledFromBackground');
+		}
 		$('#new_chemical_form').dialog("open");
 	});
 	
@@ -246,7 +253,7 @@ $(function(){
 	});
 	
 	//detaily chemické látky
-	$(".multiCheckboxChemicals").on("click", "input[id*='chemicalList']", function(){
+	$(".multiCheckboxChemicals.workplace").on("click", "input[id*='chemicalList']", function(){
 		var checkbox = $(this);
 		var id = checkbox.val();
 		var label = checkbox.parent().text();
@@ -266,7 +273,7 @@ $(function(){
 			url: baseUrl + '/workplace/chemicaldetail/format/html',
 			data: "id_chemical=" + elementId + "&clientId=" + clientId + "&idChemical=" + id + "&chemical=" + label,
 			success: function(newElement){
-				$('#new_chemical').parents('tr').before(newElement);
+				$('.new_chemical.workplace').parents('tr').before(newElement);
 				$('#id_chemical').val(++elementId);
 			}
 		});
@@ -275,6 +282,38 @@ $(function(){
 	function ajaxRemoveChemicalDetail(id, label){
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().next().remove();
 		$("input[id*='chemicalDetail'][value='" + id + "']").parent().remove();
+	}
+	
+	//detaily chemické látky 2
+	$(".multiCheckboxChemicals.position").on("click", "input[id*='chemicalList']", function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddChemical2Detail(id, label);
+		}
+		else{
+			ajaxRemoveChemical2Detail(id, label);
+		}
+	});
+	
+	function ajaxAddChemical2Detail(id, label){
+		var elementId = $("#id_chemical2").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/chemical2detail/format/html',
+			data: 'id_chemical2=' + elementId + "&clientId=" + clientId + "&idChemical=" + id + "&chemical=" + label,
+			success: function(newElement){
+				$('.new_chemical.position').parents('tr').before(newElement);
+				$('#id_chemical2').val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveChemical2Detail(id, label){
+		$("input[id*='chemical2Detail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='chemical2Detail'][value='" + id + "']").parent().remove();
 	}
 	
 	//PŘIDÁVÁNÍ ŠKOLENÍ
@@ -401,7 +440,7 @@ $(function(){
 					ajaxAppendCheckbox(identifier, controller);
 				}
 				else{
-					if(identifier == 'work' || identifier == 'technicaldevice'){
+					if(identifier == 'work' || identifier == 'technicaldevice' || identifier == 'chemical'){
 						ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground);
 					}
 					else{
@@ -489,10 +528,6 @@ $(function(){
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
-						//tohle pak smazat
-						if(identifier == 'chemical'){
-							ajaxAddChemicalDetail(key, value);
-						}
 					}
 					// nezaškrtnutá hodnota
 					else if($.inArray(key, vals) == -1){
@@ -555,25 +590,31 @@ $(function(){
 				$("div.multiCheckbox" + identifierCap + "s").empty();
 				$.each(json, function(key, value){
 					// nová hodnota
-					if($.inArray(value, labelArray) == -1){
-						console.log('a');
-						//form Workplace nová hodnota
-						$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
-								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
-								+ '\" name=\"' + identifier + 'List[]\">' + value
-								+ '</label><br/>');
-						//form Position nová hodnota - todle se bude muset asi ještě refaktorovat... voláno z Workplace
-						// => nezaškrtne se
+					if($.inArray(value, labelArray) == -1){						
+						//přidávání je voláno z workplace formu - zaškrtne se ve workplace, ale v position ne
 						if(!calledFromBackground){
-							console.log('b');
+							//form Workplace nová hodnota
+							$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
+									+ '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+							if(identifier == 'chemical'){
+								ajaxAddChemicalDetail(key, value);
+							}
+							//form Position nová hodnota
 							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
 									key + '\" type=\"checkbox\" value=\"' + key 
 									+ '\" name=\"' + identifier + 'List[]\">' + value
 									+ '</label><br/>');
 						}
-						//form Position, přidáváno z Position - zaškrtne se
+						//přidávání je voláno z position formu - zaškrtne se v position, ale ve workplace ne
 						else{
-							console.log('c');
+							//form Workplace nová hodnota
+							$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" value=\"' + key 
+									+ '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+							//form Position nová hodnota
 							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
 									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 									+ '\" name=\"' + identifier + 'List[]\">' + value
@@ -581,9 +622,9 @@ $(function(){
 							if(identifier == 'work'){
 								ajaxAddWorkDetail(key, value);
 							}
-						}
-						if(identifier == 'chemical'){
-							ajaxAddChemicalDetail(key, value);
+							if(identifier == 'chemical'){
+								ajaxAddChemical2Detail(key, value);
+							}
 						}
 					}
 					else{

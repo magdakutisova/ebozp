@@ -189,8 +189,6 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form = $this->fillMultiselects($form);
     	
-    	$form->new_work->setAttrib('class', array('new_work', 'position', 'background'));
-    	$form->new_technicaldevice->setAttrib('class', array('new_technicaldevice', 'postion', 'background'));
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
@@ -367,29 +365,16 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->field = $element->__toString();
     }
     
-    public function newtechnicaldeviceAction(){
+    public function chemical2detailAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newtechnicaldevice', 'html')->initContext();
+    	$ajaxContext->addActionContext('chemical2detail', 'html')->initContext();
     	
-    	$id = $this->_getParam('id_technical_device', null);
+    	$id = $this->_getParam('id_chemical2', null);
     	
-    	$element = new My_Form_Element_TechnicalDevice("newTechnicalDevice$id");
+    	$element = new My_Form_Element_Chemical2Detail("chemical2Detail$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_sortList);
-    	$element->setAttrib('multiOptions2', $this->_typeList);
-    	
-    	$this->view->field = $element->__toString();
-    }
-    
-    public function newchemicalAction(){
-    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
-    	$ajaxContext->addActionContext('newchemical', 'html')->initContext();
-    	
-    	$id = $this->_getParam('id_chemical', null);
-    	
-    	$element = new My_Form_Element_Chemical("newChemical$id");
-    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
-    	$element->setAttrib('multiOptions', $this->_chemicalList);
+    	$element->setIdChemical($this->_getParam('idChemical'));
+    	$element->setChemical($this->_getParam('chemical'));
     	
     	$this->view->field = $element->__toString();
     }
@@ -495,8 +480,8 @@ class PositionController extends Zend_Controller_Action{
     	if($form->technicaldeviceList != null){
     		$form->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	}
-    	if($form->chemical != null){
-    		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);
+    	if($form->chemicalList != null){
+    		$form->chemicalList->setMultiOptions($this->_chemicalList);
     	}
     	
     	return $form;

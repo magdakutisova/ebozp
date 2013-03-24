@@ -284,14 +284,15 @@ class Application_Form_Workplace extends Zend_Form
         $this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
         
         $this->addElement('multiCheckbox', 'chemicalList', array(
-        		'decorators' => $this->generateCheckboxListDecorator('Chemicals'),
+        		'decorators' => $this->generateCheckboxListDecorator('Chemicals workplace'),
         		'order' => 25,
         		));
         
         $this->addElement('button', 'new_chemical', array(
-        	'label' => 'Přidat novou chemickou látku',
-        	'order' => 2000,
-        	'decorators' => $elementDecorator2,
+        		'label' => 'Přidat novou chemickou látku',
+        		'order' => 2000,
+        		'decorators' => $elementDecorator2,
+        		'class' => array('new_chemical', 'workplace'),
         ));
         
         //umístění
