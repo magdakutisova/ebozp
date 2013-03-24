@@ -491,9 +491,8 @@ class PositionController extends Zend_Controller_Action{
     	if($form->workList != null){
     		$form->workList->setMultiOptions($this->_workList);
     	}
-    	if($form->technical_device != null){
-    		$form->technical_device->setAttrib('multiOptions', $this->_sortList);
-    		$form->technical_device->setAttrib('multiOptions2', $this->_typeList);
+    	if($form->technicaldeviceList != null){
+    		$form->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	}
     	if($form->chemical != null){
     		$form->chemical->setAttrib('multiOptions', $this->_chemicalList);

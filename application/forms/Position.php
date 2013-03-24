@@ -238,12 +238,12 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('technicalDevice', 'technical_device', array(
+       	$this->addElement('multiCheckbox', 'technicaldeviceList', array(
        			'order' => 4002,
-       			'validators' => array(new My_Validate_TechnicalDevice()),
+       			'decorators' => $this->generateCheckboxListDecorator('Technicaldevices position'),
        			));
        	
-       	$this->addElement('button', 'new_technical_device_to_position', array(
+       	$this->addElement('button', 'new_technicaldevice', array(
        			'label' => 'Další technický prostředek',
        			'order' => 5000,
        			'decorators' => $elementDecorator2,
