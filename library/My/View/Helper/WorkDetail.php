@@ -25,7 +25,7 @@ class My_View_Helper_WorkDetail extends Zend_View_Helper_FormElement{
 		
 		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_work]', $idWork);
-		$this->html .= '<td><label for="' . $name . '[work]">' . $value['work'] . '</label></td>';
+		$this->html .= '<td><label for="' . $name . '[work]">' . $value['work'] . '</label>' . $helperHidden->formHidden($name . '[work]', $work) . '</td>';
 		$this->html .= '<td colspan="2"><label for="' . $name . '[frequency]">Četnost pracovní činnosti</label><br/>';
 		$this->html .= $helperSelect->formSelect($name . '[frequency]', $frequency, null, $multiOptions) . '</td>';
 		$this->html .= '<td colspan="2"><label for="' . $name . '[new_frequency]" class="hidden">Jiná četnost (ne menší než 1x měsíčně)</label><br/>';

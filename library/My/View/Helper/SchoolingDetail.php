@@ -25,7 +25,7 @@ class My_View_Helper_SchoolingDetail extends Zend_View_Helper_FormElement{
 		
 		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_schooling]', $idSchooling);
-		$this->html .= '<td><label for="' . $name . '[schooling]">' . $value['schooling'] . '</label></td>';
+		$this->html .= '<td><label for="' . $name . '[schooling]">' . $value['schooling'] . '</label>' . $helperHidden->formHidden($name . '[schooling]', $schooling) . '</td>';
 		$this->html .= '<td colspan=2><label for="' . $name . '[note]">Poznámka</label><br/>' . $helperTextarea->formTextarea($name . '[note]', $note) . '</td>';
 		if($canViewPrivate){
 			$this->html .= '<td colspan=2><label for="' . $name . '[private]">Soukromá poznámka</label><br/>' . $helperTextarea->formTextarea($name . '[private]', $private) . '</td>';

@@ -315,6 +315,7 @@ $(function(){
 		$.ajax({
 			type: "POST",
 			url: baseUrl + '/position/schoolingdetail/format/html',
+			async: false,
 			data: "id_schooling=" + elementId + "&clientId=" + clientId + "&idSchooling=" + id + "&schooling=" + label,
 			success: function(newElement){
 				$('#new_schooling').parents('tr').before(newElement);
@@ -332,8 +333,12 @@ $(function(){
 	$(document).ready(function(){
 		$('input#schoolingList-1').attr('checked', true).attr('disabled', true);
 		$('input#schoolingList-2').attr('checked', true).attr('disabled', true);
-		ajaxAddSchoolingDetail(1, 'Požární ochrana');
-		ajaxAddSchoolingDetail(2, 'Bezpečnost práce');
+		if($('label[for*=schoolingDetail]:contains("Požární ochrana")').length == 0){
+			ajaxAddSchoolingDetail(1, 'Požární ochrana');
+		}
+		if($('label[for*=schoolingDetail]:contains("Bezpečnost práce")').length == 0){
+			ajaxAddSchoolingDetail(2, 'Bezpečnost práce');
+		}
 	});
 	
 	//DETAILY FAKTORŮ PRACOVNÍHO PROSTŘEDÍ
@@ -418,6 +423,7 @@ $(function(){
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	}
 	
+	//volat při přidávání folder
 	function ajaxPopulateSelect(identifier, controller){
 		var clientId = $("#client_id").val();
 		$.ajax({
@@ -446,6 +452,7 @@ $(function(){
 		});
 	}
 	
+	//volat při přidávání workplace, position, employee
 	function ajaxPopulateSelects(identifier, controller){
 		var clientId = $("#client_id").val();
 		$.ajax({
@@ -497,6 +504,8 @@ $(function(){
 		});
 	}
 	
+	//volat při přidávání work, technicalDevice, chemical - ošetřuje problémy s dvěma stejnými seznamy s odlišným počtem
+	//zaškrtnutých položek (jedna v klasickém formu a druhá v dialogu nad tím)
 	function ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground){
 		var clientId = $("#client_id").val();
 		$.ajax({
@@ -509,6 +518,8 @@ $(function(){
 				var identifierCap = capitalizeFirstLetter(identifier);
 				var checkedItems;
 				var checkedItems2 = null;
+				//obecně ve dvojce budou vždycky seznamy z formu Position, protože přidávací jsou ve Workplace, takže
+				//nebude souhlasit název controlleru - jedná se o odlišení ve kterém seznamu jsou zaškrtnuty které položky
 				if($("div.multiCheckbox" + identifierCap + "s." + controller).length){
 					checkedItems2 = $("div.multiCheckbox" + identifierCap + "s:not(." + controller + ") label input:checked");
 					checkedItems = $("div.multiCheckbox" + identifierCap + "s." + controller + " label input:checked");
@@ -540,10 +551,13 @@ $(function(){
 					// nová hodnota
 					if($.inArray(value, labelArray) == -1){
 						console.log('a');
+						//form Workplace nová hodnota
 						$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
+						//form Position nová hodnota - todle se bude muset asi ještě refaktorovat... voláno z Workplace
+						// => nezaškrtne se
 						if(!calledFromBackground){
 							console.log('b');
 							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
@@ -551,6 +565,7 @@ $(function(){
 									+ '\" name=\"' + identifier + 'List[]\">' + value
 									+ '</label><br/>');
 						}
+						//form Position, přidáváno z Position - zaškrtne se
 						else{
 							console.log('c');
 							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
@@ -561,8 +576,12 @@ $(function(){
 						if(identifier == 'chemical'){
 							ajaxAddChemicalDetail(key, value);
 						}
+						if(identifier == 'work'){
+							ajaxAddWorkDetail(key, value);
+						}
 					}
 					else{
+						//FORM WORKPLACE
 						// nezaškrtnutá hodnota
 						if($.inArray(key, vals) == -1){
 							console.log('d');
@@ -576,6 +595,7 @@ $(function(){
 									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value
 									+ '</label><br/>');
 						}
+						//FORM POSITION
 						// nezaškrtnutá hodnota
 						if($.inArray(key, vals2) == -1){
 							console.log('f');
@@ -595,6 +615,7 @@ $(function(){
 		});
 	}
 	
+	//volat při přidávání schooling
 	function ajaxAppendCheckbox(identifier, controller){
 		var clientId = $('#client_id').val();
 		$.ajax({

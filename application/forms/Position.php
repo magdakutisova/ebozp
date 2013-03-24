@@ -65,7 +65,7 @@ class Application_Form_Position extends Zend_Form{
 		));
 		
 		//elementy
-		 $this->addElement('hidden', 'client_id', array(
+		$this->addElement('hidden', 'client_id', array(
         	'decorators' => $elementDecorator,
         	'order' => 10000,
         ));
@@ -301,8 +301,10 @@ class Application_Form_Position extends Zend_Form{
        	));
 	}
 	
-	public function preValidation(array $data, $canViewPrivate, $categoryList, $yesNoList){
+	public function preValidation(array $data, $canViewPrivate, $categoryList, $yesNoList, $frequencyList){
 		$newEnvironmentFactorDetails = array_filter(array_keys($data), array($this, 'findEnvironmentFactorDetails'));
+		$newSchoolingDetails = array_filter(array_keys($data), array($this, 'findSchoolingDetails'));
+		$newWorkDetails = array_filter(array_keys($data), array($this, 'findWorkDetails'));
 		
 		foreach ($newEnvironmentFactorDetails as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -315,11 +317,43 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newEnvironmentFactorDetail);
 		}
+		
+		foreach ($newSchoolingDetails as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newSchoolingDetail = new My_Form_Element_SchoolingDetail('schoolingDetail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'canViewPrivate' => $canViewPrivate,
+					));
+			$this->addElement($newSchoolingDetail);
+		}
+		
+		foreach ($newWorkDetails as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newWorkDetail = new My_Form_Element_WorkDetail('workDetail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'multiOptions' => $frequencyList,
+					));
+			$this->addElement($newWorkDetail);
+		}
 	}
 	
 	private function findEnvironmentFactorDetails($environmentFactorDetail){
 		if(strpos($environmentFactorDetail, 'environmentFactorDetail') !== false){
 			return $environmentFactorDetail;
+		}
+	}
+	
+	private function findSchoolingDetails($schoolingDetail){
+		if(strpos($schoolingDetail, 'schoolingDetail') !== false){
+			return $schoolingDetail;
+		}
+	}
+	
+	private function findWorkDetails($workDetail){
+		if(strpos($workDetail, 'workDetail') !== false){
+			return $workDetail;
 		}
 	}
 	

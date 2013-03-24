@@ -193,7 +193,7 @@ class PositionController extends Zend_Controller_Action{
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
-    			$this->_yesNoList);
+    			$this->_yesNoList, $this->_frequencyList);
     	
     	//pokud formulář není odeslán, předáme formulář do view
     	if(!$this->getRequest()->isPost()){
