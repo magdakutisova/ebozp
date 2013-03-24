@@ -128,7 +128,7 @@ $(function(){
 	});
 	
 	//formulář pracovní pozice podmíněné zobrazování četnosti
-	$('select[id*=frequency]').change(function(){
+	$('#position').on("change", "select[id*=frequency]", function(){
 		toggleHiddenFrequency(this);
 	});
 
