@@ -190,6 +190,7 @@ class PositionController extends Zend_Controller_Action{
     	$form = $this->fillMultiselects($form);
     	
     	$form->new_work->setAttrib('class', array('new_work', 'position', 'background'));
+    	$form->new_technicaldevice->setAttrib('class', array('new_technicaldevice', 'postion', 'background'));
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,

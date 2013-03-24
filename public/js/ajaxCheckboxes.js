@@ -129,9 +129,15 @@ $(function(){
 		}
 	});
 	
-	$('#new_technicaldevice').click(function(){
+	$('.new_technicaldevice').click(function(){
 		$('#new_technicaldevice_form input[type=text]').val('');
 		validatorTechnicalDevice.resetForm();
+		if($(this).hasClass('background')){
+			$("#save_technicaldevice").addClass('calledFromBackground');
+		}
+		else{
+			$("#save_technicaldevice").removeClass('calledFromBackground');
+		}
 		$('#new_technicaldevice_form').dialog("open");
 	});
 	
@@ -395,7 +401,7 @@ $(function(){
 					ajaxAppendCheckbox(identifier, controller);
 				}
 				else{
-					if(identifier == 'work'){
+					if(identifier == 'work' || identifier == 'technicaldevice'){
 						ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground);
 					}
 					else{
@@ -572,12 +578,12 @@ $(function(){
 									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
 									+ '\" name=\"' + identifier + 'List[]\">' + value
 									+ '</label><br/>');
+							if(identifier == 'work'){
+								ajaxAddWorkDetail(key, value);
+							}
 						}
 						if(identifier == 'chemical'){
 							ajaxAddChemicalDetail(key, value);
-						}
-						if(identifier == 'work'){
-							ajaxAddWorkDetail(key, value);
 						}
 					}
 					else{
