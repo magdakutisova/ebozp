@@ -189,6 +189,7 @@ class PositionController extends Zend_Controller_Action{
     	
     	$form = $this->fillMultiselects($form);
     	
+    	$form->new_work->setAttrib('class', array('new_work', 'position', 'background'));
     	$form->save->setLabel('Uložit');
     	
     	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
@@ -346,6 +347,21 @@ class PositionController extends Zend_Controller_Action{
     	$element->setIdSchooling($this->_getParam('idSchooling'));
     	$element->setSchooling($this->_getParam('schooling'));
     	$element->setAttrib('canViewPrivate', $this->_canViewPrivate);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function workdetailAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('workdetail', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_work', null);
+    	
+    	$element = new My_Form_Element_WorkDetail("workDetail$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setIdWork($this->_getParam('idWork'));
+    	$element->setWork($this->_getParam('work'));
+    	$element->setAttrib('multiOptions', $this->_frequencyList);
     	
     	$this->view->field = $element->__toString();
     }

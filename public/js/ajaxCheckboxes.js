@@ -68,6 +68,12 @@ $(function(){
 	$('.new_work').click(function(){
 		$('#new_work_form input[type=text]').val('');
 		validatorWork.resetForm();
+		if($(this).hasClass('background')){
+			$("#save_work").addClass('calledFromBackground');
+		}
+		else{
+			$("#save_work").removeClass('calledFromBackground');
+		}
 		$('#new_work_form').dialog("open");
 	});
 	
@@ -78,6 +84,38 @@ $(function(){
 		modal: true,
 		title: 'Zadejte název pracovní činnosti',
 	});
+	
+	//detaily pracovní činnosti
+	$('.multiCheckboxWorks.position').on("click", "input[id*='workList']", function(){
+		var checkbox = $(this);
+		var id = checkbox.val();
+		var label = checkbox.parent().text();
+		if(checkbox.is(':checked')){
+			ajaxAddWorkDetail(id, label);
+		}
+		else{
+			ajaxRemoveWorkDetail(id, label);
+		}
+	});
+	
+	function ajaxAddWorkDetail(id, label){
+		var elementId = $("#id_work").val();
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/position/workdetail/format/html',
+			data: "id_work=" + elementId + "&clientId=" + clientId + "&idWork=" + id + "&work=" + label,
+			success: function(newElement){
+				$(".new_work.position").parents('tr').before(newElement);
+				$("#id_work").val(++elementId);
+			}
+		});
+	}
+	
+	function ajaxRemoveWorkDetail(id, label){
+		$("input[id*='workDetail'][value='" + id + "']").parent().next().remove();
+		$("input[id*='workDetail'][value='" + id + "']").parent().remove();
+	}
 	
 	//PŘIDÁVÁNÍ TECHNICKÉHO PROSTŘEDKU
 	var validatorTechnicalDevice = $('#technicaldevice').validate({
@@ -201,6 +239,7 @@ $(function(){
 		title: 'Zadejte název chemické látky.',
 	});
 	
+	//detaily chemické látky
 	$(".multiCheckboxChemicals").on("click", "input[id*='chemicalList']", function(){
 		var checkbox = $(this);
 		var id = checkbox.val();
@@ -337,6 +376,10 @@ $(function(){
 		var elementClass = $(this).attr('class').split(' ');
 		var identifier = elementClass[0];
 		var controller = elementClass[1];
+		var calledFromBackground = false;
+		if($(this).hasClass('calledFromBackground')){
+			calledFromBackground = true;
+		}
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
 			if(identifier == 'folder'){
@@ -347,7 +390,12 @@ $(function(){
 					ajaxAppendCheckbox(identifier, controller);
 				}
 				else{
-					ajaxPopulateSelects(identifier, controller);
+					if(identifier == 'work'){
+						ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground);
+					}
+					else{
+						ajaxPopulateSelects(identifier, controller);
+					}
 				}			
 			}
 		}
@@ -424,12 +472,8 @@ $(function(){
 				$.each(json, function(key, value){
 					// nová hodnota
 					if($.inArray(value, labelArray) == -1){
-						$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
-								+ '\" name=\"' + identifier + 'List[]\">' + value
-								+ '</label><br/>');
-						$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
-								key + '\" type=\"checkbox\" value=\"' + key 
 								+ '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
 						if(identifier == 'chemical'){
@@ -439,13 +483,111 @@ $(function(){
 					// nezaškrtnutá hodnota
 					else if($.inArray(key, vals) == -1){
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
-							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');
+							key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');	
 					}
 					// ostatní hodnoty
 					else{
 						$("div.multiCheckbox" + identifierCap + "s").append('<label><input id=\"' + identifier + 'List-' +
 								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value
 								+ '</label><br/>');
+					}
+				});
+			}
+		});
+	}
+	
+	function ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground){
+		var clientId = $("#client_id").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/' + controller + '/populate' + identifier + 's',
+			data: "clientId=" + clientId,
+			async: false,
+			success: function(json){
+				var identifierCap = capitalizeFirstLetter(identifier);
+				var checkedItems;
+				var checkedItems2 = null;
+				if($("div.multiCheckbox" + identifierCap + "s." + controller).length){
+					checkedItems2 = $("div.multiCheckbox" + identifierCap + "s:not(." + controller + ") label input:checked");
+					checkedItems = $("div.multiCheckbox" + identifierCap + "s." + controller + " label input:checked");
+				}
+				else{
+					checkedItems = $("div.multiCheckbox" + identifierCap + "s label input:checked");
+				}
+
+				var vals = [];
+				var i = 0;
+				checkedItems.each(function(){
+					vals[i++] = $(this).val();
+				});
+				var vals2 = [];
+				if(checkedItems2){
+					var i = 0;
+					checkedItems2.each(function(){
+						vals2[i++] = $(this).val();
+					});
+				}
+				var labels = $("div.multiCheckbox" + identifierCap + "s label");
+				var labelArray = [];
+				var j = 0;
+				labels.each(function(){
+					labelArray[j++] = $(this).text();
+				});
+				$("div.multiCheckbox" + identifierCap + "s").empty();
+				$.each(json, function(key, value){
+					// nová hodnota
+					if($.inArray(value, labelArray) == -1){
+						console.log('a');
+						$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+								key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
+								+ '\" name=\"' + identifier + 'List[]\">' + value
+								+ '</label><br/>');
+						if(!calledFromBackground){
+							console.log('b');
+							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" value=\"' + key 
+									+ '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+						}
+						else{
+							console.log('c');
+							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key 
+									+ '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+						}
+						if(identifier == 'chemical'){
+							ajaxAddChemicalDetail(key, value);
+						}
+					}
+					else{
+						// nezaškrtnutá hodnota
+						if($.inArray(key, vals) == -1){
+							console.log('d');
+							$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+								key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');
+						}
+						// ostatní hodnoty
+						else{
+							console.log('e');
+							$("div.multiCheckbox" + identifierCap + "s." + controller).append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+						}
+						// nezaškrtnutá hodnota
+						if($.inArray(key, vals2) == -1){
+							console.log('f');
+							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
+								key + '\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value + '</label><br/>');
+						}
+						// ostatní hodnoty
+						else{
+							console.log('g');
+							$("div.multiCheckbox" + identifierCap + "s:not(." + controller + ")").append('<label><input id=\"' + identifier + 'List-' +
+									key + '\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' + value
+									+ '</label><br/>');
+						}
 					}
 				});
 			}

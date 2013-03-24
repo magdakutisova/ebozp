@@ -1,10 +1,9 @@
 <?php
-class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
+class My_Form_Element_WorkDetail extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'workComplete';
+	public $helper = 'workDetail';
 	protected $_idWork;
 	protected $_work;
-	protected $_newWork;
 	protected $_frequency;
 	protected $_newFrequency;
 	
@@ -30,10 +29,6 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 		return $this->_work;
 	}
 	
-	public function getNewWork(){
-		return $this->_newWork;
-	}
-	
 	public function getFrequency(){
 		return $this->_frequency;
 	}
@@ -50,10 +45,6 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 		$this->_work = $_work;
 	}
 	
-	public function setNewWork($_newWork){
-		$this->_newWork = $_newWork;
-	}
-	
 	public function setFrequency($_frequency){
 		$this->_frequency = $_frequency;
 	}
@@ -65,7 +56,6 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 	public function setValue($values){
 		$this->setIdWork($values['id_work']);
 		$this->setWork($values['work']);
-		$this->setNewWork($values['new_work']);
 		$this->setFrequency($values['frequency']);
 		$this->setNewFrequency($values['new_frequency']);
 		return $this;
@@ -75,7 +65,6 @@ class My_Form_Element_WorkComplete extends Zend_Form_Element_Xhtml{
 		$values = array();
 		$values['id_work'] = $this->getIdWork();
 		$values['work'] = $this->getWork();
-		$values['new_work'] = $this->getNewWork();
 		$values['frequency'] = $this->getFrequency();
 		$values['new_frequency'] = $this->getNewFrequency();
 		return $values;
