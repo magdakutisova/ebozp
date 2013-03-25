@@ -18,6 +18,8 @@ class WorkplaceController extends Zend_Controller_Action
     private $_yearOfBirthList = array();
     private $_technicalDeviceList = array();
     private $_folderList = array();
+    private $_schoolingList = array();
+    private $_environmentFactorList = array();
 
     public function init()
     {
@@ -54,6 +56,9 @@ class WorkplaceController extends Zend_Controller_Action
         $employees = new Application_Model_DbTable_Employee();
         $this->_employeeList = $employees->getEmployees($this->_clientId);
         
+        //získání seznamu FPP
+        $this->_environmentFactorList = My_EnvironmentFactor::getEnvironmentFactors();
+        
         //získání seznamu pracovišť
         $workplaces = new Application_Model_DbTable_Workplace();
         $this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
@@ -75,6 +80,12 @@ class WorkplaceController extends Zend_Controller_Action
         	$this->_yearOfBirthList[$i] = $i;
         }
         
+        //získání seznamu školení
+        $defaultSchoolings = My_Schooling::getSchoolings();
+        $schoolings = new Application_Model_DbTable_Schooling();
+        $extraSchoolings = $schoolings->getExtraSchoolings($this->_clientId);
+        $this->_schoolingList = $defaultSchoolings + $extraSchoolings;
+         
         //přístupová práva
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
@@ -117,7 +128,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//naplnění formuláře hodnotami z DB
 		$form = $this->fillMultiselects($form);
-		
+		//$form->new_position->setAttrib('class', $subsidiaryId);
 		$form->save->setLabel('Uložit');
     	
     	//zmapujeme nové prvky
@@ -713,11 +724,26 @@ class WorkplaceController extends Zend_Controller_Action
     	$formPosition->subsidiaryList->setMultiOptions($formContent);
     	$formPosition->subsidiaryList->setValue($subsidiaryId);
     	$formPosition->workplaceList->setMultiOptions($this->_workplaceList);
+    	$formPosition->environmentfactorList->setMultiOptions($this->_environmentFactorList);
+    	$formPosition->schoolingList->setMultiOptions($this->_schoolingList);
+    	$formPosition->workList->setMultiOptions($this->_workList);
+    	$formPosition->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
+    	$formPosition->chemicalList->setMultiOptions($this->_chemicalList);
     	$formPosition->employeeList->setMultiOptions($this->_employeeList);
     	$formPosition->removeElement('new_workplace');
     	$formPosition->removeElement('other');
-    	$formPosition->save->setAttrib('class', array('position', 'workplace', 'ajaxSave'));
-    	$formPosition->save->setLabel('Uložit');
+    	$formPosition->removeElement('save');
+    	$formPosition->addElement('button', 'save', array(
+    			'decorators' => array(
+       				'ViewHelper',
+       				array('Errors'),
+       				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
+       				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+       			),
+    			'order' => 9999,
+    			'class' => array('position', 'workplace', 'ajaxSave'),
+    			'label' => 'Uložit',
+    			));
     	$this->view->formPosition = $formPosition;
     	 
     	$formEmployee = new Application_Form_Employee();
@@ -727,6 +753,11 @@ class WorkplaceController extends Zend_Controller_Action
     	$formEmployee->sex->setMultiOptions($this->_sexList);
     	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
     	$this->view->formEmployee = $formEmployee;
+    	
+    	$formSchooling = new Application_Form_Schooling();
+    	$formSchooling->clientId->setValue($this->_clientId);
+    	$formSchooling->save_schooling->setAttrib('class', array('schooling', 'position', 'ajaxSave'));
+    	$this->view->formSchooling = $formSchooling;
     	 
     	$formWork = new Application_Form_Work();
     	$formWork->clientId->setValue($this->_clientId);

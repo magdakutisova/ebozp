@@ -41,14 +41,51 @@ $(function(){
 	});
 	
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
+	var validatorPosition = $('#position').validate({
+		rules: {
+			position: {
+				required: true
+			},
+			business_hours: {
+				required: true
+			},
+		},
+		messages: {
+			position: "Uveďte název pracovní pozice.",
+			business_hours: "Uveďte pracovní dobu.",
+		}
+	});
+	
 	$('#new_position').click(function(){
-		$('#new_position_form').dialog("open");
+		//var subsidiary = $(this).attr('class');
+		/*$('#new_position_form input[type=checkbox]').attr('checked', false);
+		$('#new_position_form div.multiCheckboxSubsidiaries input[type=checkbox][value=' + subsidiary + ']').attr('checked', true);
+		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value=1]').attr('checked', true);
+		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value=2]').attr('checked', true);
+		$('#new_position_form input[type=text]').val('');
+		$('#new_position_form textarea').val('');
+		$('#new_position_form select#categorization').val('0');
+		$('#new_position_form tr[id*=environmentFactorDetail]').next().next().next().next().remove();
+		$('#new_position_form tr[id*=environmentFactorDetail]').next().next().next().remove();
+		$('#new_position_form tr[id*=environmentFactorDetail]').next().next().remove();
+		$('#new_position_form tr[id*=environmentFactorDetail]').next().remove();
+		$('#new_position_form tr[id*=environmentFactorDetail]').remove();
+		$('#new_position_form div.multiCheckboxEnvironmentFactors').parent().parent().attr('class', 'hidden');
+		$('#new_position_form div.multiCheckboxEnvironmentFactors').parent().parent().prev().attr('class', 'hidden');
+		$('#new_position_form input[id*=schoolingDetail][value!=1][value!=2]').parent().next().remove();
+		$('#new_position_form input[id*=schoolingDetail][value!=1][value!=2]').parent().remove();
+		$('#new_position_form tr[id*=workDetail]').next().remove();
+		$('#new_position_form tr[id*=workDetail]').remove();
+		$('#new_position_form tr[id*=chemical2Detail]').next().remove();
+		$('#new_position_form tr[id*=chemical2Detail]').remove();
+		validatorPosition.resetForm();*/
+		$('#new_position_form').dialog(open);
 	});
 	
 	$('#new_position_form').dialog({
 		autoOpen: false,
 		height: 500,
-		width: 700,
+		width: 900,
 		modal: true,
 		title: 'Zadejte oficiální název pracovní pozice tak, jak je uveden v pracovní smlouvě.',
 	});
@@ -691,5 +728,36 @@ $(function(){
 				});
 			}
 		});
+	}
+	
+	//formulář pracovní pozice podmíněné zobrazování FPP
+	$('select[id=categorization]').change(function(){
+		toggleHiddenFactors(this);
+	});
+	
+	$(document).ready(function(){
+		var selectbox = $(document).find('select[id=categorization]');
+		toggleHiddenFactors(selectbox);
+	});
+	
+	function toggleHiddenFactors(selectbox){
+		if($(selectbox).val() == 0){
+			$(selectbox).parent().parent().next().next().addClass('hidden');
+			$(selectbox).parent().parent().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().addClass('hidden');
+			$('tr[id*=environmentFactorDetail]').addClass('hidden');
+		}
+		else{
+			$(selectbox).parent().parent().next().next().removeClass('hidden');
+			$(selectbox).parent().parent().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').next().removeClass('hidden');
+			$('tr[id*=environmentFactorDetail]').removeClass('hidden');
+		}
 	}
 });
