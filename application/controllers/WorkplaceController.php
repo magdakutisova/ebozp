@@ -128,7 +128,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//naplnění formuláře hodnotami z DB
 		$form = $this->fillMultiselects($form);
-		//$form->new_position->setAttrib('class', $subsidiaryId);
+		$form->new_position->setAttrib('class', $subsidiaryId);
 		$form->save->setLabel('Uložit');
     	
     	//zmapujeme nové prvky

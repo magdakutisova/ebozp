@@ -57,11 +57,11 @@ $(function(){
 	});
 	
 	$('#new_position').click(function(){
-		//var subsidiary = $(this).attr('class');
-		/*$('#new_position_form input[type=checkbox]').attr('checked', false);
-		$('#new_position_form div.multiCheckboxSubsidiaries input[type=checkbox][value=' + subsidiary + ']').attr('checked', true);
-		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value=1]').attr('checked', true);
-		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value=2]').attr('checked', true);
+		var subsidiary = $(this).attr('class');
+		$('#new_position_form input[type=checkbox]').attr('checked', false);
+		$('#new_position_form div.multiCheckboxSubsidiaries input[type=checkbox][value="' + subsidiary + '"]').prop('checked', true);
+		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value="1"]').prop('checked', true);
+		$('#new_position_form div.multiCheckboxSchoolings input[type=checkbox][value="2"]').prop('checked', true);
 		$('#new_position_form input[type=text]').val('');
 		$('#new_position_form textarea').val('');
 		$('#new_position_form select#categorization').val('0');
@@ -70,16 +70,16 @@ $(function(){
 		$('#new_position_form tr[id*=environmentFactorDetail]').next().next().remove();
 		$('#new_position_form tr[id*=environmentFactorDetail]').next().remove();
 		$('#new_position_form tr[id*=environmentFactorDetail]').remove();
-		$('#new_position_form div.multiCheckboxEnvironmentFactors').parent().parent().attr('class', 'hidden');
-		$('#new_position_form div.multiCheckboxEnvironmentFactors').parent().parent().prev().attr('class', 'hidden');
-		$('#new_position_form input[id*=schoolingDetail][value!=1][value!=2]').parent().next().remove();
-		$('#new_position_form input[id*=schoolingDetail][value!=1][value!=2]').parent().remove();
+		$('#new_position_form div.multiCheckboxEnvironmentfactors').parent().parent().addClass('hidden');
+		$('#new_position_form div.multiCheckboxEnvironmentfactors').parent().parent().prev().addClass('hidden');
+		$('#new_position_form tr[id*=schoolingDetail] > input[id*=schoolingDetail][value!="1"][value!="2"]').parent().next().remove();
+		$('#new_position_form tr[id*=schoolingDetail] > input[id*=schoolingDetail][value!="1"][value!="2"]').parent().remove();
 		$('#new_position_form tr[id*=workDetail]').next().remove();
 		$('#new_position_form tr[id*=workDetail]').remove();
 		$('#new_position_form tr[id*=chemical2Detail]').next().remove();
 		$('#new_position_form tr[id*=chemical2Detail]').remove();
-		validatorPosition.resetForm();*/
-		$('#new_position_form').dialog(open);
+		validatorPosition.resetForm();
+		$('#new_position_form').dialog("open");
 	});
 	
 	$('#new_position_form').dialog({
