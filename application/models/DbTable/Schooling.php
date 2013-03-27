@@ -28,7 +28,7 @@ class Application_Model_DbTable_Schooling extends Zend_Db_Table_Abstract{
 	}
 	
 	public function updateSchooling(Application_Model_Schooling $schooling){
-		$data = $schooling->toArray();
+		$data = $schooling->toArray(true);
 		$this->update($data, 'id_schooling = ' . $schooling->getIdSchooling());
 	}
 	

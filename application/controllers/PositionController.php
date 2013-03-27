@@ -253,6 +253,10 @@ class PositionController extends Zend_Controller_Action{
     		$workplace->setFolderId(null);
     	}
     	$workplaceId = $workplaces->addWorkplace($workplace);
+    	if(!$workplaceId){
+    		//TODO nějaké ošetření pokud bude třeba
+    		return;
+    	}
     	
     	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
     	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
@@ -319,9 +323,9 @@ class PositionController extends Zend_Controller_Action{
     	$this->_helper->layout->disableLayout();
     	
     	$data = $this->_getAllParams();
+    	$schoolings = new Application_Model_DbTable_Schooling();
     	$schooling = new Application_Model_Schooling($data);
     	$schooling->setClientId($this->_getParam('clientId'));
-    	$schoolings = new Application_Model_DbTable_Schooling();
     	$schoolings->addSchooling($schooling);
     }
     
@@ -462,7 +466,7 @@ class PositionController extends Zend_Controller_Action{
     }
 	
     private function fillMultiselects($form){
-    	if($form->workplaceList != null){
+    	if($form->workplaceList != null && $this->_workplaceList != 0){
     		$form->workplaceList->setMultiOptions($this->_workplaceList);
     	}
     	if($form->employeeList != null){

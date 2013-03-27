@@ -212,9 +212,16 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->_helper->layout->disableLayout();
     	
     	$data = $this->_getAllParams();
-    	$work = new Application_Model_Work($data);
     	$works = new Application_Model_DbTable_Work();
-    	$workId = $works->addWork($work);
+    	$work = new Application_Model_Work($data);
+    	$existsWork = $works->existsWork($work->getWork());
+    	$workId = 0;
+    	if(!$existsWork){
+    		$workId = $works->addWork($work);
+    	}   	
+    	else{
+    		$workId = $existsWork;
+    	}
     	$clientHasWork = new Application_Model_DbTable_ClientHasWork();
     	$clientHasWork->addRelation($this->_getParam('clientId'), $workId);    	
     }
@@ -236,7 +243,14 @@ class WorkplaceController extends Zend_Controller_Action
     	$data = $this->_getAllParams();
     	$technicalDevice = new Application_Model_TechnicalDevice($data);
     	$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-    	$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
+    	$existsTechnicalDevice = $technicalDevices->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
+    	$technicalDeviceId = 0;
+    	if(!$existsTechnicalDevice){
+    		$technicalDeviceId = $technicalDevices->addTechnicalDevice($technicalDevice);
+    	}
+    	else{
+    		$technicalDeviceId = $existsTechnicalDevice;
+    	}
     	$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
     	$clientHasTechnicalDevice->addRelation($this->_getParam('clientId'), $technicalDeviceId);
     }
@@ -279,7 +293,14 @@ class WorkplaceController extends Zend_Controller_Action
     	$data = $this->_getAllParams();
     	$chemical = new Application_Model_Chemical($data);
     	$chemicals = new Application_Model_DbTable_Chemical();
-    	$chemicalId = $chemicals->addChemical($chemical);
+    	$existsChemical = $chemicals->existsChemical($chemical->getChemical());
+    	$chemicalId = 0;
+    	if(!$existsChemical){
+    		$chemicalId = $chemicals->addChemical($chemical);
+    	}
+    	else{
+    		$chemicalId = $existsChemical;
+    	}
     	$clientHasChemical = new Application_Model_DbTable_ClientHasChemical();
     	$clientHasChemical->addRelation($this->_getParam('clientId'), $chemicalId);
     }

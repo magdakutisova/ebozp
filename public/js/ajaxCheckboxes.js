@@ -30,6 +30,7 @@ $(function(){
 		$('#new_employee_form select#sex').val('0');
 		validatorEmployee.resetForm();
 		$('#new_employee_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_employee_form').dialog({
@@ -80,6 +81,7 @@ $(function(){
 		$('#new_position_form tr[id*=chemical2Detail]').remove();
 		validatorPosition.resetForm();
 		$('#new_position_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_position_form').dialog({
@@ -112,6 +114,7 @@ $(function(){
 			$("#save_work").removeClass('calledFromBackground');
 		}
 		$('#new_work_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_work_form').dialog({
@@ -176,6 +179,7 @@ $(function(){
 			$("#save_technicaldevice").removeClass('calledFromBackground');
 		}
 		$('#new_technicaldevice_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_technicaldevice_form').dialog({
@@ -247,6 +251,7 @@ $(function(){
 		$('#new_workplace_form select#folder_id').val('0');
 		validatorWorkplace.resetForm();
 		$('#new_workplace_form').dialog('open');
+		return false;
 	});
 	
 	$('#new_workplace_form').dialog({
@@ -279,6 +284,7 @@ $(function(){
 			$("#save_chemical").removeClass('calledFromBackground');
 		}
 		$('#new_chemical_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_chemical_form').dialog({
@@ -369,6 +375,7 @@ $(function(){
 		$('#new_schooling_form input[type=text]').val('');
 		validatorSchooling.resetForm();
 		$('#new_schooling_form').dialog("open");
+		return false;
 	});
 	
 	$('#new_schooling_form').dialog({
