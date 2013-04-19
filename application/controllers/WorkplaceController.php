@@ -179,7 +179,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
 	    	}
 	    	
-	    	$this->processCustomElements($form, $formData, $workplaceId);
+	    	$this->processCustomElements($formData, $workplaceId);
 			
 			//uložení transakce
 			$adapter->commit();
@@ -486,7 +486,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
     		
-    		$this->processCustomElements($form, $formData, $workplaceId, true);
+    		$this->processCustomElements($formData, $workplaceId, true);
 			
     		//uložení transakce
 			$adapter->commit();
@@ -676,7 +676,7 @@ class WorkplaceController extends Zend_Controller_Action
 		return $form;
     }
     
-    private function processCustomElements($form, $formData, $workplaceId, $toEdit = false){
+    private function processCustomElements($formData, $workplaceId, $toEdit = false){
     	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
     	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
     	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
@@ -691,10 +691,10 @@ class WorkplaceController extends Zend_Controller_Action
 		foreach ($formData['technicaldeviceList'] as $technicalDeviceId){
 			$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
 		}
+		$chemicalDetails = array_filter(array_keys($formData), array($this, 'findChemicalDetails'));
 		foreach ($formData['chemicalList'] as $chemicalId){
 			$usePurpose = "";
 			$usualAmount = "";
-			$chemicalDetails = array_filter(array_keys($formData), array($this, 'findChemicalDetails'));
 			foreach($chemicalDetails as $detail){
 				if($formData[$detail]['id_chemical'] == $chemicalId){
 					$usePurpose = $formData[$detail]['use_purpose'];

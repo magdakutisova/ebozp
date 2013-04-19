@@ -17,4 +17,29 @@ class Application_Model_DbTable_PositionHasEnvironmentFactor extends Zend_Db_Tab
 					),
 			);
 	
+	public function addRelation($positionId, $environmentFactorId, $category, $protectionMeasures, $measurementTaken,
+			$note, $private){
+		try{
+			$data['id_position'] = $positionId;
+			$data['id_environment_factor'] = $environmentFactorId;
+			$data['category'] = $category;
+			$data['protection_measures'] = $protectionMeasures;
+			$data['measurement_taken'] = $measurementTaken;
+			$data['note'] = $note;
+			$data['private'] = $private;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			$data['category'] = $category;
+			$data['protection_measures'] = $protectionMeasures;
+			$data['measurement_taken'] = $measurementTaken;
+			$data['note'] = $note;
+			$data['private'] = $private;
+			$this->update($data, array(
+					'id_position = ?' => $positionId,
+					'id_environment_factor = ?' => $environmentFactorId,
+					));
+		}
+	}
+	
 }

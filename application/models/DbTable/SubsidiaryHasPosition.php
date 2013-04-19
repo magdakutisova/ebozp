@@ -16,4 +16,15 @@ class Application_Model_DbTable_SubsidiaryHasPosition extends Zend_Db_Table_Abst
 		),
 	);
 	
+	public function addRelation($subsidiaryId, $positionId){
+		try{
+			$data['id_subsidiary'] = $subsidiaryId;
+			$data['id_position'] = $positionId;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			//porušení integrity se ignoruje
+		}
+	}
+	
 }

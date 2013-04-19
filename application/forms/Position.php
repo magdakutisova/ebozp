@@ -96,7 +96,7 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('text', 'business_hours', array(
+       	$this->addElement('text', 'working_hours', array(
        			'label' => 'Pracovní doba',
        			'order' => 3,
        			'filters' => array('StringTrim', 'StripTags'),
