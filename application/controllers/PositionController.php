@@ -74,7 +74,7 @@ class PositionController extends Zend_Controller_Action{
     	
     	//získání seznamu pracovišť
     	$workplaces = new Application_Model_DbTable_Workplace();
-    	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+    	$this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
     	
     	//získání seznamu četností
     	$this->_frequencyList = My_Frequency::getFrequencies();
@@ -164,17 +164,26 @@ class PositionController extends Zend_Controller_Action{
     	try{
     		//init session pro případ selhání ukládání
     		$formData = $this->getRequest()->getPost();
-    		Zend_Debug::dump($formData);
     		$defaultNamespace->formData = $formData;
     		$defaultNamespace->form = $form;
     		
     		//zahájení transakce
     		$adapter->beginTransaction();
     		
-    		//TODO - kontrola na pracoviště na pobočkách
-    		//vybrat všechny ID pracovišť na zaškrtnutých pobočkách
-    		//vybrat všechny ID zaškrtnutých pracovišť
-    		//pokud zaškrtnutá nejsou v množině těch prvních, hodit chybku
+    		if(!array_key_exists('subsidiaryList', $formData)){
+    			throw new Exception("Vyberte alespoň jednu pobočku.");
+    		}
+    		
+    		//kontrola na pracoviště na pobočkách
+    		if(isset($formData['workplaceList'])){
+    			$workplaces = new Application_Model_DbTable_Workplace();
+    			foreach($formData['workplaceList'] as $workplaceId){
+    				$result = $workplaces->existsWithinSubsidiaries($workplaceId, $formData['subsidiaryList']);
+    				if($result != "OK"){
+    					throw new Exception($result);
+    				}
+    			}
+    		}
     		
     		//vložení pracovní pozice
     		$position = new Application_Model_Position($formData);
@@ -185,11 +194,25 @@ class PositionController extends Zend_Controller_Action{
     		
     		//uložení transakce
     		$adapter->commit();
-    		
-    		//TODO dořešit bezpečnostní deník
+    		foreach($formData['subsidiaryList'] as $subs){
+    			$subsidiary = $subsidiaries->getSubsidiary($subs);
+    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    		}
+    		$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' přidána.');
+    		unset($defaultNamespace->form);
+    		unset($defaultNamespace->formData);
+    		if($form->getElement('other')->isChecked()){
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+    		}
+    		else{
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
+    		}
     	}
     	catch(Exception $e){
-    		//TODO
+    		//zrušení transakce
+    		$adapter->rollback();
+    		$this->_helper->FlashMessenger($e->getMessage() . ' Uložení pracovní pozice do databáze selhalo.');
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
     	}
     	
     	$this->view->form = $form;
@@ -540,6 +563,9 @@ class PositionController extends Zend_Controller_Action{
     	$positionHasEnvironmentFactor = new Application_Model_DbTable_PositionHasEnvironmentFactor();
     	$positionHasSchooling = new Application_Model_DbTable_PositionHasSchooling();
     	$positionHasWork = new Application_Model_DbTable_PositionHasWork();
+    	$positionHasTechnicalDevice = new Application_Model_DbTable_PositionHasTechnicalDevice();
+    	$positionHasChemical = new Application_Model_DbTable_PositionHasChemical();
+    	$employees = new Application_Model_DbTable_Employee();
     	
     	foreach($formData['subsidiaryList'] as $subsidiaryId){
     		$subsidiaryHasPosition->addRelation($subsidiaryId, $positionId);
@@ -569,7 +595,13 @@ class PositionController extends Zend_Controller_Action{
     		}
     	}
     	$schoolingDetails = array_filter(array_keys($formData), array($this, 'findSchoolingDetails'));
-    	foreach($formData['schoolingList'] as $schoolingId){
+    	$schoolingList = array();
+    	if(array_key_exists('schoolingList', $formData)){
+    		$schoolingList = $formData['schoolingList'];
+    	}
+    	$schoolingList[] = 1;
+    	$schoolingList[] = 2;
+    	foreach($schoolingList as $schoolingId){
     		$note = '';
     		$private = '';
     		foreach($schoolingDetails as $detail){
@@ -583,7 +615,7 @@ class PositionController extends Zend_Controller_Action{
     	}
     	$workDetails = array_filter(array_keys($formData), array($this, 'findWorkDetails'));
     	foreach($formData['workList'] as $workId){
-    		$frequency = null;
+    		$frequency = '';
     		foreach($workDetails as $detail){
     			if($formData[$detail]['id_work'] == $workId){
     				$frequencyKey = $formData[$detail]['frequency'];
@@ -601,7 +633,25 @@ class PositionController extends Zend_Controller_Action{
     		}
     		$positionHasWork->addRelation($positionId, $workId, $frequency);
     	}
-    	//todo technika, chemie s detaily, zamestnanci
+    	foreach($formData['technicaldeviceList'] as $technicalDeviceId){
+    		$positionHasTechnicalDevice->addRelation($positionId, $technicalDeviceId);
+    	}
+    	$chemical2Details = array_filter(array_keys($formData), array($this, 'findChemical2Details'));
+    	foreach($formData['chemicalList'] as $chemicalId){
+    		$exposition = '';
+    		foreach($chemical2Details as $detail){
+    			if($formData[$detail]['id_chemical'] == $chemicalId){
+    				$exposition = $formData[$detail]['exposition'];
+    				break 1;
+    			}
+    		}
+    		$positionHasChemical->addRelation($positionId, $chemicalId, $exposition);
+    	}
+    	foreach($formData['employeeList'] as $employeeId){
+    		$employee = $employees->getEmployee($employeeId);
+    		$employee->setPositionId($positionId);
+    		$employees->updateEmployee($employee);
+    	}
     }
     
     private function findEnvironmentFactorDetails($environmentFactorDetail){
@@ -619,6 +669,12 @@ class PositionController extends Zend_Controller_Action{
     private function findWorkDetails($workDetail){
     	if(strpos($workDetail, "workDetail") !== false){
     		return $workDetail;
+    	}
+    }
+    
+    private function findChemical2Details($chemical2Detail){
+    	if(strpos($chemical2Detail, "chemical2Detail") !== false){
+    		return $chemical2Detail;
     	}
     }
     

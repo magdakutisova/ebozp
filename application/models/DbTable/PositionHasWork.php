@@ -22,6 +22,7 @@ class Application_Model_DbTable_PositionHasWork extends Zend_Db_Table_Abstract{
 			$data['id_position'] = $positionId;
 			$data['id_work'] = $workId;
 			$data['frequency'] = $frequency;
+			$this->insert($data);
 		}
 		catch(Exception $e){
 			$data['frequency'] = $frequency;

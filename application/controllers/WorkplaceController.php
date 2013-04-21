@@ -61,7 +61,7 @@ class WorkplaceController extends Zend_Controller_Action
         
         //získání seznamu pracovišť
         $workplaces = new Application_Model_DbTable_Workplace();
-        $this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+        $this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
         
         //získání seznamu umístění
         $folders = new Application_Model_DbTable_Folder();
@@ -188,6 +188,8 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
+	    	unset($defaultNamespace->form);
+	    	unset($defaultNamespace->formData);
 	    	if ($form->getElement('other')->isChecked()){
 	    		$this->_helper->redirector->gotoRoute ( array ('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew' );
 	    	}
@@ -198,7 +200,7 @@ class WorkplaceController extends Zend_Controller_Action
     	catch(Exception $e){
     		//zrušení transakce
     		$adapter->rollback();
-    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. Zkuste to prosím znovu nebo kontaktujte administrátora. ' . $e . $e->getMessage() . $e->getTraceAsString());
+    		$this->_helper->FlashMessenger('Uložení pracoviště do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
     	}
     	

@@ -196,6 +196,30 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		}
 	}
 	
+	/**************************************************************
+	 * Vrací pole pro rozbalovací seznam pracovišť s názvem pobočky.
+	*/
+	public function getWorkplacesWithSubsidiaryName($clientId){
+		$select = $this->select()->from('workplace')
+		->join('subsidiary', 'workplace.subsidiary_id = subsidiary.id_subsidiary')
+		->where('workplace.client_id = ?', $clientId)
+		->order('name');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		if (count($results) > 0){
+			$workplaces = array();
+			foreach($results as $result){
+				$key = $result->id_workplace;
+				$workplace = $result->name . ' (' . $result->subsidiary_name . ')';
+				$workplaces[$key] = $workplace;
+			}
+			return $workplaces;
+		}
+		else{
+			return 0;
+		}
+	}
+	
 	/*********************************************************************
 	 * Vrací kompletní pole pro populate formuláře.
 	 */
@@ -260,6 +284,20 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			}
 		}
 		return $workplace;
+	}
+	
+	public function existsWithinSubsidiaries($workplaceId, $subsidiaries){
+		$workplace = $this->getWorkplace($workplaceId);
+		/* Zend_Debug::dump($workplace->getSubsidiaryId());
+		Zend_Debug::dump($subsidiaries);
+		die(); */
+		if(in_array($workplace->getSubsidiaryId(), $subsidiaries)){
+			return "OK";
+		}
+		else{
+			return "Pracoviště " . $workplace->getName() . " se nenachází na žádné ze zaškrtnutých poboček. 
+					Zaškrtněte pobočku, kde se pracoviště nachází, nebo zrušte zaškrtnutí pracoviště.";
+		}
 	}
 	
 	private function process($result){

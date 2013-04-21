@@ -17,4 +17,20 @@ class Application_Model_DbTable_PositionHasChemical extends Zend_Db_Table_Abstra
 		),
 	);
 	
+	public function addRelation($positionId, $chemicalId, $exposition){
+		try{
+			$data['id_position'] = $positionId;
+			$data['id_chemical'] = $chemicalId;
+			$data['exposition'] = $exposition;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			$data['exposition'] = $exposition;
+			$this->update($data, array(
+					'id_position = ?' => $positionId,
+					'id_chemical = ?' => $chemicalId,
+			));
+		}
+	}
+	
 }

@@ -104,7 +104,7 @@ class Application_Form_Position extends Zend_Form{
        			'required' => true,
        			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
        	));
-       	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
+       	$this->getElement('working_hours')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'workplaces', array(
         	'label' => 'Pracoviště:',
