@@ -629,7 +629,7 @@ class PositionController extends Zend_Controller_Action{
     	}
     	$workDetails = array_filter(array_keys($formData), array($this, 'findWorkDetails'));
     	foreach($formData['workList'] as $workId){
-    		$frequency = '';
+    		$frequency = null;
     		foreach($workDetails as $detail){
     			if($formData[$detail]['id_work'] == $workId){
     				$frequencyKey = $formData[$detail]['frequency'];

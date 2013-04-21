@@ -68,6 +68,46 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		return false;
 	}
 	
+	public function getBySubsidiaryWithDetails($subsidiaryId, $incomplete = false){
+		if(!$incomplete){
+			$select = $this->select()
+				->from('position')
+				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
+				->where('id_subsidiary = ?', $subsidiaryId)
+				->order('position.position');
+			$select->setIntegrityCheck(false);
+			$result = $this->fetchAll($select);
+		}
+		else{
+			$subSelect = $this->select()
+				->distinct()
+				->from(array('position_has_work'), array('position_has_work.id_position'))
+				->where('position_has_work.frequency IS NOT NULL');
+			$subSelect->setIntegrityCheck(false);
+			$select = $this->select()
+				->from('position')
+				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
+				->where('subsidiary_has_position.id_subsidiary = ?', $subsidiaryId)
+				->where('position.working_hours IS NULL OR position.id_position NOT IN(' . $subSelect . ')')
+				->order('position.position');
+			$select->setIntegrityCheck(false);
+			$result = $this->fetchAll($select);
+		}
+		
+		$positions = array();
+		$i = 0;
+		if($result != null){
+			foreach($result as $position){
+				$positions[$i]['position'] = $this->processPosition($position);
+				
+				$selectWorkplaces = $this->select()
+					->from('workplace')
+					->join('workplace_has_position', 'position.id_position = workplace_has_position.id_position')
+					->where('workplace_has_position.id_position = ?', $positions[$i]['position']->getIdPosition());
+			}
+		}
+	}
+	
 	private function process($result){
 		if ($result->count()){
 			$positions = array();
