@@ -418,7 +418,21 @@ class PositionController extends Zend_Controller_Action{
     		$this->view->selectForm = $selectForm;
     	}
     	
-    	//TODO vypisování pracovních pozic
+    	if($subsidiaryId != null){
+    		if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($subsidiaryId))){
+    			$this->_helper->redirector->gotoSimple('denied', 'error');
+    		}
+    		
+    		//vypisování pracovních pozic
+    		$positionDb = new Application_Model_DbTable_Position();
+    		if($filter == 'vse'){
+    			$positions = $positionDb->getBySubsidiaryWithDetails($subsidiaryId);
+    		}
+    		if($filter == 'neuplna'){
+    			$positions = $positionDb->getBySubsidiaryWithDetails($subsidiaryId, true);
+    		}
+    		$this->view->positions = $positions;
+    	}
     }
     
     private function filterSubsidiarySelect($formContent){
