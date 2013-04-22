@@ -65,7 +65,7 @@ class Application_Form_Position extends Zend_Form{
 		));
 		
 		//elementy
-		 $this->addElement('hidden', 'client_id', array(
+		$this->addElement('hidden', 'client_id', array(
         	'decorators' => $elementDecorator,
         	'order' => 10000,
         ));
@@ -96,7 +96,7 @@ class Application_Form_Position extends Zend_Form{
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('text', 'business_hours', array(
+       	$this->addElement('text', 'working_hours', array(
        			'label' => 'Pracovní doba',
        			'order' => 3,
        			'filters' => array('StringTrim', 'StripTags'),
@@ -104,7 +104,7 @@ class Application_Form_Position extends Zend_Form{
        			'required' => true,
        			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
        	));
-       	$this->getElement('business_hours')->getDecorator('Description')->setEscape(false);
+       	$this->getElement('working_hours')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'workplaces', array(
         	'label' => 'Pracoviště:',
@@ -202,7 +202,7 @@ class Application_Form_Position extends Zend_Form{
        			'label' => 'Pracovní činnosti (prováděné práce):',
        			'decorators' => $elementDecoratorColspanSeparator,
        			'order' => 3001,
-       			'description' => $questionMarkStart . 'Doplňte postupně všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
+       			'description' => $questionMarkStart . 'Vyberte všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
        			));
        	$this->getElement('works')->getDecorator('Description')->setEscape(false);
        	
@@ -212,10 +212,16 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('button', 'new_work_to_position', array(
-       			'label' => 'Další pracovní činnost',
+       	$this->addElement('multiCheckbox', 'workList', array(
+       			'decorators' => $this->generateCheckboxListDecorator('Works position'),
+       			'order' => 3002,
+       			));
+       	
+       	$this->addElement('button', 'new_work', array(
+       			'label' => 'Přidat novou pracovní činnost',
        			'order' => 4000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_work', 'position', 'background'),
        			));
        	
        	//technické prostředky
@@ -233,15 +239,16 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('technicalDevice', 'technical_device', array(
+       	$this->addElement('multiCheckbox', 'technicaldeviceList', array(
        			'order' => 4002,
-       			'validators' => array(new My_Validate_TechnicalDevice()),
+       			'decorators' => $this->generateCheckboxListDecorator('Technicaldevices position'),
        			));
        	
-       	$this->addElement('button', 'new_technical_device_to_position', array(
-       			'label' => 'Další technický prostředek',
+       	$this->addElement('button', 'new_technicaldevice', array(
+       			'label' => 'Přidat nový technický prostředek',
        			'order' => 5000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_technicaldevice', 'position', 'background'),
        			));
        	
        	//chemické látky
@@ -253,16 +260,22 @@ class Application_Form_Position extends Zend_Form{
        			));
        	$this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
        	
-       	$this->addElement('hidden', 'id_chemical', array(
+       	$this->addElement('hidden', 'id_chemical2', array(
        			'value' => 5003,
        			'order' => 10009,
        			'decorators' => $elementDecorator,
        			));
        	
-       	$this->addElement('button', 'new_chemical_to_position', array(
-       			'label' => 'Další chemická látka',
+       	$this->addElement('multiCheckbox', 'chemicalList', array(
+       			'order' => 5002,
+       			'decorators' => $this->generateCheckboxListDecorator('Chemicals position'),
+       			));
+       	
+       	$this->addElement('button', 'new_chemical', array(
+       			'label' => 'Přidat novou chemickou látku',
        			'order' => 6000,
        			'decorators' => $elementDecorator2,
+       			'class' => array('new_chemical', 'position', 'background')
        			));
        	
        	//zaměstnanci       	
@@ -281,7 +294,7 @@ class Application_Form_Position extends Zend_Form{
        			'label' => 'Přidat nového zaměstnance',
        			'order' => 8000,
        			'decorators' => $elementDecorator2,
-       			));
+				));
        	
        	//zbytek
        	$this->addElement('checkbox', 'other', array(
@@ -296,8 +309,11 @@ class Application_Form_Position extends Zend_Form{
        	));
 	}
 	
-	public function preValidation(array $data, $canViewPrivate, $categoryList, $yesNoList){
+	public function preValidation(array $data, $canViewPrivate, $categoryList, $yesNoList, $frequencyList){
 		$newEnvironmentFactorDetails = array_filter(array_keys($data), array($this, 'findEnvironmentFactorDetails'));
+		$newSchoolingDetails = array_filter(array_keys($data), array($this, 'findSchoolingDetails'));
+		$newWorkDetails = array_filter(array_keys($data), array($this, 'findWorkDetails'));
+		$newChemical2Details = array_filter(array_keys($data), array($this, 'findChemical2Details'));
 		
 		foreach ($newEnvironmentFactorDetails as $fieldName){
 			$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -310,11 +326,58 @@ class Application_Form_Position extends Zend_Form{
 					));
 			$this->addElement($newEnvironmentFactorDetail);
 		}
+		
+		foreach ($newSchoolingDetails as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newSchoolingDetail = new My_Form_Element_SchoolingDetail('schoolingDetail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'canViewPrivate' => $canViewPrivate,
+					));
+			$this->addElement($newSchoolingDetail);
+		}
+		
+		foreach ($newWorkDetails as $fieldName){
+			$order = preg_replace('/\D/', '', $fieldName) + 1;
+			$newWorkDetail = new My_Form_Element_WorkDetail('workDetail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					'multiOptions' => $frequencyList,
+					));
+			$this->addElement($newWorkDetail);
+		}
+		
+		foreach ($newChemical2Details as $fieldName){
+			$order = preg_replace('/chemical2Detail/', '', $fieldName) + 1;
+			$newChemical2Detail = new My_Form_Element_Chemical2Detail('chemical2Detail' . strval($order - 1), array(
+					'order' => $order,
+					'value' => $data[$fieldName],
+					));
+			$this->addElement($newChemical2Detail);
+		}
 	}
 	
 	private function findEnvironmentFactorDetails($environmentFactorDetail){
 		if(strpos($environmentFactorDetail, 'environmentFactorDetail') !== false){
 			return $environmentFactorDetail;
+		}
+	}
+	
+	private function findSchoolingDetails($schoolingDetail){
+		if(strpos($schoolingDetail, 'schoolingDetail') !== false){
+			return $schoolingDetail;
+		}
+	}
+	
+	private function findWorkDetails($workDetail){
+		if(strpos($workDetail, 'workDetail') !== false){
+			return $workDetail;
+		}
+	}
+	
+	private function findChemical2Details($chemical2Detail){
+		if(strpos($chemical2Detail, 'chemical2Detail') !== false){
+			return $chemical2Detail;
 		}
 	}
 	

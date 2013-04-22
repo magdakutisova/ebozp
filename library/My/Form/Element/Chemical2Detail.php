@@ -1,10 +1,9 @@
 <?php
-class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
+class My_Form_Element_Chemical2Detail extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'chemical';
+	public $helper = 'chemical2Detail';
 	protected $_idChemical;
 	protected $_chemical;
-	protected $_newChemical;
 	protected $_exposition;
 	
 	public function loadDefaultDecorators(){
@@ -29,10 +28,6 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 		return $this->_chemical;
 	}
 	
-	public function getNewChemical(){
-		return $this->_newChemical;
-	}
-	
 	public function getExposition(){
 		return $this->_exposition;
 	}
@@ -45,10 +40,6 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 		$this->_chemical = $_chemical;
 	}
 	
-	public function setNewChemical($_newChemical){
-		$this->_newChemical = $_newChemical;
-	}
-	
 	public function setExposition($_exposition){
 		$this->_exposition = $_exposition;
 	}
@@ -56,7 +47,6 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 	public function setValue($values){
 		$this->setIdChemical($values['id_chemical']);
 		$this->setChemical($values['chemical']);
-		$this->setNewChemical($values['new_chemical']);
 		$this->setExposition($values['exposition']);
 		return $this;
 	}
@@ -65,7 +55,6 @@ class My_Form_Element_Chemical extends Zend_Form_Element_Xhtml{
 		$values = array();
 		$values['id_chemical'] = $this->getIdChemical();
 		$values['chemical'] = $this->getChemical();
-		$values['new_chemical'] = $this->getNewChemical();
 		$values['exposition'] = $this->getExposition();
 		return $values;
 	}

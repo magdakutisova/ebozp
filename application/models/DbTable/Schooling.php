@@ -28,7 +28,7 @@ class Application_Model_DbTable_Schooling extends Zend_Db_Table_Abstract{
 	}
 	
 	public function updateSchooling(Application_Model_Schooling $schooling){
-		$data = $schooling->toArray();
+		$data = $schooling->toArray(true);
 		$this->update($data, 'id_schooling = ' . $schooling->getIdSchooling());
 	}
 	
@@ -42,9 +42,7 @@ class Application_Model_DbTable_Schooling extends Zend_Db_Table_Abstract{
 	public function getExtraSchoolings($clientId){
 		$select = $this->select()
 			->from('schooling')
-			->join('position_has_schooling', 'schooling.id_schooling = position_has_schooling.id_schooling')
-			->join('position', 'position_has_schooling.id_position = position.id_position')
-			->where('position.client_id = ?', $clientId)
+			->where('client_id = ?', $clientId)
 			->where('schooling.id_schooling > 23')
 			->group('schooling.id_schooling');
 		$select->setIntegrityCheck(false);

@@ -128,7 +128,7 @@ $(function(){
 	});
 	
 	//formulář pracovní pozice podmíněné zobrazování četnosti
-	$('select[id*=frequency]').change(function(){
+	$('#position').on("change", "select[id*=frequency]", function(){
 		toggleHiddenFrequency(this);
 	});
 
@@ -148,43 +148,6 @@ $(function(){
 			$(selectbox).parent().next().children('input').val('');
 		}
 	}
-	
-	//formulář pracovní pozice podmíněné zobrazování FPP
-	$('select[id=categorization]').change(function(){
-		toggleHiddenFactors(this);
-	});
-	
-	$(document).ready(function(){
-		var selectbox = $(document).find('select[id=categorization]');
-		toggleHiddenFactors(selectbox);
-	});
-	
-	function toggleHiddenFactors(selectbox){
-		if($(selectbox).val() == 0){
-			$(selectbox).parent().parent().next().next().addClass('hidden');
-			$(selectbox).parent().parent().next().addClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().next().next().addClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().next().addClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().addClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().addClass('hidden');
-			$('tr[id*=environmentFactorDetail]').addClass('hidden');
-		}
-		else{
-			$(selectbox).parent().parent().next().next().removeClass('hidden');
-			$(selectbox).parent().parent().next().removeClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().next().next().removeClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().next().removeClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().next().removeClass('hidden');
-			$('tr[id*=environmentFactorDetail]').next().removeClass('hidden');
-			$('tr[id*=environmentFactorDetail]').removeClass('hidden');
-		}
-	}
-	
-	//povinná školení
-	$(document).ready(function(){
-		$('input#schoolingList-1').attr('checked', true).attr('disabled', true);
-		$('input#schoolingList-2').attr('checked', true).attr('disabled', true);
-	});
 	
 });
 

@@ -1,7 +1,7 @@
 <?php
-class My_Form_Element_Schooling extends Zend_Form_Element_Xhtml{
+class My_Form_Element_SchoolingDetail extends Zend_Form_Element_Xhtml{
 	
-	public $helper = 'schooling';
+	public $helper = 'schoolingDetail';
 	protected $_idSchooling;
 	protected $_schooling;
 	protected $_note;

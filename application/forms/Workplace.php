@@ -226,6 +226,7 @@ class Application_Form_Workplace extends Zend_Form
         	'decorators' => $elementDecorator2,
         ));
         
+        //pracovní činnosti
         $this->addElement('hidden', 'works', array(
         	'label' => 'Pracovní činnosti:',
         	'decorators' => $elementDecoratorColspanSeparator,
@@ -235,16 +236,18 @@ class Application_Form_Workplace extends Zend_Form
         $this->getElement('works')->getDecorator('Description')->setEscape(false);
         
         $this->addElement('multiCheckbox', 'workList', array(
-        		'decorators' => $this->generateCheckboxListDecorator('Works'),
+        		'decorators' => $this->generateCheckboxListDecorator('Works workplace'),
         		'order' => 19,
         		));
         
         $this->addElement('button', 'new_work', array(
-        	'label' => 'Přidat novou pracovní činnost',
-        	'order' => 20,
-        	'decorators' => $elementDecorator2,
+        		'label' => 'Přidat novou pracovní činnost',
+        		'order' => 20,
+        		'decorators' => $elementDecorator2,
+        		'class' => 'new_work',
         ));
         
+        //technické prostředky
         $this->addElement('hidden', 'technical_devices', array(
         	'label' => 'Technické prostředky:',
         	'decorators' => $elementDecoratorColspanSeparator,
@@ -254,14 +257,15 @@ class Application_Form_Workplace extends Zend_Form
         $this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
         
         $this->addElement('multiCheckbox', 'technicaldeviceList', array(
-        		'decorators' => $this->generateCheckboxListDecorator('Technicaldevices'),
+        		'decorators' => $this->generateCheckboxListDecorator('Technicaldevices workplace'),
         		'order' => 22,
         		));
         
         $this->addElement('button', 'new_technicaldevice', array(
-        	'label' => 'Přidat nový technický prostředek',
-        	'order' => 23,
-        	'decorators' => $elementDecorator2,
+        		'label' => 'Přidat nový technický prostředek',
+        		'order' => 23,
+        		'decorators' => $elementDecorator2,
+        		'class' => 'new_technicaldevice',
         ));
               	
         //chemické látky
@@ -280,14 +284,15 @@ class Application_Form_Workplace extends Zend_Form
         $this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
         
         $this->addElement('multiCheckbox', 'chemicalList', array(
-        		'decorators' => $this->generateCheckboxListDecorator('Chemicals'),
+        		'decorators' => $this->generateCheckboxListDecorator('Chemicals workplace'),
         		'order' => 25,
         		));
         
         $this->addElement('button', 'new_chemical', array(
-        	'label' => 'Přidat novou chemickou látku',
-        	'order' => 2000,
-        	'decorators' => $elementDecorator2,
+        		'label' => 'Přidat novou chemickou látku',
+        		'order' => 2000,
+        		'decorators' => $elementDecorator2,
+        		'class' => array('new_chemical', 'workplace'),
         ));
         
         //umístění

@@ -17,4 +17,15 @@ class Application_Model_DbTable_PositionHasTechnicalDevice extends Zend_Db_Table
 		),
 	);
 	
+	public function addRelation($positionId, $technicalDeviceId){
+		try{
+			$data['id_position'] = $positionId;
+			$data['id_technical_device'] = $technicalDeviceId;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			//porušení integrity se ignoruje
+		}
+	}
+	
 }
