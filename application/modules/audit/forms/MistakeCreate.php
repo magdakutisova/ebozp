@@ -72,10 +72,11 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		));
 		
 		// chyba
-		$this->addElement("text", "weight", array(
+		$this->addElement("select", "weight", array(
 				"label" => "Závažnost",
 				"required" => true,
-				"decorators" => $elementDecorator
+				"decorators" => $elementDecorator,
+				"multiOptions" => array("1" => "1", "2" => "2", "3" => "3")
 		));
 		
 		// navrh reseni

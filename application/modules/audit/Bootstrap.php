@@ -61,6 +61,16 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		$router->addRoute(
+				"audit-report-create",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/create",
+						array(
+								"module" => "audit",
+								"controller" => "report",
+								"action" => "create"
+						))
+		);
+		
 		// routa pro fill dotazniku
 		$router->addRoute(
 				"audit-form-fill",

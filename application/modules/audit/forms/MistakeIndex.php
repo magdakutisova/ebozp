@@ -59,6 +59,24 @@ class Audit_Form_MistakeIndex extends Zend_Form {
 				"multioptions" => array(0 => "Vše")
 		));
 		
+		$this->addElement("select", "category", array(
+				"decorators" => $elementDecorator,
+				"label" => "Kategorie",
+				"multioptions" => array(0 => "Vše")
+		));
+		
+		$this->addElement("select", "subcategory", array(
+				"decorators" => $elementDecorator,
+				"label" => "Podkategorie",
+				"multioptions" => array(0 => "Vše")
+		));
+		
+		$this->addElement("select", "weight", array(
+				"decorators" => $elementDecorator,
+				"label" => "Závažnost",
+				"multioptions" => array("Vše", "1", "2", "3")
+		));
+		
 		$this->addElement("submit", "submit", array(
 				"label" => "Filtrovat",
 				"decorators" => $lastDecorator
