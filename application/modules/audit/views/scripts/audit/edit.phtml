@@ -8,8 +8,9 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#forms">Formuláře</a></li>
 		<li><a href="#mistakes">Neshody</a></li>
-		<li><a href="#newmistake">Neshody z pracovišť</a></li>
 		<li><a href="#workcomments">Kontrola pracovišť</a></li>
+		<li><a href="#newworkplace">Nové pracoviště</a></li>
+		<li><a href="#newmistake">Jiná neshoda</a></li>
 	</ul>
 	<div id="overview" class="tab">
 		<h3>Přehled</h3>
@@ -19,7 +20,22 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<em>*)Shrnutí musí být vyplněno než bude audit/prověrka uzavřena a odeslána koordinátorovi</em>
 		<?php 
 		// vyhodnoceni zobrazeni uzavreni auditu
-		if ($this->form->getElement("summary")->getValue()) {
+		$audit = $this->audit;
+		$userId = $this->userId;
+		
+		// vyhodnoceni, jestli je zprava vygenerovana
+		if ($audit->report_id) {
+			// tady bude odkaz na editaci zpravy
+		} else {
+			// odkaz na vytvoreni zpravy
+			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-create");
+			
+			echo "<p><strong>Zpráva ještě není vytvořena</strong> <a href='$url'>Vytvořit zprávu</a></p>";
+		}
+		
+		$isReport = $userId == $audit->auditor_id || $userId == $audit->coordinator_id && $audit->report_id;
+		
+		if ($this->form->getElement("summary")->getValue() && $isReport) {
 			?>
 		<h3>Uzavření auditu</h3>
 			<?php 
@@ -118,9 +134,10 @@ echo $this->formHidden("clientId", $this->client->id_client);
 	<div id="newmistake">
 	<?php 
 	echo $this->selectWorkplace;
-	echo $this->formButton("new-workplace", "Přidat pracoviště (zobrazit/skrýt formulář)", array("class" => $this->audit->subsidiary_id));
 	?>
-		<div class="hidden" id="new-workplace-form">
+	</div>
+	<div id="newworkplace">
+		<div id="new-workplace-form">
 			<?php echo $this->placeForm; ?>
 		</div>
 	</div>

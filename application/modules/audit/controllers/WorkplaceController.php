@@ -61,7 +61,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$adapter->query($sql);
 		
 		// presmerovani zpet na audit
-		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-edit");
+		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-edit") . "#workcomments";
 		$this->_redirect($url);
 	}
 	
@@ -154,6 +154,8 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$sql = "select `$nameWorkplaces`.*, `$nameComments`.`comment`, `$nameComments`.workplace_id, (comment is null) as `create` from `$nameWorkplaces` left join `$nameComments` on workplace_id = id_workplace and audit_id = " . $adapter->quote($this->_auditId) . " where id_workplace = $workplaceIdQ";
 		
 		$workplaceInfo = $adapter->query($sql)->fetch();
+		
+		if (is_null($workplaceInfo["workplace_id"])) $workplaceInfo["workplace_id"] = $workplaceInfo["id_workplace"];
 		
 		// vytvoreni dat pro navratovou hodnotu
 		$commentForm = new Audit_Form_WorkplaceComment();

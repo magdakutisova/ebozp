@@ -39,6 +39,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$this->_audit = $tableAudits->getById($auditId);
 			$this->_auditId = $auditId;
 		}
+		
+		$this->view->layout()->setLayout("client-layout");
 	}
 	
 	public function createAction() {
@@ -303,6 +305,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->mistakes = $mistakes;
 		$this->view->assocIndex = $assocIndex;
 		$this->view->commentForms = $commentForms;
+		$this->view->userId = $userId;
 	}
 	
 	public function getAction() {

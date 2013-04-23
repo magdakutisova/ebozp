@@ -47,6 +47,19 @@ $((new function () {
 	}
 	
 	/*
+	 * vygeneruje select se zavaznosti neshody
+	 */
+	function generateWeightSelect(weight) {
+		var retVal = $("<select name='weight'></select>");
+		
+		for (var i = 1; i <= 3; i++) retVal.append($("<option></option>").text(i).attr("value", i));
+		
+		retVal.val(weight);
+		
+		return retVal;
+	}
+	
+	/*
 	 * odstrani boxik s napovedou
 	 */
 	function hideTooltip() {
@@ -348,7 +361,7 @@ $((new function () {
 				$("<td>").text("Závažnost:")
 		).append(
 				$("<td>").append(
-						$("<input type='text' name='weight'>").val(weight)
+						generateWeightSelect(weight)
 				)
 		);
 		
@@ -432,7 +445,7 @@ $((new function () {
 	function showQDialog() {
 		var groupName = $(this).find(">input[name='itemName']").val();
 		
-		editQuestionDialog("", 0, addQuestionFinish, groupName);
+		editQuestionDialog("", 1, addQuestionFinish, groupName);
 	}
 	
 	/*
@@ -446,7 +459,7 @@ $((new function () {
 		
 		// zjisteni popisku
 		var question = form.find("textarea").val();
-		var weight = form.find("input[type='text']").val();
+		var weight = form.find("select").val();
 		
 		var label = buildQuestion(question, weight);
 		
@@ -590,7 +603,7 @@ $((new function () {
 		var item = questionary.getByName(elementName);
 		
 		var question = form.find("textarea").val();
-		var weight = form.find("input[type='text']").val();
+		var weight = form.find("select").val();
 		
 		if (question.length) {
 			// sestaveni dat

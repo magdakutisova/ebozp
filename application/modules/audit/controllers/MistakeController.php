@@ -424,6 +424,30 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				
 			$formFilter->addWorkplaces($workplaces);
 		}
+		
+		// nacteni kategorii
+		$tableCategories = new Audit_Model_Categories();
+		$categories = $tableCategories->fetchAll("parent_id IS NULL", "name");
+		$category = $formFilter->category->getValue();
+		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		foreach ($categories as $item) {
+			$formFilter->getElement("category")->addMultiOption($item->id, $item->name);
+			if ($item->id == $category) $where[] = "category like " . $adapter->quote($item->name);
+		}
+		
+		if (!$category) {
+			$formFilter->removeElement("subcategory");
+		} else {
+			// nacteni podkategorii
+			$categories = $tableCategories->fetchAll("parent_id = " . $adapter->quote($category), "name");
+			$subcategory = $formFilter->getElement("subcategory")->getValue();
+			
+			foreach ($categories as $item) {
+				$formFilter->getElement("subcategory")->addMultiOption($item->id, $item->name);
+				if ($item->id == $subcategory) $where[] = "subcategory like " . $adapter->quote($item->name);
+			}
+		}
 
 		$workplaceId = $formFilter->getValue("workplace_id");
 
@@ -434,6 +458,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		if ($workplaceId) {
 			$where[] = "workplace_id = $workplaceId";
+		}
+		
+		if ($weight = $formFilter->weight->getValue()) {
+			$where[] = "weight = " . $adapter->quote($weight);
 		}
 
 		switch ($filter) {
@@ -484,7 +512,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				null);
 
 		// nastaveni id pracoviste
-		$mistake->workplace_id = ($workpalceId = $form->getValue("workplace_id")) ? $workplaceId : null;
+		$mistake->workplace_id = ($workpalceId = $form->getValue("workplace_id")) ? $form->getValue("workplace_id") : null;
 
 		// nastaveni zodpovedne osoby
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
@@ -505,7 +533,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				"checkId" => $checkId
 		);
 
-		$url = $this->view->url($params, "audit-edit");
+		$url = $this->view->url($params, "audit-edit") . "#workcomments";
 
 		$this->_redirect($url);
 	}
