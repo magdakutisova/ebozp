@@ -55,7 +55,7 @@
 	text-decoration: underline;
 }
 
-a.workplace-title{
+a.workplace-title, a.position-title{
 	font-size: 120%;
 	font-weight: bold;
 	margin-top: 10px;
@@ -90,6 +90,10 @@ h5{
 
 .align-right{
 	text-align: right;
+}
+
+.no-bullet{
+	list-style: none;
 }
 
 /*Formulare*/

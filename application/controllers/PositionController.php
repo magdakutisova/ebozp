@@ -1,31 +1,54 @@
 <?php
 
-class PositionController extends Zend_Controller_Action{
-	
-	private $_headquarters = null;
+class PositionController extends Zend_Controller_Action
+{
+
+    private $_headquarters = null;
+
     private $_clientId = null;
+
     private $_acl = null;
+
     private $_user = null;
+
     private $_username = null;
+
     private $_yesNoList = array();
+
     private $_sexList = array();
+
     private $_yearOfBirthList = array();
+
     private $_canViewPrivate = false;
-    private $_employeeList;
-    private $_environmentFactorList;
-    private $_categoryList;
-    private $_schoolingList;
-    private $_workList;
-    private $_workplaceList;
-    private $_frequencyList;
-    private $_sortList;
-    private $_typeList;
-    private $_chemicalList;
-    private $_positionList;
-    private $_technicalDeviceList;
-    private $_folderList;
-    
-    public function init(){
+
+    private $_employeeList = null;
+
+    private $_environmentFactorList = null;
+
+    private $_categoryList = null;
+
+    private $_schoolingList = null;
+
+    private $_workList = null;
+
+    private $_workplaceList = null;
+
+    private $_frequencyList = null;
+
+    private $_sortList = null;
+
+    private $_typeList = null;
+
+    private $_chemicalList = null;
+
+    private $_positionList = null;
+
+    private $_technicalDeviceList = null;
+
+    private $_folderList = null;
+
+    public function init()
+    {
     	//globální nastavení view
     	$this->view->title = 'Pracovní pozice';
     	$this->view->headTitle($this->view->title);
@@ -106,8 +129,9 @@ class PositionController extends Zend_Controller_Action{
     	$this->_canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
     	$this->view->canViewPrivate = $this->_canViewPrivate;
     }
-    
-    public function newAction(){
+
+    public function newAction()
+    {
     	$defaultNamespace = new Zend_Session_Namespace();
     	$this->view->subtitle = "Zadat pracovní pozici";
     	$form = $this->loadOrCreateForm($defaultNamespace);
@@ -217,8 +241,9 @@ class PositionController extends Zend_Controller_Action{
     	
     	$this->view->form = $form;
     }
-    
-    public function addemployeeAction(){
+
+    public function addemployeeAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addemployee', 'html')->initContext();
     	$this->_helper->viewRenderer->setNoRender(true);
@@ -230,16 +255,18 @@ class PositionController extends Zend_Controller_Action{
     	$employee->setClientId($this->_getParam('clientId'));
     	$employeeId = $employees->addEmployee($employee);
     }
-    
-    public function populateemployeesAction(){
+
+    public function populateemployeesAction()
+    {
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$employees = new Application_Model_DbTable_Employee();
     	$this->_employeeList = $employees->getEmployees($this->_clientId);
     	echo Zend_Json::encode($this->_employeeList);
     }
-    
-    public function addworkplaceAction(){
+
+    public function addworkplaceAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addworkplace', 'html')->initContext();
     	$this->_helper->viewRenderer->setNoRender(true);
@@ -290,16 +317,18 @@ class PositionController extends Zend_Controller_Action{
     	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
     	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
     }
-    
-    public function populateworkplacesAction(){
+
+    public function populateworkplacesAction()
+    {
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
     	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
     	echo Zend_Json::encode($this->_workplaceList);
     }
-    
-    public function environmentfactordetailAction(){
+
+    public function environmentfactordetailAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('environmentfactordetail', 'html')->initContext();
     	
@@ -315,8 +344,9 @@ class PositionController extends Zend_Controller_Action{
     	
     	$this->view->field = $element->__toString();
     }
-       
-    public function addschoolingAction(){
+
+    public function addschoolingAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addschooling', 'html')->initContext();
     	$this->_helper->viewRenderer->setNoRender(true);
@@ -328,8 +358,9 @@ class PositionController extends Zend_Controller_Action{
     	$schooling->setClientId($this->_getParam('clientId'));
     	$schoolings->addSchooling($schooling);
     }
-    
-    public function populateschoolingsAction(){
+
+    public function populateschoolingsAction()
+    {
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$defaultSchoolings = My_Schooling::getSchoolings();
@@ -338,8 +369,9 @@ class PositionController extends Zend_Controller_Action{
     	$this->_schoolingList = $defaultSchoolings + $extraSchoolings;
     	echo Zend_Json::encode($this->_schoolingList);
     }
-    
-    public function schoolingdetailAction(){
+
+    public function schoolingdetailAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('schoolingdetail', 'html')->initContext();
     	
@@ -353,8 +385,9 @@ class PositionController extends Zend_Controller_Action{
     	
     	$this->view->field = $element->__toString();
     }
-    
-    public function workdetailAction(){
+
+    public function workdetailAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('workdetail', 'html')->initContext();
     	
@@ -368,8 +401,9 @@ class PositionController extends Zend_Controller_Action{
     	
     	$this->view->field = $element->__toString();
     }
-    
-    public function chemical2detailAction(){
+
+    public function chemical2detailAction()
+    {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('chemical2detail', 'html')->initContext();
     	
@@ -382,8 +416,9 @@ class PositionController extends Zend_Controller_Action{
     	
     	$this->view->field = $element->__toString();
     }
-    
-    public function listAction(){
+
+    public function listAction()
+    {
     	$defaultNamespace = new Zend_Session_Namespace();
     	if (isset($defaultNamespace->form)){
     		unset($defaultNamespace->form);
@@ -428,14 +463,15 @@ class PositionController extends Zend_Controller_Action{
     		if($filter == 'vse'){
     			$positions = $positionDb->getBySubsidiaryWithDetails($subsidiaryId);
     		}
-    		if($filter == 'neuplna'){
+    		if($filter == 'neuplne'){
     			$positions = $positionDb->getBySubsidiaryWithDetails($subsidiaryId, true);
     		}
     		$this->view->positions = $positions;
     	}
     }
-    
-    private function filterSubsidiarySelect($formContent){
+
+    private function filterSubsidiarySelect($formContent)
+    {
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
     	foreach ($formContent as $key => $subsidiary){
     		if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
@@ -444,8 +480,9 @@ class PositionController extends Zend_Controller_Action{
     	}
     	return $formContent;
     }
-    
-    private function initSubsidiarySwitch($formContent, $subsidiaryId){
+
+    private function initSubsidiarySwitch($formContent, $subsidiaryId)
+    {
     	$selectForm = new Application_Form_Select ();
     	$selectForm->select->setMultiOptions ( $formContent );
     	$selectForm->select->setLabel('Vyberte pobočku:');
@@ -465,8 +502,9 @@ class PositionController extends Zend_Controller_Action{
     	$this->view->subsidiaryId = $subsidiaryId;
     	return $subsidiaryId;
     }
-    
-    private function loadOrCreateForm($defaultNamespace){
+
+    private function loadOrCreateForm($defaultNamespace)
+    {
     	//pokud předtím selhalo odeslání, tak se načte aktuální formulář se všemi dodatečně vloženými elementy
     	if (isset ( $defaultNamespace->form )) {
     		$form = $defaultNamespace->form;
@@ -478,8 +516,9 @@ class PositionController extends Zend_Controller_Action{
     	}
     	return $form;
     }
-	
-    private function fillMultiselects($form){
+
+    private function fillMultiselects($form)
+    {
     	if($form->workplaceList != null && $this->_workplaceList != 0){
     		$form->workplaceList->setMultiOptions($this->_workplaceList);
     	}
@@ -504,14 +543,16 @@ class PositionController extends Zend_Controller_Action{
     	
     	return $form;
     }
-    
-    private function findChemicalDetails($chemicalDetail){
+
+    private function findChemicalDetails($chemicalDetail)
+    {
     	if(strpos($chemicalDetail, "chemicalDetail") !== false){
     		return $chemicalDetail;
     	}
     }
-    
-    private function initFloatingForms($formContent, $subsidiaryId){
+
+    private function initFloatingForms($formContent, $subsidiaryId)
+    {
     	$formWorkplace = new Application_Form_Workplace();
     	$formWorkplace->clientId->setValue($this->_clientId);
     	$formWorkplace->subsidiary_id->setMultiOptions($formContent);
@@ -570,8 +611,9 @@ class PositionController extends Zend_Controller_Action{
     	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
     	$this->view->formEmployee = $formEmployee;
     }
-    
-    private function processCustomElements($formData, $positionId, $toEdit = false){
+
+    private function processCustomElements($formData, $positionId, $toEdit = false)
+    {
     	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
     	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
     	$positionHasEnvironmentFactor = new Application_Model_DbTable_PositionHasEnvironmentFactor();
@@ -667,29 +709,47 @@ class PositionController extends Zend_Controller_Action{
     		$employees->updateEmployee($employee);
     	}
     }
-    
-    private function findEnvironmentFactorDetails($environmentFactorDetail){
+
+    private function findEnvironmentFactorDetails($environmentFactorDetail)
+    {
     	if(strpos($environmentFactorDetail, "environmentFactorDetail") !== false){
     		return $environmentFactorDetail;
     	}
     }
-    
-    private function findSchoolingDetails($schoolingDetail){
+
+    private function findSchoolingDetails($schoolingDetail)
+    {
     	if(strpos($schoolingDetail, "schoolingDetail") !== false){
     		return $schoolingDetail;
     	}
     }
-    
-    private function findWorkDetails($workDetail){
+
+    private function findWorkDetails($workDetail)
+    {
     	if(strpos($workDetail, "workDetail") !== false){
     		return $workDetail;
     	}
     }
-    
-    private function findChemical2Details($chemical2Detail){
+
+    private function findChemical2Details($chemical2Detail)
+    {
     	if(strpos($chemical2Detail, "chemical2Detail") !== false){
     		return $chemical2Detail;
     	}
     }
-    
+
+    public function editAction()
+    {
+        // action body
+    }
+
+    public function deleteAction()
+    {
+        // action body
+    }
+
+
 }
+
+
+
