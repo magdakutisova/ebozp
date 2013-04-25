@@ -1,6 +1,12 @@
 <?php
 class Audit_ReportController extends Zend_Controller_Action {
 	
+	public function init() {
+		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
+		
+		$this->view->headScript()->appendFile("/js/audit/report/report.js");
+	}
+	
 	/**
 	 * prvnotni vytvoreni z auditu
 	 */
@@ -14,6 +20,10 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$auditor = $audit->getAuditor();
 		
 		$this->view->audit = $audit;
+		$this->view->client = $client;
+		$this->view->coordinator = $coordinator;
+		$this->view->auditor = $auditor;
+		$this->view->subsidiary = $subsidiary;
 	}
 	
 	public function loadAudit() {

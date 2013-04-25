@@ -1,1 +1,63 @@
-<?php
+<?php 
+$client = $this->client;
+$audit = $this->audit;
+?>
+<h1>Výstupní zpráva auditu</h1>
+<?php 
+$address = $client->headquarters_street . ", " . $client->headquarters_town . ", " . $client->headquarters_code;
+
+if ($audit->is_check) {
+	$name = "Zpráva o provedení prověrky bezpečnosti práce a požární ochrany";
+	$targetCaption = "Cíl roční prověrky BOZP a PO";
+	$target = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a podle Zákona 262/2006 Sb. Zákoník práce, § 108, odst. 5.";
+	$progresCaption = "Průběh roční prověrky BOZP a PO";
+	
+	$progresItems = array(
+			"Kontrola funkčnosti systému BOZP a PO.",
+			"Prověření přetrvávajících neshod.",
+			"Fyzická kontrola všech pracovišť.",
+			"Doplnění a úprava registru neshod.",
+			"Návrh konkrétních opatření k odstranění BOZP a PO."
+	);
+} else {
+	$name = "Zpráva o provedení auditu bezpečnosti práce a požární ochrany";
+	$targetCaption = "Cíl auditu BOZP a PO";
+	$target = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a jeho shody  s požadavky právních a dalších předpisů České republiky. 
+Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
+	$progresCaption = "Průběh auditu BOZP a PO";
+	
+	$progresItems = array(
+			"Kontrola systému BOZP a PO - dokumentace, záznamy, výcvik a školení, technická bezpečnost, atd.",
+			"Fyzická kontrola pracovišť.",
+			"Zpracování registru neshod.",
+			"Návrh konkrétních opatření k dosažení požadované úrovně BOZP a PO."
+	);
+}
+
+$opts = array(
+		"common" => array(
+				"name" => $name,
+				"org" => $client->company_name,
+				"org_hq" => $address,
+				"ico" => $client->tax_number,
+				"sub_hq" => $this->subsidiary->hq,
+				"done_at" => $audit->done_at,
+				"done_in" => $this->subsidiary->subsidiary_name,
+				"auditor_name" => $this->auditor->username,
+				"coordinator_name" => $this->coordinator->username,
+				"client_responsibles" => $audit->responsibile_name,
+				"target_caption" => $targetCaption,
+				"target" => $target,
+				"progres_caption" => $progresCaption,
+				"progres_note" => $audit->progress_note,
+				"summary" => $audit->summary
+		),
+		
+		"progresItems" => $progresItems,
+		
+		"client" => $this->client,
+		"audit" => $this->audit
+);
+
+echo $this->partial("report/_form.phtml", $opts);
+?>

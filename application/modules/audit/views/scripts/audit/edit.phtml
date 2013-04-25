@@ -1,6 +1,7 @@
 <?php 
 echo $this->formHidden("auditId", $this->audit->id);
 echo $this->formHidden("clientId", $this->client->id_client);
+echo $this->formHidden("client_id", $this->client->id_client);
 ?>
 <?php echo $this->auditInfo()->header($this->audit, $this->client, $this->subsidiary); ?>
 <div id="tabs">
@@ -30,7 +31,7 @@ echo $this->formHidden("clientId", $this->client->id_client);
 			// odkaz na vytvoreni zpravy
 			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-create");
 			
-			echo "<p><strong>Zpráva ještě není vytvořena</strong> <a href='$url'>Vytvořit zprávu</a></p>";
+			echo "<p><big><strong>Zpráva ještě není vytvořena</strong> <a href='$url'>Vytvořit zprávu</a></big></p>";
 		}
 		
 		$isReport = $userId == $audit->auditor_id || $userId == $audit->coordinator_id && $audit->report_id;
@@ -145,7 +146,9 @@ echo $this->formHidden("clientId", $this->client->id_client);
 		<?php echo $this->action("get", "workplace", "audit", array("auditId" => $this->audit)); ?>
 	</div>
 </div>
+
 <div class="multiCheckboxWorkplaces"></div>
+
 <div class="hidden" id="new_position_form">
 	<?php echo $this->postForm; ?>
 </div>

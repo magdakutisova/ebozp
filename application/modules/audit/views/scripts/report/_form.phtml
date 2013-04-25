@@ -1,0 +1,153 @@
+<?php 
+$common = $this->common;
+?>
+<menu id="up-menu">
+	<li><a href="#common">Obecné informace</a></li>
+	<li><a href="#target">Cíl a průběh auditu</a></li>
+	<li><a href="#description">Popis auditu</a></li>
+	<li><a href="#summary">Zjištění z auditu</a>
+</menu>
+<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-report-save"); ?>">
+	<fieldset>
+		<legend id="common"><small>[<a href="#up-menu">Nahoru</a>]</small> Obecné informace</legend>
+		<table>
+			<tbody>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[name]", "Název dokumentu"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[name]", $common["name"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[org]", "Organizace"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[org]", $common["org"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[org_hq]", "Sídlem"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[org_hq]", $common["org_hq"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[ico]", "IČO"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[ico]", $common["ico"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[sub_hq]", "Provozovna se sídlem"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[sub_hq]", $common["sub_hq"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[done_at]", "Datum provedení"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[done_at]", $common["done_at"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[done_in]", "Místo provedení"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[done_in]", $common["done_in"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[auditor_name]", "Provedl"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[auditor_name]", $common["auditor_name"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[coordinator_name]", "Zpracoval"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[coordinator_name]", $common["coordinator_name"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[client_responsibles]", "Účastníci za klienta"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[client_responsibles]", $common["client_responsibles"]); ?>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<fieldset>
+		<legend id="target"><small>[<a href="#up-menu">Nahoru</a>]</small> Cíl a průběh auditu</legend>
+		<table>
+			<tbody>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[target_caption]", "Cíle"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[target_caption]", $common["target_caption"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+					<?php echo $this->formTextarea("report[target]", $common["target"], array("style" => "width:100%; height:50em; ")); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("report[progres_caption]", "Průběh"); ?>
+					</td>
+					<td>
+					<?php echo $this->formText("report[progres_caption]", $common["progres_caption"]); ?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<?php echo $this->formButton("add-progres-item", "Přidat položku"); ?>
+						<ol id="progres-items">
+							<?php 
+							$i = 0;
+							foreach ($this->progresItems as $item) {
+								echo "<li>";
+								echo "<button name='delete' type='button'>Odebrat</button>";
+								echo $this->formText("report[item][$i]", $item, array("style" => "width: 500px"));
+								
+								echo "</li>";
+								
+								$i++;
+							}
+							?>
+						</ol>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<fieldset>
+		<legend id="description"><small>[<a href="#up-menu">Nahoru</a>]</small> Popis auditu</legend>
+		<?php echo $this->formTextarea("report[progres_note]", $common["progres_note"], array("style" => "width:100%; height:50em; ")); ?>
+	</fieldset>
+	<fieldset>
+		<legend id="summary"><small>[<a href="#up-menu">Nahoru</a>]</small> Zjištění z auditu</legend>
+		<?php echo $this->formTextarea("report[summary]", $common["summary"], array("style" => "width:100%; height:50em; ")); ?>
+	</fieldset>
+</form>
