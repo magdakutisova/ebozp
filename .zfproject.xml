@@ -59,6 +59,8 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="diary"/>
         </controllerFile>
+        <controllerFile controllerName="Position">
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="Client"/>

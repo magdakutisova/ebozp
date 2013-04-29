@@ -3,6 +3,55 @@
 
 	<div class="box">
 		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'positionNew'); ?>">Přidat pracovní pozici</a>
+		| <?php if($this->filter == 'vse'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'neuplne'), 'positionList'); ?>">Vyfiltrovat neúplné pracovní pozice</a>
+		<?php }else{?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'positionList'); ?>">Zobrazit všechny pracovní pozice</a>
+		<?php }?>
 	</div>
-
+	
+	<?php //var_dump($this->positions);?>
+	
+	<?php if($this->positions != null){ ?>
+		<div class="box">
+		<?php foreach($this->positions as $position){?>
+		<div>
+			&bull; <a class="show-info position-title"><?php echo $position['position']->getPosition();?></a>
+			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionEdit');?>">Editovat</a>
+			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionDelete')?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
+		</div>
+		<div class="position-info hidden">
+			<?php if($position['position']->getWorkingHours()){?>
+				<p class="no-margin"><span class="bold">Pracovní doba: </span> <?php echo $position['position']->getWorkingHours()?></p>
+			<?php }?>
+			<?php if($position['position']->getNote()){?>
+				<p class="no-margin"><span class="bold">Poznámka: </span> <?php echo $position['position']->getNote()?></p>
+			<?php }?>
+			<?php if($this->canViewPrivate){ 
+				if($position['position']->getPrivate()){?>
+				<p class="no-margin"><span class="bold">Soukromá poznámka: </span> <?php echo $position['position']->getPrivate()?></p>
+			<?php }}?>
+			<p class="no-margin">Kategorizace prací <span class="bold">
+			<?php if($position['position']->getCategorization()){?>				
+					byla 
+				<?php } else {?>
+					nebyla 
+				<?php }?>
+			</span>provedena</p>
+			<?php if($position['position']->getCategorization() && isset($position['environmentFactors'])){?>
+				<p class="no-margin"><span class="bold">Faktory pracovního prostředí:</span>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['environmentFactors'] as $environmentFactor){?>
+					<li><?php echo $environmentFactor['factor'];?></li>
+					<li class="no-bullet"><span class="bold">Kategorie: </span><?php echo $environmentFactor['category'];?></li>
+					<?php if($environmentFactor['protection_measures']){?>
+						<li class="no-bullet"><span class="bold">Ochranná opatření proti FPP: </span><?php echo $environmentFactor['protection_measures'];?></li>
+					<?php }?>
+				<?php }?>
+				</ul>
+			<?php }?>
+		</div>
+		<?php }?>
+		</div>
+	<?php }?>
 <?php }?>
