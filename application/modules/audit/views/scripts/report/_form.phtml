@@ -5,124 +5,108 @@ $common = $this->common;
 	<li><a href="#common">Obecné informace</a></li>
 	<li><a href="#target">Cíl a průběh auditu</a></li>
 	<li><a href="#description">Popis auditu</a></li>
-	<li><a href="#summary">Zjištění z auditu</a>
+	<li><a href="#summary">Zjištění z auditu</a></li>
+	<li><a href="#forms">Systematická část</a></li>
+	<li><a href="#workplaces">Vyhodnocení pracovišť</a></li>
+	<li><a href="#mistakes">Registr neshod</a></li>
+	<li><a href="#save">Uložit</a></li>
 </menu>
-<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-report-save"); ?>">
+<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-report-save"); ?>" method="post">
 	<fieldset>
-		<legend id="common"><small>[<a href="#up-menu">Nahoru</a>]</small> Obecné informace</legend>
+		<legend id="common">
+			<small>[<a href="#up-menu">Nahoru</a>]
+			</small> Obecné informace
+		</legend>
 		<table>
 			<tbody>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[name]", "Název dokumentu"); ?>
+					<td><?php echo $this->formLabel("report[name]", "Název dokumentu"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[name]", $common["name"]); ?>
+					<td><?php echo $this->formText("report[name]", $common["name"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[org]", "Organizace"); ?>
+					<td><?php echo $this->formLabel("report[org]", "Organizace"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[org]", $common["org"]); ?>
+					<td><?php echo $this->formText("report[org]", $common["org"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[org_hq]", "Sídlem"); ?>
+					<td><?php echo $this->formLabel("report[org_hq]", "Sídlem"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[org_hq]", $common["org_hq"]); ?>
+					<td><?php echo $this->formText("report[org_hq]", $common["org_hq"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[ico]", "IČO"); ?>
+					<td><?php echo $this->formLabel("report[ico]", "IČO"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[ico]", $common["ico"]); ?>
+					<td><?php echo $this->formText("report[ico]", $common["ico"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[sub_hq]", "Provozovna se sídlem"); ?>
+					<td><?php echo $this->formLabel("report[sub_hq]", "Provozovna se sídlem"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[sub_hq]", $common["sub_hq"]); ?>
+					<td><?php echo $this->formText("report[sub_hq]", $common["sub_hq"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[done_at]", "Datum provedení"); ?>
+					<td><?php echo $this->formLabel("report[done_at]", "Datum provedení"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[done_at]", $common["done_at"]); ?>
+					<td><?php echo $this->formText("report[done_at]", $common["done_at"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[done_in]", "Místo provedení"); ?>
+					<td><?php echo $this->formLabel("report[done_in]", "Místo provedení"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[done_in]", $common["done_in"]); ?>
+					<td><?php echo $this->formText("report[done_in]", $common["done_in"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[auditor_name]", "Provedl"); ?>
+					<td><?php echo $this->formLabel("report[auditor_name]", "Provedl"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[auditor_name]", $common["auditor_name"]); ?>
+					<td><?php echo $this->formText("report[auditor_name]", $common["auditor_name"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[coordinator_name]", "Zpracoval"); ?>
+					<td><?php echo $this->formLabel("report[coordinator_name]", "Zpracoval"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[coordinator_name]", $common["coordinator_name"]); ?>
+					<td><?php echo $this->formText("report[coordinator_name]", $common["coordinator_name"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[client_responsibles]", "Účastníci za klienta"); ?>
+					<td><?php echo $this->formLabel("report[client_responsibles]", "Účastníci za klienta"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[client_responsibles]", $common["client_responsibles"]); ?>
+					<td><?php echo $this->formText("report[client_responsibles]", $common["client_responsibles"]); ?>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</fieldset>
 	<fieldset>
-		<legend id="target"><small>[<a href="#up-menu">Nahoru</a>]</small> Cíl a průběh auditu</legend>
+		<legend id="target">
+			<small>[<a href="#up-menu">Nahoru</a>]
+			</small> Cíl a průběh auditu
+		</legend>
 		<table>
 			<tbody>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[target_caption]", "Cíle"); ?>
+					<td><?php echo $this->formLabel("report[target_caption]", "Cíle"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[target_caption]", $common["target_caption"]); ?>
+					<td><?php echo $this->formText("report[target_caption]", $common["target_caption"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
-					<?php echo $this->formTextarea("report[target]", $common["target"], array("style" => "width:100%; height:50em; ")); ?>
+					<td colspan="2"><?php echo $this->formTextarea("report[target]", $common["target"], array("style" => "width:100%; height:50em; ")); ?>
 					</td>
 				</tr>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("report[progres_caption]", "Průběh"); ?>
+					<td><?php echo $this->formLabel("report[progres_caption]", "Průběh"); ?>
 					</td>
-					<td>
-					<?php echo $this->formText("report[progres_caption]", $common["progres_caption"]); ?>
+					<td><?php echo $this->formText("report[progres_caption]", $common["progres_caption"]); ?>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
-						<?php echo $this->formButton("add-progres-item", "Přidat položku"); ?>
+					<td colspan="2"><?php echo $this->formButton("add-progres-item", "Přidat položku"); ?>
 						<ol id="progres-items">
 							<?php 
 							$i = 0;
@@ -130,9 +114,9 @@ $common = $this->common;
 								echo "<li>";
 								echo "<button name='delete' type='button'>Odebrat</button>";
 								echo $this->formText("report[item][$i]", $item, array("style" => "width: 500px"));
-								
+
 								echo "</li>";
-								
+
 								$i++;
 							}
 							?>
@@ -143,11 +127,218 @@ $common = $this->common;
 		</table>
 	</fieldset>
 	<fieldset>
-		<legend id="description"><small>[<a href="#up-menu">Nahoru</a>]</small> Popis auditu</legend>
+		<legend id="description">
+			<small>[<a href="#up-menu">Nahoru</a>]
+			</small> Popis auditu
+		</legend>
 		<?php echo $this->formTextarea("report[progres_note]", $common["progres_note"], array("style" => "width:100%; height:50em; ")); ?>
 	</fieldset>
 	<fieldset>
-		<legend id="summary"><small>[<a href="#up-menu">Nahoru</a>]</small> Zjištění z auditu</legend>
+		<legend id="summary">
+			<small>[<a href="#up-menu">Nahoru</a>]
+			</small> Zjištění z auditu
+		</legend>
 		<?php echo $this->formTextarea("report[summary]", $common["summary"], array("style" => "width:100%; height:50em; ")); ?>
 	</fieldset>
+	<fieldset>
+		<legend id="forms">
+			<small>[<a href="#up-menu">Nahoru</a>]
+			</small> Systematická část
+		</legend>
+		<?php 
+		foreach ($this->forms["list"] as $form) {
+			$formId = $form["id"];
+			$groups = $this->forms["groups"][$formId];
+			?>
+		<h2>
+			<?php echo $form["name"]; ?>
+		</h2>
+		<div id="<?php echo "chart-$formId"; ?>"></div>
+		<table class="report" id="frm-<?php echo $formId; ?>">
+			<tbody>
+				<?php 
+				for ($i = 0; $i < count($groups["groups"]); $i++) {
+					$group = $groups["groups"][$i];
+					$points = $groups["groupsInfo"][$group["id"]];
+					$percent = (1 - $points["gained"] / $points["max"]) * 100;
+					$percent = round($percent);
+					?>
+				<tr>
+					<td><?php echo $i + 1; ?></td>
+					<td><?php echo $group["name"]; ?></td>
+					<td class="report-percent"><?php echo $percent; ?>%</td>
+				</tr>
+				<?php 
+				}
+				?>
+			</tbody>
+		</table>
+		<?php 
+		}
+		?>
+	</fieldset>
+	<fieldset>
+		<legend id="workplaces"><small>[<a href="#up-menu">Nahoru</a>] </small> Vyhodnocení pracovišť</legend>
+		<?php 
+		// vypsani navigace v pracovistich
+		echo "<menu>\n";
+		
+		foreach ($this->workplaces["workplaces"] as $workplace) {
+			echo "<li><a href='#work-" . $workplace["id_workplace"] . "'>" . $workplace["name"] . "</a></li>\n";
+		}
+		
+		echo "</menu>\n";
+		
+		$commentIndex = $this->workplaces["comments"];
+		
+		// odkaz vracejici na navigaci
+		$return = "<small>[<a href='#workplaces'>Nahoru</a>]</small>";
+		
+		foreach ($this->workplaces["workplaces"] as $workplace) {
+			$id = $workplace["id_workplace"];
+			
+			echo "<hr />";
+			echo "<h2 id='work-$id'>" . $workplace["name"] . "</h2>\n";
+			echo $return;
+			?>
+		<h3>Komentář</h3>
+		<?php
+			// vyhodnoceni jestli je komentar nastaven 
+			$filled = isset($commentIndex[$id]);
+			
+			if ($filled) $filled = !empty($commentIndex[$id]["comment"]);
+			
+			if ($filled) {
+				echo "<pre>" . $commentIndex[$id]["comment"] . "</pre>";
+			} else {
+				echo "<em>Žádný komentář nebyl nastaven</em>";
+			}
+		?>
+		<h3>Neshody</h3>
+		<?php 
+			if (isset($this->workplaces["mistakes"][$id])) {
+				?>
+		<table>
+			<thead>
+				<tr>
+					<th>Závažnost</th>
+					<th>Neshoda</th>
+					<th>Navrhované opatření</th>
+					<th>Komentář</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+			foreach ($this->workplaces["mistakes"][$id] as $mistake) {
+				?>
+				<tr>
+					<td><?php echo $mistake["weight"]; ?></td>
+					<td class="pre"><?php echo $mistake["mistake"]; ?></td>
+					<td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+					<td class="pre"><?php echo $mistake["comment"]; ?></td>
+				</tr>
+				<?php 
+			}
+			?>
+			</tbody>
+		</table>
+				<?php 
+			} else {
+				echo "<em>Na tomto pracovišti nebyly zjištěny žádné neshody</em>";
+			}
+		?>
+			<?php 
+		}
+		?>
+	</fieldset>
+	<fieldset>
+		<legend id="mistakes"><small>[<a href="#up-menu">Nahoru</a>] </small> Registr neshod</legend>
+		<?php 
+		foreach ($this->forms["list"] as $form) {
+			echo "<h2>" . $form["name"] . "</h2>";
+			
+			// zpracovani skupin
+			$formId = $form["id"];
+			$groups = $this->forms["groups"][$formId];
+			
+			for ($i = 0; $i < count($groups["groups"]); $i++) {
+				// vyhodnoceni jestli je nejaka neshoda v teto skupine
+				$group = $groups["groups"][$i];
+				
+				if (!isset($this->mistakes["forms"][$group["id"]])) continue;
+				
+				echo "<h3>" .($i + 1) . ". " . $group["name"] . "</h3>";
+				
+				?>
+		<table>
+			<thead>
+				<tr>
+					<th>Závažnost</th>
+					<th>Neshoda</th>
+					<th>Navrhované opatření</th>
+					<th>Komentář</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php 
+				foreach ($this->mistakes["forms"][$group["id"]] as $mistake) {
+					?>
+					<tr>
+						<td><?php echo $mistake["weight"]; ?></td>
+						<td class="pre"><?php echo $mistake["mistake"]; ?></td>
+						<td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+					<td class="pre"><?php echo $mistake["comment"]; ?></td>
+				</tr>
+					<?php 
+				}
+				?>
+			</tbody>
+		</table>
+				<?php 
+			}
+		}
+		?>
+		<h2>Ostatní neshody</h2>
+		<?php 
+		if (empty($this->mistakes["others"])) {
+			echo "<em>Nejsou žádné další neshody";
+		} else {
+		?>
+		<table>
+			<thead>
+				<tr>
+					<th>Závažnost</th>
+					<th>Neshoda</th>
+					<th>Navrhované opatření</th>
+					<th>Komentář</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php 
+				foreach ($this->mistakes["others"] as $mistake) {
+					?>
+					<tr>
+						<td><?php echo $mistake["weight"]; ?></td>
+						<td class="pre"><?php echo $mistake["mistake"]; ?></td>
+						<td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+						<td class="pre"><?php echo $mistake["comment"]; ?></td>
+				</tr>
+					<?php 
+				}
+				?>
+			</tbody>
+		</table>
+		<?php
+		}
+		?>
+	</fieldset>
+	<fieldset>
+		<legend id="save"><small>[<a href="#up-menu">Nahoru</a>] </small> Uložit</legend>
+		<p>
+		<?php echo $this->formSubmit("save", "Uložit"); ?>
+		</p>
+	</fieldset>
 </form>
+<script type="text/javascript" src="/js/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="/js/jqplot.barRenderer.min.js"></script>
+<script type="text/javascript" src="/js/audit/report/report.js"></script>

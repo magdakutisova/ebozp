@@ -179,3 +179,10 @@ textarea[id*='schoolingDetail']					{width: 300px;}
  .sem-red { background-position: 0 0;}
  .sem-green { background-position: 0 48px;}
  .sem-yellow { background-position: 0 24px; }
+ 
+ /*
+  * zprava z auditu
+  */
+table.report { border-collapse: collapse; font-size: 12pt; }
+table.report td { border: 1px solid black; }
+td.report-percent { font-weight: bolder; color: red; text-align: center; width: 4em;}

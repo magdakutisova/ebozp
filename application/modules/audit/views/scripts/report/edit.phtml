@@ -1,0 +1,26 @@
+<?php 
+$client = $this->client;
+$audit = $this->audit;
+?>
+<h1>Výstupní zpráva auditu/prověrky</h1>
+<?php 
+$opts = array(
+		"common" => $this->report->toArray(),
+		
+		"forms" => array(
+				"list" => $this->forms,
+				"groups" => $this->formsGroups
+		),
+		
+		"progresItems" => $this->items,
+		
+		"workplaces" => $this->workplaces,
+		
+		"mistakes" => $this->mistakes,
+		
+		"client" => $this->client,
+		"audit" => $this->audit
+);
+
+echo $this->partial("report/_form.phtml", $opts);
+?>
