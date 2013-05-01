@@ -55,6 +55,9 @@ $(function(){
 						},
 						clientId: function(){
 							return $('#client_id').val();
+						},
+						positionId: function(){
+							return $('#id_position').val();
 						}
 					}
 				}
@@ -245,6 +248,9 @@ $(function(){
 						},
 						clientId: function(){
 							return $('#client_id').val();
+						},
+						workplaceId: function(){
+							return $('#id_workplace').val();
 						}
 					}
 				}

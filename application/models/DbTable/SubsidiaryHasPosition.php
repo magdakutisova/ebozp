@@ -22,7 +22,7 @@ class Application_Model_DbTable_SubsidiaryHasPosition extends Zend_Db_Table_Abst
 		$results = $this->fetchAll($select);
 		$subsidiaries = array();
 		foreach($results as $result){
-			$subsidiaries[] = $result->id_subsidiaries;
+			$subsidiaries[] = $result->id_subsidiary;
 		}
 		return $subsidiaries;
 	}

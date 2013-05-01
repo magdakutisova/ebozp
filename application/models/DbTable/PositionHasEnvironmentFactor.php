@@ -17,6 +17,24 @@ class Application_Model_DbTable_PositionHasEnvironmentFactor extends Zend_Db_Tab
 					),
 			);
 	
+	public function getEnvironmentFactors($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$environmentFactors = array();
+		foreach($results as $result){
+			$environmentFactors[] = $result->id_environment_factor;
+		}
+		return $environmentFactors;
+	}
+	
+	public function removeRelation($environmentFactorId, $positionId){
+		$this->delete(array(
+				'id_environment_factor = ?' => $environmentFactorId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
 	public function addRelation($positionId, $environmentFactorId, $category, $protectionMeasures, $measurementTaken,
 			$note, $private){
 		try{

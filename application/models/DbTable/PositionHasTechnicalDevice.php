@@ -17,6 +17,25 @@ class Application_Model_DbTable_PositionHasTechnicalDevice extends Zend_Db_Table
 		),
 	);
 	
+	public function getTechnicalDevices($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$technicalDevices = array();
+		foreach($results as $result){
+			$technicalDevices[] = $result->id_technical_device;
+		}
+		return $technicalDevices;
+	}
+	
+	public function removeRelation($technicalDeviceId, $positionId){
+		$this->delete(array(
+				'id_technical_device = ?' => $technicalDeviceId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
+	
 	public function addRelation($positionId, $technicalDeviceId){
 		try{
 			$data['id_position'] = $positionId;

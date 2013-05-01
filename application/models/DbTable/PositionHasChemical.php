@@ -17,6 +17,24 @@ class Application_Model_DbTable_PositionHasChemical extends Zend_Db_Table_Abstra
 		),
 	);
 	
+	public function getChemicals($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$chemicals = array();
+		foreach($results as $result){
+			$chemicals[] = $result->id_chemical;
+		}
+		return $chemicals;
+	}
+	
+	public function removeRelation($chemicalId, $positionId){
+		$this->delete(array(
+				'id_chemical = ?' => $chemicalId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
 	public function addRelation($positionId, $chemicalId, $exposition){
 		try{
 			$data['id_position'] = $positionId;

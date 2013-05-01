@@ -241,7 +241,18 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
     	if($workplaces->existsWorkplace($this->getRequest()->getParam('name'), $this->getRequest()->getParam('clientId'))){
-    		echo Zend_Json::encode(false);
+    		if($this->getRequest()->getParam('workplaceId')){
+    			$workplace = $workplaces->getWorkplace($this->getRequest()->getParam('workplaceId'));
+    			if($workplace->getName() == $this->getRequest()->getParam('name')){
+    				echo Zend_Json::encode(true);
+    			}
+    			else{
+    				echo Zend_Json::encode(false);
+    			}
+    		}
+    		else{
+    			echo Zend_Json::encode(false);
+    		}
     	}
     	else{
     		echo Zend_Json::encode(true);

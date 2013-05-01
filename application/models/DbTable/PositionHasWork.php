@@ -17,6 +17,24 @@ class Application_Model_DbTable_PositionHasWork extends Zend_Db_Table_Abstract{
 		),
 	);
 	
+	public function getWorks($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$works = array();
+		foreach($results as $result){
+			$works[] = $result->id_work;
+		}
+		return $works;
+	}
+	
+	public function removeRelation($workId, $positionId){
+		$this->delete(array(
+				'id_work = ?' => $workId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
 	public function addRelation($positionId, $workId, $frequency){
 		try{
 			$data['id_position'] = $positionId;

@@ -335,7 +335,18 @@ class PositionController extends Zend_Controller_Action
     	$this->_helper->layout->disableLayout();
     	$positions = new Application_Model_DbTable_Position();
     	if($positions->existsPosition($this->getRequest()->getParam('position'), $this->getRequest()->getParam('clientId'))){
-    		echo Zend_Json::encode(false);
+    		if($this->getRequest()->getParam('positionId')){
+    			$position = $positions->getPosition($this->getRequest()->getParam('positionId'));
+    			if($position->getPosition() == $this->getRequest()->getParam('position')){
+    				echo Zend_Json::encode(true);
+    			}
+    			else{
+    				echo Zend_Json::encode(false);
+    			}
+    		}
+    		else{
+    			echo Zend_Json::encode(false);
+    		}
     	}
     	else{
     		echo Zend_Json::encode(true);
@@ -723,6 +734,58 @@ class PositionController extends Zend_Controller_Action
     		$employee->setPositionId($positionId);
     		$employees->updateEmployee($employee);    		
     	}
+    	
+    	if($toEdit){
+    		$subsidiaries = $subsidiaryHasPosition->getSubsidiaries($positionId);
+    		foreach($subsidiaries as $subsidiary){
+    			if(!in_array($subsidiary, $formData['subsidiaryList'])){
+    				$subsidiaryHasPosition->removeRelation($subsidiary, $positionId);
+    			}
+    		}
+    		$workplaces = $workplaceHasPosition->getWorkplaces($positionId);
+    		foreach($workplaces as $workplace){
+    			if(!in_array($workplace, $formData['workplaceList'])){
+    				$workplaceHasPosition->removeRelation($workplace, $positionId);
+    			}
+    		}
+    		$environmentFactors = $positionHasEnvironmentFactor->getEnvironmentFactors($positionId);
+    		foreach($environmentFactors as $environmentFactor){
+    			if(!in_array($environmentFactor, $formData['environmentfactorList'])){
+    				$positionHasEnvironmentFactor->removeRelation($environmentFactor, $positionId);
+    			}
+    		}
+    		$schoolings = $positionHasSchooling->getSchoolings($positionId);
+    		foreach($schoolings as $schooling){
+    			if(!in_array($schooling, $formData['schoolingList'])){
+    				$positionHasSchooling->removeRelation($schooling, $positionId);
+    			}
+    		}
+    		$works = $positionHasWork->getWorks($positionId);
+    		foreach($works as $work){
+    			if(!in_array($work, $formData['workList'])){
+    				$positionHasWork->removeRelation($work, $positionId);
+    			}
+    		}
+    		$technicalDevices = $positionHasTechnicalDevice->getTechnicalDevices($positionId);
+    		foreach($technicalDevices as $technicalDevice){
+    			if(!in_array($technicalDevice, $formData['technicaldeviceList'])){
+    				$positionHasTechnicalDevice->removeRelation($technicalDevice, $positionId);
+    			}
+    		}
+    		$chemicals = $positionHasChemical->getChemicals($positionId);
+    		foreach($chemicals as $chemical){
+    			if(!in_array($chemical, $formData['chemicalList'])){
+    				$positionHasChemical->removeRelation($chemical, $positionId);
+    			}
+    		}
+    		$employeesList = $employees->getByPosition($positionId);
+    		foreach($employeesList as $employee){
+    			if(!in_array($employee->getIdEmployee(), $formData['employeeList'])){
+    				$employee->setPositionId(null);
+    				$employees->updateEmployee($employee);
+    			}
+    		}
+    	}
     }
 
     private function findEnvironmentFactorDetails($environmentFactorDetail)
@@ -901,10 +964,23 @@ class PositionController extends Zend_Controller_Action
         	}
         	
         	$this->processCustomElements($formData, $positionId, true);
-        	//TODO
+        	
+        	//uložení transakce
+        	$adapter->commit();
+        	foreach($formData['subsidiaryList'] as $subs){
+        		$subsidiary = $subsidiaries->getSubsidiary($subs);
+        		$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+        	}
+        	$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' upravena.');
+        	unset($defaultNamespace->form);
+        	unset($defaultNamespace->formData);
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
         }
         catch(Exception $e){
-        	
+        	//zrušení transakce
+        	$adapter->rollback();
+        	$this->_helper->FlashMessenger($e->getMessage() . ' Uložení pracovní pozice do databáze selhalo.');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
         }
         
     }
