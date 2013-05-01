@@ -194,6 +194,20 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 					}
 				}
 				
+				$selectEmployees = $this->select()
+					->from('employee')
+					->where('position_id = ?', $positions[$i]['position']->getIdPosition());
+				$selectEmployees->setIntegrityCheck(false);
+				$employees = $this->fetchAll($selectEmployees);
+				if($employees != null){
+					$p = 0;
+					foreach($employees as $employee){
+						$positions[$i]['employees'][$p]['first_name'] = $employee->first_name;
+						$positions[$i]['employees'][$p]['surname'] = $employee->surname;
+						$p++;
+					}
+				}
+				
 				$i++;
 			}
 			return $positions;

@@ -112,14 +112,13 @@
 				<p class="no-margin"><span class="bold">Chemické látky na pracovišti: </span></p>
 				<ul class="no-margin-bottom">
 				<?php foreach($workplace['chemicals'] as $chemical){?>
-					<li><?php echo $chemical['chemical']?>
-					<?php if ($chemical['usual_amount']){
-						echo ', obvyklé množství: ' . $chemical['usual_amount'];
-					}?>
-					<?php if ($chemical['use_purpose']){
-						echo ', účel použití: ' . $chemical['use_purpose'];
-					}?>
-					</li>
+					<li><?php echo $chemical['chemical']?></li>
+					<?php if ($chemical['usual_amount']){ ?>
+						<li class="no-bullet"><span class="bold">Obvyklé množství: </span><?php echo $chemical['usual_amount'];?></li>
+					<?php }?>
+					<?php if ($chemical['use_purpose']){ ?>
+						<li class="no-bullet"><span class="bold">Účel použití: </span><?php echo $chemical['use_purpose'];?></li>
+					<?php }?>					
 				<?php }?>
 				</ul>
 			<?php }?>

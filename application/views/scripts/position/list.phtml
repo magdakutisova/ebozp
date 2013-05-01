@@ -39,7 +39,7 @@
 				<?php }?>
 			</span>provedena</p>
 			<?php if($position['position']->getCategorization() && isset($position['environmentFactors'])){?>
-				<p class="no-margin"><span class="bold">Faktory pracovního prostředí:</span>
+				<p class="no-margin"><span class="bold">Faktory pracovního prostředí:</span></p>
 				<ul class="no-margin-bottom">
 				<?php foreach($position['environmentFactors'] as $environmentFactor){?>
 					<li><?php echo $environmentFactor['factor'];?></li>
@@ -47,11 +47,83 @@
 					<?php if($environmentFactor['protection_measures']){?>
 						<li class="no-bullet"><span class="bold">Ochranná opatření proti FPP: </span><?php echo $environmentFactor['protection_measures'];?></li>
 					<?php }?>
+					<?php if($environmentFactor['note']){?>
+						<li class="no-bullet"><span class="bold">Poznámka: </span><?php echo $environmentFactor['note'];?></li>
+					<?php }?>
+					<?php if($this->canViewPrivate && $environmentFactor['private']){?>
+						<li class="no-bullet"><span class="bold">Soukromá poznámka: </span><?php echo $environmentFactor['private'];?></li>
+					<?php }?>
 				<?php }?>
 				</ul>
 			<?php }?>
-		</div>
+			<?php if(isset($position['schoolings'])){ ?>
+				<p class="no-margin"><span class="bold">Školení pro pracovní pozici:</span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['schoolings'] as $schooling){?>
+					<li><?php echo $schooling['schooling']?></li>
+					<?php if($schooling['note']){?>
+						<li class="no-bullet"><span class="bold">Poznámka: </span> <?php echo $schooling['note'];?></li>
+					<?php }?>
+					<?php if($this->canVievPrivate && $schooling['private']){?>
+						<li class="no-bullet"><span class="bold">Soukromá poznámka: </span><?php echo $schooling['private'];?></li>
+					<?php }?>
+				<?php }?>
+				</ul>
+			<?php } ?>
+			<?php if(isset($position['works'])){?>
+				<p class="no-margin"><span class="bold">Pracovní činnosti (prováděné práce):</span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['works'] as $work){?>
+					<li><?php echo $work['work']?></li>
+					<?php if($work['frequency']){?>
+						<li class="no-bullet"><span class="bold">Četnost pracovní činnosti: </span><?php echo $work['frequency'];?></li>
+					<?php }?>
+				<?php }?>
+				</ul>
+			<?php }?>
+			<?php if(isset($position['technicalDevices'])){?>
+				<p class="no-margin"><span class="bold">Technické prostředky:</span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['technicalDevices'] as $technicalDevice){?>
+					<li><?php if ($technicalDevice['sort']){
+						echo $technicalDevice['sort'];
+					}?>
+					<?php if ($technicalDevice['sort'] && $technicalDevice['type']){
+						echo ' ';
+					}?>
+					<?php if ($technicalDevice['type']){
+						echo $technicalDevice['type'];
+					}?></li>
+				<?php }?>
+				</ul>
+			<?php }?>
+			<?php if(isset($position['chemicals'])){?>
+				<p class="no-margin"><span class="bold">Chemické látky:</span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['chemicals'] as $chemical){?>
+					<li><?php echo $chemical['chemical']?></li>
+					<?php if($chemical['exposition']){?>
+						<li class="no-bullet"><span class="bold">Expozice: </span><?php echo $chemical['exposition'];?></li>
+					<?php }?>
+				<?php }?>
+				</ul>
+			<?php }?>
+			<?php if(isset($position['employees'])){?>
+				<p class="no-margin"><span class="bold">Seznam zaměstanaců:</span></p>
+				<ul class="no-margin-bottom">
+				<?php foreach($position['employees'] as $employee){?>
+					<li><?php echo $employee['first_name'] . ' ' . $employee['surname'];?></li>
+				<?php }?>
+				</ul>
+			<?php }?>
+			</div>
 		<?php }?>
 		</div>
-	<?php }?>
+	<?php } else {
+		if($this->filter == "vse"){?>
+		<p>Pobočka nemá žádné pracovní pozice.</p>
+		<?php } else {?>
+		<p>Pobočka nemá žádné neúplné pracovní pozice.</p>
+		<?php }
+	}?>
 <?php }?>
