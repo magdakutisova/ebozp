@@ -129,16 +129,20 @@ $(function(){
 	
 	//formulář pracovní pozice podmíněné zobrazování četnosti
 	$('#position').on("change", "select[id*=frequency]", function(){
-		toggleHiddenFrequency(this);
+		var value = $(this).find('option:selected').val();
+		toggleHiddenFrequency(this, value);
 	});
 
 	$(document).ready(function(){
-		var selectbox = $(document).find('select[id*=frequency]');
-		toggleHiddenFrequency(selectbox);
+		var selectboxes = $(document).find('select[id*=frequency]');
+		selectboxes.each(function(){
+			var value = $(this).find('option:selected').val();
+			toggleHiddenFrequency($(this), value);
+		});
 	});
 	
-	function toggleHiddenFrequency(selectbox){
-		if($(selectbox).val() == 6){
+	function toggleHiddenFrequency(selectbox, value){
+		if(value == 6){
 			$(selectbox).parent().next().children('label').removeClass('hidden');
 			$(selectbox).parent().next().children('input').attr('hidden', false);
 		}

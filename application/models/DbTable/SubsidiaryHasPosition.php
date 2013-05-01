@@ -16,6 +16,24 @@ class Application_Model_DbTable_SubsidiaryHasPosition extends Zend_Db_Table_Abst
 		),
 	);
 	
+	public function getSubsidiaries($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$subsidiaries = array();
+		foreach($results as $result){
+			$subsidiaries[] = $result->id_subsidiaries;
+		}
+		return $subsidiaries;
+	}
+	
+	public function removeRelation($subsidiaryId, $positionId){
+		$this->delete(array(
+				'id_subsidiary = ?' => $subsidiaryId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
 	public function addRelation($subsidiaryId, $positionId){
 		try{
 			$data['id_subsidiary'] = $subsidiaryId;

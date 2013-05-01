@@ -236,6 +236,18 @@ class WorkplaceController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_workList);
     }
     
+    public function validateAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	if($workplaces->existsWorkplace($this->getRequest()->getParam('name'), $this->getRequest()->getParam('clientId'))){
+    		echo Zend_Json::encode(false);
+    	}
+    	else{
+    		echo Zend_Json::encode(true);
+    	}
+    }
+    
     public function addtechnicaldeviceAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addtechnicaldevice', 'html')->initContext();

@@ -213,6 +213,10 @@ class PositionController extends Zend_Controller_Action
     		$position = new Application_Model_Position($formData);
     		$position->setClientId($this->_clientId);
     		$positionId = $positions->addPosition($position);
+    		if(!$positionId){
+    			$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+    		}
     		
     		$this->processCustomElements($formData, $positionId);
     		
@@ -281,7 +285,6 @@ class PositionController extends Zend_Controller_Action
     	}
     	$workplaceId = $workplaces->addWorkplace($workplace);
     	if(!$workplaceId){
-    		//TODO nějaké ošetření pokud bude třeba
     		return;
     	}
     	
@@ -323,8 +326,20 @@ class PositionController extends Zend_Controller_Action
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
-    	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+    	$this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
     	echo Zend_Json::encode($this->_workplaceList);
+    }
+    
+    public function validateAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$positions = new Application_Model_DbTable_Position();
+    	if($positions->existsPosition($this->getRequest()->getParam('position'), $this->getRequest()->getParam('clientId'))){
+    		echo Zend_Json::encode(false);
+    	}
+    	else{
+    		echo Zend_Json::encode(true);
+    	}
     }
 
     public function environmentfactordetailAction()
@@ -706,7 +721,7 @@ class PositionController extends Zend_Controller_Action
     	foreach($formData['employeeList'] as $employeeId){
     		$employee = $employees->getEmployee($employeeId);
     		$employee->setPositionId($positionId);
-    		$employees->updateEmployee($employee);
+    		$employees->updateEmployee($employee);    		
     	}
     }
 
@@ -740,7 +755,158 @@ class PositionController extends Zend_Controller_Action
 
     public function editAction()
     {
-        // action body
+        $defaultNamespace = new Zend_Session_Namespace();
+        $this->view->subtitle = "Upravit pracovní pozici";
+        $form = $this->loadOrCreateForm($defaultNamespace);
+        
+        //získání parametrů
+        $clientId = $this->getRequest()->getParam('clientId');
+        $subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+        $positionId = $this->getRequest()->getParam('positionId');
+        
+        $form->client_id->setValue($clientId);
+        $form->id_position->setValue($positionId);
+        
+        $positions = new Application_Model_DbTable_Position();
+        $position = $positions->getPositionComplete($positionId);
+        
+        //naplnění multiselectu pobočkami
+        $subsidiaries = new Application_Model_DbTable_Subsidiary ();
+        $formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+        if ($formContent != 0){
+        	$formContent = $this->filterSubsidiarySelect($formContent);
+        	$form->subsidiaryList->setMultiOptions ( $formContent );
+        }
+        $form->subsidiaryList->setValue($subsidiaryId);
+        
+        //inicializace plovoucích formulářů
+        $this->initFloatingForms($formContent, $subsidiaryId);
+         
+        //naplnění formuláře hodnotami z DB
+        $form = $this->fillMultiselects($form);
+        $form->new_workplace->setAttrib('class', $subsidiaryId);
+        $form->removeElement('other');
+        $form->save->setLabel('Uložit');
+        
+        //vložení detailů
+        if(isset($position['environmentFactorDetails'])){
+        	$order = $form->getValue('id_environment_factor');
+        	foreach($position['environmentFactorDetails'] as $detail){
+        		$form->addElement('environmentFactorDetail', 'environmentFactorDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'multiOptions' => $this->_categoryList,
+        				'multiOptions2' => $this->_yesNoList,
+        				'canViewPrivate' => $this->_canViewPrivate,
+        				));
+        		$order++;
+        	}
+        }
+        
+   		if(isset($position['schoolingDetails'])){
+        	$order = $form->getValue('id_schooling');
+        	foreach($position['schoolingDetails'] as $detail){
+        		$form->addElement('schoolingDetail', 'schoolingDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'canViewPrivate' => $this->_canViewPrivate,
+        				));
+        		$order++;
+        	}
+        }
+        
+        if(isset($position['workDetails'])){
+        	$order = $form->getValue('id_work');
+        	foreach($position['workDetails'] as $detail){
+        		$form->addElement('workDetail', 'workDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'multiOptions' => $this->_frequencyList,
+        		));
+        		$order++;
+        	}
+        }
+        
+        if(isset($position['chemicalDetails'])){
+        	$order = $form->getValue('id_chemical2');
+        	foreach($position['chemicalDetails'] as $detail){
+        		$form->addElement('chemical2Detail', 'chemical2Detail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        		));
+        		$order++;
+        	}
+        }
+        
+        //zmapujeme nové prvky
+        $form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
+        		$this->_yesNoList, $this->_frequencyList);
+        
+        //když není odeslán, naplníme daty z databáze nebo ze session
+        if(!$this->getRequest()->isPost()){
+        	$this->view->form = $form;
+        	if(isset($defaultNamespace->formData)){
+        		$form->populate($defaultNamespace->formData);
+        		unset($defaultNamespace->formData);
+        	}
+        	else{
+        		//naplnění základních polí pro pracoviště
+        		$form->populate($position);
+        	}
+        	return;
+        }
+        
+        //když není platný, vrátíme ho do view
+        if(!$form->isValid($this->getRequest()->getPost())){
+        	$form->populate($form->getValues());
+        	$this->view->form = $form;
+        	return;
+        }
+        
+        //zpracování formuláře
+        $adapter = $positions->getAdapter();
+        try{
+        	//init session pro případ selhání ukládání
+        	$formData = $this->getRequest()->getPost();
+        	$defaultNamespace->formData = $formData;
+        	$defaultNamespace->form = $form;
+        	
+        	//zahájení transakce
+        	$adapter->beginTransaction();
+        	
+        	if(!array_key_exists('subsidiaryList', $formData)){
+        		throw new Exception("Vyberte alespoň jednu pobočku.");
+        	}
+        	
+        	//kontrola na pracoviště na pobočkách
+        	if(isset($formData['workplaceList'])){
+        		$workplaces = new Application_Model_DbTable_Workplace();
+        		foreach($formData['workplaceList'] as $workplaceId){
+        			$result = $workplaces->existsWithinSubsidiaries($workplaceId, $formData['subsidiaryList']);
+        			if($result != "OK"){
+        				throw new Exception($result);
+        			}
+        		}
+        	}
+        	
+        	//update pracovní pozice
+        	$positionNew = new Application_Model_Position($formData);
+        	$differentName = true;
+        	if($position['position'] == $positionNew->getPosition()){
+        		$differentName = false;
+        	}
+        	if(!$positions->updatePosition($positionNew, $differentName)){
+        		$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+        	}
+        	
+        	$this->processCustomElements($formData, $positionId, true);
+        	//TODO
+        }
+        catch(Exception $e){
+        	
+        }
+        
     }
 
     public function deleteAction()
