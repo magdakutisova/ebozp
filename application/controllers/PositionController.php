@@ -684,6 +684,10 @@ class PositionController extends Zend_Controller_Action
     	$schoolingList[] = 1;
     	$schoolingList[] = 2;
     	foreach($schoolingList as $schoolingId){
+    		/* Zend_Debug::dump($formData);
+    		Zend_Debug::dump($schoolingList);
+    		Zend_Debug::dump($schoolingDetails);
+    		die(); */
     		$note = '';
     		$private = '';
     		foreach($schoolingDetails as $detail){
@@ -754,9 +758,15 @@ class PositionController extends Zend_Controller_Action
     				$positionHasEnvironmentFactor->removeRelation($environmentFactor, $positionId);
     			}
     		}
+    		$schoolingList = array();
+    		if(array_key_exists('schoolingList', $formData)){
+    			$schoolingList = $formData['schoolingList'];
+    		}
+    		$schoolingList[] = 1;
+    		$schoolingList[] = 2;
     		$schoolings = $positionHasSchooling->getSchoolings($positionId);
     		foreach($schoolings as $schooling){
-    			if(!in_array($schooling, $formData['schoolingList'])){
+    			if(!in_array($schooling, $schoolingList)){
     				$positionHasSchooling->removeRelation($schooling, $positionId);
     			}
     		}
@@ -963,15 +973,15 @@ class PositionController extends Zend_Controller_Action
     			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
         	}
         	
-        	$this->processCustomElements($formData, $positionId, true);
+      		$this->processCustomElements($formData, $positionId, true);
         	
         	//uložení transakce
         	$adapter->commit();
         	foreach($formData['subsidiaryList'] as $subs){
         		$subsidiary = $subsidiaries->getSubsidiary($subs);
-        		$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+        		$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
         	}
-        	$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' upravena.');
+        	$this->_helper->FlashMessenger('Pracovní pozice ' . $positionNew->getPosition() . ' upravena.');
         	unset($defaultNamespace->form);
         	unset($defaultNamespace->formData);
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
