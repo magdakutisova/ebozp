@@ -1022,8 +1022,4 @@ class PositionController extends Zend_Controller_Action
         }
     }
 
-
 }
-
-
-

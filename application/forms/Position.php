@@ -72,6 +72,7 @@ class Application_Form_Position extends Zend_Form{
 		 
 		$this->addElement('hidden', 'clientId', array(
 				'value' => $this->getAttrib('clientId'),
+				'order' => 10010,
 				));
        	
        	$this->addElement('hidden', 'id_position', array(
@@ -155,7 +156,7 @@ class Application_Form_Position extends Zend_Form{
        	
        	//faktory pracovního prostředí       	
        	$this->addElement('hidden', 'id_environment_factor', array(
-       			'value' => 1003,
+       			'value' => 12,
        			'order' => 10004,
        			'decorators' => $elementDecorator,
        			));
@@ -163,37 +164,37 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'environmentFactors', array(
        			'label' => 'Faktory pracovního prostředí:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 1001,
+       			'order' => 10,
        			));
        	
        	$this->addElement('multiCheckbox', 'environmentfactorList', array(
        			'decorators' => $this->generateCheckboxListDecorator('Environmentfactors'),
-       			'order' => 1002,
+       			'order' => 11,
        			));
        	
        	//školení
        	$this->addElement('hidden', 'schoolings', array(
        			'label' => 'Školení pro pracovní pozici:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 2001,
+       			'order' => 1001,
        			'description' => $questionMarkStart . 'Vyberte školení ze seznamu (možnost vybrat více možností). Pokud druh školení není uveden, doplňte jej.' . $questionMarkEnd,
        			));
        	$this->getElement('schoolings')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_schooling', array(
-       			'value' => 2003,
+       			'value' => 1003,
        			'order' => 10005,
        			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('multiCheckbox', 'schoolingList', array(
-       			'order' => 2002,
+       			'order' => 1002,
        			'decorators' => $this->generateCheckboxListDecorator('Schoolings'),
        			));
        	
        	$this->addElement('button', 'new_schooling', array(
        			'label' => 'Přidat nové školení',
-       			'order' => 3000,
+       			'order' => 2000,
        			'decorators' => $elementDecorator2,
        			));
        	
@@ -201,25 +202,25 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'works', array(
        			'label' => 'Pracovní činnosti (prováděné práce):',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 3001,
+       			'order' => 2001,
        			'description' => $questionMarkStart . 'Vyberte všechny pracovní činnosti, které zaměstnanec vykonává. Za pracovní činnost se považuje pravidelně se opakující práce.' . $questionMarkEnd,
        			));
        	$this->getElement('works')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_work', array(
-       			'value' => 3003,
+       			'value' => 2003,
        			'order' => 10007,
        			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('multiCheckbox', 'workList', array(
        			'decorators' => $this->generateCheckboxListDecorator('Works position'),
-       			'order' => 3002,
+       			'order' => 2002,
        			));
        	
        	$this->addElement('button', 'new_work', array(
        			'label' => 'Přidat novou pracovní činnost',
-       			'order' => 4000,
+       			'order' => 3000,
        			'decorators' => $elementDecorator2,
        			'class' => array('new_work', 'position', 'background'),
        			));
@@ -228,25 +229,19 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'technical_devices', array(
        			'label' => 'Technické prostředky:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 4001,
+       			'order' => 3001,
        			'description' => $questionMarkStart . 'Zadejte jednotlivé technologie, stroje, nástroje, dopravní prostředky, nářadí apod. používané nebo obsluhované při této pracovní činnosti.' . $questionMarkEnd,
        			));
        	$this->getElement('technical_devices')->getDecorator('Description')->setEscape(false);
-       	
-       	$this->addElement('hidden', 'id_technical_device', array(
-       			'value' => 4003,
-       			'order' => 10008,
-       			'decorators' => $elementDecorator,
-       			));
-       	
+       	       	
        	$this->addElement('multiCheckbox', 'technicaldeviceList', array(
-       			'order' => 4002,
+       			'order' => 3002,
        			'decorators' => $this->generateCheckboxListDecorator('Technicaldevices position'),
        			));
        	
        	$this->addElement('button', 'new_technicaldevice', array(
        			'label' => 'Přidat nový technický prostředek',
-       			'order' => 5000,
+       			'order' => 3003,
        			'decorators' => $elementDecorator2,
        			'class' => array('new_technicaldevice', 'position', 'background'),
        			));
@@ -255,25 +250,25 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'chemicals', array(
        			'label' => 'Chemické látky:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 5001,
+       			'order' => 3004,
        			'description' => $questionMarkStart . 'Zadejte název chemické látky a její expozici na pracovní pozici.' . $questionMarkEnd,
        			));
        	$this->getElement('chemicals')->getDecorator('Description')->setEscape(false);
        	
        	$this->addElement('hidden', 'id_chemical2', array(
-       			'value' => 5003,
+       			'value' => 3006,
        			'order' => 10009,
        			'decorators' => $elementDecorator,
        			));
        	
        	$this->addElement('multiCheckbox', 'chemicalList', array(
-       			'order' => 5002,
+       			'order' => 3005,
        			'decorators' => $this->generateCheckboxListDecorator('Chemicals position'),
        			));
        	
        	$this->addElement('button', 'new_chemical', array(
        			'label' => 'Přidat novou chemickou látku',
-       			'order' => 6000,
+       			'order' => 4000,
        			'decorators' => $elementDecorator2,
        			'class' => array('new_chemical', 'position', 'background')
        			));
@@ -282,17 +277,17 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'employees', array(
        			'label' => 'Seznam zaměstnanců:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 6001,
+       			'order' => 4001,
        	));
        	
        	$this->addElement('multiCheckbox', 'employeeList', array(
        			'decorators' => $elementDecoratorEmployees,
-       			'order' => 6002,
+       			'order' => 4002,
        			));
        	
 		$this->addElement('button', 'new_employee', array(
        			'label' => 'Přidat nového zaměstnance',
-       			'order' => 8000,
+       			'order' => 5000,
        			'decorators' => $elementDecorator2,
 				));
        	
