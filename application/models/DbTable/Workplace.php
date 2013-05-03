@@ -216,7 +216,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			return $workplaces;
 		}
 		else{
-			return 0;
+			return array();
 		}
 	}
 	

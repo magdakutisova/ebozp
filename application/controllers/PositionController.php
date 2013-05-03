@@ -332,7 +332,7 @@ class PositionController extends Zend_Controller_Action
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('environmentfactordetail', 'html')->initContext();
     	
-    	$id = $this->getParam('id_environment_factor', null);
+    	$id = $this->_getParam('id_environment_factor', null);
     	
     	$element = new My_Form_Element_EnvironmentFactorDetail("environmentFactorDetail$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
