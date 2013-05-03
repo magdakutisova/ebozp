@@ -997,7 +997,29 @@ class PositionController extends Zend_Controller_Action
 
     public function deleteAction()
     {
-        // action body
+        if($this->getRequest()->getMethod() == "POST"){
+        	$subsidiaryId = $this->_getParam('subsidiaryId');
+        	$positionId = $this->_getParam('positionId');
+        	$positions = new Application_Model_DbTable_Position();
+        	$position = $positions->getPosition($positionId);
+        	$name = $position->getPosition();
+        	
+        	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
+        	$subsidiaries = $subsidiaryHasPosition->getSubsidiaries($positionId);
+        	$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+        	
+        	$positions->deletePosition($positionId);
+        	foreach($subsidiaries as $subs){
+        		$subsidiary = $subsidiariesDb->getSubsidiary($subs);
+        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
+        	}
+        	
+        	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
+        }
+        else{
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště', 403);
+        }
     }
 
 

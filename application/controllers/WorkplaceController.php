@@ -549,7 +549,7 @@ class WorkplaceController extends Zend_Controller_Action
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
         }
         else{
-        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 500);
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 403);
         }
     }
     

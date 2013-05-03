@@ -18,7 +18,7 @@
 		<div>
 			&bull; <a class="show-info position-title"><?php echo $position['position']->getPosition();?></a>
 			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionEdit');?>">Editovat</a>
-			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionDelete')?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
+			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionDelete')?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat tuto pracovní pozici?')" /></form>
 		</div>
 		<div class="position-info hidden">
 			<?php if($position['position']->getWorkingHours()){?>
