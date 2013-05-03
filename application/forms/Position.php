@@ -15,7 +15,7 @@ class Application_Form_Position extends Zend_Form{
 		$questionMarkEnd = '"/>';
 		$hiddenLink = '<a class="showTr">Poznámka</a>';
 		
-		//dekorátory - doplnit
+		//dekorátory
 		$elementDecorator = array(
 				'ViewHelper',
 				array('Errors'),

@@ -684,10 +684,6 @@ class PositionController extends Zend_Controller_Action
     	$schoolingList[] = 1;
     	$schoolingList[] = 2;
     	foreach($schoolingList as $schoolingId){
-    		/* Zend_Debug::dump($formData);
-    		Zend_Debug::dump($schoolingList);
-    		Zend_Debug::dump($schoolingDetails);
-    		die(); */
     		$note = '';
     		$private = '';
     		foreach($schoolingDetails as $detail){
@@ -874,6 +870,7 @@ class PositionController extends Zend_Controller_Action
         				));
         		$order++;
         	}
+        	$form->id_environment_factor->setValue($order);
         }
         
    		if(isset($position['schoolingDetails'])){
@@ -886,6 +883,7 @@ class PositionController extends Zend_Controller_Action
         				));
         		$order++;
         	}
+        	$form->id_schooling->setValue($order);
         }
         
         if(isset($position['workDetails'])){
@@ -898,6 +896,7 @@ class PositionController extends Zend_Controller_Action
         		));
         		$order++;
         	}
+        	$form->id_work->setValue($order);
         }
         
         if(isset($position['chemicalDetails'])){
@@ -909,6 +908,7 @@ class PositionController extends Zend_Controller_Action
         		));
         		$order++;
         	}
+        	$form->id_chemical2->setValue($order);
         }
         
         //zmapujeme nové prvky

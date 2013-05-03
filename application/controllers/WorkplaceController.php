@@ -457,6 +457,7 @@ class WorkplaceController extends Zend_Controller_Action
 						));
 				$order++;
 			}
+			$form->id_chemical->setValue($order);
 		}
 		
 		$form->removeElement('other');
