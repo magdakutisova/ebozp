@@ -801,7 +801,7 @@ class PositionController extends Zend_Controller_Action
         	$positions->deletePosition($positionId);
         	foreach($subsidiaries as $subs){
         		$subsidiary = $subsidiariesDb->getSubsidiary($subs);
-        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
+        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
         	}
         	
         	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');

@@ -98,6 +98,10 @@ class Application_Form_Position extends Zend_Form{
        			'decorators' => $elementDecoratorColspan,
        			'order' => 3,
        			'description' => $questionMarkStart . 'Uveďte název uvedený v pracovní smlouvě' . $questionMarkEnd,
+       			'validators' => array(
+       					array('validator' => 'StringLength',
+       							'options' => array(1,128)),
+       			),
        	));
        	$this->getElement('position')->getDecorator('Description')->setEscape(false);
        	

@@ -664,12 +664,17 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->view->textForm = $textForm;
 		if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
 			$formData = $this->getRequest()->getPost();
-			$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
-				'clientId' => $this->_clientId,
-				'subsidiaryId' => $subsidiaryId,
-				'filter' => $this->getRequest()->getParam('filter'),
-				'folder' => $formData['text'],
-			));
+			if($textForm->isValid($formData)){
+				$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
+					'clientId' => $this->_clientId,
+					'subsidiaryId' => $subsidiaryId,
+					'filter' => $this->getRequest()->getParam('filter'),
+					'folder' => $formData['text'],
+				));
+			}
+			else{
+				$textForm->populate($formData);
+			}
 		}
     }
     

@@ -32,7 +32,7 @@ class Application_Form_Login extends Zend_Form
         $this->addElement('text', 'username', array(
         	'filters' => array('StringTrim', 'StripTags', 'StringtoLower'),
         	'validators' => array(
-        		array('StringLength', false, array(0,50)),
+        		array('StringLength', false, array(1,50)),
         	),
         	'required' => true,
         	'label' => 'Uživatelské jméno',
@@ -42,7 +42,7 @@ class Application_Form_Login extends Zend_Form
         $this->addElement('password', 'password', array(
         	'filters' => array('StringTrim', 'StripTags'),
         	'validators' => array(
-        		array('StringLength', false, array(0,50)),
+        		array('StringLength', false, array(1,50)),
         	),
         	'required' => true,
         	'label' => 'Heslo',

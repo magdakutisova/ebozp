@@ -34,7 +34,7 @@ class Application_Form_Register extends Zend_Form{
        		'filters' => array('StripTags', 'StringTrim', 'StringtoLower'),
        		'validators' => array(
        			'Alnum',
-       			array('StringLength', false, array(0,50)),
+       			array('StringLength', false, array(1,50)),
        		),
        		'decorators' => $elementDecorator,
        	));
@@ -45,7 +45,7 @@ class Application_Form_Register extends Zend_Form{
        		'filters' => array('StripTags', 'StringTrim'),
        		'validators' => array(
        			'Alnum',
-       			array('StringLength', false, array(0,50)),
+       			array('StringLength', false, array(1,50)),
        		),
        		'decorators' => $elementDecorator,
        	));
@@ -57,7 +57,7 @@ class Application_Form_Register extends Zend_Form{
        		'validators' => array(
        			'Alnum',
        			array('Identical', false, array('token' => 'password')),
-       			array('StringLength', false, array(0,50)),
+       			array('StringLength', false, array(1,50)),
        		),
        		'decorators' => $elementDecorator,
        	));

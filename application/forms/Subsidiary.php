@@ -39,6 +39,10 @@ class Application_Form_Subsidiary extends Zend_Form
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,255)),
+        		),
         ));
         
          $this->addElement('hidden', 'subsidiary', array(
@@ -51,6 +55,10 @@ class Application_Form_Subsidiary extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,128)),
+        		),
         ));
         
         $this->addElement('text', 'subsidiary_code', array(
@@ -67,6 +75,10 @@ class Application_Form_Subsidiary extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,128)),
+        		),
         ));
         
         $this->addElement('hidden', 'contact', array(
@@ -79,6 +91,10 @@ class Application_Form_Subsidiary extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,64)),
+        		),
         ));
         
         $this->addElement('text', 'phone', array(
@@ -86,14 +102,22 @@ class Application_Form_Subsidiary extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,45)),
+        		),
         ));
         
         $this->addElement('text', 'email', array(
         	'label' => 'E-mail',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array('EmailAddress'),
+        	'validators' => array('EmailAddress',
+        					array('validator' => 'StringLength',
+								'options' => array(1,255)),
+				),
         	'decorators' => $elementDecorator,
+        		
         ));
         
         $this->addElement('text', 'supervision_frequency', array(
@@ -108,6 +132,10 @@ class Application_Form_Subsidiary extends Zend_Form
         	'label' => 'Poskytovatel pracovnělékařské péče',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,255)),
+        		),
         	'decorators' => $elementDecorator,
         ));
         

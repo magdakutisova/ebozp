@@ -30,12 +30,20 @@ class Application_Form_TechnicalDevice extends Zend_Form{
 				'label' => 'Druh technického prostředku',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,200)),
+				),
 				));
 		
 		$this->addElement('text', 'type', array(
 				'label' => 'Typ technického prostředku',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(0,200)),
+				),
 				));
 		
 		$this->addElement('button', 'save_technicaldevice', array(

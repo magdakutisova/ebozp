@@ -28,8 +28,13 @@ class Application_Form_Folder extends Zend_Form{
 		
 		$this->addElement('text', 'folder', array(
 				'label' => 'Nové umístění',
+				'required' => true,
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,255)),
+				),
 				));
 		
 		$this->addElement('button', 'save_folder', array(
