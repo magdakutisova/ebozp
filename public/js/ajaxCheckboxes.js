@@ -44,6 +44,16 @@ $(function(){
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
 	var validatorPosition = $('#position').validate({
 		rules: {
+			"subsidiaryListError": {
+				required: function(element){
+					var checkboxes = $('input[id*=subsidiaryList]');
+					if(checkboxes.filter(':checked').length == 0){
+						return true;
+					}
+					return false;
+				},
+				minlength: 1,
+			},
 			position: {
 				required: true,
 				remote: {
@@ -67,6 +77,9 @@ $(function(){
 			},
 		},
 		messages: {
+			"subsidiaryListError": {
+				required: "Vyberte alespoň jednu pobočku.",
+			},
 			position: {
 				required: "Uveďte název pracovní pozice.",
 				remote: "Klient již má pracovní pozici s tímto názvem, zvolte jiný."
