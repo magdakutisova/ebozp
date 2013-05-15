@@ -94,7 +94,7 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'IČO',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array('Digits', new Zend_Validate_StringLength(array('min' => 8, 'max => 8'))),
+        	'validators' => array('Digits', new Zend_Validate_StringLength(array('max' => 8))),
         	'decorators' => $elementDecorator,
         ));
         
