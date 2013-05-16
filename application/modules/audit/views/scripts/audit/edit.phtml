@@ -27,6 +27,12 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		// vyhodnoceni, jestli je zprava vygenerovana
 		if ($audit->report_id) {
 			// tady bude odkaz na editaci zpravy
+			echo "<fieldset><legend>Závěrečná zpráva</legend>";
+			
+			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-edit");
+			echo "<a href='$url'>Výstupní zpráva z auditu</a>";
+			
+			echo "</fieldset>";
 		} else {
 			// odkaz na vytvoreni zpravy
 			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-create");

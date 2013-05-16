@@ -1,0 +1,154 @@
+<?php
+$this->layout()->disableLayout();
+$report = $this->report;
+$audit = $this->audit;
+
+// vytvoreni PDF
+$pdf = new My_Pdf();
+
+// uvodni strana
+$pdf->AddPage();
+$pdf->SetFont("dejavusans", 'b', 24);
+$pdf->SetXY(50, 20);
+$pdf->SetMargins(50, 20);
+$pdf->SetAutoPageBreak(true, 35);
+$pdf->Write(10, "Závěrečná zpráva o provedení auditu bezpečnosti práce a požární ochrany");
+
+// obdelnicky
+$pdf->SetDrawColor(173, 39, 38);
+$pdf->SetFillColor(173, 38, 38);
+$pdf->Rect(10, 20, 15, 70, "DF");
+
+// obrazek helmy
+$pdf->Image($this->image, 20, 100, 160);
+
+$pdf->Rect(10, 200, 15, 70, "DF");
+$pdf->Rect(10, 270, 180, 15, "DF");
+
+// logo hlavni stranky
+$pdf->Image($this->logo, 50, 230, 100);
+
+// pridani strany a zapis uvodni tabulky
+$pdf->AddPage("P", "A4");
+$this->pdf()->clientTable($pdf, $audit, $report);
+
+// cile auditu a prubeh
+$pdf->SetLeftMargin(20);
+$pdf->SetRightMargin(10);
+
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, $report->target_caption);
+$pdf->SetFont("dejavusans", 12, "");
+$pdf->MultiCell(180, 0, $report->target, 0, "L");
+
+$pdf->Ln(10);
+
+$this->pdf()->header($pdf, $report->progres_caption);
+
+$i = 1;
+
+foreach ($this->items as $item) {
+	$pdf->Write(1, $i++ . ". " . $item->content);
+	$pdf->Ln(7);
+}
+
+// popis auditu
+$name = $audit->is_check ? "prověrky" : "auditu";
+
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, "Popis $name");
+$pdf->MultiCell(180, 0, $report->progres_note, 0, "L");
+
+// popis auditu
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, "Zjištení z $name");
+
+$pdf->MultiCell(180, 0, $report->summary, 0, "L");
+
+// zapis systematicke casi
+$index = 0;
+
+foreach ($this->forms as $form) {
+	$pdf->AddPage("P", "A4");
+	
+	$formId = $form["id"];
+	$groups = $this->formsGroups[$formId];
+	
+	// nadpis
+	$this->pdf()->header($pdf, $form["name"]);
+	
+	// graf
+	list($format,  $data) = explode(",", $this->charts[$index++]);
+	$pdf->Image("@" . base64_decode($data),'', '', 170);
+	$pdf->Ln(75);
+	
+	$this->pdf()->form($pdf, $groups);
+}
+
+// vyhodnoceni a kontrola pracovist
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, "VYHODNOCENÍ - KONTROLA PRACOVIŠŤ");
+
+foreach ($this->workplaces["workplaces"] as $workplace) {
+	$pdf->SetFont("dejavusans", "b", 15);
+	$pdf->Write(1, $workplace["name"]);
+	$pdf->SetFont("dejavusans", "", 12);
+	$pdf->Ln(10);
+	
+	// zapis komentare
+	$id = $workplace["id_workplace"];
+	
+	if (isset($this->workplaces["comments"][$id])) {
+		// zapis komentare
+		$pdf->MultiCell(180, 0, $this->workplaces["comments"][$id]["comment"], 0, "L");
+	} else {
+		$pdf->SetFont("dejavusans", "i", 12);
+		$pdf->Write(1, "Žádný komentář nebyl nastaven");
+		$pdf->SetFont("dejavusans", "", 12);
+	}
+	
+	$pdf->Ln(10);
+	
+	if (isset($this->workplaces["mistakes"][$id])) {
+		$this->pdf()->mistakes($pdf, $this->workplaces["mistakes"][$id]);
+	}
+}
+
+// neshody
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, "Registr neshod");
+
+foreach ($this->forms as $form) {
+	$this->pdf()->header($pdf, $form["name"], 18, "ib");
+
+	// zpracovani skupin
+	$formId = $form["id"];
+	$groups = $this->formsGroups[$formId];
+		
+	for ($i = 0; $i < count($groups["groups"]); $i++) {
+		// vyhodnoceni jestli je nejaka neshoda v teto skupine
+		$group = $groups["groups"][$i];
+		$groupId = $group["id"];
+
+		if (!isset($this->mistakes["forms"][$groupId])) continue;
+
+		$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
+		$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);
+	}
+}
+
+$this->pdf()->header($pdf, "Ostatní neshody", 18, "ib");
+
+if (empty($this->mistakes["others"])) {
+	$pdf->Write(1, "Nejsou žádné další neshody");
+} else {
+	$this->pdf()->mistakes($pdf, $this->mistakes["others"]);
+}
+
+$this->pdf()->footer($pdf, $this->logo, "Zpracoval:
+G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622
+Zapsána u Rejstříkového soudu vedeného Krajským soudem v Hradci Králové, oddíl A, vložka 3503
+Telefon: 466535700, E-mail: guard7@guard7.cz, www. guard7.cz");
+
+
+$pdf->Output("zprava.pdf", "F");

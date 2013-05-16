@@ -67,7 +67,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 		$this->deny($coordinator, "audit:audit", array("fill", "post", "create"));
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json"));
-		$this->allow($coordinator, "audit:report",array("report", "create", "edit", "save"));
+		$this->allow($coordinator, "audit:report",array("report.pdf", "create", "edit", "save"));
 		
 		$this->allow($admin);
 		

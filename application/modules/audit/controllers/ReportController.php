@@ -42,6 +42,27 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->mistakes = $mistakes;
 	}
 	
+	public function reportPdfAction() {
+		$audit = $this->loadAudit();
+		$report = $this->loadReport($audit);
+		
+		$charts = (array) $this->getRequest()->getParam("chart", array());
+		
+		$this->view->report = $report;
+		$this->view->audit = $audit;
+		$this->view->items = $report->getItems();
+		$this->view->charts = $charts;
+		
+		$forms = $audit->getForms();
+		$this->view->forms = $forms->toArray();
+		$this->view->formsGroups = self::getFormsGroups($forms);
+		$this->view->workplaces = self::getWorkplaces($audit);
+		$this->view->mistakes = self::getMistakes($audit);
+		
+		$this->view->image = __DIR__ . "/../resources/helmet.png";
+		$this->view->logo = __DIR__ . "/../resources/logo.png";
+	}
+	
 	public function editAction() {
 		$audit = $this->loadAudit();
 		$report = $this->loadReport($audit);
@@ -261,6 +282,12 @@ class Audit_ReportController extends Zend_Controller_Action {
 		return $retVal;
 	}
 	
+	/**
+	 * nacteni zpravu nebo vytvori novou
+	 * 
+	 * @param Audit_Model_Row_Audit $audit
+	 * @return Audit_Model_Row_AuditReport
+	 */
 	public function loadReport(Audit_Model_Row_Audit $audit) {
 		$tableReports = new Audit_Model_AuditsReports();
 		$retVal = null;

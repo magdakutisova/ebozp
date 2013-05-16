@@ -4,6 +4,10 @@ $audit = $this->audit;
 ?>
 <h1>Výstupní zpráva auditu/prověrky</h1>
 <?php 
+$url = $this->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-report-download");
+echo "<form action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Náhled'></form>";
+?>
+<?php 
 $opts = array(
 		"common" => $this->report->toArray(),
 		

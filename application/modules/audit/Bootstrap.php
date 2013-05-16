@@ -91,6 +91,16 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		$router->addRoute(
+				"audit-report-download",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/download",
+						array(
+								"module" => "audit",
+								"controller" => "report",
+								"action" => "report.pdf"
+						))
+		);
+		
 		// routa pro fill dotazniku
 		$router->addRoute(
 				"audit-form-fill",

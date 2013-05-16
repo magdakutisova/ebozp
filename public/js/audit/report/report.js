@@ -18,10 +18,26 @@ $(function () {
 		$("#progres-items").append(li).sortable("refresh");
 	}
 	
+	function appendImages() {
+		// vygenerovani grafu
+		var form = $("#download-form");
+		
+		$(".report").each(function () {
+			var table = $(this);
+			var index = table.attr("id").split("-")[1];
+			
+			// vygenerovani retezce obrazku
+			var imgSrc = $("#chart-" + index).jqplotToImageStr();
+			
+			form.append($("<input type='hidden' name='chart[]' />").val(imgSrc));
+		});
+	}
+	
 	// razeni polozek seznamu prubehu
 	$("#progres-items").sortable({ axis : "y" });
 	$("#add-progres-item").click(addProgres);
 	$("#progres-items button").click(removeItem);
+	$("#download-form").submit(appendImages);
 	
 	// vygenerovani grafu
 	$(".report").each(function () {
