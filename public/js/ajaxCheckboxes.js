@@ -44,16 +44,47 @@ $(function(){
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
 	var validatorPosition = $('#position').validate({
 		rules: {
-			position: {
-				required: true
+			"subsidiaryListError": {
+				required: function(element){
+					var checkboxes = $('input[id*=subsidiaryList]');
+					if(checkboxes.filter(':checked').length == 0){
+						return true;
+					}
+					return false;
+				},
+				minlength: 1,
 			},
-			business_hours: {
+			position: {
+				required: true,
+				remote: {
+					url: baseUrl + "/position/validate",
+					type: "post",
+					data:{
+						position: function(){
+							return $('input#position').val();
+						},
+						clientId: function(){
+							return $('#client_id').val();
+						},
+						positionId: function(){
+							return $('#id_position').val();
+						}
+					}
+				}
+			},
+			working_hours: {
 				required: true
 			},
 		},
 		messages: {
-			position: "Uveďte název pracovní pozice.",
-			business_hours: "Uveďte pracovní dobu.",
+			"subsidiaryListError": {
+				required: "Vyberte alespoň jednu pobočku.",
+			},
+			position: {
+				required: "Uveďte název pracovní pozice.",
+				remote: "Klient již má pracovní pozici s tímto názvem, zvolte jiný."
+			},
+			working_hours: "Uveďte pracovní dobu.",
 		}
 	});
 	
@@ -220,7 +251,22 @@ $(function(){
 	var validatorWorkplace = $('#workplace').validate({
 		rules: {
 			name: {
-				required: true
+				required: true,
+				remote: {
+					url: baseUrl + "/workplace/validate",
+					type: "post",
+					data:{
+						name: function(){
+							return $('#name').val();
+						},
+						clientId: function(){
+							return $('#client_id').val();
+						},
+						workplaceId: function(){
+							return $('#id_workplace').val();
+						}
+					}
+				}
 			},
 			business_hours: {
 				required: true
@@ -233,7 +279,10 @@ $(function(){
 			},
 		},
 		messages: {
-			name: "Uveďte jméno pracoviště.",
+			name:{
+				required: "Uveďte jméno pracoviště.",
+				remote: "Klient již má pracoviště s tímto názvem, zvolte jiný."
+			},
 			business_hours: "Uveďte pracovní dobu.",
 			description: "Uveďte popis pracoviště.",
 			boss_email: "Uveďte platnou emailovou adresu.",

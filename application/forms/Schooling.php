@@ -30,6 +30,10 @@ class Application_Form_Schooling extends Zend_Form{
 				'label' => 'Název školení',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,150)),
+				),
 				));
 		
 		$this->addElement('button', 'save_schooling', array(

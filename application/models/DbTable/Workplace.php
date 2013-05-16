@@ -216,7 +216,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			return $workplaces;
 		}
 		else{
-			return 0;
+			return array();
 		}
 	}
 	
@@ -269,7 +269,8 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		
 		$select = $this->select()->from('workplace_has_chemical')
 			->where('id_workplace = ?', $workplaceId)
-			->join('chemical', 'workplace_has_chemical.id_chemical = chemical.id_chemical');
+			->join('chemical', 'workplace_has_chemical.id_chemical = chemical.id_chemical')
+			->order('chemical.chemical');
 		$select->setIntegrityCheck(false);
 		$chemicals = $this->fetchAll($select);
 		if(count($chemicals) > 0){

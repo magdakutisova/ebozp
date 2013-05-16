@@ -14,14 +14,28 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	}
 	
 	public function addPosition(Application_Model_Position $position){
-		$data = $position->toArray();
-		$positionId = $this->insert($data);
-		return $positionId;
+		$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
+		if(!$existingPosition){
+			$data = $position->toArray();
+			$positionId = $this->insert($data);
+			return $positionId;
+		}
+		return false;		
 	}
 	
-	public function updatePosition(Application_Model_Position $position){
+	public function updatePosition(Application_Model_Position $position, $differentName = false){
 		$data = $position->toArray();
-		$this->update($data, 'id_position = ' . $position->getIdPosition());
+		if($differentName){
+			$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
+		}
+		else{
+			$existingPosition = false;
+		}
+		if(!$existingPosition){
+			$this->update($data, 'id_position = ' . $position->getIdPosition());
+			return true;
+		}
+		return false;
 	}
 	
 	public function deletePosition($id){
@@ -194,11 +208,174 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 					}
 				}
 				
+				$selectEmployees = $this->select()
+					->from('employee')
+					->where('position_id = ?', $positions[$i]['position']->getIdPosition());
+				$selectEmployees->setIntegrityCheck(false);
+				$employees = $this->fetchAll($selectEmployees);
+				if($employees != null){
+					$p = 0;
+					foreach($employees as $employee){
+						$positions[$i]['employees'][$p]['first_name'] = $employee->first_name;
+						$positions[$i]['employees'][$p]['surname'] = $employee->surname;
+						$p++;
+					}
+				}
+				
 				$i++;
 			}
 			return $positions;
 		}
 		return null;
+	}
+	
+	/**
+	 * 
+	 * @param unknown_type $positionId
+	 * @return kompletní pole pro populate formuláře
+	 */
+	public function getPositionComplete($positionId){
+		$select = $this->select()->from('position')
+			->where('id_position = ?', $positionId);
+		$position = $this->fetchAll($select);
+		if(count($position) > 0){
+			$position = $position->current()->toArray();
+		}
+		
+		$select = $this->select()->from('subsidiary_has_position')
+			->where('id_position = ?', $positionId);
+		$select->setIntegrityCheck(false);
+		$subsidiaries = $this->fetchAll($select);
+		if(count($subsidiaries) > 0){
+			$i = 0;
+			foreach($subsidiaries as $subsidiary){
+				$position['subsidiaryList'][$i] = $subsidiary->id_subsidiary;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('workplace_has_position')
+			->where('id_position = ?', $positionId);
+		$select->setIntegrityCheck(false);
+		$workplaces = $this->fetchAll($select);
+		if(count($workplaces) > 0){
+			$i = 0;
+			foreach($workplaces as $workplace){
+				$position['workplaceList'][$i] = $workplace->id_workplace;
+				$i++;
+			}
+		}
+		
+		
+		$select = $this->select()->from('position_has_environment_factor')
+			->where('id_position = ?', $positionId)
+			->join('environment_factor', 'position_has_environment_factor.id_environment_factor = environment_factor.id_environment_factor')
+			->order('environment_factor.factor');
+		$select->setIntegrityCheck(false);
+		$environmentFactors = $this->fetchAll($select);
+		if(count($environmentFactors) > 0){
+			$i = 0;
+			foreach($environmentFactors as $environmentFactor){
+				$position['environmentfactorList'][$i] = $environmentFactor->id_environment_factor;
+				$position['environmentFactorDetails'][$i]['id_environment_factor'] = $environmentFactor->id_environment_factor;
+				$position['environmentFactorDetails'][$i]['factor'] = $environmentFactor->factor;
+				$position['environmentFactorDetails'][$i]['category'] = $environmentFactor->category;
+				$position['environmentFactorDetails'][$i]['protection_measures'] = $environmentFactor->protection_measures;
+				$position['environmentFactorDetails'][$i]['measurement_taken'] = $environmentFactor->measurement_taken;
+				$position['environmentFactorDetails'][$i]['note'] = $environmentFactor->note;
+				$position['environmentFactorDetails'][$i]['private'] = $environmentFactor->private;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('position_has_schooling')
+			->where('id_position = ?', $positionId)
+			->join('schooling', 'position_has_schooling.id_schooling = schooling.id_schooling')
+			->order('schooling.schooling');
+		$select->setIntegrityCheck(false);
+		$schoolings = $this->fetchAll($select);
+		if(count($schoolings) > 0){
+			$i = 0;
+			foreach($schoolings as $schooling){
+				$position['schoolingList'][$i] = $schooling->id_schooling;
+				$position['schoolingDetails'][$i]['id_schooling'] = $schooling->id_schooling;
+				$position['schoolingDetails'][$i]['schooling'] = $schooling->schooling;
+				$position['schoolingDetails'][$i]['note'] = $schooling->note;
+				$position['schoolingDetails'][$i]['private'] = $schooling->private;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('position_has_work')
+			->where('id_position = ?', $positionId)
+			->join('work', 'position_has_work.id_work = work.id_work')
+			->order('work.work');
+		$select->setIntegrityCheck(false);
+		$works = $this->fetchAll($select);
+		if(count($works) > 0){
+			$i = 0;
+			$frequencies = My_Frequency::getFrequencies();
+			foreach($works as $work){
+				$position['workList'][$i] = $work->id_work;
+				$position['workDetails'][$i]['id_work'] = $work->id_work;
+				$position['workDetails'][$i]['work'] = $work->work;
+					foreach($frequencies as $key => $frequency){
+						if($work->frequency == $frequency){
+							$position['workDetails'][$i]['frequency'] = $key;
+							$position['workDetails'][$i]['new_frequency'] = null;
+							break 1;
+						}
+					}
+					if(!isset($position['workDetails'][$i]['frequency'])){
+						$position['workDetails'][$i]['frequency'] = 6;
+						$position['workDetails'][$i]['new_frequency'] = $work->frequency;
+					}
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('position_has_technical_device')
+			->where('id_position = ?', $positionId);
+		$select->setIntegrityCheck(false);
+		$technicalDevices = $this->fetchAll($select);
+		if(count($technicalDevices) > 0){
+			$i = 0;
+			foreach($technicalDevices as $technicalDevice){
+				$position['technicaldeviceList'][$i] = $technicalDevice->id_technical_device;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('position_has_chemical')
+			->where('id_position = ?', $positionId)
+			->join('chemical', 'position_has_chemical.id_chemical = chemical.id_chemical')
+			->order('chemical.chemical');
+		$select->setIntegrityCheck(false);
+		$chemicals = $this->fetchAll($select);
+		if(count($chemicals) > 0){
+			$i = 0;
+			foreach($chemicals as $chemical){
+				$position['chemicalList'][$i] = $chemical->id_chemical;
+				$position['chemicalDetails'][$i]['id_chemical'] = $chemical->id_chemical;
+				$position['chemicalDetails'][$i]['chemical'] = $chemical->chemical;
+				$position['chemicalDetails'][$i]['exposition'] = $chemical->exposition;
+				$i++;
+			}
+		}
+		
+		$select = $this->select()->from('employee')
+			->where('position_id = ?', $positionId);
+		$select->setIntegrityCheck(false);
+		$employees = $this->fetchAll($select);
+		if(count($employees) > 0){
+			$i = 0;
+			foreach($employees as $employee){
+				$position['employeeList'][$i] = $employee->id_employee;
+				$i++;
+			}
+		}
+		return $position;
+		
 	}
 	
 	private function process($result){

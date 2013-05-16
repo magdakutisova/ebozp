@@ -31,6 +31,10 @@ class Application_Form_Employee extends Zend_Form{
 				'label' => 'Titul před jménem',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(0,45)),
+				),
 				));
 				
 		$this->addElement('text', 'first_name', array(
@@ -38,6 +42,10 @@ class Application_Form_Employee extends Zend_Form{
 				'required' => true,
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,45)),
+				),
 				));
 		
 		$this->addElement('text', 'surname', array(
@@ -45,12 +53,20 @@ class Application_Form_Employee extends Zend_Form{
 				'required' => true,
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,45)),
+				),
 				));
 		
 		$this->addElement('text', 'title_2', array(
 				'label' => 'Titul za jménem',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(0,45)),
+				),
 				));
 		
 		$this->addElement('select', 'year_of_birth', array(
@@ -74,12 +90,20 @@ class Application_Form_Employee extends Zend_Form{
         	'filters' => array('StripTags', 'StringTrim'),
         	'validators' => array('EmailAddress'),
         	'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(0,255)),
+				),
         ));
 		 
 		$this->addElement('text', 'phone', array(
 				'label' => 'Telefon',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(0,45)),
+				),
 				));
 		
 		$this->addElement('textarea', 'note', array(

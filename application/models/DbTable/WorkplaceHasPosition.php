@@ -27,6 +27,17 @@ class Application_Model_DbTable_WorkplaceHasPosition extends Zend_Db_Table_Abstr
 		return $positions;
 	}
 	
+	public function getWorkplaces($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$workplaces = array();
+		foreach($results as $result){
+			$workplaces[] = $result->id_workplace;
+		}
+		return $workplaces;
+	}
+	
 	public function addRelation($workplaceId, $positionId){
 		try{
 			$data['id_workplace'] = $workplaceId;

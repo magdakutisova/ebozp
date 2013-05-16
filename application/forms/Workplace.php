@@ -99,6 +99,10 @@ class Application_Form_Workplace extends Zend_Form
        		'decorators' => $elementDecoratorColspan,
        		'order' => 2,
        		'description' => $questionMarkStart . 'Zadejte oficiální název pracoviště' . $questionMarkEnd,
+       			'validators' => array(
+       					array('validator' => 'StringLength',
+       							'options' => array(1,128)),
+       			),
        	));       	
        	$this->getElement('name')->getDecorator('Description')->setEscape(false);
        	
@@ -183,6 +187,10 @@ class Application_Form_Workplace extends Zend_Form
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 11,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,45)),
+        		),
         ));
         
         $this->addElement('text', 'boss_surname', array(
@@ -190,6 +198,10 @@ class Application_Form_Workplace extends Zend_Form
         	'filters' => array('StringTrim', 'StripTags'),
         	'decorators' => $elementDecoratorColspan,
         	'order' => 12,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,45)),
+        		),
         ));
         
         $this->addElement('text', 'boss_phone', array(
@@ -197,6 +209,10 @@ class Application_Form_Workplace extends Zend_Form
         	'filters' => array('StringTrim', 'StripTags'),
         	'decorators' => $elementDecoratorColspan,
         	'order' => 13,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,45)),
+        		),
         ));
         
         $this->addElement('text', 'boss_email', array(
@@ -205,6 +221,10 @@ class Application_Form_Workplace extends Zend_Form
         	'validators' => array('EmailAddress'),
         	'decorators' => $elementDecoratorColspan,
         	'order' => 14,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,255)),
+        		),
         ));
         
 		$this->addElement('hidden', 'positions', array(

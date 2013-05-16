@@ -17,6 +17,24 @@ class Application_Model_DbTable_PositionHasSchooling extends Zend_Db_Table_Abstr
 					),
 			);
 	
+	public function getSchoolings($positionId){
+		$select = $this->select()
+			->where('id_position = ?', $positionId);
+		$results = $this->fetchAll($select);
+		$schoolings = array();
+		foreach($results as $result){
+			$schoolings[] = $result->id_schooling;
+		}
+		return $schoolings;
+	}
+	
+	public function removeRelation($schoolingId, $positionId){
+		$this->delete(array(
+				'id_schooling = ?' => $schoolingId,
+				'id_position = ?' => $positionId,
+		));
+	}
+	
 	public function addRelation($positionId, $schoolingId, $note, $private){
 		try{
 			$data['id_position'] = $positionId;

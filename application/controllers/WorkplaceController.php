@@ -179,7 +179,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceNew');
 	    	}
 	    	
-	    	$this->processCustomElements($formData, $workplaceId);
+	    	$this->_helper->workplaceRelationships($formData, $workplaceId);
 			
 			//uložení transakce
 			$adapter->commit();
@@ -234,6 +234,29 @@ class WorkplaceController extends Zend_Controller_Action
     	$works = new Application_Model_DbTable_Work();
     	$this->_workList = $works->getWorks($this->_clientId);
     	echo Zend_Json::encode($this->_workList);
+    }
+    
+    public function validateAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	if($workplaces->existsWorkplace($this->getRequest()->getParam('name'), $this->getRequest()->getParam('clientId'))){
+    		if($this->getRequest()->getParam('workplaceId')){
+    			$workplace = $workplaces->getWorkplace($this->getRequest()->getParam('workplaceId'));
+    			if($workplace->getName() == $this->getRequest()->getParam('name')){
+    				echo Zend_Json::encode(true);
+    			}
+    			else{
+    				echo Zend_Json::encode(false);
+    			}
+    		}
+    		else{
+    			echo Zend_Json::encode(false);
+    		}
+    	}
+    	else{
+    		echo Zend_Json::encode(true);
+    	}
     }
     
     public function addtechnicaldeviceAction(){
@@ -327,6 +350,38 @@ class WorkplaceController extends Zend_Controller_Action
     	$element->setChemical($this->_getParam('chemical'));
     	
     	$this->view->field = $element->__toString();
+    }
+    
+    public function addpositionAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addposition', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	 
+    	$data = $this->_getAllParams();
+    	$position = new Application_Model_Position($data);
+    	$positions = new Application_Model_DbTable_Position();
+    	$position->setClientId($this->_getParam('clientId'));
+    	$positionId = $positions->addPosition($position);
+    	if(!$positionId){
+    		return;
+    	}
+    	
+    	$this->_helper->positionRelationships($data, $positionId);
+    	
+    	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+    	foreach($data['subsidiaryList'] as $subs){
+    		$subsidiary = $subsidiaries->getSubsidiary($subs);
+    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    	}
+    }
+    
+    public function populatepositionsAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$positions = new Application_Model_DbTable_Position();
+    	$this->_positionList = $positions->getPositions($this->_clientId);
+    	echo Zend_Json::encode($this->_positionList);
     }
 
     public function listAction()
@@ -434,6 +489,7 @@ class WorkplaceController extends Zend_Controller_Action
 						));
 				$order++;
 			}
+			$form->id_chemical->setValue($order);
 		}
 		
 		$form->removeElement('other');
@@ -488,7 +544,7 @@ class WorkplaceController extends Zend_Controller_Action
 	    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'workplaceEdit');
     		}
     		
-    		$this->processCustomElements($formData, $workplaceId, true);
+    		$this->_helper->workplaceRelationships($formData, $workplaceId, true);
 			
     		//uložení transakce
 			$adapter->commit();
@@ -525,7 +581,7 @@ class WorkplaceController extends Zend_Controller_Action
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
         }
         else{
-        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 500);
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště.', 403);
         }
     }
     
@@ -608,12 +664,17 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->view->textForm = $textForm;
 		if($this->getRequest()->isPost() && in_array('Přidat', $this->getRequest()->getPost())){
 			$formData = $this->getRequest()->getPost();
-			$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
-				'clientId' => $this->_clientId,
-				'subsidiaryId' => $subsidiaryId,
-				'filter' => $this->getRequest()->getParam('filter'),
-				'folder' => $formData['text'],
-			));
+			if($textForm->isValid($formData)){
+				$this->_helper->redirector->gotoSimple('newfolder', 'workplace', null, array(
+					'clientId' => $this->_clientId,
+					'subsidiaryId' => $subsidiaryId,
+					'filter' => $this->getRequest()->getParam('filter'),
+					'folder' => $formData['text'],
+				));
+			}
+			else{
+				$textForm->populate($formData);
+			}
 		}
     }
     
@@ -676,69 +737,6 @@ class WorkplaceController extends Zend_Controller_Action
 			$form->chemicalList->setMultiOptions($this->_chemicalList);
     	}
 		return $form;
-    }
-    
-    private function processCustomElements($formData, $workplaceId, $toEdit = false){
-    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
-    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
-    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
-    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
-    	
-		foreach ($formData['positionList'] as $positionId){
-			$workplaceHasPosition->addRelation($workplaceId, $positionId);
-		}
-		foreach ($formData['workList'] as $workId){
-			$workplaceHasWork->addRelation($workplaceId, $workId);
-		}	
-		foreach ($formData['technicaldeviceList'] as $technicalDeviceId){
-			$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
-		}
-		$chemicalDetails = array_filter(array_keys($formData), array($this, 'findChemicalDetails'));
-		foreach ($formData['chemicalList'] as $chemicalId){
-			$usePurpose = "";
-			$usualAmount = "";
-			foreach($chemicalDetails as $detail){
-				if($formData[$detail]['id_chemical'] == $chemicalId){
-					$usePurpose = $formData[$detail]['use_purpose'];
-					$usualAmount = $formData[$detail]['usual_amount'];
-					break 1;
-				}
-			}
-			$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount);
-		}
-
-		if($toEdit){
-			$positions = $workplaceHasPosition->getPositions($workplaceId);
-			foreach ($positions as $position){
-				if(!in_array($position, $formData['positionList'])){
-					$workplaceHasPosition->removeRelation($workplaceId, $position);
-				}
-			}
-			$works = $workplaceHasWork->getWorks($workplaceId);
-			foreach ($works as $work){
-				if(!in_array($work, $formData['workList'])){
-					$workplaceHasWork->removeRelation($workplaceId, $work);
-				}
-			}
-			$technicalDevices = $workplaceHasTechnicalDevice->getTechnicalDevices($workplaceId);
-			foreach ($technicalDevices as $technicalDevice){
-				if(!in_array($technicalDevice, $formData['technicaldeviceList'])){
-					$workplaceHasTechnicalDevice->removeRelation($workplaceId, $technicalDevice);
-				}
-			}
-			$chemicals = $workplaceHasChemical->getChemicals($workplaceId);
-			foreach ($chemicals as $chemical){
-				if(!in_array($chemical, $formData['chemicalList'])){
-					$workplaceHasChemical->removeRelation($workplaceId, $chemical);
-				}
-			}
-		}
-    }
-    
-    private function findChemicalDetails($chemicalDetail){
-    	if(strpos($chemicalDetail, "chemicalDetail") !== false){
-    		return $chemicalDetail;
-    	}
     }
     
     private function initFloatingForms($formContent, $subsidiaryId){

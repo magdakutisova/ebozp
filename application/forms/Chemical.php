@@ -30,6 +30,10 @@ class Application_Form_Chemical extends Zend_Form{
 				'label' => 'Název chemické látky',
 				'filters' => array('StripTags', 'StringTrim'),
 				'decorators' => $elementDecorator,
+				'validators' => array(
+						array('validator' => 'StringLength',
+								'options' => array(1,200)),
+				),
 				));
 		
 		$this->addElement('button', 'save_chemical', array(

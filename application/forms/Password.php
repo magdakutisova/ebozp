@@ -32,7 +32,7 @@ class Application_Form_Password extends Zend_Form
         $this->addElement('password', 'oldPassword', array(
         	'filters' => array('StringTrim', 'StripTags'),
         	'validators' => array(
-        		array('StringLength', false, array(0,50)),
+        		array('StringLength', false, array(1,50)),
         	),
         	'required' => true,
         	'label' => 'Původní heslo',
@@ -42,7 +42,7 @@ class Application_Form_Password extends Zend_Form
         $this->addElement('password', 'newPassword', array(
         	'filters' => array('StringTrim', 'StripTags'),
         	'validators' => array(
-        		array('StringLength', false, array(0,50)),
+        		array('StringLength', false, array(1,50)),
         	),
         	'required' => true,
         	'label' => 'Nové heslo',
@@ -56,7 +56,7 @@ class Application_Form_Password extends Zend_Form
        		'validators' => array(
        			'Alnum',
        			array('Identical', false, array('token' => 'newPassword')),
-       			array('StringLength', false, array(0,50)),
+       			array('StringLength', false, array(1,50)),
        		),
        		'decorators' => $elementDecorator,
        	));

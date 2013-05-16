@@ -40,6 +40,10 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'Název organizace',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
+        	'validators' => array(
+        			array('validator' => 'StringLength',
+        					'options' => array(1,255)),
+        			),
         	'decorators' => $elementDecorator,
         ));
         
@@ -52,6 +56,10 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'Ulice a č. p.',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,128)),
+        		),
         	'decorators' => $elementDecorator,
         ));
         
@@ -68,6 +76,10 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'Obec',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,128)),
+        		),
         	'decorators' => $elementDecorator,
         ));
         
@@ -82,7 +94,7 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'IČO',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array('Digits', new Zend_Validate_StringLength(array('min' => 8, 'max => 8'))),
+        	'validators' => array('Digits', new Zend_Validate_StringLength(array('max' => 8))),
         	'decorators' => $elementDecorator,
         ));
         
@@ -110,6 +122,10 @@ class Application_Form_Client extends Zend_Form
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,128)),
+        		),
         ));
         
         $this->addElement('text', 'invoice_code', array(
@@ -126,6 +142,10 @@ class Application_Form_Client extends Zend_Form
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,128)),
+        		),
         ));
         
         $this->addElement('select', 'insurance_company', array(
@@ -133,6 +153,10 @@ class Application_Form_Client extends Zend_Form
         	'required' => true,
         	'decorators' => $elementDecorator,
         	'multiOptions' => array('Kooperativa', 'Česká pojišťovna'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,45)),
+        		),
         ));
         
         $this->addElement('text', 'supervision_frequency', array(
@@ -148,6 +172,10 @@ class Application_Form_Client extends Zend_Form
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,255)),
+        		),
         ));
                
         $this->addElement('hidden', 'contact', array(
@@ -160,6 +188,10 @@ class Application_Form_Client extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,64)),
+        		),
         ));
         
         $this->addElement('text', 'phone', array(
@@ -167,13 +199,19 @@ class Application_Form_Client extends Zend_Form
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,45)),
+        		),
         ));
         
         $this->addElement('text', 'email', array(
         	'label' => 'E-mail',
         	'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array('EmailAddress'),
+        	'validators' => array('EmailAddress',
+        			array('validator' => 'StringLength',
+        						'options' => array(1,45))),
         	'decorators' => $elementDecorator,
         ));
         

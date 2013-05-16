@@ -28,6 +28,14 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		$this->delete('id_employee = ' . (int)$id);
 	}
 	
+	public function getByPosition($positionId){
+		$select = $this->select()
+			->from('employee')
+			->where('position_id = ?', $positionId);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	/****************************************************************************
 	 * Vrací seznam ID - zaměstnanec.
 	 */
@@ -46,6 +54,22 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 			}
 		}
 		return $employees;
+	}
+	
+	private function process($result){
+		if($result->count()){
+			$employees = array();
+			foreach($result as $employee){
+				$employee = $result->current();
+				$employees[] = $this->processEmployee($employee);
+			}
+			return $employees;
+		}
+	}
+	
+	private function processEmployee($employee){
+		$data = $employee->toArray();
+		return new Application_Model_Employee($data);
 	}
 	
 }

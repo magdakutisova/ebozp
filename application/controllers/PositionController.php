@@ -213,8 +213,12 @@ class PositionController extends Zend_Controller_Action
     		$position = new Application_Model_Position($formData);
     		$position->setClientId($this->_clientId);
     		$positionId = $positions->addPosition($position);
+    		if(!$positionId){
+    			$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+    		}
     		
-    		$this->processCustomElements($formData, $positionId);
+    		$this->_helper->positionRelationships($formData, $positionId);
     		
     		//uložení transakce
     		$adapter->commit();
@@ -281,37 +285,10 @@ class PositionController extends Zend_Controller_Action
     	}
     	$workplaceId = $workplaces->addWorkplace($workplace);
     	if(!$workplaceId){
-    		//TODO nějaké ošetření pokud bude třeba
     		return;
     	}
     	
-    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
-    	$workplaceHasWork = new Application_Model_DbTable_WorkplaceHasWork();
-    	$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
-    	$workplaceHasChemical = new Application_Model_DbTable_WorkplaceHasChemical();
-    	 
-    	foreach ($data['positionList'] as $positionId){
-    		$workplaceHasPosition->addRelation($workplaceId, $positionId);
-    	}
-    	foreach ($data['workList'] as $workId){
-    		$workplaceHasWork->addRelation($workplaceId, $workId);
-    	}
-    	foreach ($data['technicaldeviceList'] as $technicalDeviceId){
-    		$workplaceHasTechnicalDevice->addRelation($workplaceId, $technicalDeviceId);
-    	}
-    	foreach ($data['chemicalList'] as $chemicalId){
-    		$usePurpose = "";
-    		$usualAmount = "";
-    		$chemicalDetails = array_filter(array_keys($data), array($this, 'findChemicalDetails'));
-    		foreach($chemicalDetails as $detail){
-    			if($data[$detail]['id_chemical'] == $chemicalId){
-    				$usePurpose = $data[$detail]['use_purpose'];
-    				$usualAmount = $data[$detail]['usual_amount'];
-    				break 1;
-    			}
-    		}
-    		$workplaceHasChemical->addRelation($workplaceId, $chemicalId, $usePurpose, $usualAmount);
-    	}
+    	$this->_helper->workplaceRelationships($data, $workplaceId);
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
     	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
@@ -323,8 +300,31 @@ class PositionController extends Zend_Controller_Action
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
-    	$this->_workplaceList = $workplaces->getWorkplaces($this->_clientId);
+    	$this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
     	echo Zend_Json::encode($this->_workplaceList);
+    }
+    
+    public function validateAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$positions = new Application_Model_DbTable_Position();
+    	if($positions->existsPosition($this->getRequest()->getParam('position'), $this->getRequest()->getParam('clientId'))){
+    		if($this->getRequest()->getParam('positionId')){
+    			$position = $positions->getPosition($this->getRequest()->getParam('positionId'));
+    			if($position->getPosition() == $this->getRequest()->getParam('position')){
+    				echo Zend_Json::encode(true);
+    			}
+    			else{
+    				echo Zend_Json::encode(false);
+    			}
+    		}
+    		else{
+    			echo Zend_Json::encode(false);
+    		}
+    	}
+    	else{
+    		echo Zend_Json::encode(true);
+    	}
     }
 
     public function environmentfactordetailAction()
@@ -332,7 +332,7 @@ class PositionController extends Zend_Controller_Action
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('environmentfactordetail', 'html')->initContext();
     	
-    	$id = $this->getParam('id_environment_factor', null);
+    	$id = $this->_getParam('id_environment_factor', null);
     	
     	$element = new My_Form_Element_EnvironmentFactorDetail("environmentFactorDetail$id");
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
@@ -369,7 +369,7 @@ class PositionController extends Zend_Controller_Action
     	$this->_schoolingList = $defaultSchoolings + $extraSchoolings;
     	echo Zend_Json::encode($this->_schoolingList);
     }
-
+    
     public function schoolingdetailAction()
     {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
@@ -612,144 +612,204 @@ class PositionController extends Zend_Controller_Action
     	$this->view->formEmployee = $formEmployee;
     }
 
-    private function processCustomElements($formData, $positionId, $toEdit = false)
-    {
-    	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
-    	$workplaceHasPosition = new Application_Model_DbTable_WorkplaceHasPosition();
-    	$positionHasEnvironmentFactor = new Application_Model_DbTable_PositionHasEnvironmentFactor();
-    	$positionHasSchooling = new Application_Model_DbTable_PositionHasSchooling();
-    	$positionHasWork = new Application_Model_DbTable_PositionHasWork();
-    	$positionHasTechnicalDevice = new Application_Model_DbTable_PositionHasTechnicalDevice();
-    	$positionHasChemical = new Application_Model_DbTable_PositionHasChemical();
-    	$employees = new Application_Model_DbTable_Employee();
-    	
-    	foreach($formData['subsidiaryList'] as $subsidiaryId){
-    		$subsidiaryHasPosition->addRelation($subsidiaryId, $positionId);
-    	}
-    	foreach($formData['workplaceList'] as $workplaceId){
-    		$workplaceHasPosition->addRelation($workplaceId, $positionId);
-    	}
-    	if($formData['categorization'] == 1){
-    		$environmentFactorDetails = array_filter(array_keys($formData), array($this, 'findEnvironmentFactorDetails'));
-    		foreach($formData['environmentfactorList'] as $environmentFactorId){
-    			$category = '';
-    			$measurementTaken = '';
-    			$protectionMeasures = '';
-    			$note = '';
-    			$private = '';
-    			foreach ($environmentFactorDetails as $detail){
-    				if($formData[$detail]['id_environment_factor'] == $environmentFactorId){
-    					$category = $formData[$detail]['category'];
-    					$measurementTaken = $formData[$detail]['measurement_taken'];
-    					$protectionMeasures = $formData[$detail]['protection_measures'];
-    					$note = $formData[$detail]['note'];
-    					$private = $formData[$detail]['private'];
-    					break 1;
-    				}
-    			}
-    			$positionHasEnvironmentFactor->addRelation($positionId, $environmentFactorId, $category, $protectionMeasures, $measurementTaken, $note, $private);
-    		}
-    	}
-    	$schoolingDetails = array_filter(array_keys($formData), array($this, 'findSchoolingDetails'));
-    	$schoolingList = array();
-    	if(array_key_exists('schoolingList', $formData)){
-    		$schoolingList = $formData['schoolingList'];
-    	}
-    	$schoolingList[] = 1;
-    	$schoolingList[] = 2;
-    	foreach($schoolingList as $schoolingId){
-    		$note = '';
-    		$private = '';
-    		foreach($schoolingDetails as $detail){
-    			if($formData[$detail]['id_schooling'] == $schoolingId){
-    				$note = $formData[$detail]['note'];
-    				$private = $formData[$detail]['private'];
-    				break 1;
-    			}
-    		}
-    		$positionHasSchooling->addRelation($positionId, $schoolingId, $note, $private);
-    	}
-    	$workDetails = array_filter(array_keys($formData), array($this, 'findWorkDetails'));
-    	foreach($formData['workList'] as $workId){
-    		$frequency = null;
-    		foreach($workDetails as $detail){
-    			if($formData[$detail]['id_work'] == $workId){
-    				$frequencyKey = $formData[$detail]['frequency'];
-    				if($frequencyKey != 0){
-    					if($frequencyKey != 6){
-    						$frequencies = My_Frequency::getFrequencies();
-    						$frequency = $frequencies[$frequencyKey];
-    					}
-    					else{
-    						$frequency = $formData[$detail]['new_frequency'];
-    					}
-    				}
-    				break 1;
-    			}
-    		}
-    		$positionHasWork->addRelation($positionId, $workId, $frequency);
-    	}
-    	foreach($formData['technicaldeviceList'] as $technicalDeviceId){
-    		$positionHasTechnicalDevice->addRelation($positionId, $technicalDeviceId);
-    	}
-    	$chemical2Details = array_filter(array_keys($formData), array($this, 'findChemical2Details'));
-    	foreach($formData['chemicalList'] as $chemicalId){
-    		$exposition = '';
-    		foreach($chemical2Details as $detail){
-    			if($formData[$detail]['id_chemical'] == $chemicalId){
-    				$exposition = $formData[$detail]['exposition'];
-    				break 1;
-    			}
-    		}
-    		$positionHasChemical->addRelation($positionId, $chemicalId, $exposition);
-    	}
-    	foreach($formData['employeeList'] as $employeeId){
-    		$employee = $employees->getEmployee($employeeId);
-    		$employee->setPositionId($positionId);
-    		$employees->updateEmployee($employee);
-    	}
-    }
-
-    private function findEnvironmentFactorDetails($environmentFactorDetail)
-    {
-    	if(strpos($environmentFactorDetail, "environmentFactorDetail") !== false){
-    		return $environmentFactorDetail;
-    	}
-    }
-
-    private function findSchoolingDetails($schoolingDetail)
-    {
-    	if(strpos($schoolingDetail, "schoolingDetail") !== false){
-    		return $schoolingDetail;
-    	}
-    }
-
-    private function findWorkDetails($workDetail)
-    {
-    	if(strpos($workDetail, "workDetail") !== false){
-    		return $workDetail;
-    	}
-    }
-
-    private function findChemical2Details($chemical2Detail)
-    {
-    	if(strpos($chemical2Detail, "chemical2Detail") !== false){
-    		return $chemical2Detail;
-    	}
-    }
-
     public function editAction()
     {
-        // action body
+        $defaultNamespace = new Zend_Session_Namespace();
+        $this->view->subtitle = "Upravit pracovní pozici";
+        $form = $this->loadOrCreateForm($defaultNamespace);
+        
+        //získání parametrů
+        $clientId = $this->getRequest()->getParam('clientId');
+        $subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
+        $positionId = $this->getRequest()->getParam('positionId');
+        
+        $form->client_id->setValue($clientId);
+        $form->id_position->setValue($positionId);
+        
+        $positions = new Application_Model_DbTable_Position();
+        $position = $positions->getPositionComplete($positionId);
+        
+        //naplnění multiselectu pobočkami
+        $subsidiaries = new Application_Model_DbTable_Subsidiary ();
+        $formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+        if ($formContent != 0){
+        	$formContent = $this->filterSubsidiarySelect($formContent);
+        	$form->subsidiaryList->setMultiOptions ( $formContent );
+        }
+        $form->subsidiaryList->setValue($subsidiaryId);
+        
+        //inicializace plovoucích formulářů
+        $this->initFloatingForms($formContent, $subsidiaryId);
+         
+        //naplnění formuláře hodnotami z DB
+        $form = $this->fillMultiselects($form);
+        $form->new_workplace->setAttrib('class', $subsidiaryId);
+        $form->removeElement('other');
+        $form->save->setLabel('Uložit');
+        
+        //vložení detailů
+        if(isset($position['environmentFactorDetails'])){
+        	$order = $form->getValue('id_environment_factor');
+        	foreach($position['environmentFactorDetails'] as $detail){
+        		$form->addElement('environmentFactorDetail', 'environmentFactorDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'multiOptions' => $this->_categoryList,
+        				'multiOptions2' => $this->_yesNoList,
+        				'canViewPrivate' => $this->_canViewPrivate,
+        				));
+        		$order++;
+        	}
+        	$form->id_environment_factor->setValue($order);
+        }
+        
+   		if(isset($position['schoolingDetails'])){
+        	$order = $form->getValue('id_schooling');
+        	foreach($position['schoolingDetails'] as $detail){
+        		$form->addElement('schoolingDetail', 'schoolingDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'canViewPrivate' => $this->_canViewPrivate,
+        				));
+        		$order++;
+        	}
+        	$form->id_schooling->setValue($order);
+        }
+        
+        if(isset($position['workDetails'])){
+        	$order = $form->getValue('id_work');
+        	foreach($position['workDetails'] as $detail){
+        		$form->addElement('workDetail', 'workDetail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        				'multiOptions' => $this->_frequencyList,
+        		));
+        		$order++;
+        	}
+        	$form->id_work->setValue($order);
+        }
+        
+        if(isset($position['chemicalDetails'])){
+        	$order = $form->getValue('id_chemical2');
+        	foreach($position['chemicalDetails'] as $detail){
+        		$form->addElement('chemical2Detail', 'chemical2Detail' . $order, array(
+        				'value' => $detail,
+        				'order' => $order,
+        		));
+        		$order++;
+        	}
+        	$form->id_chemical2->setValue($order);
+        }
+        
+        //zmapujeme nové prvky
+        $form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
+        		$this->_yesNoList, $this->_frequencyList);
+        
+        //když není odeslán, naplníme daty z databáze nebo ze session
+        if(!$this->getRequest()->isPost()){
+        	$this->view->form = $form;
+        	if(isset($defaultNamespace->formData)){
+        		$form->populate($defaultNamespace->formData);
+        		unset($defaultNamespace->formData);
+        	}
+        	else{
+        		//naplnění základních polí pro pracoviště
+        		$form->populate($position);
+        	}
+        	return;
+        }
+        
+        //když není platný, vrátíme ho do view
+        if(!$form->isValid($this->getRequest()->getPost())){
+        	$form->populate($form->getValues());
+        	$this->view->form = $form;
+        	return;
+        }
+        
+        //zpracování formuláře
+        $adapter = $positions->getAdapter();
+        try{
+        	//init session pro případ selhání ukládání
+        	$formData = $this->getRequest()->getPost();
+        	$defaultNamespace->formData = $formData;
+        	$defaultNamespace->form = $form;
+        	
+        	//zahájení transakce
+        	$adapter->beginTransaction();
+        	
+        	if(!array_key_exists('subsidiaryList', $formData)){
+        		throw new Exception("Vyberte alespoň jednu pobočku.");
+        	}
+        	
+        	//kontrola na pracoviště na pobočkách
+        	if(isset($formData['workplaceList'])){
+        		$workplaces = new Application_Model_DbTable_Workplace();
+        		foreach($formData['workplaceList'] as $workplaceId){
+        			$result = $workplaces->existsWithinSubsidiaries($workplaceId, $formData['subsidiaryList']);
+        			if($result != "OK"){
+        				throw new Exception($result);
+        			}
+        		}
+        	}
+        	
+        	//update pracovní pozice
+        	$positionNew = new Application_Model_Position($formData);
+        	$differentName = true;
+        	if($position['position'] == $positionNew->getPosition()){
+        		$differentName = false;
+        	}
+        	if(!$positions->updatePosition($positionNew, $differentName)){
+        		$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+        	}
+        	
+      		$this->_helper->positionRelationships($formData, $positionId, true);
+        	
+        	//uložení transakce
+        	$adapter->commit();
+        	foreach($formData['subsidiaryList'] as $subs){
+        		$subsidiary = $subsidiaries->getSubsidiary($subs);
+        		$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+        	}
+        	$this->_helper->FlashMessenger('Pracovní pozice ' . $positionNew->getPosition() . ' upravena.');
+        	unset($defaultNamespace->form);
+        	unset($defaultNamespace->formData);
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
+        }
+        catch(Exception $e){
+        	//zrušení transakce
+        	$adapter->rollback();
+        	$this->_helper->FlashMessenger($e->getMessage() . ' Uložení pracovní pozice do databáze selhalo.');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+        }
+        
     }
 
     public function deleteAction()
     {
-        // action body
+        if($this->getRequest()->getMethod() == "POST"){
+        	$subsidiaryId = $this->_getParam('subsidiaryId');
+        	$positionId = $this->_getParam('positionId');
+        	$positions = new Application_Model_DbTable_Position();
+        	$position = $positions->getPosition($positionId);
+        	$name = $position->getPosition();
+        	
+        	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
+        	$subsidiaries = $subsidiaryHasPosition->getSubsidiaries($positionId);
+        	$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+        	
+        	$positions->deletePosition($positionId);
+        	foreach($subsidiaries as $subs){
+        		$subsidiary = $subsidiariesDb->getSubsidiary($subs);
+        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
+        	}
+        	
+        	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
+        	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
+        }
+        else{
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště', 403);
+        }
     }
 
-
 }
-
-
-
