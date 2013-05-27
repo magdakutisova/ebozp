@@ -27,6 +27,13 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:workplace"));
 		$this->add(new Zend_Acl_Resource("audit:report"));
 		
+		/*
+		 * ZDROJE MODULU DOCUMENT 
+		 */
+		$this->add(new Zend_Acl_Resource("document:index"));
+		$this->add(new Zend_Acl_Resource("document:directory"));
+		$this->add(new Zend_Acl_Resource("document:document"));
+		
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
 		$technician = My_Role::ROLE_TECHNICIAN;

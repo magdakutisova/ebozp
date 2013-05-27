@@ -1,0 +1,52 @@
+<div class="box">
+Adresa: <?php echo $this->path($this->path, $this->directory); ?>
+</div>
+<?php
+// kontrola acl pro vytvoreni noveho adresare
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "document:directory", "post")) {
+	?>
+<div class="box">
+<?php echo $this->formPostDir; ?>
+</div>
+	<?php 
+}
+
+// kontrola ACL pro upload souboru
+if ($acl->isAllowed($user->role, "document:document", "upload")) {
+	echo "<div class='box'>" . $this->formPostFile . "</div>";
+}
+
+// kontrola ACL pro smazani adresare
+$dirActions = array();
+
+if ($acl->isAllowed($user->role, "document:directory", "delete")) {
+	$dirActions["Smazat"] = $this->url(array("clientId" => $this->clientId, "directoryId" => "__DIR__"), "document-directory-delete");
+}
+
+// vypis adresaru a souboru
+echo "<h1>Výpis adresáře</h1>";
+echo "<h2>" . $this->directory->name . "</h2>";
+?>
+<table>
+	<tbody>
+<?php 
+foreach ($this->childDirs as $dir) {
+	echo "<tr><td>";
+	echo $this->path()->dirLink($dir, $dir->name);
+	echo "</td>";
+	echo "<td>";
+	
+	foreach ($dirActions as $label => $action) {
+		$url = str_replace("__DIR__", $dir->id, $action);
+		
+		echo "<a href='$url'>$label</a>";
+	}
+	
+	echo "</td></tr>";
+}
+?>
+	</tbody>
+</table>

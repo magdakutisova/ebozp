@@ -51,6 +51,13 @@
 			<route>audit-list</route>
 			<clientId>clientId</clientId>
 		</audits>
+		<documents>
+			<label>Dokumenty</label>
+			<route>document-index</route>
+			<resource>document:index</resource>
+			<privilege>index</privilege>
+			<clientId>clientId</clientId>
+		</documents>
 		<print>
 			<label>Záznamy (k tisku)</label>
 			<route>printIndex</route>
