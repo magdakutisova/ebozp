@@ -1,0 +1,12 @@
+<?php
+$this->layout()->disableLayout();
+$path = $this->version->path();
+$version = $this->version;
+$file = $this->file;
+
+// zapis hlavicek
+header("Content-Length: " . $version->size);
+header("Content-Type: " . $version->mime);
+header("Content-Disposition: attachment; filename=" . $file->name);
+
+readfile($path);

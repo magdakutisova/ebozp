@@ -1,7 +1,7 @@
 <?php
 class Document_View_Helper_Path extends Zend_View_Helper_Abstract {
 	
-	public function path(Document_Model_Rowset_Directories $path = null, Document_Model_Row_Directory $directory = null) {
+	public function path(Document_Model_Rowset_Directories $path = null, Document_Model_Row_Directory $directory = null, $lastIsLink = false) {
 		// pokud je cesta NULL, vraci se instance
 		if ($path == null) return $this;
 		
@@ -12,7 +12,7 @@ class Document_View_Helper_Path extends Zend_View_Helper_Abstract {
 			$list[] = $this->dirLink($item, $this->dirName($item));
 		}
 		
-		$list[] = $this->dirName($directory);
+		$list[] = $lastIsLink ? $this->dirLink($directory, $this->dirName($directory)) : $this->dirName($directory);
 		
 		return "/ " . implode(" / ", $list);
 	}

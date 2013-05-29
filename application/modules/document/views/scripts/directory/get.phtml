@@ -47,6 +47,15 @@ foreach ($this->childDirs as $dir) {
 	
 	echo "</td></tr>";
 }
+
+foreach ($this->childDocuments as $file) {
+	echo "<tr><td>";
+	echo $this->file($file);
+	echo "</td>";
+	echo "<td>";
+
+	echo "</td></tr>";
+}
 ?>
 	</tbody>
 </table>

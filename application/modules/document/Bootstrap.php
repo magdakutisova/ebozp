@@ -1,6 +1,11 @@
 <?php
 class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 	
+	protected function _initDirs() {
+		if (!defined("DOCUMENT_PATH_DIR"))
+			define("DOCUMENT_PATH_DIR", __DIR__ . "/files");
+	}
+	
 	protected function _initRoutes() {
 		
 		$this->bootstrap('FrontController');
@@ -70,6 +75,78 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "document",
 								"controller" => "document",
 								"action" => "post"
+						))
+		);
+		
+		// zobrazi soubor
+		$router->addRoute(
+				"document-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/get",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "get"
+						))
+		);
+		
+		// zobrazi soubor
+		$router->addRoute(
+				"document-version-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/version/:versionId/get",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "get"
+						))
+		);
+		
+		$router->addRoute(
+				"document-version-download",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/version/:versionId/download",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "download"
+						))
+		);
+		
+		$router->addRoute(
+				"document-version-upload",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/version/upload",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "upload"
+						))
+		);
+		
+		$router->addRoute(
+				"document-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/put",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "put"
+						))
+		);
+		
+		$router->addRoute(
+				"document-attach",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/attach-directory/",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "attach"
+						))
+		);
+		
+		$router->addRoute(
+				"document-dettach",
+				new Zend_Controller_Router_Route("/klient/:clientId/file/:fileId/dettach-directory/:directoryId",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "detach"
 						))
 		);
 	}

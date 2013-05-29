@@ -28,7 +28,18 @@ class Document_Model_Row_Directory extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	public function childDocs() {
-		return new Zend_Db_Table_Rowset(array("data" => array()));
+		// sestaveni SQL dotazu
+		$tableAssocs = new Document_Model_DirectoriesFiles();
+		$tableFiles = new Document_Model_Files();
+		$adapter = $tableAssocs->getAdapter();
+		
+		$nameAssocs = $adapter->quoteIdentifier($tableAssocs->info("name"));
+		$nameFiles = $adapter->quoteIdentifier($tableFiles->info("name"));
+		
+		$sql = "select * from $nameFiles inner join $nameAssocs on file_id = id where directory_id = " . $adapter->quote($this->_data["id"]);
+		$result = $adapter->query($sql)->fetchAll();
+		
+		return new Document_Model_Rowset_Files(array("data" => $result, "table" => $tableFiles, "rowClass" => $tableFiles->getRowClass()));
 	}
 	
 	/**

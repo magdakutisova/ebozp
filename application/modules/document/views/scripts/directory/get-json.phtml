@@ -1,0 +1,9 @@
+<?php
+$retVal = array(
+		"directory" => $this->directory->toArray(),
+		"path" => $this->path->toArray(),
+		"childDirs" => $this->childDirs->toArray(),
+		"childDocs" => $this->childDocuments->toArray()
+);
+
+echo $this->json($retVal);

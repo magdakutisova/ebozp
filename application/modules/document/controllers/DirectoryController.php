@@ -3,6 +3,7 @@ class Document_DirectoryController extends Zend_Controller_Action {
 	
 	public function init() {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
+		$this->view->layout()->setLayout("client-layout");
 	}
 	
 	public function deleteAction() {
@@ -53,6 +54,10 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		$this->view->formPostDir = $formPostDir;
 		$this->view->formPostFile = $formPostFile;
 		$this->view->clientId = $this->getRequest()->getParam("clientId");
+	}
+	
+	public function getJsonAction() {
+		$this->getAction();
 	}
 	
 	public function indexAction() {

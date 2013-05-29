@@ -1,0 +1,102 @@
+<?php 
+$file = $this->file;
+$versions = $this->versions;
+$current = $versions[$versions->count() - 1];
+$loaded = $this->loaded;
+
+// vyhodnoceni verze
+$type = ($current->id == $loaded->id) ? "Aktuální verze" : "Stará verze";
+?>
+<h1>Dokument</h1>
+<h2><?php echo $this->file()->fileName($this->file) . " - " . $type; ?></h2>
+<?php 
+// vypocet velikosti dokumentu
+$unit = "B";
+$size = (int) $current->size;
+
+if ($size > 1024) {
+	$size = round($size / 1024, 2);
+	$unit = "K";
+}
+
+if ($size > 1024) {
+	$size = round($size / 1024, 2);
+	$unit = "M";
+}
+?>
+<table>
+	<tr>
+		<td>Jméno souboru</td>
+		<td><?php echo $this->file()->fileName($file); echo " " . $this->formButton("rename-file", "Přejmenovat"); ?></td>
+	</tr>
+	<tr>
+		<td>Velikost</td>
+		<td><?php echo $size . " " . $unit; ?></td>
+	</tr>
+	<tr>
+		<td>Mime typ</td>
+		<td><?php echo $current->mime; ?></td>
+	</tr>
+	<tr>
+		<td>Datum vytvoření</td>
+		<td><?php echo $this->version()->date($file->created_at); ?></td>
+	</tr>
+		<td>Datum poslední změny</td>
+		<td><?php echo $this->version()->date($current->created_at); ?></td>
+	</tr>
+</table>
+<strong><big><?php echo $this->version()->download($loaded); ?></big></strong>
+<h2>Nahrát aktualizci</h2>
+<?php echo $this->uploadForm; ?>
+<h2>Historie verzí</h2>
+<ol>
+<?php 
+foreach ($versions as $version) {
+	echo "<li>";
+	echo ($version->id == $loaded->id) ? $this->version()->date($version->created_at) : $this->version($version);
+	echo "</li>";
+}
+?>
+</ol>
+<h2>Adresáře</h2>
+<ul>
+<?php 
+$clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
+
+foreach ($this->directories as $directory) {
+	// url pro detach
+	$url = $this->url(array("clientId" => $clientId, "fileId" => $file->id, "directoryId" => $directory->id), "document-dettach");
+	
+	echo "<li>";
+	echo "<a href='$url' class='dettach'>Odebrat z adresáře</a>";
+	echo $this->path($directory->path(), $directory, true);
+	echo "</li>";
+}
+?>
+</ul>
+<?php echo $this->formButton("attach-dir", "Přidat do adresáře"); ?>
+<div id="rename-form" class="hidden">
+<?php echo $this->renameForm; ?>
+</div>
+<div id="attach-form" class="hidden">
+<?php 
+// vygenerovani seznamu korenovych adresaru
+$roots = array("0" => "---Vyberte klienta---");
+
+foreach ($this->roots as $root) {
+	$roots[$root->id] = $root->name;
+}
+
+echo $this->formSelect("root-list", 0, null, $roots);
+?>
+	<div id="attach-path"></div>
+	<form action="<?php echo $this->url(array("clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0), "fileId" => $file->id), "document-attach"); ?>" method="post" id="form-attach">
+		<div>
+			Vybraný adresář: <strong id="attach-selected"></strong>
+			<input type="hidden" name="directoryId" value="0" id="dirId" />
+			<input type="submit" value="Připojit" disabled="disabled" id="attach-submit" />
+		</div>
+	</form>
+	<ul id="attach-content" style="list-style: none;"></ul>
+</div>
+<script type="text/javascript" src="/js/document/document.js"></script>
