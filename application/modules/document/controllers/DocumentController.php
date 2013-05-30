@@ -132,10 +132,15 @@ class Document_DocumentController extends Zend_Controller_Action {
 	}
 	
 	/**
-	 * zobrazi kos
+	 * zobrazi moje dokumenty (vsechny i kos)
 	 */
 	public function indexAction() {
+		$user = Zend_Auth::getInstance()->getIdentity();
+		$tableFiles = new Document_Model_Files();
 		
+		$files = $tableFiles->getByUserExtended($user->id_user);
+		
+		$this->view->files = $files;
 	}
 	
 	/**
@@ -198,6 +203,18 @@ class Document_DocumentController extends Zend_Controller_Action {
 		), "document-get");
 		
 		$this->_redirect($url);
+	}
+	
+	/**
+	 * zobrazi kos
+	 */
+	public function trashAction() {
+		$user = Zend_Auth::getInstance()->getIdentity();
+		
+		$tableFiles = new Document_Model_Files();
+		$files = $tableFiles->getTrash($user->id_user);
+		
+		$this->view->files = $files;
 	}
 	
 	/**

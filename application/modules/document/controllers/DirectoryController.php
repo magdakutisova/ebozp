@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/DocumentController.php";
+
 class Document_DirectoryController extends Zend_Controller_Action {
 	
 	public function init() {
@@ -16,6 +18,24 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		// smazani adresare a presmerovani na rodice
 		$directory->delete();
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId", 0), "directoryId" => $parentId), "document-directory-get");
+		$this->_redirect($url);
+	}
+	
+	public function detachAction() {
+		// nacteni dat
+		$request = $this->getRequest();
+		$directory = self::loadDir($request->getParam("directoryId", 0));
+		$file = Document_DocumentController::loadFile($request->getParam("fileId", 0));
+		
+		// smazani dat
+		$tableAssocs = new Document_Model_DirectoriesFiles();
+		$tableAssocs->delete(array(
+				"file_id = " . $file->id,
+				"directory_id = " . $directory->id
+		));
+		
+		// presmerovani na vypis adresare
+		$url = $this->view->url(array("clientId" => $request->getParam("clientId", 0), "directoryId" => $directory->id), "document-directory-get");
 		$this->_redirect($url);
 	}
 	

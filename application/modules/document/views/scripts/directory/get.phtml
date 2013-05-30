@@ -1,23 +1,25 @@
 <div class="box">
-Adresa: <?php echo $this->path($this->path, $this->directory); ?>
+<?php echo $this->docMenu(); ?>
 </div>
+<div class="box">
+Adresa: <?php echo $this->path($this->path, $this->directory); ?>
 <?php
 // kontrola acl pro vytvoreni noveho adresare
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
 if ($acl->isAllowed($user->role, "document:directory", "post")) {
-	?>
-<div class="box">
-<?php echo $this->formPostDir; ?>
-</div>
-	<?php 
+	echo $this->formPostDir;
 }
 
 // kontrola ACL pro upload souboru
 if ($acl->isAllowed($user->role, "document:document", "upload")) {
-	echo "<div class='box'>" . $this->formPostFile . "</div>";
+	echo $this->formPostFile;
 }
+
+?>
+</div>
+<?php 
 
 // kontrola ACL pro smazani adresare
 $dirActions = array();
@@ -34,7 +36,7 @@ echo "<h2>" . $this->directory->name . "</h2>";
 	<tbody>
 <?php 
 foreach ($this->childDirs as $dir) {
-	echo "<tr><td>";
+	echo "<tr><td><span class='directory'></span>";
 	echo $this->path()->dirLink($dir, $dir->name);
 	echo "</td>";
 	echo "<td>";
@@ -42,20 +44,36 @@ foreach ($this->childDirs as $dir) {
 	foreach ($dirActions as $label => $action) {
 		$url = str_replace("__DIR__", $dir->id, $action);
 		
-		echo "<a href='$url'>$label</a>";
+		echo "<a href='$url' class='dettach'>$label</a>";
 	}
 	
 	echo "</td></tr>";
 }
 
+// vyhodnoceni prav k souborum v adresari
+$fileActions = array();
+
+if ($acl->isAllowed($user->role, "document:directory", "detach")) {
+	$fileActions["Odebrat"] = $this->url(array("clientId" => $this->clientId, "directoryId" => "__DIR__", "fileId" => "__FILE__"), "document-directory-dettach");
+}
+
 foreach ($this->childDocuments as $file) {
-	echo "<tr><td>";
+	echo "<tr><td><span class='document'></span>";
 	echo $this->file($file);
 	echo "</td>";
 	echo "<td>";
+	
+	// prepis akci a jejich zapis
+	foreach ($fileActions as $label => $action) {
+		$url = str_replace("__DIR__", $this->directory->id, $action);
+		$url = str_replace("__FILE__", $file->id, $url);
+		
+		echo "<a href='$url' class='dettach'>$label</a>";
+	}
 
 	echo "</td></tr>";
 }
 ?>
 	</tbody>
 </table>
+<script type="text/javascript" src="/js/document/document.js"></script>

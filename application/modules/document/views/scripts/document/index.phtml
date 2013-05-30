@@ -1,0 +1,13 @@
+<div class='box'><?php echo $this->docMenu(); ?></div>
+<h1>Moje dokumenty</h1>
+<table>
+<?php 
+foreach ($this->files as $file) {
+	$link = $this->file($file);
+	
+	$link .= " (" . $file->cnt . ")";
+	
+	echo "<tr><td>$link</td></tr>";
+}
+?>
+</table>

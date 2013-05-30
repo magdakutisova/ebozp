@@ -1,0 +1,11 @@
+<div class='box'><?php echo $this->docMenu(); ?></div>
+<h1>Koš</h1>
+<table>
+<?php 
+foreach ($this->files as $file) {
+	$link = $this->file($file);
+	
+	echo "<tr><td>$link</td></tr>";
+}
+?>
+</table>

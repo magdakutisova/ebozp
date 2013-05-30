@@ -149,5 +149,35 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "detach"
 						))
 		);
+		
+		$router->addRoute(
+				"document-directory-dettach",
+				new Zend_Controller_Router_Route("/klient/:clientId/directory/:directoryId/dettach-file/:fileId",
+						array(
+								"module" => "document",
+								"controller" => "directory",
+								"action" => "detach"
+						))
+		);
+		
+		$router->addRoute(
+				"document-mine",
+				new Zend_Controller_Router_Route("/klient/:clientId/documents/mine",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "index"
+						))
+		);
+		
+		$router->addRoute(
+				"document-trash",
+				new Zend_Controller_Router_Route("/klient/:clientId/documents/mine/trash",
+						array(
+								"module" => "document",
+								"controller" => "document",
+								"action" => "trash"
+						))
+		);
 	}
 }
