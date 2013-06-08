@@ -2,7 +2,21 @@
 <?php echo $this->docMenu(); ?>
 </div>
 <div class="box">
-Adresa: <?php echo $this->path($this->path, $this->directory); ?>
+Adresa: <?php echo $this->path($this->path, $this->directory); ?> <?php if ($this->directory->parent_id) echo $this->formButton("edit-directory", "Upravit adresář")?><br />
+Pobočka: <strong>
+<?php 
+if ($this->directory->subsidiary_id) {
+	foreach ($this->subsidiaries as $sub) {
+		if ($sub->id_subsidiary == $this->directory->subsidiary_id) {
+			echo $sub->subsidiary_name;
+			break;
+		}
+	}
+} else {
+	echo "-";
+}
+?>
+</strong>
 <?php
 // kontrola acl pro vytvoreni noveho adresare
 $acl = new My_Controller_Helper_Acl();
@@ -76,4 +90,9 @@ foreach ($this->childDocuments as $file) {
 ?>
 	</tbody>
 </table>
+<div class="hidden">
+	<div id="form-edit-dir">
+	<?php echo $this->formEdit; ?>
+	</div>
+</div>
 <script type="text/javascript" src="/js/document/document.js"></script>

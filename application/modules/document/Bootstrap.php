@@ -56,6 +56,17 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// vytvori adresar
+		$router->addRoute(
+				"document-directory-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/directory/:directoryId/put",
+						array(
+								"module" => "document",
+								"controller" => "directory",
+								"action" => "put"
+						))
+		);
+		
 		// smaze adresar
 		$router->addRoute(
 				"document-directory-delete",

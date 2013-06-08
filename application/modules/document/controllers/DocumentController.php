@@ -234,7 +234,8 @@ class Document_DocumentController extends Zend_Controller_Action {
 		
 		// presun souboru
 		$element = $form->getElement("file");
-		$file->createVersionFromFile($element->getValue(), $element->getMimeType());
+		
+		$file->createVersionFromFile($element->getFileName(), $element->getMimeType());
 		
 		// presmerovani na get
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId", 0), "fileId" => $file->id), "document-get");

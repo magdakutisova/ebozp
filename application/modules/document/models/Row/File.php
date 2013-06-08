@@ -1,6 +1,10 @@
 <?php
 class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 	
+	const TYPE_NONE = 0;
+	const TYPE_DOCUMENTATION = 1;
+	const TYPE_LEGISLATIVE = 2;
+	
 	/**
 	 * pripoji dokument do adresare
 	 * 

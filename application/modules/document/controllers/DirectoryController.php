@@ -67,6 +67,16 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		$url = $this->view->url(array("clientId" => $clientId, "directoryId" => $directory->id), "document-post");
 		$formPostFile->setAction($url);
 		
+		// nacteni pobocek
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId), "subsidiary_name");
+		
+		$formEdit = new Document_Form_DirectoryEdit();
+		$formEdit->fillSelect($subsidiaries);
+		$formEdit->populate($directory->toArray());
+		$url = $this->view->url(array("clientId" => $clientId, "directoryId" => $directory->id), "document-directory-put");
+		$formEdit->setAction($url);
+		
 		$this->view->directory = $directory;
 		$this->view->path = $path;
 		$this->view->childDirs = $childDirs;
@@ -74,6 +84,8 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		$this->view->formPostDir = $formPostDir;
 		$this->view->formPostFile = $formPostFile;
 		$this->view->clientId = $this->getRequest()->getParam("clientId");
+		$this->view->subsidiaries = $subsidiaries;
+		$this->view->formEdit = $formEdit;
 	}
 	
 	public function getJsonAction() {
@@ -121,7 +133,33 @@ class Document_DirectoryController extends Zend_Controller_Action {
 	}
 	
 	public function putAction() {
+		$directory = self::loadDir($this->_request->getParam("directoryId"));
 		
+		// pokud je adresar korenovy, pak je editace zakazana
+		if ($directory->parent_id == null) throw new Zend_Db_Table_Row_Exception("Editation of root is forbiden");
+		
+		$form = new Document_Form_DirectoryEdit();
+		
+		// nacteni pobocek klienta
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $this->_request->getParam("clientId")));
+		$form->fillSelect($subsidiaries);
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("get");
+			return;
+		}
+		
+		$directory->setFromArray($form->getValues(true));
+		
+		// kotrnola pobocky, jestli neni 0
+		if ($form->getElement("subsidiary_id")->getValue() == 0) $directory->subsidiary_id = null;
+		
+		$directory->save();
+		
+		// presmerovani na novou url
+		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId"), "directoryId" => $this->_request->getParam("directoryId")), "document-directory-get");
+		$this->_redirect($url);
 	}
 	
 	/**

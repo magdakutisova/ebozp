@@ -88,7 +88,12 @@ $(function () {
 		return function () { return confirm(message); };
 	}
 	
+	function openEditDirForm() {
+		createDialog($("#form-edit-dir"), "350px", "Úprava adresáře", undefined);
+	}
+	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
+	$("#edit-directory").click(openEditDirForm).button( { "icon-only" : true, icons : { primary : "ui-icon-pencil"}, "text" : false});
 	
 	$(".button").button();
 	$("#attach-dir").click(openAttachForm);

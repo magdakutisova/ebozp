@@ -26,6 +26,12 @@ class Document_Form_File extends Zend_Form {
 		);
 		
 		$this->addElement("text", "name", array("required" => true, "label" => "Jméno : ", "decorators" => $elementDecorator));
+		$this->addElement("select", "file_type", array("label" => "Typ souboru : ", "decorators" => $elementDecorator, "multiOptions" => array(
+				Document_Model_Row_File::TYPE_NONE => "Obecný dokument",
+				Document_Model_Row_File::TYPE_DOCUMENTATION => "Dokumentace",
+				Document_Model_Row_File::TYPE_LEGISLATIVE => "Legislativa"
+		)));
+		
 		$this->addElement("submit", "submit", array("label" => "Uložit", "decorators" => $submitDecorator));
 	}
 }
