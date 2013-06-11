@@ -3,17 +3,9 @@ class Audit_Model_Forms extends Zend_Db_Table_Abstract {
 	
 	protected $_name = "audit_forms";
 	
-	protected $_primary = "questionary_id";
+	protected $_primary = "id";
 	
-	protected $_sequence = false;
-	
-	protected $_referenceMap = array(
-			"questionary" => array(
-					"columns" => "questionary_id",
-					"refTableClass" => "Questionary_Model_Questionaries",
-					"refColumns" => "id"
-			)
-	);
+	protected $_sequence = true;
 	
 	protected $_rowClass = "Audit_Model_Row_Form";
 	
@@ -26,11 +18,10 @@ class Audit_Model_Forms extends Zend_Db_Table_Abstract {
 	 * @param Questionary_Model_Row_Questionary $questionary dotaznik
 	 * @return Audit_Model_Row_Form
 	 */
-	public function createForm($name, Questionary_Model_Row_Questionary $questionary) {
+	public function createForm($name) {
 		// x - navratova hodnota
 		$x = $this->createRow(array(
-				"name" => $name,
-				"questionary_id" => $questionary->id
+				"name" => $name
 		));
 		
 		$x->save();

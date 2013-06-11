@@ -11,7 +11,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			"form" => array(
 					"columns" => "form_id",
 					"refTableClass" => "Audit_Model_Forms",
-					"refColumns" => "questionary_id"
+					"refColumns" => "id"
 			),
 			
 			"audit" => array(

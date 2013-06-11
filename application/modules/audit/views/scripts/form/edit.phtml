@@ -1,32 +1,31 @@
 <link type="text/css" rel="stylesheet" href="/css/questionary.css">
 <h1>Editace formuláře - <?php echo $this->form->name; ?></h1>
+<a href="/audit/form/index">Zpět na seznam</a>
 <?php
 echo $this->editForm;
+
+// smazani formulare
+echo "<h2>Smazat formulář</h2>";
+echo $this->formDelete;
+
+// vypis kategorii tak, jak jdou posobe a vytvoreni formulare pro ulozeni noveho razeni
 ?>
-<div>
+<h2>Pořadí kategorií</h2>
+<form action="/audit/form/sort" method="post">
+	<ol id="catlist">
 <?php 
-echo $this->formButton("add-group", "Přidat skupinu");
-echo $this->formButton("remove-group", "Odstranit skupinu");
-echo $this->formButton("edit-group", "Upravit nadpis skupiny");
-echo $this->formButton("sort-group", "Řadit skupiny");
-echo $this->formButton("endsort-group", "Dokončit řazení", array("style" => "display:none;"));
+foreach ($this->categories as $category) {
+	$url = "/audit/section/edit?categoryId=" . $category->id . "&formId=" . $category->form_id;
+	
+	echo "<li><a href='$url'>" . $category->name . "</a>" . $this->formHidden("category[sort][]", $category->id) . "</li>";
+}
 ?>
-</div>
-<div>
-<?php 
-echo $this->formButton("add-question", "Přidat otázku");
-echo $this->formButton("remove-question", "Odstranit otázku");
-echo $this->formButton("edit-question", "Upravit otázku");
-echo $this->formButton("sort-question", "Řadit otázky");
-echo $this->formButton("endsort-question", "Dokončit řazení", array("style" => "display:none"));
-?>
-</div>
-<div>
-<?php echo $this->formButton("cancel-action", "Zrušit", array("style" => "display:none;")); ?>
-</div>
-<div id="form-container"></div>
-<script type="text/javascript">
-var QDATA = <?php echo Zend_Json::encode($this->questionary->toArray()); ?>
-</script>
-<script type="text/javascript" src="/js/questionary.items.js"></script>
+	</ol>
+	<?php 
+	echo $this->formHidden("formId", $this->form->id);
+	echo $this->formSubmit("category[submit]", "Uložit");
+	?>
+</form>
+<h2>Nová kategorie</h2>
+<?php echo $this->categoryForm; ?>
 <script type="text/javascript" src="/js/audit/form/edit.js"></script>

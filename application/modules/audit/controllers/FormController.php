@@ -11,7 +11,7 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		// nacteni dat, pokud jsou nejaka odeslana
 		$data = $this->getRequest()->getParam("form", array());
-		$form->isValid($data);
+		$form->isValidPartial($data);
 		
 		$this->view->form = $form;
 	}
@@ -21,27 +21,16 @@ class Audit_FormController extends Zend_Controller_Action {
 	 */
 	public function deleteAction() {
 		// nacteni dat
-		$data = $this->getRequest()->getParam("form", array());
-		$data = array_merge(array("id" => 0), $data);
+		$form = self::loadForm($this->_request->getParam("formId"));
+		$delForm = new Audit_Form_Delete();
 		
-		// kontrola dat
-		try {
-			// nacteni formulare
-			$tableForms = new Audit_Model_Forms();
-			$form = $tableForms->findById($data["id"]);
-			
-			if (!$form) throw new Zend_Exception("Form #" . $data["id"] . " not found");
-		} catch (Zend_Exception $e) {
-			$this->_forward("index");
+		if (!$delForm->isValid($this->_request->getParams())) {
+			$this->_forward("edit");
 			return;
 		}
 		
-		// nacteni puvodniho dotazniku
-		$questionary = $form->getQuestionary();
-		
 		// smazani dat
 		$form->delete();
-		$questionary->delete();
 		
 		// presmerovani na index
 		$this->_redirect("/audit/form/index");
@@ -52,29 +41,30 @@ class Audit_FormController extends Zend_Controller_Action {
 	 */
 	public function editAction() {
 		// nacteni dat
-		$data = $this->getRequest()->getParam("form", array());
-		$data = array_merge(array("id" => 0), $data);
+		$formId = $this->getRequest()->getParam("formId", 0);
+		$form = self::loadForm($formId);
 		
-		$tableForms = new Audit_Model_Forms();
-		$form = $tableForms->findById($data["id"]);
-		
-		if (!$form) {
-			// formular nebyl nalezen
-			$this->_forward("index");
-			return;
-		}
-		
-		// nalezeni dotazniku a prevod do tridy
-		$questionaryRow = $form->getQuestionary();
-		$questionary = $questionaryRow->toClass();
-		
-		// vytvoreni HTML formulare
+		// vytvoreni HTML formulare pro zmenu jmena
 		$editForm = new Audit_Form_Form();
-		$editForm->populate($questionaryRow->toArray());
+		$editForm->populate($form->toArray());
+		$editForm->setAction($this->view->url(array("formId" => $formId), "audit-form-put"));
+		
+		// nacteni kategorii 
+		$categories = $form->findCategories();
+		
+		// formular tvorby kategorii
+		$categoryForm = new Audit_Form_Section();
+		$categoryForm->isValidPartial($this->_request->getParams());
+		
+		// formular smazani
+		$formDelete = new Audit_Form_Delete();
+		$formDelete->setAction("/audit/form/delete?formId=" . $form->id);
 		
 		$this->view->form = $form;
-		$this->view->questionary = $questionary;
 		$this->view->editForm = $editForm;
+		$this->view->categories = $categories;
+		$this->view->categoryForm = $categoryForm;
+		$this->view->formDelete = $formDelete;
 	}
 	
 	public function fillAction() {
@@ -253,64 +243,39 @@ class Audit_FormController extends Zend_Controller_Action {
 			return;
 		}
 		
-		// vytvoreni zakladniho dotazniku
-		$tableQuestionaries = new Questionary_Model_Questionaries();
-		$questionary = $tableQuestionaries->createQuestionary($form->getValue("name"));
-		
 		// vytvoreni reprezentace formulare
 		$tableForms = new Audit_Model_Forms();
-		$form = $tableForms->createForm($form->getValue("name"), $questionary);
+		$form = $tableForms->createForm($form->getValue("name"));
 		
 		// presmerovani na editaci
-		$this->_redirect("/audit/form/edit?form[id]=" . $questionary->id);
+		$this->_redirect("/audit/form/edit?formId=" . $form->id);
 	}
 	
 	/*
 	 * ulozi zmeny ve formulari
 	 */
-	public function putJsonAction() {
-		$this->view->layout()->disableLayout();
-		$this->view->response = false;
-		
+	public function putAction() {
 		// nacteni dat
-		$data = $this->getRequest()->getParam("form", array());
-		$data = array_merge(array("id" => 0), $data);
+		$formId = $this->_request->getParam("formId");
 		
-		// nacteni lokalnich dat
-		$tableForms = new Audit_Model_Forms();
-		$formRow = $tableForms->findById($data["id"]);
-		
-		if (!$formRow) return;
-		
-		// nacteni dotazniku
-		$questionaryRow = $formRow->getQuestionary();
+		try {
+			$formRow = self::loadForm($formId);
+		} catch (Zend_Exception $e) {
+			return;
+		}
 		
 		// kontrola dat odeslanych z klienta
 		$form = new Audit_Form_Form();
 		
-		if (!$form->isValid($data)){
+		if (!$form->isValid($this->_request->getParams())){
 			return;
 		}
 		
 		// nastaveni jmena
-		$formRow->name = $form->getElement("name")->getValue();
+		$formRow->setFromArray($form->getValues(true));
 		$formRow->save();
 		
-		// naprasovani dat z dotazniku
-		$qData = Zend_Json::decode($data["def"]);
-		
-		// nastaveni dotazniku
-		$questionary = new Questionary_Questionary();
-		$questionary->setFromArray($qData);
-		
-		// zapis do dotazniku
-		$questionaryRow->saveClass($questionary);
-		
-		// zapis do formulare
-		$formRow->writeQuestionary($questionary);
-		
-		// nastaveni view
-		$this->view->response = true;
+		$this->view->form = $formRow;
 	}
 	
 	public function saveAction() {
@@ -418,5 +383,40 @@ class Audit_FormController extends Zend_Controller_Action {
 		), "audit-form-fill");
 		
 		$this->_redirect($url);
+	}
+	
+	public function sortAction() {
+		// nacteni dat
+		$formId = $this->_request->getParam("formId", 0);
+		$form = self::loadForm($formId);
+		
+		// vytvoreni instance tabulky a priprava podminky
+		$tableCategories = new Audit_Model_FormsCategories();
+		$where = array("form_id = ?" => $form->id, "id = ?" => 0);
+		$data = array("position" => 0);
+		$pos = 1;
+		
+		// prochazeni dat a zapis do databaze
+		$sort = (array) $this->_request->getParam("category", null);
+		$sort = array_merge(array("sort" => array()), $sort);
+		
+		// update dat
+		foreach ($sort["sort"] as $categoryId) {
+			$where["id = ?"] = $categoryId;
+			$data["position"] = $pos++;
+			
+			$tableCategories->update($data, $where);
+		}
+		
+		$this->view->form = $form;
+	}
+	
+	public static function loadForm($id) {
+		$tableForms = new Audit_Model_Forms();
+		$form = $tableForms->findById($id);
+		
+		if (!$form) throw new Zend_Db_Table_Exception("Form #$id not found");
+		
+		return $form;
 	}
 }

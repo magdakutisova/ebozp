@@ -355,5 +355,27 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "post"
 						))
 		);
+		
+		// vytvoreni sekce otazek ve formulari
+		$router->addRoute(
+				"audit-section-post",
+				new Zend_Controller_Router_Route("/form/:formId/section/post",
+						array(
+								"module" => "audit",
+								"controller" => "section",
+								"action" => "post"
+						))
+		);
+		
+		// vytvoreni sekce otazek ve formulari
+		$router->addRoute(
+				"audit-form-put",
+				new Zend_Controller_Router_Route("/audit/form/:formId/put",
+						array(
+								"module" => "audit",
+								"controller" => "form",
+								"action" => "put"
+						))
+		);
 	}
 }

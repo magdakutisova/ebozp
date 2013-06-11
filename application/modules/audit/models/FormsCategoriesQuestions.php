@@ -9,14 +9,8 @@ class Audit_Model_FormsCategoriesQuestions extends Zend_Db_Table_Abstract {
 	
 	protected $_referenceMap = array(
 			"category" => array(
-					"columns" => "category_id",
+					"columns" => "group_id",
 					"refTableClass" => "Audit_Model_FormsCategories",
-					"refColumns" => "id"
-			),
-			
-			"item" => array(
-					"columns" => "questionary_item_id",
-					"refTableClass" => "Questionary_Model_QuestinariesItems",
 					"refColumns" => "id"
 			)
 	);
@@ -37,23 +31,17 @@ class Audit_Model_FormsCategoriesQuestions extends Zend_Db_Table_Abstract {
 	 * @param string $suggestion navrh opatreni
 	 * @return Audit_Model_Row_FormCategoryQuestion
 	 */
-	public function createQuestion(Audit_Model_Row_FormCategory $questionCategory,
-			Questionary_Model_Row_QuestionaryItem $item,
-			$category,
-			$subcategory,
-			$concretisation,
-			$mistake,
-			$suggestion) {
+	public function createQuestion(Audit_Model_Row_FormCategory $questionCategory, array $data) {
 		
 		$retVal = $this->createRow(array(
 				"group_id" => $questionCategory->id,
-				"questionary_item_id" => $item->id,
-				"question" => $item->label,
-				"category" => $category,
-				"subcategory" => $subcategory,
-				"concretisation" => $concretisation,
-				"mistake" => $mistake,
-				"suggestion" => $suggestion
+				"weight" => $data["weight"],
+				"question" => $data["question"],
+				"category" => $data["category"],
+				"subcategory" => $data["subcategory"],
+				"concretisation" => $data["concretisation"],
+				"mistake" => $data["mistake"],
+				"suggestion" => $data["suggestion"]
 		));
 		
 		$retVal->save();

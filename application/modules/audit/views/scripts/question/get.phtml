@@ -1,0 +1,11 @@
+<?php
+// navratova url
+$url = "/audit/section/edit?formId=" . $this->category->form_id . "&categoryId=" . $this->category->id;
+
+echo "<a href='$url'>Zpět na kategorii</a>";
+echo "<h1>Editace otázky</h2>";
+echo $this->form;
+
+echo "<h2>Smazat otázku</h2>";
+
+echo $this->formDelete;

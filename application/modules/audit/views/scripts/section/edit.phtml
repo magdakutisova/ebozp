@@ -1,0 +1,32 @@
+<?php
+$url = "/audit/form/edit?formId=" . $this->form->id;
+
+echo "<h1>" . $this->category->name . "</h1>";
+echo "<h2><a href='$url'>" . $this->form->name . "</a></h2>";
+echo $this->categoryForm;
+
+echo "<h2>Smazat skupinu</h2>";
+echo $this->formDelete;
+
+// formular nove neshody
+echo "<h2>Nová itázka</h2>";
+echo "<fieldset><legend id='toggler' style='cursor:pointer; text-decoration: underline;'>Zobrazit/skrát formulář</legend>";
+echo $this->newQuestion;
+echo "</fieldset>";
+
+// vypis otazek
+echo "<h2>Otázky</h2>";
+
+echo "<form action='/audit/section/sort?categoryId=" . $this->category->id . "' method='post'>";
+echo "<ol id='question-list'>";
+
+foreach ($this->questions as $question) {
+	echo "<li><a href='#' title='editovat'>$question->question</a>" . $this->formHidden("question[sort][]", $question->id) . "</li>";
+}
+
+echo "</ol>";
+echo $this->formHidden("categoryId", $this->category->id);
+echo "<p>" . $this->formSubmit("submit", "Uložit pořadí") , "</p>";
+echo "</form>";
+
+echo $this->headScript()->appendFile("/js/audit/section/edit.js", "text/javascript");

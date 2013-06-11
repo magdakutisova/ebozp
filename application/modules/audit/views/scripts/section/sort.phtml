@@ -1,0 +1,3 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$redirector->gotoSimple("edit", null, null, array("formId" => $this->category->form_id, "categoryId" => $this->category->id));

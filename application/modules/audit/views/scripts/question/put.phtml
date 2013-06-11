@@ -1,0 +1,3 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$redirector->gotoSimpleAndExit("edit", "section", null, array("formId" => $this->section->form_id, "categoryId" => $this->section->id));

@@ -9,9 +9,9 @@ class Audit_Model_FormsCategories extends Zend_Db_Table_Abstract {
 	
 	protected $_referenceMap = array(
 			"form" => array(
-					"columns" => "questionary_id",
+					"columns" => "form_id",
 					"refTableClass" => "Audit_Model_Forms",
-					"refColumns" => "questionary_id"
+					"refColumns" => "id"
 			)
 	);
 	
@@ -27,9 +27,14 @@ class Audit_Model_FormsCategories extends Zend_Db_Table_Abstract {
 	 * @return Audit_Model_Row_FormCategory
 	 */
 	public function createCategory($name, Audit_Model_Row_Form $form) {
+		// zjisteni maximalni pozice
+		$sql = "select max(position) as m from " . $this->_name . " where form_id = " . $form->id;
+		$position = $this->getAdapter()->query($sql)->fetchColumn() + 1;
+		
 		$retVal = $this->createRow(array(
 				"name" => $name,
-				"questionary_id" => $form->questionary_id
+				"form_id" => $form->id,
+				"position" => $position
 		));
 		
 		$retVal->save();

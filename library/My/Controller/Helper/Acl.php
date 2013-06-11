@@ -26,6 +26,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:check"));
 		$this->add(new Zend_Acl_Resource("audit:workplace"));
 		$this->add(new Zend_Acl_Resource("audit:report"));
+		$this->add(new Zend_Acl_Resource("audit:section"));
+		$this->add(new Zend_Acl_Resource("audit:question"));
 		
 		/*
 		 * ZDROJE MODULU DOCUMENT 

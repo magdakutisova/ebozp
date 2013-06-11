@@ -8,7 +8,7 @@ class Zend_View_Helper_FormLink extends Zend_View_Helper_Abstract {
 		if (is_null($link)) $link = "/audit/form/get";
 		
 		// sestaveni adresy
-		$link .= "?form[id]=" . $form->questionary_id;
+		$link .= "?formId=" . $form->id;
 		
 		// sestaveni retval
 		$retVal = "<a href='$link'>$caption</a>";
