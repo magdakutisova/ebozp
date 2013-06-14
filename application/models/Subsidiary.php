@@ -14,6 +14,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	private $clientId;
 	private $private;
 	private $hq;
+	private $difficulty;
+	private $district;
 	private $allowed;
 	
 	public function __construct ($options = array()){
@@ -210,6 +212,22 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	public function getDeleted() {
 		return $this->deleted;
 	}
+	
+	public function getDifficulty(){
+		return $this->difficulty;
+	}
+	
+	public function setDifficulty($difficulty){
+		$this->difficulty = $difficulty;
+	}
+	
+	public function getDistrict(){
+		return $this->district;
+	}
+	
+	public function setDistrict($district){
+		$this->district = $district;
+	}
 
 	/**
 	 * @return the $allowed
@@ -239,6 +257,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$this->clientId = isset($data['client_id']) ? $data['client_id'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
 		$this->hq = isset($data['hq']) ? $data['hq'] : null;
+		$this->difficulty = isset($data['difficulty']) ? $data['difficulty'] : null;
+		$this->district = isset($data['district']) ? $data['district'] : null;
 		
 		return $this;
 	}
@@ -260,6 +280,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$data['client_id'] = $this->clientId;
 		$data['private'] = $this->private;
 		$data['hq'] = $this->hq;
+		$data['difficulty'] = $this->difficulty;
+		$data['district'] = $this->district;
 		
 		return $data;
 	}
