@@ -59,7 +59,10 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="diary"/>
         </controllerFile>
-        <controllerFile controllerName="Position">
+        <controllerFile controllerName="Position"/>
+        <controllerFile controllerName="Utility">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="clientimport"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -213,6 +216,12 @@
           <viewControllerScriptsDirectory forControllerName="Workplace">
             <viewScriptFile forActionName="delete"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Utility">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Utility">
+            <viewScriptFile forActionName="clientimport"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -248,6 +257,10 @@
       <testApplicationDirectory>
         <testApplicationControllerDirectory>
           <testApplicationControllerFile forControllerName="Index"/>
+          <testApplicationControllerFile forControllerName="Utility">
+            <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="clientimport"/>
+          </testApplicationControllerFile>
         </testApplicationControllerDirectory>
       </testApplicationDirectory>
       <testLibraryDirectory/>

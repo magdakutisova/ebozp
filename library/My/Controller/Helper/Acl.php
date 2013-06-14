@@ -14,6 +14,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('workplace'));
 		$this->add(new Zend_Acl_Resource('position'));
 		$this->add(new Zend_Acl_Resource('print'));
+		$this->add(new Zend_Acl_Resource('utility'));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 
@@ -41,12 +42,14 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$technician = My_Role::ROLE_TECHNICIAN;
 		$coordinator = My_Role::ROLE_COORDINATOR;
 		$admin = My_Role::ROLE_ADMIN;
+		$superadmin = My_Role::ROLE_SUPERADMIN;
 		
 		$this->addRole(new Zend_Acl_Role($guest));
 		$this->addRole(new Zend_Acl_Role($client));
 		$this->addRole(new Zend_Acl_Role($technician), $client);
 		$this->addRole(new Zend_Acl_Role($coordinator), $technician);
-		$this->addRole(new Zend_Acl_Role($admin));
+		$this->addRole(new Zend_Acl_Role($superadmin));
+		$this->addRole(new Zend_Acl_Role($admin), $superadmin);
 		
 		$this->allow($guest, array('user', 'error'));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
@@ -78,7 +81,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json"));
 		$this->allow($coordinator, "audit:report",array("report.pdf", "create", "edit", "save"));
 		
-		$this->allow($admin);
+		$this->allow($superadmin);
+		$this->deny($admin, 'utility');
 		
 	}
 	

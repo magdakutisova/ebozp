@@ -41,5 +41,19 @@
 			<resource>user</resource>
 			<privilege>rights</privilege>
 		</userAdmin>
+		<utility>
+			<label>Nástroje pro superadmina</label>
+			<route>utility</route>
+			<resource>utility</resource>
+			<privilege>index</privilege>
+			<pages>
+				<clientimport>
+					<label>Import klientů</label>
+					<route>clientimport</route>
+					<resource>utility</resource>
+					<privilege>clientimport</privilege>
+				</clientimport>
+			</pages>
+		</utility>
 	</nav>
 </configdata>
