@@ -253,35 +253,50 @@ class ClientController extends Zend_Controller_Action
 				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 							
 				$clients = new Application_Model_DbTable_Client ();
+				$adapter = $clients->getAdapter();
 				
-				//přidání klienta a kontrola IČO
-				$clientId = $clients->addClient ( $client);
-				if (!$clientId) {
-					$defaultNamespace->formData = $formData;
-					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
-					$this->_helper->redirector->gotoRoute ( array (), 'clientNew' );
-				}
+				try{
+					//zahájení transakce
+					$adapter->beginTransaction();
 					
-				$subsidiary->setSubsidiaryName($client->getCompanyName());
-				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
-				$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
-				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
-				$subsidiary->setClientId($clientId);
-				$subsidiary->setHq(true);
-				
-				//přidání pobočky
-				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
-				
-				if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
-					$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
-					$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+					//přidání klienta a kontrola IČO
+					$clientId = $clients->addClient ( $client);
+					if (!$clientId) {
+						$defaultNamespace->formData = $formData;
+						$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
+						$this->_helper->redirector->gotoRoute ( array (), 'clientNew' );
+					}
+						
+					$subsidiary->setSubsidiaryName($client->getCompanyName());
+					$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
+					$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
+					$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
+					$subsidiary->setClientId($clientId);
+					$subsidiary->setHq(true);
+					
+					//přidání pobočky
+					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+					$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
+					
+					if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
+						$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+						$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+					}
+					
+					$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
+					
+					//uložení transakce
+					$adapter->commit();
+					
+					$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> přidán' );
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientIndex' );
 				}
-
-				$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
-				
-				$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> přidán' );
-				$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientIndex' );
+				catch(Exception $e){
+					//zrušení transakce
+					$adapter->rollback();
+					$this->_helper->FlashMessenger('Uložení klienta do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
+					$this->_helper->redirector->gotoRoute(array(), 'clientNew');
+				}				
 			} else {
 				$form->populate ( $formData );
 			}
@@ -375,32 +390,44 @@ class ClientController extends Zend_Controller_Action
 				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
 				$clients = new Application_Model_DbTable_Client ();
+				$adapter = $clients->getAdapter();
 				
-				//update klienta a kontrola IČO
-				if (!$clients->updateClient ( $client)) {
-					$defaultNamespace->formData = $formData;
-					$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
-					$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
+				try{
+					//zahájení transakce
+					$adapter->beginTransaction();
+					
+					//update klienta a kontrola IČO
+					if (!$clients->updateClient ( $client)) {
+						$defaultNamespace->formData = $formData;
+						$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
+						$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
+					}
+					
+					$subsidiary->setSubsidiaryName($client->getCompanyName());
+					$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
+					$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
+					$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
+					$subsidiary->setClientId($client->getIdClient());
+					$subsidiary->setHq(true);
+					
+					//update pobočky
+					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
+					$subsidiaries->updateSubsidiary ( $subsidiary, true);
+					
+					$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
+					
+					//uložení transakce
+					$adapter->commit();
+					
+					$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> upraven' );
+					$this->_helper->redirector->gotoRoute ( array ('clientId' => $client->getIdClient() ), 'clientAdmin' );
 				}
-				
-				//update klienta
-				//$clients->updateClient ( $client);
-				
-				$subsidiary->setSubsidiaryName($client->getCompanyName());
-				$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
-				$subsidiary->setSubsidiaryCode($client->getHeadquartersCode());
-				$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
-				$subsidiary->setClientId($client->getIdClient());
-				$subsidiary->setHq(true);
-				
-				//update pobočky
-				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiary, true);
-				
-				$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
-				
-				$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> upraven' );
-				$this->_helper->redirector->gotoRoute ( array ('clientId' => $client->getIdClient() ), 'clientAdmin' );
+				catch(Exception $e){
+					//zrušení transakce
+					$adapter->rollback();
+					$this->_helper->FlashMessenger('Uložení klienta do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
+					$this->_helper->redirector->gotoRoute(array(), 'clientNew');
+				}
 			}
 		
 		} else {
