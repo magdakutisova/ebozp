@@ -35,7 +35,7 @@
 			</p>
 			<ul>
 		<?php } ?>
-		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . '</a>'?></li>
+		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
 	<?php }
 		endforeach; ?>
 	</ul>

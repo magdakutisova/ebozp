@@ -27,7 +27,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			foreach($subsidiaries as $subsidiary){
 				if($acl->isAllowed($user, $subsidiary)){				 
 					$subs->addPage(array(
-						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(),
+						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown(),
 						'route' => 'subsidiaryIndex',
 						'resource' => 'subsidiary',
 						'privilege' => 'index',

@@ -13,13 +13,15 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 		if($client->getInvoiceStreet()){
 			$content .= '<p class="no-margin"><span class="bold">Fakturační adresa: </span>'
 				. $client->getInvoiceStreet()
-				. ', ' . $client->getInvoiceCode()
 				. ', ' . $client->getInvoiceTown()
+				. ' ' . $client->getInvoiceCode()
 				. '</p>';
 		}
-		$content .= '<p class="no-margin"><span class="bold">IČO: </span>'
-			. $client->getCompanyNumber()
-			. '</p>';
+		if($client->getCompanyNumber()){
+			$content .= '<p class="no-margin"><span class="bold">IČO: </span>'
+				. $client->getCompanyNumber()
+				. '</p>';
+		}
 		if ($client->getTaxNumber()){
 			$content .= '<p class="no-margin"><span class="bold">DIČ: </span>'
 				. $client->getTaxNumber()
@@ -27,12 +29,20 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 		}
 		$content .= '<p class="no-margin"><span class="bold">Adresa sídla organizace: </span>'
 			. $client->getHeadquartersStreet()
-			. ', ' . $client->getHeadquartersCode()
 			. ', ' . $client->getHeadquartersTown()
-			. '</p><p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
-			. $subsidiary->getContactPerson() . ', telefon: '
-			. $subsidiary->getPhone() . ', e-mail: '
-			. $subsidiary->getEmail() . '</p>';
+			. ' ' . $client->getHeadquartersCode()
+			. '</p>';
+		if($subsidiary->getDistrict()){
+			$content .= '<p class="no-margin"><span class="bold">Okres: </span>'
+					. $subsidiary->getDistrict()
+					. '</p>';
+		}
+		if($subsidiary->getContactPerson()){
+			$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
+				. $subsidiary->getContactPerson() . ', telefon: '
+				. $subsidiary->getPhone() . ', e-mail: '
+				. $subsidiary->getEmail() . '</p>';
+		}
 		if ($client->getBusiness()){
 			$content .= '<p class="no-margin"><span class="bold">Činnost klienta: </span>'
 				. $client->getBusiness()
@@ -48,14 +58,21 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 				. $subsidiary->getSupervisionFrequency()
 				. '</p>';
 		}
+		if($subsidiary->getDifficulty()){
+			$content .= '<p class="no-margin"><span class="bold">Náročnost: </span>'
+					. $subsidiary->getDifficulty()
+					. '</p>';
+		}
 		if ($subsidiary->getDoctor()){
 			$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
 				. $subsidiary->getDoctor()
 				. '</p>';
 		}
-		$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
-			. $client->getInsuranceCompany()
-			. '</p>';
+		if($client->getInsuranceCompany()){
+			$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
+				. $client->getInsuranceCompany()
+				. '</p>';
+		}
 		//TODO odpovědní zaměstnanci
 		if($client->getPrivate() && $this->view->canViewPrivate){
 			$content .= '<p class="no-margin"><span class="bold">Soukromá poznámka: </span>'

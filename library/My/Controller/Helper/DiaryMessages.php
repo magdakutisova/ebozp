@@ -39,7 +39,11 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     			$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
     			$flashMessenger->addMessage('Zpráva odeslána');
 				$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('Redirector');
-				$redirector->gotoRoute(array(), 'home');
+				$module = $this->request->getModuleName();
+				$controller = $this->request->getControllerName();
+				$action = $this->request->getActionName();
+				$params = $this->request->getParams();
+				$redirector->gotoSimple($action, $controller, $module, $params);
     		}
     	}  
 	}
