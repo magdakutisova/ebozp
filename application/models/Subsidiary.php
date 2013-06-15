@@ -259,7 +259,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$this->hq = isset($data['hq']) ? $data['hq'] : null;
 		$this->difficulty = isset($data['difficulty']) ? $data['difficulty'] : null;
 		$this->district = isset($data['district']) ? $data['district'] : null;
-		
+				
 		return $this;
 	}
 	
