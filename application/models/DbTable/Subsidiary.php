@@ -28,6 +28,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	public function addSubsidiary(Application_Model_Subsidiary $subsidiary) {
 		$data = $subsidiary->toArray();
 		$subsidiaryId = $this->insert ( $data );
+		$subsidiary->setIdSubsidiary($subsidiaryId);
 		
 		if ($subsidiary->getHq() == 0) {
 			//indexace pro vyhledávání

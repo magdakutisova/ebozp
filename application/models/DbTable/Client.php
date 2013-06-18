@@ -32,6 +32,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			if(!$companyNumberRow){
 				$data = $client->toArray();
 				$clientId = $this->insert ( $data );
+				$client->setIdClient($clientId);
 			
 				//indexace pro vyhledávání
 				$index = $this->getSearchIndex();
