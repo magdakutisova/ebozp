@@ -153,6 +153,49 @@ $(function(){
 		}
 	}
 	
+	//zobrazovani jen relevantnich pracovist pri pridavani pracovni pozice
+	$('.multiCheckboxSubsidiaries input').click(function(){
+		ajaxToggleWorkplaces();
+	});
+	
+	function ajaxToggleWorkplaces(){
+		var clientId = $("#client_id").val();
+		var checkedSubsidiaries = $(".multiCheckboxSubsidiaries input:checked");
+		var subIds = [];
+		var i = 0;
+		checkedSubsidiaries.each(function(){
+			subIds[i++] = $(this).val();
+		});
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: baseUrl + '/position/populateworkplaces',
+			data: "clientId=" + clientId + '&' + subIds.serializeArray(),
+			async: false,
+			success: function(json){
+				var checkedWorkplaces = $(".multiCheckboxWorkplaces input:checked");
+				var workplaceIds = [];
+				var j = 0;
+				checkedWorkplaces.each(function(){
+					workplaceIds[j++] = $(this).val();
+				});
+				$(".multiCheckboxWorkplaces").empty();
+				$.each(json, function(key, value){
+					if($.inArray(key, workplaceIds)){
+						$("div.multiCheckbox" + identifierCap + "s").append('<br/><label><input id=\"' + identifier + 'List-' + key +
+								'\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' +
+								value + '</label>');
+					}
+					else{
+						$("div.multiCheckbox" + identifierCap + "s").append('<br/><label><input id=\"' + identifier + 'List-' + key +
+								'\" type=\"checkbox\" value=\"' + key + '\" name=\"' + identifier + 'List[]\">' +
+								value + '</label>');
+					}
+				});
+			}
+		});
+	}
+	
 });
 
 /**

@@ -210,7 +210,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$workplaces = array();
 			foreach($results as $result){
 				$key = $result->id_workplace;
-				$workplace = $result->name . ' (' . $result->subsidiary_name . ')';
+				$workplace = $result->name . ' (' . $result->subsidiary_name . ', ' . $result->subsidiary_street . ', ' . $result->subsidiary_town . ')';
 				$workplaces[$key] = $workplace;
 			}
 			return $workplaces;

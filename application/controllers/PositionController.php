@@ -300,10 +300,11 @@ class PositionController extends Zend_Controller_Action
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
+    	//změnit SELECT
     	$this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
     	echo Zend_Json::encode($this->_workplaceList);
     }
-    
+       
     public function validateAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
