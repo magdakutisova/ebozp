@@ -101,7 +101,7 @@ class SearchController extends Zend_Controller_Action
 					$this->$this->_helper->redirector->gotoRoute ( array (), 'searchIndex' );
 				}
 				
-				$results = $index->find($query);
+				$results = $index->find(Zend_Search_Lucene_Search_QueryParser::parse($query, 'utf-8'));
 				$message = "K vyhledávání indexováno " . $index->count() . " položek.";
 				
 				$acl = new My_Controller_Helper_Acl();
