@@ -40,10 +40,9 @@ $(function(){
 		$("#zpravy").toggleClass("hidden");
 	});
 	
-	//PRO PŘÍPAD ŽE BY CHTĚLI pobočky SCHOVAT
-	/*$(".concealer").click(function(){
+	$("div#filtered").on("click", ".concealer", function(){
 		$(this).next("ul").toggleClass("hidden");
-	});*/
+	});
 	
 	$(".show-folder-form").click(function(){
 		$(".folder-form").toggleClass("hidden");
