@@ -300,8 +300,18 @@ class PositionController extends Zend_Controller_Action
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
-    	//změnit SELECT
     	$this->_workplaceList = $workplaces->getWorkplacesWithSubsidiaryName($this->_clientId);
+    	echo Zend_Json::encode($this->_workplaceList);
+    }
+    
+    public function toggleworkplacesAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$data = $this->_getParam('subIds');
+		$data = explode(',', $data);
+    	
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$this->_workplaceList = $workplaces->getWorkplacesBySubsidiaries($data);
     	echo Zend_Json::encode($this->_workplaceList);
     }
        

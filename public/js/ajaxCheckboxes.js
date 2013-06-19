@@ -537,7 +537,12 @@ $(function(){
 						ajaxPopulateSelectsAmbiguous(identifier, controller, calledFromBackground);
 					}
 					else{
-						ajaxPopulateSelects(identifier, controller);
+						if(identifier == 'workplace'){
+							ajaxToggleWorkplaces();
+						}
+						else{
+							ajaxPopulateSelects(identifier, controller);
+						}
 					}
 				}			
 			}
@@ -559,6 +564,55 @@ $(function(){
 	
 	function capitalizeFirstLetter(string){
 		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+	
+	//volat pri pridavani workplace
+	//zobrazovani jen relevantnich pracovist pri pridavani pracovni pozice
+	$('.multiCheckboxSubsidiaries input').click(function(){
+		ajaxToggleWorkplaces();
+	});
+	
+	$(document).ready(function(){
+		ajaxToggleWorkplaces();
+	});
+	
+	function ajaxToggleWorkplaces(){
+		var clientId = $("#client_id").val();
+		var checkedSubsidiaries = $(".multiCheckboxSubsidiaries input:checked");
+		var subIds = [];
+		var i = 0;
+		checkedSubsidiaries.each(function(){
+			subIds[i++] = $(this).val();
+		});
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: baseUrl + '/position/toggleworkplaces',
+			data: "clientId=" + clientId + "&subIds=" + subIds,
+			async: false,
+			success: function(json){
+				console.log("clientId=" + clientId + "&subIds=" + subIds);
+				var checkedWorkplaces = $(".multiCheckboxWorkplaces input:checked");
+				var workplaceIds = [];
+				var j = 0;
+				checkedWorkplaces.each(function(){
+					workplaceIds[j++] = $(this).val();
+				});
+				$(".multiCheckboxWorkplaces").empty();
+				$.each(json, function(key, value){
+					if($.inArray(key, workplaceIds) == -1){
+						$("div.multiCheckboxWorkplaces").append('<br/><label><input id=\"workplaceList-' + key +
+								'\" type=\"checkbox\" value=\"' + key + '\" name=\"workplaceList[]\">' +
+								value + '</label>');
+					}
+					else{
+						$("div.multiCheckboxWorkplaces").append('<br/><label><input id=\"workplaceList-' + key +
+								'\" type=\"checkbox\" checked=\"checked\" value=\"' + key + '\" name=\"workplaceList[]\">' +
+								value + '</label>');						
+					}
+				});
+			}
+		});
 	}
 	
 	//volat při přidávání folder
@@ -590,7 +644,7 @@ $(function(){
 		});
 	}
 	
-	//volat při přidávání workplace, position, employee
+	//volat při přidávání position, employee
 	function ajaxPopulateSelects(identifier, controller){
 		var clientId = $("#client_id").val();
 		$.ajax({
