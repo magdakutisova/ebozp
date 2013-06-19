@@ -65,6 +65,10 @@ label.required:after{
 	text-decoration: underline;
 }
 
+.anchor{
+	color:#06c;text-decoration:underline;cursor: pointer;
+}
+
 a.workplace-title, a.position-title{
 	font-size: 120%;
 	font-weight: bold;

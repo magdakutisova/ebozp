@@ -29,12 +29,12 @@
 			<?php $client = $subsidiary->getClientId(); ?>
 			<p class="bold concealer">
 			<?php if($allowed){?><a><?php }?>
-				<?php echo $companyName . ' - ' . $companyAddress ?>
+				<span class="anchor"><?php echo $companyName . ' - ' . $companyAddress ?></span>
 			<?php if($allowed){?></a><?php }?>
 			</p>
 			<ul class="hidden">
-			<li><?php if ($allowed){
-			echo '<a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
+			<?php if ($allowed){
+			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 			$allowed = ''; }?>
 		<?php } ?>
 		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
