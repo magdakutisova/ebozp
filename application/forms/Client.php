@@ -113,7 +113,7 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'DIČ',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array(new Zend_Validate_StringLength(array('max => 15'))),
+        	'validators' => array(new Zend_Validate_Regex(array('pattern' => '/^CZ[0-9]{8,10}$/'))),
         	'decorators' => $elementDecorator,
         ));
         
