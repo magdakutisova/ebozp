@@ -44,6 +44,9 @@
 				<?php foreach($position['environmentFactors'] as $environmentFactor){?>
 					<li><?php echo $environmentFactor['factor'];?></li>
 					<li class="no-bullet"><span class="bold">Kategorie: </span><?php echo $environmentFactor['category'];?></li>
+					<?php if($environmentFactor['source']){?>
+						<li class="no-bullet"><span class="bold">Zdroj (popis): </span><?php echo $environmentFactor['source'];?></li>
+					<?php }?>
 					<?php if($environmentFactor['protection_measures']){?>
 						<li class="no-bullet"><span class="bold">Ochranná opatření proti FPP: </span><?php echo $environmentFactor['protection_measures'];?></li>
 					<?php }?>

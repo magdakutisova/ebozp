@@ -7,6 +7,7 @@ class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 	protected $_category;
 	protected $_protectionMeasures;
 	protected $_measurementTaken;
+	protected $_source;
 	protected $_note;
 	protected $_private;
 	
@@ -44,6 +45,10 @@ class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 		return $this->_measurementTaken;
 	}
 	
+	public function getSource(){
+		return $this->_source;
+	}
+	
 	public function getNote(){
 		return $this->_note;
 	}
@@ -72,6 +77,10 @@ class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 		$this->_measurementTaken = $_measurementTaken;
 	}
 	
+	public function setSource($_source){
+		$this->_source = $_source;
+	}
+	
 	public function setNote($_note){
 		$this->_note = $_note;
 	}
@@ -86,6 +95,7 @@ class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 		$this->setCategory($values['category']);
 		$this->setProtectionMeasures($values['protection_measures']);
 		$this->setMeasurementTaken($values['measurement_taken']);
+		$this->setSource($values['source']);
 		$this->setNote($values['note']);
 		$this->setPrivate($values['private']);	
 		return $this;
@@ -98,6 +108,7 @@ class My_Form_Element_EnvironmentFactorDetail extends Zend_Form_Element_Xhtml{
 		$values['category'] = $this->getCategory();
 		$values['protection_measures'] = $this->getProtectionMeasures();
 		$values['measurement_taken'] = $this->getMeasurementTaken();
+		$values['source'] = $this->getSource();
 		$values['note'] = $this->getNote();
 		$values['private'] = $this->getPrivate();
 		return $values;

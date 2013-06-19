@@ -30,12 +30,13 @@ class My_Controller_Helper_PositionRelationships extends Zend_Controller_Action_
 						$category = $formData[$detail]['category'];
 						$measurementTaken = $formData[$detail]['measurement_taken'];
 						$protectionMeasures = $formData[$detail]['protection_measures'];
+						$source = $formData[$detail]['source'];
 						$note = $formData[$detail]['note'];
 						$private = $formData[$detail]['private'];
 						break 1;
 					}
 				}
-				$positionHasEnvironmentFactor->addRelation($positionId, $environmentFactorId, $category, $protectionMeasures, $measurementTaken, $note, $private);
+				$positionHasEnvironmentFactor->addRelation($positionId, $environmentFactorId, $category, $protectionMeasures, $measurementTaken, $source, $note, $private);
 			}
 		}
 		$schoolingDetails = array_filter(array_keys($formData), array($this, 'findSchoolingDetails'));
