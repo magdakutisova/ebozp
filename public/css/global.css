@@ -42,6 +42,12 @@
 	background: #e5eCf9;
 }
 
+.identification{
+	border-bottom: 1px solid grey;
+	font-size: 150%;
+	margin-bottom: 20px;
+}
+
 .button-anchor{
 	border:0px solid #fff;  /* needed for opera */
 	background:transparent;

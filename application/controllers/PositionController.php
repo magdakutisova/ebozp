@@ -626,7 +626,6 @@ class PositionController extends Zend_Controller_Action
     public function editAction()
     {
         $defaultNamespace = new Zend_Session_Namespace();
-        $this->view->subtitle = "Upravit pracovní pozici";
         $form = $this->loadOrCreateForm($defaultNamespace);
         
         //získání parametrů
@@ -639,6 +638,8 @@ class PositionController extends Zend_Controller_Action
         
         $positions = new Application_Model_DbTable_Position();
         $position = $positions->getPositionComplete($positionId);
+        
+        $this->view->subtitle = "Upravit pracovní pozici " . $position["position"];
         
         //naplnění multiselectu pobočkami
         $subsidiaries = new Application_Model_DbTable_Subsidiary ();
