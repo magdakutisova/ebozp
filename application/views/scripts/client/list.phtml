@@ -27,7 +27,7 @@
 		if ($client != $subsidiary->getClientId()){?>
 			</ul>
 			<?php $client = $subsidiary->getClientId(); ?>
-			<p class="bold">
+			<p class="bold concealer">
 			<?php if($allowed){?><a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php }?>
 				<?php echo $companyName . ' - ' . $companyAddress ?>
 			<?php if($allowed){?></a><?php

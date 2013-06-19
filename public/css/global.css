@@ -5,6 +5,10 @@
 	font-weight: bold;
 }
 
+label.required:after{
+	content: " *";
+}
+
 .message{
 	background: #b7ceec; padding: 10px
 }
