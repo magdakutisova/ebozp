@@ -37,6 +37,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("document:directory"));
 		$this->add(new Zend_Acl_Resource("document:document"));
 		
+		$preventist = My_Role::ROLE_PREVENTIST;
 		$guest = My_Role::ROLE_GUEST;
 		$client = My_Role::ROLE_CLIENT;
 		$technician = My_Role::ROLE_TECHNICIAN;
@@ -46,6 +47,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		
 		$this->addRole(new Zend_Acl_Role($guest));
 		$this->addRole(new Zend_Acl_Role($client));
+		$this->addRole(new Zend_Acl_Role($preventist), $client);
 		$this->addRole(new Zend_Acl_Role($technician), $client);
 		$this->addRole(new Zend_Acl_Role($coordinator), $technician);
 		$this->addRole(new Zend_Acl_Role($superadmin));
@@ -62,7 +64,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
-		$this->deny($client, 'position', array('new', 'edit', 'delete')); //DODĚLAT VE VIEW!!
+		$this->deny($client, 'position', array('new', 'edit', 'delete'));
 		$this->deny($client, 'private');
 		
 		$this->allow($technician, 'private');

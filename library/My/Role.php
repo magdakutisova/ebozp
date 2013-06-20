@@ -7,12 +7,14 @@ class My_Role{
 	const ROLE_TECHNICIAN = 3;
 	const ROLE_CLIENT = 4;
 	const ROLE_GUEST = 5;
+	const ROLE_PREVENTIST = 6;
 	
 	private static $roles = array(
 		self::ROLE_CLIENT => 'Klient',
 		self::ROLE_TECHNICIAN => 'Bezpečnostní technik',
 		self::ROLE_COORDINATOR => 'Koordinátor',
 		self::ROLE_ADMIN => 'Admin',
+		self::ROLE_PREVENTIST => 'Preventista BOZP a PO',
 	);
 	
 	public static function getRoles(){
