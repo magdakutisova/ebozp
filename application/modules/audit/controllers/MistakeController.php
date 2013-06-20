@@ -382,6 +382,75 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->getAction();
 		$this->view->layout()->setLayout("floating-layout");
 	}
+	
+	public function importAction() {
+		// kontrola dat
+		$clientId = $this->_request->getParam("clientId", 0);
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+		
+		// nacteni pobocky
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiary = $tableSubsidiaries->fetchRow(array("id_subsidiary = ?" => $subsidiaryId, "client_id = ?" => $clientId));
+		
+		if (!$subsidiary) throw new Zend_Exception("Subsidiary not found");
+		
+		// kontrola odeslani souboru
+		if (!is_file($_FILES["importfile"]["tmp_name"])) {
+			// soubor nebyl nalezen
+			throw new Zend_Exception("File not found");
+		}
+		
+		// otevreni souboru a nacitani dat
+		$fp = fopen($_FILES["importfile"]["tmp_name"], "r");
+		
+		// preskoceni prvniho radku
+		fgetcsv($fp);
+		
+		// nacitani dat a vygenerovani dotazu pro vlozeni
+		$insert = array();
+		$adapter = $tableSubsidiaries->getAdapter();
+		
+		while(!feof($fp)) {
+			$item = fgetcsv($fp);
+			
+			if (count($item) < 5) continue;
+			
+			// vyhodnocení stavu
+			$state = ($item[11] == "odstraněno") ? 1 : 0;
+			
+			$motifiedAt = self::_toSQLDate($item[10]);
+			$removedAt = self::_toSQLDate($item[13]);
+			
+			$insert[] = "("
+					. $subsidiary->client_id
+					. "," . $subsidiary->id_subsidiary
+					. "," . $adapter->quote($item[3]) // zavaznost
+					. "," . $adapter->quote($item[4])	// kategorie
+					. "," . $adapter->quote($item[5])	// podkategorie
+					. "," . $adapter->quote($item[6])	// upresneni
+					. "," . $adapter->quote($item[7])	// neshoda
+					. "," . $adapter->quote($item[8])	// navrh opatreni
+					. "," . $adapter->quote($item[9])	// kometar
+					. "," . $adapter->quote($notifiedAt)
+					. "," . $adapter->quote($state)
+					. "," . $adapter->quote($item[13])	// zodpovedna osoba
+					. "," . $adapter->quote($removedAt)
+					. "," . $adapter->quote($item[15]) . ", 1)";	// skryta poznamka a hodnota is_submited
+		}
+		
+		// smazani starych dat
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableMistakes->delete(array("subsidiary_id = ?" => $subsidiary->id_subsidiary, "audit_id is null"));
+		
+		// sestaveni zapisovaciho dotazu
+		$sql = "insert into `" . $tableMistakes->info("name") . "` (client_id, subsidiary_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, is_removed, responsibile_name, will_be_removed_at, is_submited) values ";
+		$sql .= implode(",", $insert);
+		
+		$adapter->query($sql);
+		
+		$url = $this->view->url(array("clientId" => $clientId), "audit-mistakes-index");
+		$this->_redirect($url);
+	}
 
 	public function indexAction() {
 		// nacteni dat
@@ -890,5 +959,20 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if ($item1["done_at_int"] == $item2["done_at_int"]) return 0;
 
 		return ($item1["done_at_int"] > $item2["done_at_int"]) ? 1 : -1;
+	}
+	
+	/**
+	 * prevede datum na SQL format
+	 * 
+	 * @param string $date puvodni datum z excelu
+	 * @return string
+	 */
+	private static function _toSQLDate($date) {
+		list($day, $month, $year) = explode(".", $date);
+		
+		if (strlen($month) == 1) $month = "0" . $month;
+		if (strlen($day) == 1) $day = "0" . $day;
+		
+		return $year . "-" . $month . "-" . $day;
 	}
 }
