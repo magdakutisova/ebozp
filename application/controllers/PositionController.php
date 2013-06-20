@@ -304,6 +304,17 @@ class PositionController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_workplaceList);
     }
     
+    public function toggleworkplacesAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$data = $this->_getParam('subIds');
+		$data = explode(',', $data);
+    	
+    	$workplaces = new Application_Model_DbTable_Workplace();
+    	$this->_workplaceList = $workplaces->getWorkplacesBySubsidiaries($data);
+    	echo Zend_Json::encode($this->_workplaceList);
+    }
+       
     public function validateAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
@@ -615,7 +626,6 @@ class PositionController extends Zend_Controller_Action
     public function editAction()
     {
         $defaultNamespace = new Zend_Session_Namespace();
-        $this->view->subtitle = "Upravit pracovní pozici";
         $form = $this->loadOrCreateForm($defaultNamespace);
         
         //získání parametrů
@@ -628,6 +638,8 @@ class PositionController extends Zend_Controller_Action
         
         $positions = new Application_Model_DbTable_Position();
         $position = $positions->getPositionComplete($positionId);
+        
+        $this->view->subtitle = "Upravit pracovní pozici " . $position["position"];
         
         //naplnění multiselectu pobočkami
         $subsidiaries = new Application_Model_DbTable_Subsidiary ();

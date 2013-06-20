@@ -81,6 +81,17 @@ class Application_Form_Subsidiary extends Zend_Form
         		),
         ));
         
+        $this->addElement('text', 'district', array(
+        		'label' => 'Okres',
+        		'required' => false,
+        		'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,128)),
+        		),
+        		'decorators' => $elementDecorator,
+        ));
+        
         $this->addElement('hidden', 'contact', array(
         	'label' => 'Kontaktní osoba pro BOZP a PO',
         	'decorators' => $elementDecorator,
@@ -126,6 +137,14 @@ class Application_Form_Subsidiary extends Zend_Form
         	'filters' => array('Int', 'StripTags', 'StringTrim'),
         	'validators' => array('Digits'),
         	'decorators' => $elementDecorator,
+        ));
+        
+        $this->addElement('text', 'difficulty', array(
+        		'label' => 'Náročnost',
+        		'required' => false,
+        		'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array('Float'),
+        		'decorators' => $elementDecorator,
         ));
         
         $this->addElement('text', 'doctor', array(

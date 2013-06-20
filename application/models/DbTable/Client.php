@@ -26,41 +26,58 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	 * klienta, nebo false když nebyl vložen.
 	 */
 	public function addClient(Application_Model_Client $client) {
-		//když ico neexistuje, ulozit, vratit ID
-		$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
-		if(!$companyNumberRow){
+		if($client->getCompanyNumber()){
+			//když ico neexistuje, ulozit, vratit ID
+			$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
+			if(!$companyNumberRow){
+				$data = $client->toArray();
+				$clientId = $this->insert ( $data );
+				$client->setIdClient($clientId);
+			
+				//indexace pro vyhledávání
+				$index = $this->getSearchIndex();
+				$document = $this->composeDocument($client);
+				$index->addDocument ( $document );
+				$index->commit ();
+				$index->optimize ();
+			
+				return $clientId;
+			}
+			//kdyz ico existuje a klient je smazan, prepsat, vratit ID
+			elseif($companyNumberRow->deleted == "1"){
+				$companyNumber = $companyNumberRow->company_number;
+				$this->delete(array('company_number = ?' => $companyNumber));
+				$data = $client->toArray();
+				$clientId = $this->insert ( $data );
+			
+				//indexace pro vyhledávání
+				$index = $this->getSearchIndex();
+				$this->removeClientFromSearchIndex($index, $companyNumber);
+				$document = $this->composeDocument($client);
+				$index->addDocument ( $document );
+				$index->commit ();
+				$index->optimize ();
+			
+				return $clientId;
+			}
+			//kdyz ico existuje a klient neni smazan, vratit false
+			else {
+				return false;
+			}
+		}
+		else{
+			//když ičo není zadáno - výhradně import klientů, nikoli zadání z formuláře
 			$data = $client->toArray();
 			$clientId = $this->insert ( $data );
-		
+				
 			//indexace pro vyhledávání
 			$index = $this->getSearchIndex();
 			$document = $this->composeDocument($client);
 			$index->addDocument ( $document );
 			$index->commit ();
 			$index->optimize ();
-		
+				
 			return $clientId;
-		}
-		//kdyz ico existuje a klient je smazan, prepsat, vratit ID
-		elseif($companyNumberRow->deleted == "1"){
-			$companyNumber = $companyNumberRow->company_number;
-			$this->delete(array('company_number = ?' => $companyNumber));
-			$data = $client->toArray();
-			$clientId = $this->insert ( $data );
-		
-			//indexace pro vyhledávání
-			$index = $this->getSearchIndex();
-			$this->removeClientFromSearchIndex($index, $companyNumber);
-			$document = $this->composeDocument($client);
-			$index->addDocument ( $document );
-			$index->commit ();
-			$index->optimize ();
-		
-			return $clientId;
-		}
-		//kdyz ico existuje a klient neni smazan, vratit false
-		else {
-			return false;
 		}
 	}
 	
@@ -103,7 +120,11 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		}
 	}
 	
-	public function deleteClient($id) {
+	public function deleteClient($id, $completely = false) {
+		if($completely){
+			$this->delete('id_client = ' . (int)$id);
+			return;
+		}
 		$this->getClient($id);
 		$client = $this->fetchRow ( 'id_client = ' . $id );
 		$client->deleted = 1;
@@ -184,6 +205,25 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			return $results;
 		}
 		return 0;
+	}
+	
+	public function getByNameAndAddress($companyName, $headquartersStreet, $headquartersTown){
+		$select = $this->select()
+			->where('company_name = ?', $companyName)
+			->where('headquarters_street = ?', $headquartersStreet)
+			->where('headquarters_town = ?', $headquartersTown);
+		$result = $this->fetchAll($select);
+		if(count($result)){
+			if(count($result) > 1){
+				return -1;
+			}
+			else{
+				return $result->current()->id_client;
+			}
+		}
+		else{
+			return 0;
+		}
 	}
 	
 	private function process($result){

@@ -1,6 +1,7 @@
 <?php echo $this->render('header.phtml') ?>
 
 <div class="clear">
+<div class="span-25 identification"><?php echo $this->clientInfo();?></div>
 <div class="span-5 border navigation">
 	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>
 	<?php echo $this->navigation()->menu()->renderMenu($clientNav); ?>

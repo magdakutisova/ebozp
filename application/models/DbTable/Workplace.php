@@ -210,7 +210,28 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$workplaces = array();
 			foreach($results as $result){
 				$key = $result->id_workplace;
-				$workplace = $result->name . ' (' . $result->subsidiary_name . ')';
+				$workplace = $result->name . ' (' . $result->subsidiary_name . ', ' . $result->subsidiary_street . ', ' . $result->subsidiary_town . ')';
+				$workplaces[$key] = $workplace;
+			}
+			return $workplaces;
+		}
+		else{
+			return array();
+		}
+	}
+	
+	public function getWorkplacesBySubsidiaries($data){
+		$select = $this->select()->from('workplace')
+			->join('subsidiary', 'workplace.subsidiary_id = subsidiary.id_subsidiary')
+			->where('subsidiary.id_subsidiary IN(?)', $data)
+			->order('name');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		if (count($results) > 0){
+			$workplaces = array();
+			foreach($results as $result){
+				$key = $result->id_workplace;
+				$workplace = $result->name . ' (' . $result->subsidiary_name . ', ' . $result->subsidiary_street . ', ' . $result->subsidiary_town . ')';
 				$workplaces[$key] = $workplace;
 			}
 			return $workplaces;

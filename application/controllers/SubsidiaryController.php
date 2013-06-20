@@ -141,20 +141,36 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$subsidiary->setHq(0);
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
+				$adapter = $subsidiaries->getAdapter();
 				
-				if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
-					$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
-					$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+				try{
+					//zahájení transakce
+					$adapter->beginTransaction();
+					
+					$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
+					
+					if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
+						$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+						$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
+					}
+					
+					$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+					
+					//uložení transakce
+					$adapter->commit();
+					
+					$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> přidána' );
+					if ($form->getElement ( 'other' )->isChecked ()) {
+						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'subsidiaryNew' );
+					} else {
+						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+					}
 				}
-				
-				$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
-				
-				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> přidána' );
-				if ($form->getElement ( 'other' )->isChecked ()) {
-					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'subsidiaryNew' );
-				} else {
-					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+				catch(Exception $e){
+					//zrušení transakce
+					$adapter->rollback();
+					$this->_helper->FlashMessenger('Uložení klienta do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
+					$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'subsidiaryNew');
 				}
 			}
 		}
@@ -185,20 +201,36 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$subsidiary->setClientId($clientId);
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-				$subsidiaries->updateSubsidiary ( $subsidiary, true);
-
-				$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+				$adapter = $subsidiaries->getAdapter();
 				
-				$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> upravena' );
-				
-				$defaultNamespace = new Zend_Session_Namespace();
-				if (isset($defaultNamespace->referer)){
-					$path = $defaultNamespace->referer;
-					unset($defaultNamespace->referer);
-					$this->_redirect($path);
-				}
-				else{
-					$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+				try{
+					//zahájení transakce
+					$adapter->beginTransaction();
+					
+					$subsidiaries->updateSubsidiary ( $subsidiary, true);
+					
+					$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+					
+					//uložení transakce
+					$adapter->commit();
+					
+					$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . '</strong> upravena' );
+					
+					$defaultNamespace = new Zend_Session_Namespace();
+					if (isset($defaultNamespace->referer)){
+						$path = $defaultNamespace->referer;
+						unset($defaultNamespace->referer);
+						$this->_redirect($path);
+					}
+					else{
+						$this->_helper->redirector->gotoRoute ( array ('clientId' => $clientId ), 'clientAdmin' );
+					}
+				}	
+				catch(Exception $e){
+					//zrušení transakce
+					$adapter->rollback();
+					$this->_helper->FlashMessenger('Uložení klienta do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
+					$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'subsidiaryNew');
 				}
 			}
 		} else {

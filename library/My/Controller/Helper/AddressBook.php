@@ -57,7 +57,7 @@ class My_Controller_Helper_AddressBook extends Zend_Controller_Action_Helper_Abs
 						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['children'] = array();
 					}
 					else{
-						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['title'] = $subsidiary->getSubsidiaryName();
+						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['title'] = $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
 						$addressBook[$parentNode]['children'][$subsidiary->getIdSubsidiary()]['children'] = array();
 					}
 				}

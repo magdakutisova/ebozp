@@ -288,6 +288,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 												'action' => 'diary'))
 		);
 		
+		$router->addRoute(
+				'utility',
+				new Zend_Controller_Router_Route('utility',
+						array('controller' => 'utility',
+								'action' => 'index'))
+				);
+		
+		$router->addRoute(
+				'clientimport',
+				new Zend_Controller_Router_Route('clientimport',
+						array('controller' => 'utility',
+								'action' => 'clientimport'))
+				);
+		
 	}
 
 }

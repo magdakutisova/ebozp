@@ -40,6 +40,10 @@ $(function(){
 		$("#zpravy").toggleClass("hidden");
 	});
 	
+	$("div#filtered").on("click", ".concealer", function(){
+		$(this).next("ul").toggleClass("hidden");
+	});
+	
 	$(".show-folder-form").click(function(){
 		$(".folder-form").toggleClass("hidden");
 	});
@@ -152,6 +156,8 @@ $(function(){
 			$(selectbox).parent().next().children('input').val('');
 		}
 	}
+	
+	
 	
 });
 

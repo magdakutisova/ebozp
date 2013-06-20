@@ -1,6 +1,7 @@
 <?php
 class My_Role{
 	
+	const ROLE_SUPERADMIN = 0;
 	const ROLE_ADMIN = 1;
 	const ROLE_COORDINATOR = 2;
 	const ROLE_TECHNICIAN = 3;

@@ -449,8 +449,7 @@ class WorkplaceController extends Zend_Controller_Action
     public function editAction()
     {
     	$defaultNamespace = new Zend_Session_Namespace();
-    	$this->view->subtitle = "Upravit pracoviště";
-        $form = $this->loadOrCreateForm($defaultNamespace);
+    	$form = $this->loadOrCreateForm($defaultNamespace);
     	
         //získání parametrů ID klienta a pobočky
     	$clientId = $this->getRequest()->getParam('clientId');
@@ -462,6 +461,8 @@ class WorkplaceController extends Zend_Controller_Action
         
         $workplaces = new Application_Model_DbTable_Workplace();
         $workplace = $workplaces->getWorkplaceComplete($workplaceId);
+        
+        $this->view->subtitle = "Upravit pracoviště " . $workplace["name"];
         
         //naplnění comboboxu s pobočkami
    		$subsidiaries = new Application_Model_DbTable_Subsidiary ();

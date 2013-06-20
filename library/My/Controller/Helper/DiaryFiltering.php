@@ -35,27 +35,29 @@ class My_Controller_Helper_DiaryFiltering extends Zend_Controller_Action_Helper_
 		$subsidiaryList = array();
 		$subsidiaryList[0] = '--Všechny pobočky--';
 		
-		foreach ($messages as $key => $message){
-			if($this->controllerName == 'subsidiary' && $message->getSubsidiaryId() != $this->currentSubsidiary){
-				unset($messages[$key]);
-			}
-			$subsidiary = $subsidiariesDb->getSubsidiary($message->getSubsidiaryId(), true);
-			if($this->controllerName == 'client' && $subsidiary->getClientId() != $this->currentClient){
-				unset($messages[$key]);
-			}
-			if(!$acl->isAllowed($user, $subsidiary)){
-				unset($messages[$key]);
-				continue;
-			}
-			$userList[$message->getAuthor()] = $message->getAuthor();
-			$sub = $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown();
-			if ($subsidiary->getHq()){
-				$sub .= ' (centrála)';
-			}
-			$subsidiaryList[$subsidiary->getIdSubsidiary()] = $sub;
-			 
-			if(($userFilter != strval(0) && $message->getAuthor() != $userFilter) || ($subsidiaryFilter != 0 && $message->getSubsidiaryId() != $subsidiaryFilter)){
-				unset($messages[$key]);
+		if($messages){
+			foreach ($messages as $key => $message){
+				if($this->controllerName == 'subsidiary' && $message->getSubsidiaryId() != $this->currentSubsidiary){
+					unset($messages[$key]);
+				}
+				$subsidiary = $subsidiariesDb->getSubsidiary($message->getSubsidiaryId(), true);
+				if($this->controllerName == 'client' && $subsidiary->getClientId() != $this->currentClient){
+					unset($messages[$key]);
+				}
+				if(!$acl->isAllowed($user, $subsidiary)){
+					unset($messages[$key]);
+					continue;
+				}
+				$userList[$message->getAuthor()] = $message->getAuthor();
+				$sub = $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+				if ($subsidiary->getHq()){
+					$sub .= ' (centrála)';
+				}
+				$subsidiaryList[$subsidiary->getIdSubsidiary()] = $sub;
+				 
+				if(($userFilter != strval(0) && $message->getAuthor() != $userFilter) || ($subsidiaryFilter != 0 && $message->getSubsidiaryId() != $subsidiaryFilter)){
+					unset($messages[$key]);
+				}
 			}
 		}
 		uasort($userList, 'strcoll');

@@ -83,6 +83,17 @@ class Application_Form_Client extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('text', 'district', array(
+        		'label' => 'Okres',
+        		'required' => false,
+        		'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(0,128)),
+        				),
+        		'decorators' => $elementDecorator,
+        		));
+        
         $this->addElement('textarea', 'business', array(
         	'label' => 'Činnost organizace (stručný popis)',
         	'required' => false,
@@ -102,7 +113,7 @@ class Application_Form_Client extends Zend_Form
         	'label' => 'DIČ',
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
-        	'validators' => array(new Zend_Validate_StringLength(array('max => 15'))),
+        	'validators' => array(new Zend_Validate_Regex(array('pattern' => '/^CZ[0-9]{8,10}$/'))),
         	'decorators' => $elementDecorator,
         ));
         
@@ -166,6 +177,14 @@ class Application_Form_Client extends Zend_Form
         	'validators' => array('Digits'),
         	'decorators' => $elementDecorator,
         ));
+        
+        $this->addElement('text', 'difficulty', array(
+        		'label' => 'Náročnost',
+        		'required' => false,
+        		'filters' => array('StripTags', 'StringTrim'),
+        		'validators' => array('Float'),
+        		'decorators' => $elementDecorator,
+        		));
         
         $this->addElement('text', 'doctor', array(
         	'label' => 'Poskytovatel pracovnělékařské péče',

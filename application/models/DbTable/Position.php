@@ -141,6 +141,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 						$positions[$i]['environmentFactors'][$k]['category'] = $environmentFactor->category;
 						$positions[$i]['environmentFactors'][$k]['protection_measures'] = $environmentFactor->protection_measures;
 						$positions[$i]['environmentFactors'][$k]['measurement_taken'] = $environmentFactor->measurement_taken;
+						$positions[$i]['environmentFactors'][$k]['source'] = $environmentFactor->source;
 						$positions[$i]['environmentFactors'][$k]['note'] = $environmentFactor->note;
 						$positions[$i]['environmentFactors'][$k]['private'] = $environmentFactor->private;
 						$k++;
@@ -282,6 +283,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 				$position['environmentFactorDetails'][$i]['category'] = $environmentFactor->category;
 				$position['environmentFactorDetails'][$i]['protection_measures'] = $environmentFactor->protection_measures;
 				$position['environmentFactorDetails'][$i]['measurement_taken'] = $environmentFactor->measurement_taken;
+				$position['environmentFactorDetails'][$i]['source'] = $environmentFactor->source;
 				$position['environmentFactorDetails'][$i]['note'] = $environmentFactor->note;
 				$position['environmentFactorDetails'][$i]['private'] = $environmentFactor->private;
 				$i++;

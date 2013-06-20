@@ -5,6 +5,10 @@
 	font-weight: bold;
 }
 
+label.required:after{
+	content: " *";
+}
+
 .message{
 	background: #b7ceec; padding: 10px
 }
@@ -42,6 +46,12 @@
 	background: #e5eCf9;
 }
 
+.identification{
+	border-bottom: 1px solid grey;
+	font-size: 150%;
+	margin-bottom: 20px;
+}
+
 .button-anchor{
 	border:0px solid #fff;  /* needed for opera */
 	background:transparent;
@@ -53,6 +63,10 @@
 	font-size: 12px;
 	margin: 0px;
 	text-decoration: underline;
+}
+
+.anchor{
+	color:#06c;text-decoration:underline;cursor: pointer;
 }
 
 a.workplace-title, a.position-title{
