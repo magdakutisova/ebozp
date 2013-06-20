@@ -10,6 +10,7 @@ echo $this->formFilter;
 echo $this->mistakeTable()->header();
 
 $actions = array("show-mistake" => "Zobrazit");
+$today = (int) Zend_Date::now()->get("yMMdd");
 
 foreach ($this->mistakes as $mistake) {
 	// vyhodnoceni trid
@@ -17,12 +18,39 @@ foreach ($this->mistakes as $mistake) {
 	
 	if ($mistake->is_removed) {
 		$classes[] = "mistake-removed";
-	} elseif ($mistake->is_marked) {
+	} elseif ($mistake->isMarked($today)) {
 		$classes[] = "mistake-marked";
 	}
 	
-	echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes));
 }
 ?>
 </table>
+<h2>Import neshod</h2>
+<em>Podporovaný formát je CSV s nastavením:
+<ul>
+	<li>Text uzavřen do uvozovek</li>
+	<li>Položky odděleny čárkami</li>
+	<li>Escapovací znak zpětné lomítko</li>
+</ul></em>
+<form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "audit-mistake-import"); ?>" method="post" enctype="multipart/form-data">
+	<p>
+		<?php 
+		echo $this->formLabel("importfile", "Soubor s neshodami");
+		echo $this->formFile("importfile");
+		?>
+	</p>
+	<p>
+		<?php 
+		$items = $this->formFilter->getElement("subsidiary_id")->getMultiOptions();
+		$items[0] = "---Vyberte---";
+		echo $this->formLabel("subsidiaryId", "Pobočka: ");
+		echo $this->formSelect("subsidiaryId", null, null, $items);
+		?>
+	</p>
+	<p>
+		<?php echo $this->formSubmit("import-submit", "Importovat"); ?>
+	</p>
+</form>
+<b>Pozor! při importu budou všechny stávající neshody, které nejsou vázány na audit smazány a nahrazeny novými!</b>
 <script type="text/javascript" src="/js/audit/mistake/index.js"></script>

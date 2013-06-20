@@ -73,10 +73,13 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	/**
 	 * vraci nastaveni oznaceni neshody
 	 * 
+	 * @param int $specialDate datum ve formatu YYYYmmdd jako cislo
 	 * @return bool
 	 */
-	public function isMarked() {
-		return $this->is_marked;
+	public function isMarked($specialDate) {
+		$thisDate = (int) str_replace("-", "", $this->will_be_removed_at);
+		
+		return $thisDate < $specialDate;
 	}
 	
 	/**

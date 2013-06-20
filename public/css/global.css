@@ -186,8 +186,10 @@ textarea[id*='schoolingDetail']					{width: 300px;}
 .multirow-table thead { background-color: #C3D9FF; }
 .multirow-table tbody:nth-child(odd) tr { background-color: #e5ecf9; }
 .multirow-table tbody:nth-child(even) tr td { background-color: #F2F5F7; }
-.mistake-marked tr td { background-color: #ff6f6f!important; color: #000000; }
-.mistake-removed tr td { background-color: #86ff8f !important; color: #000000; }
+.mistake-marked:nth-child(odd) tr td { background-color: #ff6f6f!important; color: #000000; }
+.mistake-marked:nth-child(even) tr td { background-color: #ffb3b3!important; color: #000000; }
+.mistake-removed:nth-child(odd) tr td { background-color: #5de066 !important; color: #000000; }
+.mistake-removed:nth-child(even) tr td { background-color: #afffb5 !important; color: #000000; }
 
 /*
  * semafory

@@ -377,5 +377,16 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "put"
 						))
 		);
+		
+		// vytvoreni sekce otazek ve formulari
+		$router->addRoute(
+				"audit-mistake-import",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistakes/import",
+						array(
+								"module" => "audit",
+								"controller" => "mistake",
+								"action" => "import"
+						))
+		);
 	}
 }
