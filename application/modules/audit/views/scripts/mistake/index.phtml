@@ -15,7 +15,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 foreach ($this->mistakes as $mistake) {
 	// vyhodnoceni trid
 	$classes = array();
-	
+
 	if ($mistake->is_removed) {
 		$classes[] = "mistake-removed";
 	} elseif ($mistake->isMarked($today)) {

@@ -1,5 +1,6 @@
 <?php 
 $mistake = $this->mistake;
+$today = (int) Zend_Date::now()->get("yMMdd");
 ?>
 <h1>Detail neshody</h1>
 <table class="keyval-table">
@@ -33,15 +34,15 @@ $mistake = $this->mistake;
 			Poprvé zjištěna
 			</td>
 			<td>
-			<?php echo $this->sqlDate($this->masterAudit ? $this->masterAudit->done_at : $this->masterCheck->done_at); ?>
+			<?php echo $this->sqlDate($mistake->notified_at); ?>
 			</td>
 		</tr>
 		<tr>
 			<td>
 			Kritická*
 			</td>
-			<td class="<?php echo $mistake->is_marked ? "error" : ""; ?>">
-			<?php echo $mistake->is_marked ? "Ano" : "Ne"; ?>
+			<td class="<?php echo $mistake->isMarked($today) ? "error" : ""; ?>">
+			<?php echo $mistake->isMarked($today) ? "Ano" : "Ne"; ?>
 			</td>
 		</tr>
 		<tr>
@@ -71,6 +72,12 @@ $mistake = $this->mistake;
 			Návrh řešení
 			</td>
 			<td class="pre"><?php echo $mistake->suggestion; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Zodpovědná osoba
+			</td>
+			<td><?php echo $mistake->responsibile_name; ?></td>
 		</tr>
 		<tr>
 			<td>

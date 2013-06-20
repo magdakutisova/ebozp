@@ -443,7 +443,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$tableMistakes->delete(array("subsidiary_id = ?" => $subsidiary->id_subsidiary, "audit_id is null"));
 		
 		// sestaveni zapisovaciho dotazu
-		$sql = "insert into `" . $tableMistakes->info("name") . "` (client_id, subsidiary_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, is_removed, responsibile_name, will_be_removed_at, is_submited) values ";
+		$sql = "insert into `" . $tableMistakes->info("name") . "` (client_id, subsidiary_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, responsibile_name, will_be_removed_at, hidden_comment, is_submited) values ";
 		$sql .= implode(",", $insert);
 		
 		$adapter->query($sql);
@@ -968,11 +968,15 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	 * @return string
 	 */
 	private static function _toSQLDate($date) {
-		list($day, $month, $year) = explode(".", $date);
+		$date = trim($date);
 		
-		if (strlen($month) == 1) $month = "0" . $month;
-		if (strlen($day) == 1) $day = "0" . $day;
+		if (!$date) return 0;
 		
-		return $year . "-" . $month . "-" . $day;
+		$exploded = explode(".", $date);
+		
+		if (strlen($exploded[0]) == 1) $exploded[0] = "0" . $exploded[0];
+		if (strlen($exploded[1]) == 1) $exploded[1] = "0" . $exploded[1];
+		
+		return $exploded[2] . "-" . $exploded[1] . "-" . $exploded[0];
 	}
 }

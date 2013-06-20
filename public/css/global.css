@@ -182,7 +182,7 @@ textarea[id*='schoolingDetail']					{width: 300px;}
 .tree-roller { border: dotted 1px black; font-family: monospace; cursor: hand; cursor: pointer;  padding: 2px 5px;}
 .tree-roller:hover { background-color: #e5eCf9; }
 .keyval-table tr td:last-child { font-weight: bold;}
-.pre { white-space: pre; }
+.pre { white-space: pre-wrap; }
 .multirow-table thead { background-color: #C3D9FF; }
 .multirow-table tbody:nth-child(odd) tr { background-color: #e5ecf9; }
 .multirow-table tbody:nth-child(even) tr td { background-color: #F2F5F7; }

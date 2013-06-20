@@ -79,7 +79,7 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	public function isMarked($specialDate) {
 		$thisDate = (int) str_replace("-", "", $this->will_be_removed_at);
 		
-		return $thisDate < $specialDate;
+		return $thisDate > $specialDate;
 	}
 	
 	/**
