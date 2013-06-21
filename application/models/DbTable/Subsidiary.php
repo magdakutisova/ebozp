@@ -143,6 +143,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	public function getByDistrict(){
+		$select = $this->select()->from('subsidiary')->where('deleted = 0')->order(array('district', 'subsidiary_name'));
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
 	public function getByClient(){
 		$select = $this->select()->from('subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))->where('subsidiary.deleted = 0')->order(array('client.company_name', 'hq DESC', 'subsidiary.subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
 		$select->setIntegrityCheck(false);

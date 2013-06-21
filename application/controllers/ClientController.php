@@ -190,6 +190,19 @@ class ClientController extends Zend_Controller_Action
 				$this->view->subsidiaries = $subsidiaries;
 				$this->renderScript ( 'client/town.phtml' );
 				break;
+			case "okres":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+				
+				$subsidiaries = $subsidiariesDb->getByDistrict();
+				
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+				
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript('client/district.phtml');
+				break;
 			case "naposledy":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
