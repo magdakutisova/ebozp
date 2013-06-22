@@ -2,6 +2,8 @@
 <?php 
 echo "var CLIENT_ID=" . $this->client->id_client . ";";
 echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
+
+$today = (int) Zend_Date::now()->get("yMMdd");
 ?>
 </script>
 <h1>Audit</h1>
@@ -84,7 +86,7 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 					
 					if ($mistake->is_removed) {
 						$classes[] = "mistake-removed";
-					} elseif ($mistake->is_marked) {
+					} elseif ($mistake->isMarked($today)) {
 						$classes[] = "mistake-marked";
 					}
 					
@@ -107,7 +109,7 @@ echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
 					
 					if ($mistake->is_removed) {
 						$classes[] = "mistake-removed";
-					} elseif ($mistake->is_marked) {
+					} elseif ($mistake->isMarked($today)) {
 						$classes[] = "mistake-marked";
 					}
 					

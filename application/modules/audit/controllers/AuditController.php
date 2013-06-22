@@ -65,7 +65,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		));
 		
 		// kontrola validity asociace
-		if (!$assoc) throw new Zend_Exception("Pobočka není přístupná");
+		if (!$assoc && $this->_user->getRoleId() != My_Role::ROLE_ADMIN) throw new Zend_Exception("Pobočka není přístupná");
 		
 		// nastaveni formulare
 		$form = new Audit_Form_Audit();
@@ -247,8 +247,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$instanceForm->setAction($url);
 		
 		// nacteni neshod tykajicich se auditu
-		$assocIndex = null;
-		$mistakes = $this->_loadAuditMistakes($this->_audit, $assocIndex);
+		$auditMistakes = $this->_audit->getMistakes();
+		$otherMistakes = $this->_audit->getSupplementMistakes();
 		
 		// nacteni seznamu pracovist na pobocce
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -302,8 +302,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->submitForm = $submitForm;
 		$this->view->selectWorkplace = $selectWorkplace;
 		$this->view->workSelect = $workSelect;
-		$this->view->mistakes = $mistakes;
-		$this->view->assocIndex = $assocIndex;
+		$this->view->auditMistakes = $auditMistakes;
+		$this->view->otherMistakes = $otherMistakes;
 		$this->view->commentForms = $commentForms;
 		$this->view->userId = $userId;
 	}
@@ -447,6 +447,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// vytvoreni zaznamu
 		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("is_check"), $form->getValue("responsibile_name"));
 		
+		// prirazeni existujicich neshod
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		
+		$nameAssocs = $tableAssocs->info("name");
+		$nameMistakes = $tableMistakes->info("name");
+		
+		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed";
+		$tableAssocs->getAdapter()->query($sql);
+		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-edit")
 		);
@@ -531,10 +541,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 			
 			// aktualizace stavu neshod
 			$begin = "update `$nameAssocs`, `$nameMistakes` set ";
-			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 0 and id = mistake_id";
-			$sql2 = "$begin is_marked = 1 where `$nameAssocs`.`status` = 2 and id = mistake_id";
-			$sql3 = "$begin is_removed = 0, is_marked = 0 where `$nameAssocs`.`status` = 1 and id = mistake_id";
-			$tableMistakes->getAdapter()->query("$sql1;$sql2;$sql3");
+			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 1 and id = mistake_id";
+			$tableMistakes->getAdapter()->query("$sql1");
 			
 			// odeslani neshod, ktere se maji odeslat
 			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
@@ -629,47 +637,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$newId = $adapter->query($sql)->fetchColumn();
 		
 		return $newId - $oldId;
-	}
-	
-	/**
-	 * nacte neshody v ruzne vazbe k auditu
-	 * 
-	 * @param Audit_Model_Row_Audit $audit audit, ke kteremu se budou nacitat neshody
-	 */
-	protected function _loadAuditMistakes(Audit_Model_Row_Audit $audit, &$assocIndex) {
-		// nacteni vsech neshod vazanych k pobocce, ktere nejsou odstranne
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableAssocs = new Audit_Model_AuditsMistakes();
-		$nameAssocs = $tableAssocs->info("name");
-		
-		$where = array(
-				"!is_removed",
-				"client_id = " . $audit->client_id,
-				"subsidiary_id = " . $audit->subsidiary_id,
-				"(id in (select mistake_id from `$nameAssocs` where audit_id = $audit->id) or audit_id <> $audit->id and is_submited)"
-		);
-		
-		$mistakesAll = $tableMistakes->fetchAll($where, "created_at");
-		
-		// je potreba roztridit neshody podle tho, jestli jsou zahrnuty v auditu nebo jestli se poze vezou z predchoziho auditu
-		$assocs = $audit->findDependentRowset($tableAssocs, "audit");
-		$auditMistakesIds = array();
-		$assocIndex = array();
-		
-		foreach ($assocs as $assoc) {
-			$auditMistakesIds[] = $assoc->mistake_id;
-			$assocIndex[$assoc->mistake_id] = $assoc;
-		}
-		
-		// konecne rozrazeni neshod
-		$thisAudit = array();
-		$otherAudits = array();
-		
-		foreach ($mistakesAll as $mistake) {
-			in_array($mistake->id, $auditMistakesIds) ? ($thisAudit[] = $mistake) : ($otherAudits[] = $mistake);
-		}
-		
-		return array($thisAudit, $otherAudits);
 	}
 	
 	protected function _initWorkForms() {

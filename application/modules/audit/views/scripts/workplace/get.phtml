@@ -45,10 +45,19 @@ echo $this->commentForm;
 <table class="multirow-table" id="workplace-mistakes">
 	<?php 
 	echo $this->mistakeTable()->header(); 
-	$config = array("actions" => array(), "semaphore" => 0);
+	$config = array("actions" => array());
 	foreach ($this->mistakes as $mistake) {
 		// vyhodnoceni semaforu
-		$config["semaphore"] = $mistake->status;
+		switch ($mistake->status) {
+			case 1:
+				$config["classes"] = array("mistake-marked");
+				break;
+				
+			case 2:
+				$config["classes"] = array("mistake-removed");
+				break;
+		}
+		
 		$config["actions"] = ($mistake->audit_id == $this->audit->id) ? array("edit" => "Upravit") : array("show" => "Zobrazit");
 		echo $this->mistakeTable()->mistake($mistake, $config);
 	}

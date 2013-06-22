@@ -1,9 +1,13 @@
 <?php 
 $client = $this->client;
 $audit = $this->audit;
+
+$url = $this->url(array("clientId" => $client->id_client, "auditId" => $audit->id), "audit-edit");
 ?>
 <h1>Výstupní zpráva auditu/prověrky</h1>
 <?php 
+echo "<a href='$url'>Zpět na audit</a>";
+
 $url = $this->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-report-download");
 echo "<form action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Náhled'></form>";
 ?>

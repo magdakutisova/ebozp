@@ -43,12 +43,34 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * @return Audit_Model_Rowset_AuditsRecordsMistakes
 	 */
 	public function getMistakes() {
+		// sestaveni SQL
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		
 		$nameMistakes = $tableMistakes->info("name");
+		$nameAssocs = $tableAssocs->info("name");
 		
-		$select = $tableMistakes->select(false)->where("`m`.submit_status");
+		$sql = "select m.*, count(a2.audit_id) as cnt, a1.status from $nameMistakes as m inner join $nameAssocs as a1 on a1.mistake_id = m.id inner join $nameAssocs as a2 on m.id = a2.mistake_id where a1.audit_id = $this->id group by a2.mistake_id";
+		$result = $this->_table->getAdapter()->query($sql);
 		
-		return $this->findManyToManyRowset(new Audit_Model_AuditsRecordsMistakes(), new Audit_Model_AuditsMistakes(), "audit", "mistake", $select);
+		return new Audit_Model_Rowset_AuditsRecordsMistakes(array("data" => $result->fetchAll(), "rowClass" => "Audit_Model_Row_AuditRecordMistake"));
+	}
+	
+	/**
+	 * vraci neshody, ktere nejsou v auditu zahrnuty
+	 */
+	public function getSupplementMistakes() {
+		// sestaveni SQL
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		
+		$nameMistakes = $tableMistakes->info("name");
+		$nameAssocs = $tableAssocs->info("name");
+		
+		$sql = "select m.*, count(a2.audit_id) as cnt, a1.status from $nameMistakes as m inner join $nameAssocs as a1 on a1.mistake_id = m.id inner join $nameAssocs as a2 on m.id = a2.mistake_id where a1.audit_id != $this->id and m.id not in (select mistake_id from $nameAssocs where audit_id = $this->id) and subsidiary_id = $this->subsidiary_id and !is_removed group by a2.mistake_id";
+		$result = $this->_table->getAdapter()->query($sql);
+		
+		return new Audit_Model_Rowset_AuditsRecordsMistakes(array("data" => $result->fetchAll(), "rowClass" => "Audit_Model_Row_AuditRecordMistake"));
 	}
 	
 	/**

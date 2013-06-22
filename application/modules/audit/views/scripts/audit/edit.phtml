@@ -101,24 +101,40 @@ echo $this->formHidden("client_id", $this->client->id_client);
 			
 			echo $this->mistakeTable()->header();
 			
-			foreach ($this->mistakes[0] as $mistake) {
+			foreach ($this->auditMistakes as $mistake) {
 				// vyhodnoceni semaforu
-				$assoc = $this->assocIndex[$mistake->id];
-				$semaphore = $assoc->status;
 				$selector = $mistake->audit_id != $this->audit->id;
 				
-				echo $this->mistakeTable()->mistake($mistake, array("actions" => array("edit-mistake" => "Upravit"), "semaphore" => $semaphore, "selector" => $selector));
+				$classes = array();
+				
+				// vyhodnoceni barvy
+				if ($mistake->status == 2) {
+					$classes = array("mistake-removed");
+				} elseif ($mistake->cnt > 1) {
+					$classes = array("mistake-marked");
+				}
+				
+				// vyhodnoceni akci
+				if ($mistake->audit_id == $this->audit->id) {
+					// jedna se o neshodu pochazejici z tohoto auditu
+					$actions = array("edit-mistake" => "Upravit");
+				} else {
+					$actions = array("get-mistake" => "Zobrazit");
+				}
+				
+				echo $this->mistakeTable()->mistake($mistake, array("classes" => $classes, "actions" => $actions, "selector" => $selector));
 			}
 			?>
 		</table>
 		<p>
 			<?php 
-			echo $this->formButton("save-mistakes", "Uložit semafory"); 
+			echo $this->formSubmit("submit-solve", "Označit jako odstraněné");
+			echo $this->formSubmit("submit-unsolve", "Označit jako NEodstraněné");
 			echo $this->formSubmit("submit-detach", "Odebrat označené neshody z auditu");
 			?>
 		</p>
 		</form>
-		<h3>Neshody z jinch auditů a prověrek</h3>
+		<h3>Neshody vyřazené z auditu</h3>
 		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-attach"); ?>" method="post">
 			<table id="table-mistakes2" class="multirow-table">
 				<?php 
@@ -126,9 +142,8 @@ echo $this->formHidden("client_id", $this->client->id_client);
 				
 				echo $this->mistakeTable()->header();
 				
-				foreach ($this->mistakes[1] as $mistake) {
+				foreach ($this->otherMistakes as $mistake) {
 					// vyhodnoceni semaforu
-					
 					echo $this->mistakeTable()->mistake($mistake, array("actions" => array("show" => "Zobrazit"), "selector" => true));
 				}
 				?>

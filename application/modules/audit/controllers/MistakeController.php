@@ -60,7 +60,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$auditId = $this->_audit->id;
 			
 			$sql = "insert into `$nameAssocs` (audit_id, mistake_id, record_id, status) ";
-			$sql .= "select $auditId, id, record_id, (is_removed * 0 + (!is_removed and !is_marked) * 1 + (!is_removed and is_marked) * 2) as status  from `$nameMistakes` where id in ($in) and id not in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
+			$sql .= "select $auditId, id, record_id, 1  from `$nameMistakes` where id in ($in) and id not in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
 			
 			$adapter->query($sql);
 		}
@@ -184,7 +184,25 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$in = $adapter->quote($toDelete);
 			$auditId = $this->_audit->id;
 			
-			$sql = "delete from `$nameAssocs` where audit_id = $auditId and mistake_id in ($in) and mistake_id not in (select id from `$nameMistakes` where id in ($in) and audit_id = $auditId)";
+			/*
+			 * UPRAVA AKCE -> NAKONEC SE TO POUZIVA I PRO ZMENU ODSTRANENI / NEODSTRANENI
+			 */
+			
+			$where = "audit_id = $auditId and mistake_id in ($in) and mistake_id not in (select id from `$nameMistakes` where id in ($in) and audit_id = $auditId)";
+			
+			if ($this->_request->getParam("submit-solve", 0)) {
+				// oznaceni jako odtranene
+				$sql = "update `$nameAssocs` set status = 2 where " . $where;
+			} elseif ($this->_request->getParam("submit-unsolve", 0)) {
+				// oznaceni jako neodstranene
+				// oznaceni jako odtranene
+				$sql = "update `$nameAssocs` set status = 1 where " . $where;
+			} else {
+				// odebrani z auditu
+				$sql = "delete from `$nameAssocs` where " . $where;
+			}
+			
+			// odeslani dotazu
 			$adapter->query($sql);
 		}
 		
@@ -242,7 +260,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				$status = 1;
 				if ($mistake->is_removed) 
 					$status = 0;
-				elseif($mistake->is_marked)
+				elseif($mistake->isMarked(Zend_Date::now()->get("yMMdd")))
 					$status = 2;
 				
 				$tableAssocs->insert(array(
@@ -735,19 +753,20 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (!$mistake) throw new Zend_Exception("Mistake not found");
 		
 		$status = 1;
-		if ($mistake->is_removed) $status = 0; elseif ($mistake->is_marked) $status = 2;
+		$date = Zend_Date::now()->get("yMMdd");
+		if ($mistake->is_removed) $status = 0; elseif ($mistake->isMarked($date)) $status = 2;
 		
 		
 		// smazani aktualni aktualizace
 		$tableAssocs->delete(array("audit_id = " . $this->_audit->id, "record_id = " . $record->id));
 		
 		// zapis nove asociace
-		$tableAssocs->insert(array(
-				"audit_id" => $this->_audit->id,
-				"mistake_id" => $data["id"],
-				"record_id" => $record->id,
-				"status" => $status
-		));
+		$sql = "insert into " . $tableAssocs->info("name") . " (audit_id, mistake_id, record_id, status) values (" . $this->_audit->id . ","
+					. $data["id"] . ","
+					. $record->id . ","
+					. $status . ") on duplicate key update record_id = values(record_id), status = values(status)";
+		
+		$tableMistakes->getAdapter()->query($sql);
 		
 		// nacteni puvodni neshody a presmerovani na ni
 		$originalMistake = $tableMistakes->fetchRow(array("record_id = " . $record->id));
@@ -862,10 +881,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$where[] = "workplace_id = " . $mistake->workplace_id;
 		} else {
 			// vyhodnoceni nullovosti id itemu z dotazniku
-			if ($mistake->questionary_item_id) {
-				$where[] = "questionary_item_id = " . $mistake->questionary_item_id;
+			if ($mistake->item_id) {
+				$where[] = "item_id = " . $mistake->item_id;
 			} else {
-				$where[] = "questionary_item_id = 0";
+				$where[] = "item_id = 0";
 			}
 		}
 
