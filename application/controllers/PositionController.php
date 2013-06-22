@@ -46,6 +46,9 @@ class PositionController extends Zend_Controller_Action
     private $_technicalDeviceList = null;
 
     private $_folderList = null;
+    private $_canEditPosition;
+    private $_canCreatePosition;
+    private $_canDeletePosition;
 
     public function init()
     {
@@ -128,6 +131,13 @@ class PositionController extends Zend_Controller_Action
     	//soukromá poznámka
     	$this->_canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
     	$this->view->canViewPrivate = $this->_canViewPrivate;
+    	
+    	$this->_canCreatePosition = $this->_acl->isAllowed($this->_user, 'position', 'new');
+    	$this->view->canCreatePosition = $this->_canCreatePosition;
+    	$this->_canEditPosition = $this->_acl->isAllowed($this->_user, 'position', 'edit');
+    	$this->view->canEditPosition = $this->_canEditPosition;
+    	$this->_canDeletePosition = $this->_acl->isAllowed($this->_user, 'position', 'delete');
+    	$this->view->canDeletePosition = $this->_canDeletePosition;
     }
 
     public function newAction()

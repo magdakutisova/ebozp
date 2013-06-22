@@ -94,6 +94,12 @@ class My_Controller_Helper_PositionRelationships extends Zend_Controller_Action_
 		}
 		foreach($formData['employeeList'] as $employeeId){
 			$employee = $employees->getEmployee($employeeId);
+			if($employee->getPositionId() != null && $employee->getPositionId() != $positionId){
+				$positions = new Application_Model_DbTable_Position();
+				$currentPosition = $positions->getPosition($employee->getPositionId());
+				$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
+				$flashMessenger->addMessage('Upozornění: Zaměstnanec ' . $employee->getFirstName() . ' ' . $employee->getSurname() . ' byl přesunut z pracovní pozice ' . $currentPosition->getPosition() . ' na pracovní pozici ' . $positions->getPosition($positionId)->getPosition());
+			}
 			$employee->setPositionId($positionId);
 			$employees->updateEmployee($employee);
 		}

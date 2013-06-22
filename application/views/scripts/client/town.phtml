@@ -1,7 +1,8 @@
 <?php echo $this->filters()?>
 
 <div class="box" id="filtered">
-
+<a name="up"></a>
+<a href="#down">&#x25BC; Dolů &#x25BC;</a>
 	<?php $town = ""; ?>
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
@@ -14,13 +15,15 @@
 		<?php }
 		if ($subsidiary->getHq()) {?>
 			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId()), 'clientIndex');?>">
-				<?php echo $subsidiary->getSubsidiaryName() . ' (centrála)'?>
+				<?php echo $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . ' (centrála)'?>
 			</a></li>
 		<?php }
 		else {?>
-			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . '</a>'?></li>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
 		<?php }
 	}
 		endforeach; ?>
 	</ul>
+	<a name="down"></a>
+<a href="#up">&#x25B2; Nahoru &#x25B2;</a>		
 </div>

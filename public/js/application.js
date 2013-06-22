@@ -72,6 +72,11 @@ $(function(){
 		$("#filtered").load("./klienti/obec/ #filtered");
 	});
 	
+	$(".district").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./klienti/okres/ #filtered");
+	});
+	
 	$(".lastOpen").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/naposledy/ #filtered");

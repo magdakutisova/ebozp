@@ -1,0 +1,29 @@
+<?php echo $this->filters()?>
+
+<div class="box" id="filtered">
+<a name="up"></a>
+<a href="#down">&#x25BC; Dolů &#x25BC;</a>
+	<?php $district = ""; ?>
+	<ul>
+	<?php foreach ($this->subsidiaries as $subsidiary) :
+	if($subsidiary->getAllowed()){
+		if ($district != $subsidiary->getDistrict()){?>
+			</ul>
+			<?php $district = $subsidiary->getDistrict(); ?>
+			<p class="bold"><?php echo $district; ?></p>
+			<ul>
+		<?php }
+		if ($subsidiary->getHq()) {?>
+			<li class="bold"><a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId()), 'clientIndex');?>">
+				<?php echo $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . ' (centrála)'?>
+			</a></li>
+		<?php }
+		else {?>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+		<?php }
+	}
+		endforeach; ?>
+	</ul>
+	<a name="down"></a>
+<a href="#up">&#x25B2; Nahoru &#x25B2;</a>		
+</div>
