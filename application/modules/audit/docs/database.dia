@@ -1428,7 +1428,7 @@
         <dia:point val="73.7,11"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="73.65,10.95;90.42,33.65"/>
+        <dia:rectangle val="73.65,10.95;90.42,32.85"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="73.7,11"/>
@@ -1437,7 +1437,7 @@
         <dia:real val="16.669999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="22.600000000000009"/>
+        <dia:real val="21.800000000000008"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_audits_records_mistakes#</dia:string>
@@ -2045,29 +2045,6 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#Označení odstranení#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="visibility">
-            <dia:enum val="0"/>
-          </dia:attribute>
-          <dia:attribute name="abstract">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="class_scope">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-        </dia:composite>
-        <dia:composite type="umlattribute">
-          <dia:attribute name="name">
-            <dia:string>#is_marked#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="type">
-            <dia:string>#bool#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="value">
-            <dia:string>#0#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="comment">
-            <dia:string>#Přepínač označení položky ve výpise (pokud nebyla ještě odstraněna a měla už být)#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>

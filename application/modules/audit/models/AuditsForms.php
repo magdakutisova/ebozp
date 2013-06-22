@@ -33,38 +33,38 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 	 * @return Audit_Model_Row_AuditForm
 	 */
 	public function createForm(Audit_Model_Row_Audit $audit, Audit_Model_Row_Form $form) {
-		$retVal = $this->createRow(array(
-				"form_id" => $form->questionary_id,
-				"audit_id" => $audit->id,
-				"name" => $form->name
-		));
-		
-		$retVal->save();
-		
-		// prekopirovani obsahu formulare na 
-		$questionary = $form->getQuestionary()->toClass();
-		
-		$groupList = $questionary->getItems();
-		
-		// zapis skupin a dalsich dat
+		// nacteni jmen
 		$tableGroups = new Audit_Model_AuditsRecordsGroups();
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableItems = new Questionary_Model_QuestionariesItems();
 		$tableAuditsMistakes = new Audit_Model_AuditsMistakes();
+		$tableItems = new Audit_Model_FormsCategoriesQuestions();
+		$tableCategories = new Audit_Model_FormsCategories();
 		
 		$nameGroups = $tableGroups->info("name");
 		$nameRecords = $tableRecords->info("name");
 		$nameMistakes = $tableMistakes->info("name");
-		$nameItems = $tableItems->info("name");
 		$nameAuditMistakes = $tableAuditsMistakes->info("name");
+		$nameItems = $tableItems->info("name");
+		$nameCategories = $tableCategories->info("name");
 		
 		// zacatek transakce a zjisteni id
 		$adapter = $this->getAdapter();
 		
 		$adapter->beginTransaction();
 		$adapter->query("set foreign_key_checks = 0;");
-		$adapter->query("lock tables `$nameGroups` write, `$nameMistakes` write, `$nameRecords` write, `$nameItems` write, `$nameAuditMistakes` write");
+		
+		$retVal = $this->createRow(array(
+				"form_id" => $form->id,
+				"audit_id" => $audit->id,
+				"name" => $form->name
+		));
+		
+		$retVal->save();
+		
+		// nacteni skupin otazek
+		$groupList = $form->findCategories();
+		$adapter->query("lock tables `$this->_name` write, `$nameGroups` write, `$nameMistakes` write, `$nameRecords` write, `$nameAuditMistakes` write, `$nameItems` write, `$nameCategories` write");
 		
 		try {
 			// nacteni poslednich id zaznamu
@@ -72,14 +72,27 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			$groupId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameGroups' and table_schema = DATABASE()")->fetchColumn();
 			$mistakeId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameMistakes' and table_schema = DATABASE()")->fetchColumn();
 			
-			// nacteni jmen a id prvku formulare a indexace
-			$sql = "select id, name from " . $tableItems->info("name") . " where questionary_id = " . $retVal->form_id;
+			// nacteni prvku formulare
+			$sql = "select `$nameItems`.* from `$nameItems` inner join `$nameCategories` on $nameCategories.id = $nameItems.group_id where form_id = " . $retVal->form_id . " order by group_id, position";
 			$items = $adapter->query($sql);
 			$itemIndex = array();
 			
+			$thisList = array();
+			$lastId = 0;
+			
+			// indexace dle kategorie
 			while ($item = $items->fetch()) {
-				$itemIndex[$item["name"]] = $item["id"];
+				if ($item["group_id"] != $lastId) {
+					$itemIndex[$lastId] = $thisList;
+					$thisList = array();
+					$lastId = $item["group_id"];
+				}
+				
+				$thisList[] = $item;
 			}
+			
+			// zapis poslednich dat
+			$itemIndex[$lastId] = $thisList;
 			
 			// priprava dat
 			$mistakes = array();
@@ -91,15 +104,15 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			foreach ($groupList as $group) {
 				// zapis skupiny
-				$groups[] = "(" . $adapter->quote($group->getLabel()) . ", $retVal->id)";
+				$groups[] = "(" . $adapter->quote($group->name) . ", $retVal->id)";
 				
 				// zapis prvku
-				$items = $group->getItems();
+				$items = $itemIndex[$group->id];
 				$maxI = count($items);
 				
-				for ($i = 1; $i < $maxI; $i += 2) {
+				for ($i = 0; $i < $maxI; $i++)
+				{
 					// zjisteni dat o otazce
-					$qInfo = $this->_explodeWeight($items[$i]->getLabel());
 					$item = $items[$i];
 					
 					// vygenerovani zaznamu
@@ -109,15 +122,12 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 							$retVal->id,
 							$groupId,
 							$mistakeId,
-							$adapter->quote($itemIndex[$item->getName()]),
-							$adapter->quote($qInfo->question),
+							$adapter->quote($item["question"]),
 							Audit_Model_AuditsRecords::SCORE_NT,
-							$adapter->quote($qInfo->weight)
+							$adapter->quote($item["weight"])
 					);
 					
 					$records[] = "(" . implode(",", $record) . ")";
-					
-					$mistakeItems = $items[$i + 1]->getItems();
 					
 					// vygenerovani neshody
 					$mistake = array(
@@ -126,14 +136,14 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 							$audit->client_id,											// id klienta
 							$audit->subsidiary_id,										// id pobocky
 							$recordId,													// od zaznamu auditu
-							$adapter->quote($itemIndex[$item->getName()]),				// id itemu dotazniku
-							$adapter->quote($qInfo->weight),							// zavaznost
-							$adapter->quote($qInfo->question),							// otazka
-							$adapter->quote($mistakeItems[0]->getValue()),				//kategorie
-							$adapter->quote($mistakeItems[1]->getValue()),				//podkategorie
-							$adapter->quote($mistakeItems[2]->getValue()),				//specifikace
-							$adapter->quote($mistakeItems[3]->getValue()),				//neshoda
-							$adapter->quote($mistakeItems[4]->getValue()),				//navrh
+							$adapter->quote($item["id"]),								// id itemu dotazniku
+							$adapter->quote($item["weight"]),							// zavaznost
+							$adapter->quote($item["question"]),							// otazka
+							$adapter->quote($item["category"]),							//kategorie
+							$adapter->quote($item["subcategory"]),						//podkategorie
+							$adapter->quote($item["concretisation"]),					//specifikace
+							$adapter->quote($item["mistake"]),							//neshoda
+							$adapter->quote($item["suggestion"]),						//navrh
 							"''",														// komentar
 							"CURRENT_DATE",												// bude odstraneno
 							"''"														// zodpovedna osoba
@@ -156,7 +166,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			// zapis zaznamu
 			if ($records) {
-				$sqlBase = "insert into $nameRecords (id, audit_id, audit_form_id, group_id, mistake_id, questionary_item_id, question, score, weight) values ";
+				$sqlBase = "insert into $nameRecords (id, audit_id, audit_form_id, group_id, mistake_id, question, score, weight) values ";
 				
 				$chunks = array_chunk($records, 1000);
 				
@@ -168,7 +178,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			// zapis neshod
 			if ($mistakes) {
-				$sqlBase = "insert into `$nameMistakes` (id, audit_id,client_id,subsidiary_id, record_id, questionary_item_id,weight, question,category,subcategory,concretisation,mistake, suggestion, comment, will_be_removed_at, responsibile_name) values ";
+				$sqlBase = "insert into `$nameMistakes` (id, audit_id, client_id, subsidiary_id, record_id, item_id, weight, question,category,subcategory,concretisation,mistake, suggestion, comment, will_be_removed_at, responsibile_name) values ";
 				
 				$chunks = array_chunk($mistakes, 1000);
 				
@@ -180,6 +190,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			$adapter->commit();
 		} catch (Zend_Exception $e) {
+			die($e->getMessage());
 			$adapter->rollBack();
 		}
 		
@@ -209,7 +220,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 	public function getByAuditAndForm(Audit_Model_Row_Audit $audit, Audit_Model_Row_Form $form) {
 		$where = array(
 				"audit_id = " . $audit->id,
-				"form_id = " . $form->questionary_id
+				"form_id = " . $form->id
 		);
 		
 		return $this->fetchRow($where);

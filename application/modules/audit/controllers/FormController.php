@@ -194,7 +194,7 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		// nacteni dotazniku
 		$tableForms = new Audit_Model_Forms();
-		$form = $tableForms->findById($formForm->getValue("questionary_id"));
+		$form = $tableForms->findById($formForm->getValue("id"));
 		
 		if (!$form) throw new Zend_Exception("Invalid form id");
 		
@@ -379,7 +379,8 @@ class Audit_FormController extends Zend_Controller_Action {
 				"auditId" => $auditId,
 				"clientId" => $clientId,
 				"subsidiaryId" => $subsidiaryId,
-				"formId" => $formId
+				"formId" => $formId,
+				"page" => $page + 1
 		), "audit-form-fill");
 		
 		$this->_redirect($url);

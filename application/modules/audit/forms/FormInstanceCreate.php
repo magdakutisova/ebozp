@@ -27,7 +27,7 @@ class Audit_Form_FormInstanceCreate extends Zend_Form {
 				array(array("row" => "HtmlTag"), array("tag" => "tr"))
 		);
 		
-		$this->addElement("select", "questionary_id", array(
+		$this->addElement("select", "id", array(
 				"label" => "Formulář",
 				"decorators" => $elementDecorator
 		));
@@ -47,12 +47,12 @@ class Audit_Form_FormInstanceCreate extends Zend_Form {
 		
 		// nacteni dat
 		$tableForms = new Audit_Model_Forms();
-		$forms = $tableForms->fetchAll($tableForms->getAdapter()->quoteInto("questionary_id not in (?)", $ids), "name");
+		$forms = $tableForms->fetchAll($tableForms->getAdapter()->quoteInto("id not in (?)", $ids), "name");
 		
-		$element = $this->getElement("questionary_id");
+		$element = $this->getElement("id");
 		
 		foreach ($forms as $form) {
-			$element->addMultiOption($form->questionary_id, $form->name);
+			$element->addMultiOption($form->id, $form->name);
 		}
 		
 		return $this;
