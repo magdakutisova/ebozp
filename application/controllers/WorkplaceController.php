@@ -20,6 +20,12 @@ class WorkplaceController extends Zend_Controller_Action
     private $_folderList = array();
     private $_schoolingList = array();
     private $_environmentFactorList = array();
+    private $_canCreateWorkplace;
+    private $_canEditWorkplace;
+    private $_canDeleteWorkplace;
+    private $_canCreateFolder;
+    private $_canSwitchFolder;
+    private $_canDeleteFolder;
 
     public function init()
     {
@@ -90,6 +96,19 @@ class WorkplaceController extends Zend_Controller_Action
         $this->_username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
+		
+		$this->_canCreateWorkplace = $this->_acl->isAllowed($this->_user, 'workplace', 'new');
+		$this->view->canCreateWorkplace = $this->_canCreateWorkplace;
+		$this->_canEditWorkplace = $this->_acl->isAllowed($this->_user, 'workplace', 'edit');
+		$this->view->canEditWorkplace = $this->_canEditWorkplace;
+		$this->_canDeleteWorkplace = $this->_acl->isAllowed($this->_user, 'workplace', 'delete');
+		$this->view->canDeleteWorkplace = $this->_canDeleteWorkplace;
+		$this->_canCreateFolder = $this->_acl->isAllowed($this->_user, 'workplace', 'newfolder');
+		$this->view->canCreateFolder = $this->_canCreateFolder;
+		$this->_canEditFolder = $this->_acl->isAllowed($this->_user, 'workplace', 'switchfolder');
+		$this->view->canEditFolder = $this->_canEditFolder;
+		$this->_canDeleteFolder = $this->_acl->isAllowed($this->_user, 'workplace', 'deletefolder');
+		$this->view->canDeleteFolder = $this->_canDeleteFolder;
 		
 		//soukromá poznámka
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');

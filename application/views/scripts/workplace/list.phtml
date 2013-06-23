@@ -2,10 +2,10 @@
 <?php if ($this->subsidiaryId != null){?>
 
 <div class="box">
-	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
-	| <a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
-	| <a class="large show-folder-delete">Smazat umístění</a>
-	| <?php if($this->filter == 'vse'){?> 
+	<?php if($this->canCreateWorkplace){?><a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
+	| <?php } if ($this->canCreateFolder){?><a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
+	| <?php } if ($this->canDeleteFolder){?><a class="large show-folder-delete">Smazat umístění</a>
+	| <?php } if($this->filter == 'vse'){?> 
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'neuplna'), 'workplaceList'); ?>">Vyfiltrovat neúplná pracoviště</a>
 	<?php }else{?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList'); ?>">Zobrazit všechna pracoviště</a>
@@ -39,10 +39,10 @@
 		<?php } ?>
 		<div>
 			&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
-			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceEdit');?>">Editovat</a>
-			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceDelete') ?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
-			| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
-		</div>
+			<?php if($this->canEditWorkplace){?>| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceEdit');?>">Editovat</a>
+			<?php }if($this->canDeleteWorkplace){?>| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceDelete') ?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
+			<?php }if($this->canSwitchFolder){?>| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
+		<?php }?></div>
 		<div class="workplace-info hidden">
 			<?php if($workplace['workplace']->getBusinessHours()){?>
 				<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>

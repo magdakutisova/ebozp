@@ -64,12 +64,14 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
+		$this->deny($client, 'workplace', array('new', 'edit', 'delete', 'newfolder', 'switchfolder', 'deletefolder'));
 		$this->deny($client, 'position', array('new', 'edit', 'delete'));
 		$this->deny($client, 'private');
 		
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
+		$this->allow($technician, 'workplace', array('new', 'edit', 'delete', 'newfolder', 'switchfolder', 'deletefolder'));
 		$this->allow($technician, 'position', array('new', 'edit', 'delete'));
 		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "submit"));
 		$this->allow($technician, "audit:mistake", array("attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch"));
