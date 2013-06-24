@@ -39,6 +39,8 @@
 		<?php }?>
 		</div>
 	
+<?php }else {?>
+	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
 <?php }}
 if($this->filter == 'podle-pracovnich-pozic'){?>
 	<?php if($this->works != null){ ?>		
@@ -69,5 +71,6 @@ if($this->filter == 'podle-pracovnich-pozic'){?>
 			<?php }?>
 		<?php }?>
 		</div>	
-<?php }} ?>
-<?php }?>
+<?php } else {?>
+	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
+<?php }}} ?>
