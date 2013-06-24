@@ -18,7 +18,7 @@
 				<ul>
 					<?php foreach($works as $work => $positions){?>
 					<li><?php echo $work?>
-						<?php if(count($positions)){
+						<?php if($positions[0] != ''){
 						echo " (pracovní pozice: ";
 						$i = 0;
 						$length = count($positions);
@@ -51,7 +51,7 @@ if($this->filter == 'podle-pracovnich-pozic'){?>
 				<ul>
 					<?php foreach($works as $work => $workplaces){?>
 					<li><?php echo $work?>
-						<?php if(count($workplaces)){
+						<?php if($workplaces[0] != ''){
 						echo " (provádí se na pracovištích: ";
 						$i = 0;
 						$length = count($workplaces);
