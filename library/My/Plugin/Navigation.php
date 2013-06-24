@@ -49,6 +49,10 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			foreach($pages as $page){
 				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0], 'filter' => 'vse'));
 			}
+			$pages = $clientNavigation->findAllBy('filter2', 'filter2');
+			foreach($pages as $page){
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0], 'filter' => 'podle-pracovist'));
+			}
 		}
 		
 		Zend_Registry::set('ClientNavigation', $clientNavigation);

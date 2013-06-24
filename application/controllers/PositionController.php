@@ -59,7 +59,6 @@ class PositionController extends Zend_Controller_Action
     	$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
     	
     	//získání odkazu na centrálu - instance Application_Model_Subsidiary
-    	$action = $this->getRequest()->getActionName();
     	$this->_acl = new My_Controller_Helper_Acl();
     	$this->_clientId = $this->getRequest()->getParam('clientId');
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();

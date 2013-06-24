@@ -64,6 +64,9 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="clientimport"/>
         </controllerFile>
+        <controllerFile controllerName="Work">
+          <actionMethod actionName="index"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="Client"/>
@@ -222,6 +225,9 @@
           <viewControllerScriptsDirectory forControllerName="Utility">
             <viewScriptFile forActionName="clientimport"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Work">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -260,6 +266,9 @@
           <testApplicationControllerFile forControllerName="Utility">
             <testApplicationActionMethod forActionName="index"/>
             <testApplicationActionMethod forActionName="clientimport"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="Work">
+            <testApplicationActionMethod forActionName="index"/>
           </testApplicationControllerFile>
         </testApplicationControllerDirectory>
       </testApplicationDirectory>

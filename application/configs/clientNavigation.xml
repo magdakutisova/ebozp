@@ -82,17 +82,6 @@
 			<clientId>clientId</clientId>
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 			<filter>filter</filter>
-			<pages>
-				<list>
-					<label>Databáze pracovišť</label>
-					<route>workplaceList</route>
-					<resource>workplace</resource>
-					<privilege>list</privilege>
-					<clientId>clientId</clientId>
-					<subsidiaryId>subsidiaryId</subsidiaryId>
-					<filter>filter</filter>
-				</list>
-			</pages>
 		</workplace>
 		<position>
 			<label>Databáze pracovních pozic</label>
@@ -103,5 +92,14 @@
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 			<filter>filter</filter>
 		</position>
+		<work>
+			<label>Databáze pracovních činností</label>
+			<route>workList</route>
+			<resource>work</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter2>filter2</filter2>
+		</work>
 	</nav>
 </configdata>
