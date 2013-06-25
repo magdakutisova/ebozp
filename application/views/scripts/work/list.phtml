@@ -14,7 +14,7 @@
 		<div class="box">
 		<?php foreach($this->works as $workplace => $works){?>
 			<p class="bold"><?php echo $workplace;?></p>
-			<?php if(count($works)){ ?>
+			<?php if($works != null){ ?>
 				<ul>
 					<?php foreach($works as $work => $positions){?>
 					<li><?php echo $work?>
@@ -35,19 +35,20 @@
 					</li>
 					<?php }}?>
 				</ul>
-			<?php }?>
-		<?php }?>
+			<?php } else {
+				echo "<p>Pracoviště nemá přiřazeny pracovní činnosti.</p>"?>
+		<?php }}?>
 		</div>
 	
 <?php }else {?>
 	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
 <?php }}
 if($this->filter == 'podle-pracovnich-pozic'){?>
-	<?php if($this->works != null){ ?>		
+	<?php if($this->works != null){?>		
 		<div class="box">
 		<?php foreach($this->works as $position => $works){?>
 			<p class="bold"><?php echo $position;?></p>
-			<?php if(count($works)){ ?>
+			<?php if($works != null){ ?>
 				<ul>
 					<?php foreach($works as $work => $workplaces){?>
 					<li><?php echo $work?>
@@ -68,7 +69,10 @@ if($this->filter == 'podle-pracovnich-pozic'){?>
 					</li>
 					<?php }}?>
 				</ul>
-			<?php }?>
+			<?php }
+			else{
+				echo '<p>Pracovní pozice nemá přiřazeny pracovní činnosti.';
+			}?>
 		<?php }?>
 		</div>	
 <?php } else {?>

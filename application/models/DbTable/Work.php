@@ -74,7 +74,12 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		if(count($result) > 0){
 			$works = array();
 			foreach ($result as $work){
-				$works[$work->name][$work->work][] = $work->position;
+				if($work->work != ''){
+					$works[$work->name][$work->work][] = $work->position;
+				}
+				else{
+					$works[$work->name] = null;
+				}
 			}
 			return $works;
 		}
@@ -87,7 +92,7 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		$select = $this->select()
 			->from('work')
 			->joinRight('position_has_work', 'work.id_work = position_has_work.id_work')
-			->joinLeft('position', 'position_has_work.id_position = position.id_position')
+			->joinRight('position', 'position_has_work.id_position = position.id_position')
 			->joinRight('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
 			->joinLeft('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
 			->joinLeft('workplace', 'workplace_has_work.id_workplace = workplace.id_workplace')
@@ -98,7 +103,12 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		if(count($result) > 0){
 			$works = array();
 			foreach ($result as $work){
-				$works[$work->position][$work->work][] = $work->name;
+				if($work->work != ''){
+					$works[$work->position][$work->work][] = $work->name;
+				}
+				else{
+					$works[$work->position] = null;
+				}
 			}
 			return $works;
 		}
