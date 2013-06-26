@@ -20,7 +20,7 @@
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
-	 | <a class="large" href="#">Pracovní činnosti</a>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
 	 <?php if ($this->createAuditAllowed) { ?>
 	 | <a href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary->getIdSubsidiary()), "audit-create"); ?>">Provést audit</a>
 	 <?php } ?>
