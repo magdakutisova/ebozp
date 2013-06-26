@@ -6,11 +6,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	private $subsidiaryStreet;
 	private $subsidiaryCode;
 	private $subsidiaryTown;
-	private $contactPerson;
-	private $phone;
-	private $email;
 	private $supervisionFrequency;
-	private $doctor;
 	private $clientId;
 	private $private;
 	private $hq;
@@ -95,48 +91,6 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	}
 
 	/**
-	 * @return the $contactPerson
-	 */
-	public function getContactPerson() {
-		return $this->contactPerson;
-	}
-
-	/**
-	 * @param $contactPerson the $contactPerson to set
-	 */
-	public function setContactPerson($contactPerson) {
-		$this->contactPerson = $contactPerson;
-	}
-
-	/**
-	 * @return the $phone
-	 */
-	public function getPhone() {
-		return $this->phone;
-	}
-
-	/**
-	 * @param $phone the $phone to set
-	 */
-	public function setPhone($phone) {
-		$this->phone = $phone;
-	}
-
-	/**
-	 * @return the $email
-	 */
-	public function getEmail() {
-		return $this->email;
-	}
-
-	/**
-	 * @param $email the $email to set
-	 */
-	public function setEmail($email) {
-		$this->email = $email;
-	}
-
-	/**
 	 * @return the $supervisionFrequency
 	 */
 	public function getSupervisionFrequency() {
@@ -148,20 +102,6 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	 */
 	public function setSupervisionFrequency($supervisionFrequency) {
 		$this->supervisionFrequency = $supervisionFrequency;
-	}
-
-	/**
-	 * @return the $doctor
-	 */
-	public function getDoctor() {
-		return $this->doctor;
-	}
-
-	/**
-	 * @param $doctor the $doctor to set
-	 */
-	public function setDoctor($doctor) {
-		$this->doctor = $doctor;
 	}
 
 	/**
@@ -249,11 +189,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$this->subsidiaryStreet = isset($data['subsidiary_street']) ? $data['subsidiary_street'] : null;
 		$this->subsidiaryCode = isset($data['subsidiary_code']) ? $data['subsidiary_code'] : null;
 		$this->subsidiaryTown = isset($data['subsidiary_town']) ? $data['subsidiary_town'] : null;
-		$this->contactPerson = isset($data['contact_person']) ? $data['contact_person'] : null;
-		$this->phone = isset($data['phone']) ? $data['phone'] : null;
-		$this->email = isset($data['email']) ? $data['email'] : null;
 		$this->supervisionFrequency = isset($data['supervision_frequency']) ? $data['supervision_frequency'] : null;
-		$this->doctor = isset($data['doctor']) ? $data['doctor'] : null;
 		$this->clientId = isset($data['client_id']) ? $data['client_id'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
 		$this->hq = isset($data['hq']) ? $data['hq'] : null;
@@ -272,11 +208,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$data['subsidiary_street'] = $this->subsidiaryStreet;
 		$data['subsidiary_code'] = $this->subsidiaryCode;
 		$data['subsidiary_town'] = $this->subsidiaryTown;
-		$data['contact_person'] = $this->contactPerson;
-		$data['phone'] = $this->phone;
-		$data['email'] = $this->email;
 		$data['supervision_frequency'] = $this->supervisionFrequency;
-		$data['doctor'] = $this->doctor;
 		$data['client_id'] = $this->clientId;
 		$data['private'] = $this->private;
 		$data['hq'] = $this->hq;
