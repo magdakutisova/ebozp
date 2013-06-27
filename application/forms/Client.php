@@ -238,7 +238,7 @@ class Application_Form_Client extends Zend_Form
         		));
         
         $this->addElement('hidden', 'contact_persons', array(
-        		'label' => 'Kontaktní osoby',
+        		'label' => 'Kontaktní osoby BOZP a PO:',
         		'decorators' => $elementSeparatorDecorator,
         		'order' => 100,
         		));
@@ -260,7 +260,7 @@ class Application_Form_Client extends Zend_Form
         		));
         
         $this->addElement('hidden', 'doctors', array(
-        		'label' => 'Poskytovatelé pracovnělékařské péče',
+        		'label' => 'Poskytovatelé pracovnělékařské péče:',
         		'decorators' => $elementSeparatorDecorator,
         		'order' => 200,
         		));
@@ -273,6 +273,27 @@ class Application_Form_Client extends Zend_Form
         $this->addElement('button', 'new_doctor', array(
         		'label' => 'Přidat dalšího poskytovatele pracovnělékařské péče',
         		'order' => 299,
+        		'decorators' => $elementDecorator2,
+        		));
+        
+        $this->addElement('hidden', 'id_responsibility', array(
+        		'value' => 302,
+        		'order' => 1004,
+        		));
+        
+        $this->addElement('hidden', 'responsibilities', array(
+        		'label' => 'Odpovědné osoby:',
+        		'decorators' => $elementSeparatorDecorator,
+        		'order' => 300,
+        		));
+        
+        $this->addElement('responsibility', 'responsibility301', array(
+        		'order' => 301,
+        		));
+        
+        $this->addElement('button', 'new_responsibility', array(
+        		'label' => 'Přidat další odpovědnou osobu',
+        		'order' => 998,
         		'decorators' => $elementDecorator2,
         		));
         
