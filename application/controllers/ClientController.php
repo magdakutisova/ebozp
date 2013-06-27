@@ -20,14 +20,7 @@ class ClientController extends Zend_Controller_Action
 		else{
 			$this->_helper->layout()->setLayout('clientLayout');
 		}
-		
-		//nastavení pro ajax
-		if ($this->getRequest ()->isXmlHttpRequest ()) {
-			$this->_helper->layout->disableLayout ();
-			$this->_helper->viewRenderer->setNoRender ( true );
-		}		
-		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
-		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
+		$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
 		
 		//nastavení přístupových práv
 		$this->_acl = new My_Controller_Helper_Acl();		
@@ -152,6 +145,14 @@ class ClientController extends Zend_Controller_Action
     {
 		$this->view->subtitle = 'Výběr klienta';
 		
+		//nastavení pro ajax
+		if ($this->getRequest ()->isXmlHttpRequest ()) {
+			$this->_helper->layout->disableLayout ();
+			$this->_helper->viewRenderer->setNoRender ( true );
+		}
+		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
+		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
+		
 		$this->_helper->layout()->setLayout('layout');
 		
 		$mode = $this->_getParam ( 'mode' );
@@ -240,8 +241,9 @@ class ClientController extends Zend_Controller_Action
 		
 		$form = new Application_Form_Client ();
 		$form->save->setLabel ( 'Přidat' );
+		$form->preValidation($this->getRequest()->getPost());
 		$this->view->form = $form;
-		
+				
 		// naplnění formuláře daty ze session, pokud existují
 		$defaultNamespace = new Zend_Session_Namespace ();
 		if (isset ( $defaultNamespace->formData )) {
@@ -490,6 +492,30 @@ class ClientController extends Zend_Controller_Action
 			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání klienta.', 500 );
 		}
 	
+    }
+    
+    public function newcontactpersonAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newcontactperson', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_contact_person', null);
+    	
+    	$element = new My_Form_Element_ContactPerson("newContactPerson$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    public function newdoctorAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newdoctor', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_doctor', null);
+    	
+    	$element = new My_Form_Element_Doctor("newDoctor$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	
+    	$this->view->field = $element->__toString();
     }
 
 }
