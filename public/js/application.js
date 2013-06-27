@@ -162,7 +162,11 @@ $(function(){
 		}
 	}
 	
-	
+	$(document).ready(function(){
+		if($(".errors")[0]){
+			$("form").before('<div class="form-error">Data nebyla uložena. Formulář je chybně vyplněn. Chybně vyplněná pole obsahují další informace.</div>');
+		}
+	});
 	
 });
 

@@ -17,6 +17,13 @@ label.required:after{
 	display: none;
 }
 
+.form-error{
+	color: red;
+	font-weight: bold;
+	border: 2px solid;
+	padding: 2px;
+}
+
 .overflow{
 	height: 150px;
 	overflow: auto;

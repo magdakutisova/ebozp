@@ -60,6 +60,63 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 		return $this->process($result);
 	}
 	
+	public function getBySubsidiaryWithPositions($subsidiaryId){
+		$select = $this->select()
+			->from('work')
+			->joinRight('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
+			->joinRight('workplace', 'workplace_has_work.id_workplace = workplace.id_workplace')
+			->joinLeft('position_has_work', 'work.id_work = position_has_work.id_work')
+			->joinLeft('position', 'position_has_work.id_position = position.id_position')
+			->where('workplace.subsidiary_id = ?', $subsidiaryId)
+			->order('workplace.name');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$works = array();
+			foreach ($result as $work){
+				if($work->work != ''){
+					$works[$work->name][$work->work][] = $work->position;
+				}
+				else{
+					$works[$work->name] = null;
+				}
+			}
+			return $works;
+		}
+		else{
+			return null;
+		}
+	}
+	
+	public function getBySubsidiaryWithWorkplaces($subsidiaryId){
+		$select = $this->select()
+			->from('work')
+			->joinRight('position_has_work', 'work.id_work = position_has_work.id_work')
+			->joinRight('position', 'position_has_work.id_position = position.id_position')
+			->joinRight('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
+			->joinLeft('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
+			->joinLeft('workplace', 'workplace_has_work.id_workplace = workplace.id_workplace')
+			->where('subsidiary_has_position.id_subsidiary = ?', $subsidiaryId)
+			->order('position.position');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$works = array();
+			foreach ($result as $work){
+				if($work->work != ''){
+					$works[$work->position][$work->work][] = $work->name;
+				}
+				else{
+					$works[$work->position] = null;
+				}
+			}
+			return $works;
+		}
+		else{
+			return null;
+		}
+	}
+	
 	public function existsWork($work){
 		$select = $this->select()
 			->from('work')

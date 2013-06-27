@@ -1,0 +1,80 @@
+<?php echo $this->selectForm; ?>
+<?php if($this->subsidiaryId != null){?>
+	
+	<div class="box">
+	<?php if($this->filter == 'podle-pracovist'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovnich-pozic'), 'workList'); ?>">Filtrovat podle pracovních pozic</a>
+	<?php } if($this->filter == 'podle-pracovnich-pozic'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovist'), 'workList'); ?>">Filtrovat podle pracovišť</a>
+	<?php } ?>
+	</div>
+	
+	<?php if($this->filter == 'podle-pracovist'){?>
+	<?php if($this->works != null){ ?>		
+		<div class="box">
+		<?php foreach($this->works as $workplace => $works){?>
+			<p class="bold"><?php echo $workplace;?></p>
+			<?php if($works != null){ ?>
+				<ul>
+					<?php foreach($works as $work => $positions){?>
+					<li><?php echo $work?>
+						<?php if($positions[0] != ''){
+						echo " (pracovní pozice: ";
+						$i = 0;
+						$length = count($positions);
+						foreach($positions as $position){
+							echo $position;
+							if($i != ($length - 1)){
+								echo ', ';
+							}
+							else{
+								echo ')';
+							}
+							$i++;
+						}?>
+					</li>
+					<?php }}?>
+				</ul>
+			<?php } else {
+				echo "<p>Pracoviště nemá přiřazeny pracovní činnosti.</p>"?>
+		<?php }}?>
+		</div>
+	
+<?php }else {?>
+	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
+<?php }}
+if($this->filter == 'podle-pracovnich-pozic'){?>
+	<?php if($this->works != null){?>		
+		<div class="box">
+		<?php foreach($this->works as $position => $works){?>
+			<p class="bold"><?php echo $position;?></p>
+			<?php if($works != null){ ?>
+				<ul>
+					<?php foreach($works as $work => $workplaces){?>
+					<li><?php echo $work?>
+						<?php if($workplaces[0] != ''){
+						echo " (provádí se na pracovištích: ";
+						$i = 0;
+						$length = count($workplaces);
+						foreach($workplaces as $workplace){
+							echo $workplace;
+							if($i != ($length - 1)){
+								echo ', ';
+							}
+							else{
+								echo ')';
+							}
+							$i++;
+						}?>
+					</li>
+					<?php }}?>
+				</ul>
+			<?php }
+			else{
+				echo '<p>Pracovní pozice nemá přiřazeny pracovní činnosti.';
+			}?>
+		<?php }?>
+		</div>	
+<?php } else {?>
+	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
+<?php }}} ?>
