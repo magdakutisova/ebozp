@@ -190,5 +190,15 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "trash"
 						))
 		);
+		
+		$router->addRoute(
+				"document-multiupload",
+				new Zend_Controller_Router_Route("/klient/:clientId/directory/:directoryId/multiupload",
+						array(
+								"module" => "document",
+								"controller" => "directory",
+								"action" => "multiupload"
+						))
+		);
 	}
 }

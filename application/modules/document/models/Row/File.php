@@ -4,6 +4,8 @@ class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 	const TYPE_NONE = 0;
 	const TYPE_DOCUMENTATION = 1;
 	const TYPE_LEGISLATIVE = 2;
+	const TYPE_DOCUMENTATION_PO = 3;
+	const TYPE_DOCUMENTATION_BOZP = 4;
 	
 	/**
 	 * pripoji dokument do adresare
@@ -32,6 +34,21 @@ class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 		$mime = is_null($mimeType) ? $this->mime : $mimeType;
 		
 		return $tableVersions->createVersionFormFile($this, $path, $mime);
+	}
+	
+	/**
+	 * vytvori novou verzi souboru z retezce
+	 *
+	 * @param string $content obsah souboru
+	 * @param string $mimeType mime typ
+	 * @return Document_Model_Row_Version
+	 */
+	public function createVersionFromString($content, $mimeType = null) {
+		$tableVersions = new Document_Model_Versions();
+	
+		$mime = is_null($mimeType) ? "application/octet-stream" : $mimeType;
+	
+		return $tableVersions->createVersionFromString($this, $content, $mime);
 	}
 	
 	/**

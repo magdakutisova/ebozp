@@ -25,11 +25,19 @@ if ($size > 1024) {
 	$size = round($size / 1024, 2);
 	$unit = "M";
 }
+
+$acl = new My_Controller_Helper_Acl();
+$editButton = "";
+$user = Zend_Auth::getInstance()->getIdentity();
+$editable = $acl->isAllowed($user->role, "document:document", "editother") || $file->user_id == $user->id_user;
+
+// kontrola opravneni
+if ($editable) $editButton = $this->formButton("rename-file", "Přejmenovat");
 ?>
 <table>
 	<tr>
 		<td>Jméno souboru</td>
-		<td><?php echo $this->file()->fileName($file); echo " " . $this->formButton("rename-file", "Přejmenovat"); ?></td>
+		<td><?php echo $this->file()->fileName($file); echo " " . $editButton; ?></td>
 	</tr>
 	<tr>
 		<td>Velikost</td>
@@ -48,8 +56,14 @@ if ($size > 1024) {
 	</tr>
 </table>
 <strong><big><?php echo $this->version()->download($loaded); ?></big></strong>
+<?php 
+if ($editable) {
+?>
 <h2>Nahrát aktualizci</h2>
-<?php echo $this->uploadForm; ?>
+<?php 
+	echo $this->uploadForm; 
+}
+?>
 <h2>Historie verzí</h2>
 <ol>
 <?php 
@@ -70,18 +84,24 @@ foreach ($this->directories as $directory) {
 	$url = $this->url(array("clientId" => $clientId, "fileId" => $file->id, "directoryId" => $directory->id), "document-dettach");
 	
 	echo "<li>";
-	echo "<a href='$url' class='dettach'>Odebrat z adresáře</a>";
+	
+	if ($editable) echo "<a href='$url' class='dettach'>Odebrat z adresáře</a>";
+	
 	echo $this->path($directory->path(), $directory, true);
 	echo "</li>";
 }
 ?>
 </ul>
-<?php echo $this->formButton("attach-dir", "Přidat do adresáře"); ?>
+<?php 
+if ($acl->isAllowed($user->role, "document:document", "editother"))
+	echo $this->formButton("attach-dir", "Přidat do adresáře"); 
+?>
 <div id="rename-form" class="hidden">
 <?php echo $this->renameForm; ?>
 </div>
 <div id="attach-form" class="hidden">
 <?php 
+if ($acl->isAllowed($user->role, "document:document", "editother")) {
 // vygenerovani seznamu korenovych adresaru
 $roots = array("0" => "---Vyberte klienta---");
 
@@ -101,4 +121,7 @@ echo $this->formSelect("root-list", 0, null, $roots);
 	</form>
 	<ul id="attach-content" style="list-style: none;"></ul>
 </div>
+<?php 
+}
+?>
 <script type="text/javascript" src="/js/document/document.js"></script>

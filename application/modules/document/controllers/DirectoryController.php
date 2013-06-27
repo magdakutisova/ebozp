@@ -43,6 +43,28 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		// nacteni dat
 		$directory = self::loadDir($this->getRequest()->getParam("directoryId", 0));
 		
+		// kontrola, jestli k adresari ma uzivatel pristup
+		$user = Zend_Auth::getInstance()->getIdentity();
+		$acl = new My_Controller_Helper_Acl();
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		// kontrola role
+		if (!$acl->isAllowed($user->role, "document:directory", "editall")) {
+			// kontrola prislusnosti ke klientovi
+			$tableUsers = new Application_Model_DbTable_User();
+			$userInfo = $tableUsers->getUser($user->id_user);
+			$subsidiaries = $userInfo->getUserSubsidiaries();
+			
+			$subs = $tableSubsidiaries->fetchAll(array(
+					"id_subsidiary in (?)" => $subsidiaries,
+					"client_id = ?" => $directory->client_id
+			));
+			
+			// nacteni informaci o klientech - prasarna, ale nechci sahat magde do kodu
+			
+			if (!$subs->count()) throw new Zend_Acl_Exception("Action is not allowed");
+		}
+		
 		// nacteni cesty
 		$path = $directory->path();
 		
@@ -68,7 +90,6 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		$formPostFile->setAction($url);
 		
 		// nacteni pobocek
-		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
 		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId), "subsidiary_name");
 		
 		$formEdit = new Document_Form_DirectoryEdit();
@@ -113,6 +134,47 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		$this->_forward("get");
 	}
 	
+	public function multiuploadAction() {
+		// nacteni adresare
+		$directory = self::loadDir($this->_request->getParam("directoryId"));
+		
+		// nacteni formulare a kontrola odeslaneho soubrou
+		$form = new Document_Form_Upload();
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("get");
+			return;
+		}
+		
+		// nacteni podstromu adresare
+		$subtree = $directory->subtree();
+		
+		// otevreni souboru
+		$src = $form->getElement("file")->getFileName();
+		$zip = new ZipArchive();
+		$zip->open($src);
+		
+		// prohledani a zapis dat
+		for ($i = 0; $i < $zip->numFiles; $i++) {
+			$path = $zip->getNameIndex($i);
+			$file = $zip->getFromIndex($i);
+			
+			// pokud je postelni clanek lomitko, soubor je adresar a ten se ignoruje
+			$last = $path[strlen($path) - 1];
+			if ($last == '/' || $last == '\\') continue;
+			
+			// rozlozeni cesty na segmenty
+			$arrPath = explode("/", $path);
+			
+			// provedeni zapisu
+			self::_writeFile($subtree, $arrPath, $zip, $i);
+		}
+		
+		// presmerovani na vypis adresare
+		$url = $this->view->url(array("clientId" => $directory->client_id, "directoryId" => $directory->id), "document-directory-get");
+		$this->_redirect($url);
+	}
+	
 	public function postAction() {
 		$form = new Document_Form_Directory();
 		
@@ -155,6 +217,15 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		// kotrnola pobocky, jestli neni 0
 		if ($form->getElement("subsidiary_id")->getValue() == 0) $directory->subsidiary_id = null;
 		
+		// pokud je nastaveno rekurzivni prochazeni, pak se pobocka nastavi i vsem podadresarum
+		if ($form->getElement("recursive")->getValue()) {
+			// provedeni updatu
+			$directory->getTable()->update(array("subsidiary_id" => $directory->subsidiary_id), array(
+					"left_id > ?" => $directory->left_id,
+					"right_id < ?" => $directory->righ_id
+			));
+		}
+		
 		$directory->save();
 		
 		// presmerovani na novou url
@@ -175,5 +246,65 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		if (!$directory) throw new Zend_Db_Table_Exception("Directory #$id not found");
 		
 		return $directory;
+	}
+	
+	/**
+	 * provadi rekurzivni zapis do virtualni adresarove struktury
+	 * 
+	 * @param stdClass $subTree podstrom
+	 * @param array $path zbytkova cesta
+	 * @param ZipArchive $zip archiv se soubory
+	 * @param int $index index
+	 */
+	protected static function _writeFile($subTree, array $path, $zip, $index) {
+		// kontrola, ejslti existuje zvoleny podadresar
+		$dirname = array_shift($path);
+		
+		// pokud neni dalsi prvek v ceste, pak se jedna o soubor
+		if (!$path) {
+			// zapis souboru - nejprve kontrola, jestli soubor v adresari exituje
+			$file = $subTree->dir->childFileByName($dirname);
+			
+			if (!$file) {
+				// musi se vytvorit novy soubor
+				$tableFiles = new Document_Model_Files();
+				
+				$file = $tableFiles->createFile($dirname, "application/octet-stream", Zend_Auth::getInstance()->getIdentity()->id_user);
+				$file->attach($subTree->dir);
+			}
+			
+			$file->createVersionFromString($zip->getFromIndex($index));
+			
+			return;	
+		}
+		
+		// kontrola jestli podadresar existuje
+		$dir = self::_findDirEntry($subTree, $dirname);
+		
+		// rekurzivni zapis
+		self::_writeFile($dir, $path, $zip, $index);
+	}
+	
+	/**
+	 * najde v podstramu adresar
+	 * pokud neexistuje, vytvori ho
+	 * 
+	 * @param unknown_type $subStree
+	 * @param unknown_type $name
+	 */
+	protected static function _findDirEntry($subTree, $name) {
+		foreach ($subTree->children as $child) {
+			if ($child->dir->name == $name) return $child;
+		}
+		
+		$newDir = $subTree->dir->createChildDir($name);
+		
+		$item = new stdClass();
+		$item->dir = $newDir;
+		$item->children = array();
+		
+		$subTree->children[] = $item;
+		
+		return $item;
 	}
 }

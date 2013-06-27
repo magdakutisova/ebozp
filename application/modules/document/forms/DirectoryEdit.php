@@ -34,6 +34,11 @@ class Document_Form_DirectoryEdit extends Zend_Form {
 				"decorators" => $elementDecorator
 		));
 		
+		$this->addElement("checkbox", "recursive", array(
+				"label" => "Změnit pobočku u všech podsložkách",
+				"decorators" => $elementDecorator
+		));
+		
 		$this->addElement("submit", "submit", array(
 				"label" => "Uložit",
 				"decorators" => $submitDecorator

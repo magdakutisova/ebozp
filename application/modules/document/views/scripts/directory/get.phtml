@@ -29,6 +29,9 @@ if ($acl->isAllowed($user->role, "document:directory", "post")) {
 // kontrola ACL pro upload souboru
 if ($acl->isAllowed($user->role, "document:document", "upload")) {
 	echo $this->formPostFile;
+	
+	if ($acl->isAllowed($user->role, "document:directory", "multiupload"))
+		echo $this->formLabel("multiupload", "Hromadné nahrávání: ") . $this->formCheckbox("multiupload", 1);
 }
 
 ?>
@@ -64,18 +67,18 @@ foreach ($this->childDirs as $dir) {
 	echo "</td></tr>";
 }
 
-// vyhodnoceni prav k souborum v adresari
-$fileActions = array();
-
-if ($acl->isAllowed($user->role, "document:directory", "detach")) {
-	$fileActions["Odebrat"] = $this->url(array("clientId" => $this->clientId, "directoryId" => "__DIR__", "fileId" => "__FILE__"), "document-directory-dettach");
-}
-
 foreach ($this->childDocuments as $file) {
 	echo "<tr><td><span class='document'></span>";
 	echo $this->file($file);
 	echo "</td>";
 	echo "<td>";
+
+	// vyhodnoceni prav k souboru
+	$fileActions = array();
+	
+	if ($acl->isAllowed($user->role, "document:directory", "detach") && ($file->user_id == $user->id_user || $acl->isAllowed($user->role, "document:directory", "editother"))) {
+		$fileActions["Odebrat"] = $this->url(array("clientId" => $this->clientId, "directoryId" => "__DIR__", "fileId" => "__FILE__"), "document-directory-dettach");
+	}
 	
 	// prepis akci a jejich zapis
 	foreach ($fileActions as $label => $action) {

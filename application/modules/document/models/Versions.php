@@ -47,4 +47,28 @@ class Document_Model_Versions extends Zend_Db_Table_Abstract {
 		
 		return $retVal;
 	}
+	
+	/**
+	 * vytvori soubor z retezce
+	 * 
+	 * @param Document_Model_Row_File $file radek souboru
+	 * @param string $content obsah souboru
+	 * @param string $mime mimetyp
+	 * @return Document_Model_Row_Version
+	 */
+	public function createVersionFromString($file, $content, $mime) {
+		// vytvoreni a zapis verze
+		$retVal = $this->createRow(array(
+				"file_id" => $file->id,
+				"mime" => $mime,
+				"size" => strlen($content)
+		));
+		
+		$retVal->save();
+		
+		// zapis souboru
+		file_put_contents(DOCUMENT_PATH_DIR . "/revision_" . $retVal->id . ".dat", $content);
+		
+		return $retVal;
+	}
 }

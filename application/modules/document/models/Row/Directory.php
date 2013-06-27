@@ -43,6 +43,22 @@ class Document_Model_Row_Directory extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
+	 * vraci soubor podle jmena
+	 * pokud soubor v adresari neni, vraci NULL
+	 * 
+	 * @param string $name
+	 * @return Document_Model_Row_File
+	 */
+	public function childFileByName($name) {
+		// sestaveni dotazu
+		$tableFiles = new Document_Model_Files();
+		
+		$retVal = $this->findManyToManyRowset($tableFiles, new Document_Model_DirectoriesFiles(), "directory", "file", $tableFiles->select(false)->where("name like ?", $name));
+		
+		return $retVal->current();
+	}
+	
+	/**
 	 * vytvori novy podadresar
 	 * 
 	 * @param string $name jmeno adresare
@@ -57,11 +73,49 @@ class Document_Model_Row_Directory extends Zend_Db_Table_Row_Abstract {
 		$retVal->left_id = $this->_data["left_id"] + 1;
 		$retVal->right_id = $this->_data["left_id"] + 2;
 		$retVal->root_id = $this->_data["root_id"];
+		$retVal->client_id = $this->_data["client_id"];
 		
 		// provedeni update
 		$this->_setOffset(2, $this->_data["root_id"], $this->_data["left_id"]);
 		
 		$retVal->save();
+		
+		return $retVal;
+	}
+	
+	/**
+	 * vraci podstrom adresare
+	 * podstrom obsahuje i svuj koren (tedy tento prvek)
+	 */
+	public function subtree() {
+		// nacteni dat serazenych dle id predka a dle jmena 
+		$where = array(
+				"left_id > ?" => $this->_data["left_id"],
+				"right_id < ?" => $this->_data["right_id"],
+				"client_id = ?" => $this->_data["client_id"]
+		);
+		
+		$items = $this->getTable()->fetchAll($where, array("parent_id", "name"));
+		
+		// vygenerovani vysledku
+		$retVal = new stdClass();
+		$retVal->children = array();
+		$retVal->dir = $this;
+		
+		// zapis dat
+		$itemIndex = array();			// asociativni pole, kde klicem je id adresare a obsahem jeho zaznam z hierarchie
+		$itemIndex[$this->_data["id"]] = $retVal;
+		
+		foreach ($items as $item) {
+			// inicializace objektu a zapis do indexu
+			$itemObj = new stdClass();
+			$itemObj->children = array();
+			$itemObj->dir = $item;
+			$itemIndex[$item->id] = $itemObj;
+			
+			// zapis do predka
+			$itemIndex[$item->parent_id]->children[] = $itemObj;
+		}
 		
 		return $retVal;
 	}

@@ -89,7 +89,27 @@ $(function () {
 	}
 	
 	function openEditDirForm() {
-		createDialog($("#form-edit-dir"), "350px", "Úprava adresáře", undefined);
+		createDialog($("#form-edit-dir"), "450px", "Úprava adresáře", undefined);
+	}
+	
+	function switchUploadUrl() {
+		// nacteni stavajici akce a zjisteni id klienta a adresare
+		var oldUrl = $("#formupload").attr("action");
+		var pattern = /^\/klient\/([0-9]+)\/directory\/([0-9]+)\/.*/;
+		
+		var result = oldUrl.match(pattern);
+		var url;
+		
+		// vyhodnoceni zaskrtnuti
+		if ($(this).filter(":checked").length) {
+			// multiupload
+			url = "/klient/" + result[1] + "/directory/" + result[2] + "/multiupload";
+		} else {
+			// klasicky upload
+			url = "/klient/" + result[1] + "/directory/" + result[2] + "/post-document";
+		}
+		
+		$("#formupload").attr("action", url);
 	}
 	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
@@ -98,6 +118,7 @@ $(function () {
 	$(".button").button();
 	$("#attach-dir").click(openAttachForm);
 	$("#root-list").change(rootChange);
+	$("#multiupload").change(switchUploadUrl);
 	
 	$(".dettach").click(generateConfirm("Skutečně odebrat z adresáře?")).button({ "icon-only" : true, icons : { primary : "ui-icon-close" }, "text" : false });
 });

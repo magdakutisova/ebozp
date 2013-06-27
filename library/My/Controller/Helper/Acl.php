@@ -61,6 +61,11 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, "audit:audit", array("list", "get"));
 		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
 		$this->allow($client, "audit:form", array("get"));
+		$this->allow($client, "document:directory");
+		$this->allow($client, "document:document");
+		$this->deny($client, "document:directory", array("editother", "showall", "post", "delete"));				// pomocne akce - editother umoznuje editovat cizi adresare a show all umoznuje pristup k cizim adresarum
+		$this->deny($client, "document:document", array("editother", "showall"));					// pomocna akce - viz adresare
+		$this->allow($client, "document:index");
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
@@ -77,11 +82,13 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
 		$this->allow($technician, "audit:workplace", array("comment", "setplace", "post"));
+		$this->allow($technician, "document:directory", array("editother", "showall", "index", "post", "delete"));
+		$this->allow($technician, "document:document", array("editother"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 		$this->deny($coordinator, "audit:audit", array("fill", "post", "create"));
-		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json"));
+		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));
 		$this->allow($coordinator, "audit:report",array("report.pdf", "create", "edit", "save"));
 		
 		$this->allow($superadmin);
