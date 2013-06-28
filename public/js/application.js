@@ -205,6 +205,17 @@ $(function(){
 		});
 	}
 	
+	//zaškrtnutí všech poboček - pracovní pozice	
+	$("form#position").on("click", "#subsidiariesAll", function(){
+		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');
+		if($(this).is(':checked')){
+			checkboxes.prop('checked', true);
+		}
+		else{
+			checkboxes.prop('checked', false);
+		}
+	});
+	
 });
 
 /**
