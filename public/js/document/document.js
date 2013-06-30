@@ -25,6 +25,12 @@ $(function () {
 		loadDirectory(id);
 	}
 	
+	function changeDirWithFiles() {
+		var id = $(this).next().val();
+		
+		loadDirectoryAndFiles(id);
+	}
+	
 	function selectDir() {
 		var context = $(this);
 		var id = context.next().val();
@@ -36,47 +42,106 @@ $(function () {
 		$("#attach-submit").removeAttr("disabled");
 	}
 	
+	function writeChildDirs(target, dirs, click, dblclick) {
+		target.children().remove();
+		
+		for (var i in dirs) {
+			var dir = dirs[i];
+			
+			$("<li>").append(
+					$("<span class='directory'>")
+			).append(
+					$("<a>").text(dir.name).dblclick(dblclick).click(click)
+			).append(
+					$("<input type='hidden' name='directoryId'>").val(dir.id)
+			).appendTo(target);
+		}
+	}
+	
+	function writePath(target, path, currentDir, click, dblclick) {
+		target.children().remove();
+		
+		for (var i in path) {
+			var dir = path[i];
+			
+			$("<span>").append(
+					$("<a>").text(dir.name + "/").dblclick(dblclick).click(click)
+			).append(
+					$("<input type='hidden' name='directoryId'>").val(dir.id)
+			).appendTo(target);
+		}
+		
+		// zapis aktualni polozky
+		$("<span>").append(
+				$("<a>").text(currentDir.name + "/").dblclick(dblclick).click(click)
+		).append(
+				$("<input type='hidden' name='directoryId'>").val(currentDir.id)
+		).appendTo(target);
+	}
+	
 	function loadDirectory(id) {
 		$.get("/document/directory/get.json", { directoryId : id}, function (response) {
 			// zapis rodicovskych adresaru
 			var target = $("#attach-content");
-			target.children().remove();
-			
-			for (var i in response.childDirs) {
-				var dir = response.childDirs[i];
-				
-				$("<li>").append(
-						$("<a>").text(dir.name).dblclick(changeDir).click(selectDir)
-				).append(
-						$("<input type='hidden' name='directoryId'>").val(dir.id)
-				).appendTo(target);
-			}
+			writeChildDirs(target, response.childDirs, selectDir, changeDir);
 			
 			// zapis cesty
 			target = $("#attach-path");
-			target.children().remove();
-			
-			for (var i in response.path) {
-				var dir = response.path[i];
-				
-				$("<span>").append(
-						$("<a>").text(dir.name + "/").dblclick(changeDir).click(selectDir)
-				).append(
-						$("<input type='hidden' name='directoryId'>").val(dir.id)
-				).appendTo(target);
-			}
-			
-			// zapis aktualni polozky
-			$("<span>").append(
-					$("<a>").text(response.directory.name + "/").dblclick(changeDir).click(selectDir)
-			).append(
-					$("<input type='hidden' name='directoryId'>").val(response.directory.id)
-			).appendTo(target);
+			writePath(target, response.path, response.directory, selectDir, changeDir);
 			
 			// anulace vybraneho adresare
 			$("#attach-submit").attr("disabled", "disabled");
 			$("#attach-selected").text("");
 			$("#dirId").val(0);
+		}, "json");
+	}
+	
+	function setDocument() {
+		// nacteni informaci
+		var context = $(this).parents("li:first");
+		
+		var id = context.find(":hidden").val();
+		var name = context.find("a").text();
+		
+		// zapis dat
+		$("#attach-selected").text(name);
+		$("#fileId1").val(id);
+	}
+	
+	function writeChildFiles(target, files, click, dblclick) {
+		for (var i in files) {
+			var file = files[i];
+			
+			$("<li>").append(
+					$("<span class='document'>")
+			).append(
+					$("<a>").text(file.name).dblclick(dblclick).click(click)
+			).append(
+					$("<input type='hidden' name='fileId'>").val(file.id)
+			).appendTo(target);
+		}
+	}
+	
+	function checkAttach() {
+		if ($(this).find(":hidden").val() == "0") {
+			return confirm("Stávající soubor bude odpojen.\nChcete pokračovat?");
+		}
+	}
+	
+	function loadDirectoryAndFiles(id) {
+		$.get("/document/directory/get.json", { directoryId : id}, function (response) {
+			// zapis rodicovskych adresaru
+			var target = $("#attach-content");
+			writeChildDirs(target, response.childDirs, changeDirWithFiles, $.noop);
+			writeChildFiles(target, response.childDocs, setDocument, $.noop);
+			
+			// zapis cesty
+			target = $("#attach-path");
+			writePath(target, response.path, response.directory, changeDirWithFiles, $.noop);
+			
+			// anulace vybraneho adresare
+			$("#attach-selected").text("-");
+			$("#directoryId1").val(id);
 		}, "json");
 	}
 	
@@ -112,6 +177,24 @@ $(function () {
 		$("#formupload").attr("action", url);
 	}
 	
+	function editDocSlot() {
+		// nacteni id slotu a sestaveni url
+		var id = $(this).attr("name").split("-")[1];
+		var url = "/document/documentation/edit.html";
+		
+		$.get(url, { documentationId : id, clientId : CLIENT_ID }, function (response) {
+			response = $(response);
+			response.appendTo("body");
+			response.find("#attach-file").submit(checkAttach);
+			
+			// aktivace adresaru
+			var rootId = response.find("#root-id").val();
+			loadDirectoryAndFiles(rootId);
+			
+			createDialog(response, 450, "Editace dokumentace");
+		});
+	}
+	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
 	$("#edit-directory").click(openEditDirForm).button( { "icon-only" : true, icons : { primary : "ui-icon-pencil"}, "text" : false});
 	
@@ -119,6 +202,7 @@ $(function () {
 	$("#attach-dir").click(openAttachForm);
 	$("#root-list").change(rootChange);
 	$("#multiupload").change(switchUploadUrl);
+	$("#docs-table button").click(editDocSlot).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
 	
 	$(".dettach").click(generateConfirm("Skutečně odebrat z adresáře?")).button({ "icon-only" : true, icons : { primary : "ui-icon-close" }, "text" : false });
 });

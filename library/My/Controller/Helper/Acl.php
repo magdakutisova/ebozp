@@ -37,6 +37,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("document:index"));
 		$this->add(new Zend_Acl_Resource("document:directory"));
 		$this->add(new Zend_Acl_Resource("document:document"));
+		$this->add(new Zend_Acl_Resource("document:documentation"));
+		$this->add(new Zend_Acl_Resource("document:preset"));
 		
 		$preventist = My_Role::ROLE_PREVENTIST;
 		$guest = My_Role::ROLE_GUEST;
@@ -67,6 +69,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, "document:document");
 		$this->deny($client, "document:directory", array("editother", "showall", "post", "delete"));				// pomocne akce - editother umoznuje editovat cizi adresare a show all umoznuje pristup k cizim adresarum
 		$this->deny($client, "document:document", array("editother", "showall"));					// pomocna akce - viz adresare
+		$this->allow($client, "document:documentation", array("index"));
 		$this->allow($client, "document:index");
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
@@ -94,6 +97,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($coordinator, "audit:audit", array("fill", "post", "create"));
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));
 		$this->allow($coordinator, "audit:report",array("report.pdf", "create", "edit", "save"));
+		$this->allow($coordinator, "document:preset");
+		$this->allow($coordinator, "document:documentation");
 		
 		$this->allow($superadmin);
 		$this->deny($admin, 'utility');

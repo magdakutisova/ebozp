@@ -1,0 +1,24 @@
+<?php
+echo "<div>";
+
+echo "<h2>Úprava pozice</h2>";
+
+// formular
+echo $this->form;
+
+// adresarova struktura pro vyber souboru
+echo "<h2>Výběr souboru</h2>";
+echo $this->formHidden("root-id", $this->root->id);
+
+$attachUrl = $this->url(array("documentationId" => $this->documentation->id, "clientId" => $this->documentation->client_id), "document-documentation-attach");
+?>
+<div id="attach-path"></div>
+<div>
+	<form action="<?php echo $attachUrl; ?>" method="post" id="attach-file">
+		Vybraný soubor: <strong id="attach-selected">-</strong>
+		<input type="hidden" name="fileId" value="0" id="fileId1" />
+		<input type="hidden" name="directoryId" value="0" id="directoryId1" />
+		<input type="submit" value="Připojit" id="attach-submit" />
+	</form>
+</div>
+<ul id="attach-content" style="list-style: none;"></ul>

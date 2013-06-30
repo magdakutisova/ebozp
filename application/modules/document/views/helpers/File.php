@@ -1,7 +1,7 @@
 <?php
 class Document_View_Helper_File extends Zend_View_Helper_Abstract {
 	
-	public function file(Document_Model_Row_File $file = null) {
+	public function file($file = null) {
 		if (is_null($file)) return $this;
 		
 		$url = $this->url($file);
@@ -12,11 +12,11 @@ class Document_View_Helper_File extends Zend_View_Helper_Abstract {
 		return $retVal;
 	}
 	
-	public function url(Document_Model_Row_File $file) {
+	public function url($file) {
 		return $this->view->url(array("fileId" => $file->id, "clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0)), "document-get");
 	}
 	
-	public function fileName(Document_Model_Row_File $file) {
+	public function fileName($file) {
 		return $file->name;
 	}
 }

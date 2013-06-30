@@ -200,5 +200,45 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "multiupload"
 						))
 		);
+		
+		$router->addRoute(
+				"document-documentation-index",
+				new Zend_Controller_Router_Route("/klient/:clientId/documentation",
+						array(
+								"module" => "document",
+								"controller" => "documentation",
+								"action" => "index"
+						))
+		);
+		
+		$router->addRoute(
+				"document-documentation-post",
+				new Zend_Controller_Router_Route("/klient/:clientId/documentation/post",
+						array(
+								"module" => "document",
+								"controller" => "documentation",
+								"action" => "post"
+						))
+		);
+		
+		$router->addRoute(
+				"document-documentation-put",
+				new Zend_Controller_Router_Route("/klient/:clientId/documentation/:documentationId/put",
+						array(
+								"module" => "document",
+								"controller" => "documentation",
+								"action" => "put"
+						))
+		);
+		
+		$router->addRoute(
+				"document-documentation-attach",
+				new Zend_Controller_Router_Route("/klient/:clientId/documentation/:documentationId/attach",
+						array(
+								"module" => "document",
+								"controller" => "documentation",
+								"action" => "attach"
+						))
+		);
 	}
 }

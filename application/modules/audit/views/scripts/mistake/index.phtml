@@ -26,6 +26,12 @@ foreach ($this->mistakes as $mistake) {
 }
 ?>
 </table>
+<?php 
+$user = Zend_Auth::getInstance()->getIdentity();
+$acl = new My_Controller_Helper_Acl();
+
+if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
+?>
 <h2>Import neshod</h2>
 <em>Podporovaný formát je CSV s nastavením:
 <ul>
@@ -53,4 +59,7 @@ foreach ($this->mistakes as $mistake) {
 	</p>
 </form>
 <b>Pozor! při importu budou všechny stávající neshody, které nejsou vázány na audit smazány a nahrazeny novými!</b>
+<?php 
+}
+?>
 <script type="text/javascript" src="/js/audit/mistake/index.js"></script>

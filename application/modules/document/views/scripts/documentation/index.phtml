@@ -1,0 +1,104 @@
+<script type="text/javascript">
+var CLIENT_ID = <?php echo $this->client->id_client; ?>;
+</script>
+<?php
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+echo "<h1>" . $this->client->company_name;
+
+if ($this->subsidiary) echo " - " . $this->subsidiary->subsidiary_name;
+
+echo "</h1>";
+?>
+<h2>Dokumentace</h2>
+<div class="box">
+	<form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "document-documentation-index"); ?>" method="get">
+		<?php 
+		$mo = $this->addForm->getElement("subsidiary_id")->getMultiOptions();
+		$subList = array("-1" => "-- VŠECHNA DOKUMENTACE --");
+		
+		foreach ($mo as $k => $v) $subList[$k] = $v;
+		
+		echo $this->formSelect("subId", $this->subsidiaryId, array(), $subList);
+		echo $this->formSubmit("filter-submit", "Filtrovat");
+		?>
+	</form>
+	
+<?php 
+if ($acl->isAllowed($user->role, "document:preset")) {
+	echo "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
+}
+?>
+</div>
+<table id="docs-table">
+	<thead>
+		<tr>
+			<td>
+			Název
+			</td>
+			<td>
+			Pobočka
+			</td>
+			<td>
+			Soubor
+			</td>
+			<td>
+			Akce
+			</td>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+// vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
+$editable = $acl->isAllowed($user->role, "document:documentation", "put");
+
+foreach ($this->documentations as $doc) {
+	// vyhodnoceni, zda se jedna o prazdny
+	$class = $doc->fileid ? "" : "error";
+	
+	echo "<tr class='$class'>";
+	
+	echo "<td>$doc->name</td>";
+	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";
+	echo "<td>" . ($doc->fileid ? $this->file($doc) : "-") . "</td>";
+	
+	echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
+	
+	echo "</tr>";
+}
+	?>
+	</tbody>
+</table>
+<?php 
+// pokud je uzivatel opravnen, zobrazi se formular na pridani
+if ($acl->isAllowed($user->role, "document:documentation", "post")) {
+	echo "<h3>Nová dokumentace</h3>";
+	echo $this->addForm; 
+}
+
+if ($acl->isAllowed($user->role, "document:documentation", "reset")) {
+	?>
+<h2>Nastavit výchozí dokumentace</h2>
+<form action="/document/documentation/reset?clientId=<?php echo $this->client->id_client; ?>" method="post" onsubmit="return confirm('Skutečně pokračovat?')">
+	<em>Pozor! Při resetu bude stávající dokumentace smazána a nahrazena prázdnými sloty!</em>
+	<table>
+		<tr>
+			<td>
+			<?php echo $this->formLabel("subId", "Pobočka k resetu"); ?>
+			</td>
+			<td>
+			<?php echo $this->formSelect("subId", null, array(), $subList); ?>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+			<?php echo $this->formSubmit("reset-submit", "Zresetovat"); ?>
+			</td>
+		</tr>
+	</table>
+</form>
+	<?php 
+}
+?>
+<script type="text/javascript" src="/js/document/document.js"></script>

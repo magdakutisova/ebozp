@@ -1,0 +1,62 @@
+<h1>Přednastavená dokumentace</h1>
+<h2>Obecná dokumentace</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Jméno
+			</th>
+			<th>
+			Akce
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+foreach ($this->commons as $item) {
+	?>
+		<tr>
+			<td>
+			<?php echo $item->name; ?>
+			</td>
+			<td>
+			<?php echo "<a href='/document/preset/delete?presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>
+<h2>Dokumentace pro pobočku</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Jméno
+			</th>
+			<th>
+			Akce
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+foreach ($this->noCommons as $item) {
+	?>
+		<tr>
+			<td>
+			<?php echo $item->name; ?>
+			</td>
+			<td>
+			<?php echo "<a href='/document/preset/delete?presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>
+<h2>Nová přednastavená dokumentace</h2>
+<?php
+echo $this->form;
