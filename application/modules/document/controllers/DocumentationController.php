@@ -25,7 +25,15 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	}
 	
 	public function deleteAction() {
+		// nactei dat
+		$clientId = $this->_request->getParam("clientId", 0);
+		$docId = $this->_request->getParam("documentationId", 0);
 		
+		$tableDocumentations = new Document_Model_Documentations();
+		$tableDocumentations->delete(array("id = ?" => $docId));
+		
+		$this->view->clientId = $clientId;
+		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
 	}
 	
 	public function editAction() {

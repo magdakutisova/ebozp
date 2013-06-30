@@ -6,6 +6,13 @@ echo "<h2>Úprava pozice</h2>";
 // formular
 echo $this->form;
 
+echo "<h2>Smazat</h2>";
+echo "<form action='/document/documentation/delete' onsubmit='return confirm(\"Skutečně smazat?\")'>";
+echo $this->formHidden("documentationId", $this->documentation->id);
+echo $this->formHidden("clientId", $this->documentation->client_id);
+echo $this->formSubmit("delete-submit", "Smazat");
+echo "</form>";
+
 // adresarova struktura pro vyber souboru
 echo "<h2>Výběr souboru</h2>";
 echo $this->formHidden("root-id", $this->root->id);
