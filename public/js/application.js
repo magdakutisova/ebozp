@@ -168,6 +168,54 @@ $(function(){
 		}
 	});
 	
+	//dynamické záležitosti u klienta a pobočky
+	$("#new_contact_person").click(function(){
+		ajaxAddContactPerson();
+	});
+	
+	function ajaxAddContactPerson(){
+		var id = $("#id_contact_person").val();
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/newcontactperson/format/html',
+			data: "id_contact_person=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_contact_person').parents('tr').before(newElement);
+				$('#id_contact_person').val(++id);
+			}
+		});
+	}
+	
+	$("#new_doctor").click(function(){
+		ajaxAddDoctor();
+	});
+	
+	function ajaxAddDoctor(){
+		var id = $("#id_doctor").val();
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/newdoctor/format/html',
+			data: "id_doctor=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_doctor').parents('tr').before(newElement);
+				$('#id_doctor').val(++id);
+			}
+		});
+	}
+	
+	//zaškrtnutí všech poboček - pracovní pozice	
+	$("form#position").on("click", "#subsidiariesAll", function(){
+		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');
+		if($(this).is(':checked')){
+			checkboxes.prop('checked', true);
+		}
+		else{
+			checkboxes.prop('checked', false);
+		}
+	});
+	
 });
 
 /**

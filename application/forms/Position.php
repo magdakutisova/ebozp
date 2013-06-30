@@ -32,6 +32,15 @@ class Application_Form_Position extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$elementDecoratorColspanReverse = array(
+				'ViewHelper',
+				array('Errors'),
+				array('Description', array('tag' => 'td')),
+				array('Label', array('placement' => 'append')),
+				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+		);
+		
 		$elementDecoratorColspanSeparator = array(
 				'ViewHelper',
 				array('Errors'),
@@ -91,12 +100,18 @@ class Application_Form_Position extends Zend_Form{
       			'order' => 2,
        			));
        	
+       	$this->addElement('checkbox', 'subsidiariesAll', array(
+       			'label' => 'Vybrat všechny pobočky',
+       			'decorators' => $elementDecoratorColspanReverse,
+       			'order' => 3,
+       			));
+       	
        	$this->addElement('text', 'position', array(
        			'label' => 'Název pracovní pozice',
        			'required' => true,
        			'filters' => array('StringTrim', 'StripTags'),
-       			'decorators' => $elementDecoratorColspan,
-       			'order' => 3,
+       			'decorators' => $elementDecoratorColspanSeparator,
+       			'order' => 4,
        			'description' => $questionMarkStart . 'Uveďte název uvedený v pracovní smlouvě' . $questionMarkEnd,
        			'validators' => array(
        					array('validator' => 'StringLength',
@@ -107,7 +122,7 @@ class Application_Form_Position extends Zend_Form{
        	
        	$this->addElement('text', 'working_hours', array(
        			'label' => 'Pracovní doba',
-       			'order' => 4,
+       			'order' => 5,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspanSeparator,
        			'required' => true,
@@ -118,17 +133,17 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'workplaces', array(
         	'label' => 'Pracoviště:',
         	'decorators' => $elementDecoratorColspanSeparator,
-        	'order' => 5,
+        	'order' => 6,
        	));
        	
        	$this->addElement('multiCheckbox', 'workplaceList', array(
        			'decorators' => $this->generateCheckboxListDecorator('Workplaces'),
-       			'order' => 6,
+       			'order' => 7,
        			));
        	
        	$this->addElement('button', 'new_workplace', array(
        			'label' => 'Přidat nové pracoviště',
-       			'order' => 7,
+       			'order' => 8,
        			'decorators' => $elementDecorator2,
        			));
        	
@@ -137,7 +152,7 @@ class Application_Form_Position extends Zend_Form{
        			'required' => false,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspan,
-       			'order' => 8,
+       			'order' => 9,
        	));
        	
        	$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -151,20 +166,20 @@ class Application_Form_Position extends Zend_Form{
        				'required' => false,
        				'filters' => array('StringTrim', 'StripTags'),
        				'decorators' => $elementDecoratorColspan,
-       				'order' => 9,
+       				'order' => 10,
        		));
        	}
        	
        	$this->addElement('select', 'categorization', array(
        			'label' => 'Kategorizace prací pro tuto pracovní pozici provedena',
-       			'order' => 10,
+       			'order' => 11,
        			'decorators' => $elementDecoratorColspan,
        			'multiOptions' => array('0' => 'Ne', '1' => 'Ano'),
        	));
        	
        	//faktory pracovního prostředí       	
        	$this->addElement('hidden', 'id_environment_factor', array(
-       			'value' => 13,
+       			'value' => 14,
        			'order' => 10004,
        			'decorators' => $elementDecorator,
        			));
@@ -172,12 +187,12 @@ class Application_Form_Position extends Zend_Form{
        	$this->addElement('hidden', 'environmentFactors', array(
        			'label' => 'Faktory pracovního prostředí:',
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'order' => 11,
+       			'order' => 12,
        			));
        	
        	$this->addElement('multiCheckbox', 'environmentfactorList', array(
        			'decorators' => $this->generateCheckboxListDecorator('Environmentfactors'),
-       			'order' => 12,
+       			'order' => 13,
        			));
        	
        	//školení
