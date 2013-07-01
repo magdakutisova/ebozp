@@ -7,6 +7,8 @@ class ClientController extends Zend_Controller_Action
 	private $_role;
 	private $_user;
 	private $_canViewHeadquarters = false;
+	private $_responsibilityList = array();
+	private $_employeeList = array();
 
     public function init()
     {
@@ -50,6 +52,23 @@ class ClientController extends Zend_Controller_Action
 				}
 			}
 		}
+		
+		//získání seznamu odpovědností
+		$this->_responsibilityList = My_Responsibility::getResponsibilities();
+		$clientId = $this->getRequest()->getParam('clientId', null);
+		if($clientId != null){
+			$responsibilities = new Application_Model_DbTable_Responsibility();
+			$extraResponsibilities = $responsibilities->getExtraResponsibilities($clientId);
+			$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities; 
+		}
+
+		//získání seznamu zaměstnanců
+		$this->_employeeList[0] = '-----';
+		if($clientId != null){
+			$employees = new Application_Model_DbTable_Employee();
+			$this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($clientId);
+		}
+		
 		//zobrazení soukromých poznámek
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
 		
@@ -241,8 +260,11 @@ class ClientController extends Zend_Controller_Action
 		
 		$form = new Application_Form_Client ();
 		$form->save->setLabel ( 'Přidat' );
-		$form->preValidation($this->getRequest()->getPost());
+		
+		$form = $this->fillMultiselects($form);
+		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->_employeeList);
 		$this->view->form = $form;
+		$this->view->formResponsibility = new Application_Form_Responsibility();
 				
 		// naplnění formuláře daty ze session, pokud existují
 		$defaultNamespace = new Zend_Session_Namespace ();
@@ -516,6 +538,28 @@ class ClientController extends Zend_Controller_Action
     	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
     	
     	$this->view->field = $element->__toString();
+    }
+    
+    public function newresponsibleAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('newresponsible', 'html')->initContext();
+    	
+    	$id = $this->_getParam('id_responsible', null);
+    	
+    	$element = new My_Form_Element_Responsibility("newResponsibility$id");
+    	$element->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+    	$element->setAttrib('multiOptions', $this->_responsibilityList);
+    	$element->setAttrib('multiOptions2', $this->_employeeList);
+    	
+    	$this->view->field = $element->__toString();
+    }
+    
+    private function fillMultiselects($form){
+    	if($form->responsibility301 != null){
+    		$form->responsibility301->setAttrib('multiOptions', $this->_responsibilityList);
+    		$form->responsibility301->setAttrib('multiOptions2', $this->_employeeList);
+    	}
+    	return $form;
     }
 
 }

@@ -205,6 +205,54 @@ $(function(){
 		});
 	}
 	
+	$("#new_responsible").click(function(){
+		ajaxAddResponsible();
+	});
+	
+	function ajaxAddResponsible(){
+		var id = $("#id_responsible").val();
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/newresponsible/format/html',
+			data: "id_responsible=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_responsible').parents('tr').before(newElement);
+				$('#id_responsible').val(++id);
+			}
+		});
+	}
+	
+	//přidávání odpovědnosti
+	var validatorResponsibility = $('#responsibility').validate({
+		rules: {
+			responsibility: {
+				required: true
+			},
+		},
+		messages: {
+			responsibility: "Uveďte název nové odpovědnosti.",
+		}
+	});
+	
+	$('#new_responsibility').click(function(){
+		$('#new_responsibility_form input[type=text]').val();
+		validatorResponsibility.resetForm();
+		$('#new_responsibility_form').dialog('open');
+	});
+	
+	$('#new_responsibility_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název nové odpovědnosti',
+	});
+	
+	$('#save_responsibility').click(function(){
+		ajaxPopulateResponsibilitySelect();
+	});
+	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){
 		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');

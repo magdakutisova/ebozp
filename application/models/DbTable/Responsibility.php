@@ -36,4 +36,26 @@ class Application_Model_DbTable_Responsibility extends Zend_Db_Table_Abstract{
 		$this->delete('id_responsibility = ' . (int)$id);
 	}
 	
+	/*****
+	 * Vrátí pole odpovědností "ID - název odpovědnosti" pouze těch odpovědností, která má klient
+	 * navíc oproti defaultnímu seznamu.
+	*/
+	public function getExtraResponsibilities($clientId){
+		$select = $this->select()
+			->from('responsibility')
+			->where('client_id = ?', $clientId)
+			->where('responsibility.id_responsibility > 6')
+			->group('responsibility.id_responsibility');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$responsibilities = array();
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_responsibility;
+				$responsibilities[$key] = $result->responsibility;
+			}
+		}
+		return $responsibilities;
+	}
+	
 }
