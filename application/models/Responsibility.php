@@ -64,7 +64,7 @@ class Application_Model_Responsibility{
 	public function toArray($toUpdate = false){
 		$data = array();
 		if(!$toUpdate){
-			$data['id_responsibility'] = $this->id_responsibility;
+			$data['id_responsibility'] = $this->idResponsibility;
 		}
 		$data['responsibility'] = $this->responsibility;
 		$data['client_id'] = $this->clientId;

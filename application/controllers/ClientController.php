@@ -16,7 +16,7 @@ class ClientController extends Zend_Controller_Action
 		$this->view->title = 'Správa klientů';
 		$this->view->headTitle ( $this->view->title );
 		$action = $this->getRequest()->getActionName();
-		if($action == 'list' || $action == 'new'){
+		if($action == 'list' || $action == 'new' || $action == 'populateresponsibility'){
 			$this->_helper->layout()->setLayout('layout');
 		}
 		else{
@@ -56,11 +56,9 @@ class ClientController extends Zend_Controller_Action
 		//získání seznamu odpovědností
 		$this->_responsibilityList = My_Responsibility::getResponsibilities();
 		$clientId = $this->getRequest()->getParam('clientId', null);
-		if($clientId != null){
-			$responsibilities = new Application_Model_DbTable_Responsibility();
-			$extraResponsibilities = $responsibilities->getExtraResponsibilities($clientId);
-			$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities; 
-		}
+		$responsibilities = new Application_Model_DbTable_Responsibility();
+		$extraResponsibilities = $responsibilities->getExtraResponsibilities($clientId);
+		$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities;
 
 		//získání seznamu zaměstnanců
 		$this->_employeeList[0] = '-----';
@@ -311,6 +309,8 @@ class ClientController extends Zend_Controller_Action
 					$subsidiary->setClientId($clientId);
 					$subsidiary->setHq(true);
 					
+					//TODO přidat u odpovědností a zaměstnanců nově přidaných číslo klienta
+					
 					//přidání pobočky
 					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 					$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
@@ -552,6 +552,32 @@ class ClientController extends Zend_Controller_Action
     	$element->setAttrib('multiOptions2', $this->_employeeList);
     	
     	$this->view->field = $element->__toString();
+    }
+    
+    public function addresponsibilityAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addresponsibility', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$responsibility = new Application_Model_Responsibility($data);
+    	$responsibilities = new Application_Model_DbTable_Responsibility();
+    	$responsibilities->addResponsibility($responsibility);
+    }
+    
+    public function populateresponsibilityAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$folders = new Application_Model_DbTable_Responsible();
+    	$this->_responsibilityList = My_Responsibility::getResponsibilities();
+		$clientId = $this->getRequest()->getParam('clientId', null);
+		
+		$responsibilities = new Application_Model_DbTable_Responsibility();
+		$extraResponsibilities = $responsibilities->getExtraResponsibilities($clientId);
+		$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities; 
+		
+		echo Zend_Json::encode($this->_responsibilityList);
     }
     
     private function fillMultiselects($form){

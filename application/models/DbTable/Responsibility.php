@@ -41,11 +41,20 @@ class Application_Model_DbTable_Responsibility extends Zend_Db_Table_Abstract{
 	 * navíc oproti defaultnímu seznamu.
 	*/
 	public function getExtraResponsibilities($clientId){
-		$select = $this->select()
-			->from('responsibility')
-			->where('client_id = ?', $clientId)
-			->where('responsibility.id_responsibility > 6')
-			->group('responsibility.id_responsibility');
+		if($clientId == null){
+			$select = $this->select()
+				->from('responsibility')
+				->where('client_id IS NULL')
+				->where('responsibility.id_responsibility > 6')
+				->group('responsibility.id_responsibility');
+		}
+		else{
+			$select = $this->select()
+				->from('responsibility')
+				->where('client_id = ?', $clientId)
+				->where('responsibility.id_responsibility > 6')
+				->group('responsibility.id_responsibility');
+		}
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$responsibilities = array();
