@@ -295,7 +295,38 @@ $(function(){
 	}
 	
 	//přidávání odpovědného zaměstnance
+	var validatorResponsibleEmployee = $('#responsible_employee').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
 	
+	$('#new_responsible_employee').click(function(){
+		$('#new_responsible_employee_form input[type=text]').val();
+		validatorResponsibleEmployee.resetForm();
+		$('#new_responsibility_form').dialog('open');
+	});
+	
+	$('#new_responsible_employee_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového zaměstnance',
+	})
 	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){
