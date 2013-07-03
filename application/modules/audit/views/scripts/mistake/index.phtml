@@ -55,6 +55,12 @@ if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 		?>
 	</p>
 	<p>
+	<?php 
+	echo $this->formLabel("encoding", "Kódování souboru:");
+	echo $this->formSelect("encoding", null, array(), array("CP1250" => "CP-1250 (windows)", "UTF8" => "UTF-8"))
+	?>
+	</p>
+	<p>
 		<?php echo $this->formSubmit("import-submit", "Importovat"); ?>
 	</p>
 </form>

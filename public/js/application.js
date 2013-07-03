@@ -235,7 +235,7 @@ $.iframeDialog = function (src, width, height, title) {
 	retVal.dialog({
 		modal: true,
 		width: width,
-		height: height + 50,
+		height: height + 60,
 		draggable: false,
 		title : title,
 		close: function () {

@@ -418,6 +418,14 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			throw new Zend_Exception("File not found");
 		}
 		
+		// pokud je puvodni soubor v jinem kodovani nez UTF8 - prekoduje se
+		$encoding = $this->_request->getParam("encoding", "UTF8");
+		if ($encoding != "UTF8") {
+			$content = file_get_contents($_FILES["importfile"]["tmp_name"]);
+			$content = iconv($encoding, "utf8", $content);
+			file_put_contents($_FILES["importfile"]["tmp_name"], $content);
+		}
+		
 		// otevreni souboru a nacitani dat
 		$fp = fopen($_FILES["importfile"]["tmp_name"], "r");
 		
@@ -436,9 +444,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// vyhodnocení stavu
 			$state = ($item[11] == "odstraněno") ? 1 : 0;
 			
-			$motifiedAt = self::_toSQLDate($item[10]);
+			$notifiedAt = self::_toSQLDate($item[10]);
 			$removedAt = self::_toSQLDate($item[13]);
-			
+		
 			$insert[] = "("
 					. $subsidiary->client_id
 					. "," . $subsidiary->id_subsidiary
@@ -451,9 +459,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 					. "," . $adapter->quote($item[9])	// kometar
 					. "," . $adapter->quote($notifiedAt)
 					. "," . $adapter->quote($state)
-					. "," . $adapter->quote($item[13])	// zodpovedna osoba
+					. "," . $adapter->quote($item[12])	// zodpovedna osoba
 					. "," . $adapter->quote($removedAt)
-					. "," . $adapter->quote($item[15]) . ", 1)";	// skryta poznamka a hodnota is_submited
+					. "," . $adapter->quote(@$item[14]) . ", 1)";	// skryta poznamka a hodnota is_submited
 		}
 		
 		// smazani starych dat
@@ -461,7 +469,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$tableMistakes->delete(array("subsidiary_id = ?" => $subsidiary->id_subsidiary, "audit_id is null"));
 		
 		// sestaveni zapisovaciho dotazu
-		$sql = "insert into `" . $tableMistakes->info("name") . "` (client_id, subsidiary_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, responsibile_name, will_be_removed_at, hidden_comment, is_submited) values ";
+		$sql = "insert into `" . $tableMistakes->info("name") . "` (client_id, subsidiary_id, weight, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, is_removed, responsibile_name, will_be_removed_at, hidden_comment, is_submited) values ";
 		$sql .= implode(",", $insert);
 		
 		$adapter->query($sql);

@@ -61,7 +61,7 @@ foreach ($this->documentations as $doc) {
 	
 	echo "<td>$doc->name</td>";
 	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";
-	echo "<td>" . ($doc->fileid ? $this->file($doc) : "-") . "</td>";
+	echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid)) : "-") . "</td>";
 	
 	echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
 	
