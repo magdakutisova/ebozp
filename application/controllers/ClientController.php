@@ -62,10 +62,8 @@ class ClientController extends Zend_Controller_Action
 
 		//získání seznamu zaměstnanců
 		$this->_employeeList[0] = '-----';
-		if($clientId != null){
-			$employees = new Application_Model_DbTable_Employee();
-			$this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($clientId);
-		}
+		$employees = new Application_Model_DbTable_Employee();
+		$this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($clientId);
 		
 		//zobrazení soukromých poznámek
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
@@ -263,6 +261,7 @@ class ClientController extends Zend_Controller_Action
 		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->_employeeList);
 		$this->view->form = $form;
 		$this->view->formResponsibility = new Application_Form_Responsibility();
+		$this->view->formEmployee = new Application_Form_ResponsibleEmployee();
 				
 		// naplnění formuláře daty ze session, pokud existují
 		$defaultNamespace = new Zend_Session_Namespace ();
@@ -569,7 +568,7 @@ class ClientController extends Zend_Controller_Action
     public function populateresponsibilityAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
-    	$folders = new Application_Model_DbTable_Responsible();
+    	
     	$this->_responsibilityList = My_Responsibility::getResponsibilities();
 		$clientId = $this->getRequest()->getParam('clientId', null);
 		
@@ -578,6 +577,28 @@ class ClientController extends Zend_Controller_Action
 		$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities; 
 		
 		echo Zend_Json::encode($this->_responsibilityList);
+    }
+    
+    public function addresponsibleemployeeAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addresponsibleemployee', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$employee = new Application_Model_Employee($data);
+    	$employees = new Application_Model_DbTable_Employee();
+    	$employees->addEmployee($employee);
+    }
+    
+    public function populateresponsibleemployeeAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$employees = new Application_Model_DbTable_Employee();
+    	$this->_employeeList = $employees->getResponsibleEmployees($clientId);
+    	
+    	echo Zend_Json::encode($this->_employeeList);
     }
     
     private function fillMultiselects($form){

@@ -235,9 +235,11 @@ $(function(){
 		}
 	});
 	
-	$('#new_responsibility').click(function(){
-		$('#new_responsibility_form input[type=text]').val();
+	$('form').on('click', '#new_responsibility', function(){
+		$('#new_responsibility_form input[type=text]').val('');
 		validatorResponsibility.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsibility_form #rowId').val(rowId);
 		$('#new_responsibility_form').dialog('open');
 	});
 	
@@ -281,13 +283,16 @@ $(function(){
 				el.children("option").each(function(){
 					vals[i++] = $(this).val();
 				});
-				el.empty();
+				var rowId = $('#new_responsibility_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_responsibility"]');
+				elSelected.empty();
 				$.each(json, function(key, value){
 					if($.inArray(key, vals) != -1){
-						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).text(value));
 					}
 					else{
-						el.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
 					}
 				});
 			}
@@ -314,10 +319,10 @@ $(function(){
 		}
 	});
 	
-	$('#new_responsible_employee').click(function(){
-		$('#new_responsible_employee_form input[type=text]').val();
+	$('form').on('click', '#new_responsible_employee', function(){
+		$('#new_responsible_employee_form input[type=text]').val('');
 		validatorResponsibleEmployee.resetForm();
-		$('#new_responsibility_form').dialog('open');
+		$('#new_responsible_employee_form').dialog('open');
 	});
 	
 	$('#new_responsible_employee_form').dialog({
@@ -326,7 +331,52 @@ $(function(){
 		width: 700,
 		modal: true,
 		title: 'Zadejte údaje nového zaměstnance',
-	})
+	});
+	
+	$('#save_responsible_employee').click(function(){
+		ajaxSaveResponsibleEmployee();
+		ajaxPopulateResponsibleEmployeeSelect();
+	});
+	
+	function ajaxSaveResponsibleEmployee(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/addresponsibleemployee/format/html',
+			data: $("#responsible_employee").serializeArray(),
+			async: false,
+			success: function(){
+				$('#new_responsible_employee_form').dialog("close");
+			}
+		});
+	}
+	
+	function ajaxPopulateResponsibleEmployeeSelect(){
+		var clientId = $("id_client").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/client/populateresponsibleemployee',
+			data: (clientId != undefined) ? 'clientId=' + clientId : undefined,
+			async: false,
+			success: function(json){
+				var el = $("select[id*='id_employee')");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				el.empty();
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						el.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
+	}
 	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){

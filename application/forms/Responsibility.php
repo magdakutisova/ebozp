@@ -41,6 +41,9 @@ class Application_Form_Responsibility extends Zend_Form{
 						),
 				));
 		
+		$this->addElement('hidden', 'rowId', array(
+				));
+		
 		$this->addElement('button', 'save_responsibility', array(
 				'decorators' => $elementDecorator2,
 				'label' => 'Uložit odpovědnost',

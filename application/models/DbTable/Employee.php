@@ -60,27 +60,37 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 	 * Seznam ID - zaměstnanec pro odpovědné zaměnstnace.
 	 */
 	public function getResponsibleEmployees($clientId){
-		$select = $this->select()
-			->from('employee')
-			->joinLeft('position', 'employee.position_id = position.id_position')
-			->where('client_id = ?', $clientId)
-			->order('employee.surname', 'employee.first_name')
-			->group('employee.id_employee');
+		if($clientId == null){
+			$select = $this->select()
+				->from('employee')
+				->joinLeft('position', 'employee.position_id = position.id_position')
+				->where('employee.client_id IS NULL')
+				->order('employee.surname', 'employee.first_name')
+				->group('employee.id_employee');
+		}
+		else{
+			$select = $this->select()
+				->from('employee')
+				->joinLeft('position', 'employee.position_id = position.id_position')
+				->where('employee.client_id = ?', $clientId)
+				->order('employee.surname', 'employee.first_name')
+				->group('employee.id_employee');
+		}		
 		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$employees = array();
 		if(count($results) > 0){
 			foreach($results as $result){
 				$key = $result->id_employee;
-				$employees[key] = $result->surname . ', ' . $result->first_name;
-				if($employees->phone != ''){
-					$employees[key] .= ', telefon: ' . $employees->phone;
+				$employees[$key] = $result->surname . ', ' . $result->first_name;
+				if($result->phone != ''){
+					$employees[$key] .= ', telefon: ' . $result->phone;
 				}
-				if($employees->email != ''){
-					$employees[key] .= ', email: ' . $employees->email;
+				if($result->email != ''){
+					$employees[$key] .= ', email: ' . $result->email;
 				}
-				if($employees->position_id != null){
-					$employees[key] .= ', pracovní pozice: ' . $employees->position;
+				if($result->position_id != null){
+					$employees[$key] .= ', pracovní pozice: ' . $result->position;
 				}
 			}
 		}
