@@ -325,21 +325,21 @@ class ClientController extends Zend_Controller_Action
 					$responsibles = new Application_Model_DbTable_Responsible();
 					
 					foreach($formData as $key => $value){
-						if($key == 'contactPerson101' || preg_match('/newContactPerson\d+/', $key)){
+						if(preg_match('/contactPerson\d+/', $key) || preg_match('/newContactPerson\d+/', $key)){
 							if($formData[$key]['name'] != ''){
 								$contactPerson = new Application_Model_ContactPerson($formData[$key]);
 								$contactPerson->setSubsidiaryId($subsidiaryId);
 								$contactPersons->addContactPerson($contactPerson);
 							}
 						}
-						if($key == 'doctor201' || preg_match('/newDoctor\d+/', $key)){
+						if(preg_match('/doctor\d+/', $key) || preg_match('/newDoctor\d+/', $key)){
 							if($formData[$key]['name'] != ''){
 								$doctor = new Application_Model_Doctor($formData[$key]);
 								$doctor->setSubsidiaryId($subsidiaryId);
 								$doctors->addDoctor($doctor);
 							}
 						}
-						if($key == 'responsibility301' || preg_match('/newResponsibility\d+/', $key)){
+						if(preg_match('/responsibility\d+/', $key) || preg_match('/newResponsibility\d+/', $key)){
 							if($formData[$key]['id_responsibility'] != 0 && $formData[$key]['id_employee'] != 0){
 								$responsibles->addRelation($formData[$key]['id_responsibility'], $formData[$key]['id_employee'], $subsidiaryId);
 							}
@@ -436,12 +436,15 @@ class ClientController extends Zend_Controller_Action
     public function editAction()
     {
 		$this->view->subtitle = 'Editace základních údajů klienta';
-					
-		$form = new Application_Form_Client ();
-		$form->save->setLabel ( 'Uložit' );
-		$this->view->form = $form;
+		$defaultNamespace = new Zend_Session_Namespace ();			
+		$form = $this->loadOrCreateForm($defaultNamespace);
 		
-		$defaultNamespace = new Zend_Session_Namespace ();
+		$form->save->setLabel ( 'Uložit' );
+		$form = $this->fillMultiselects($form);
+		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->_employeeList);
+		$this->view->form = $form;
+		$this->view->formResponsibility = new Application_Form_Responsibility();
+		$this->view->formEmployee = new Application_Form_ResponsibleEmployee();
 		
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
@@ -462,6 +465,11 @@ class ClientController extends Zend_Controller_Action
 				$adapter = $clients->getAdapter();
 				
 				try{
+					//init session pro případ selhání ukládání
+					$formData = $this->getRequest()->getPost();
+					$defaultNamespace->formData = $formData;
+					$defaultNamespace->form = $form;
+					
 					//zahájení transakce
 					$adapter->beginTransaction();
 					
@@ -508,15 +516,56 @@ class ClientController extends Zend_Controller_Action
 				$clients = new Application_Model_DbTable_Client();
 				$subsidiaries = new Application_Model_DbTable_Subsidiary();
 				$client = $clients->getClient($clientId);
-				$subsidiary = $subsidiaries->getHeadquarters($clientId);
+				$subsidiary = $subsidiaries->getHeadquartersWithDetails($clientId);
 				
 				$data = $client->toArray();
-				$data['id_subsidiary'] = $subsidiary->getIdSubsidiary();
-				$data['supervision_frequency'] = $subsidiary->getSupervisionFrequency();
-				$data['doctor'] = $subsidiary->getDoctor();
-				$data['contact_person'] = $subsidiary->getContactPerson();
-				$data['phone'] = $subsidiary->getPhone();
-				$data['email'] = $subsidiary->getEmail();
+				$data['id_subsidiary'] = $subsidiary['subsidiary']->getIdSubsidiary();
+				$data['supervision_frequency'] = $subsidiary['subsidiary']->getSupervisionFrequency();
+				$data['district'] = $subsidiary['subsidiary']->getDistrict();
+				$data['difficulty'] = $subsidiary['subsidiary']->getDifficulty();
+				
+				if($subsidiary['contact_persons'][0]->getIdContactPerson() != null){
+					$form->removeElement('contactPerson101');
+					$cpOrder = $form->getElement('id_contact_person')->getValue();
+					foreach($subsidiary['contact_persons'] as $contactPerson){
+						$form->addElement('contactPerson', 'contactPerson' . $cpOrder, array(
+								'order' => $cpOrder,
+								'value' => $contactPerson->toArray(),
+								'validators' => array(new My_Form_Validator_PersonEmail()),
+								));
+						$cpOrder++;
+					}
+					$form->getElement('id_contact_person')->setValue($cpOrder);
+				}
+				
+				if($subsidiary['doctors'][0]->getIdDoctor() != null){
+					$form->removeElement('doctor201');
+					$dOrder = $form->getElement('id_doctor')->getValue();
+					foreach($subsidiary['doctors'] as $doctor){
+						$form->addElement('doctor', 'doctor' . $dOrder, array(
+								'order' => $dOrder,
+								'value' => $doctor->toArray(),
+								'validators' => array(new My_Form_Validator_PersonEmail()),
+								));
+						$dOrder++;
+					}
+					$form->getElement('id_doctor')->setValue($dOrder);
+				}
+				
+				if($subsidiary['responsibles'][0]['responsibility'] != null){
+					$form->removeElement('responsibility301');
+					$rOrder = $form->getElement('id_responsible')->getValue();
+					foreach($subsidiary['responsibles'] as $responsible){
+						$form->addElement('responsibility', 'responsibility' . $rOrder, array(
+								'order' => $rOrder,
+								'multiOptions' => $this->_responsibilityList,
+								'multiOptions2' => $this->_employeeList,
+								'value' => $responsible + $responsible['employee']->toArray(),
+								));
+						$rOrder++;
+					}
+					$form->getElement('id_responsible')->setValue($rOrder);
+				}
 				
 				$form->populate ( $data );
 			}
@@ -639,6 +688,19 @@ class ClientController extends Zend_Controller_Action
     	if($form->responsibility301 != null){
     		$form->responsibility301->setAttrib('multiOptions', $this->_responsibilityList);
     		$form->responsibility301->setAttrib('multiOptions2', $this->_employeeList);
+    	}
+    	return $form;
+    }
+    
+    private function loadOrCreateForm($defaultNamespace){
+    	//pokud předtím selhalo odeslání, tak se načte aktuální formulář se všemi dodatečně vloženými elementy
+    	if (isset ( $defaultNamespace->form )) {
+    		$form = $defaultNamespace->form;
+    		unset ( $defaultNamespace->form );
+    	}
+    	//jinak se vytvoří nový
+    	else{
+    		$form = new Application_Form_Client();
     	}
     	return $form;
     }

@@ -172,6 +172,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		}
 		$i = 0;
 		foreach($responsiblesResult as $responsible){
+			$headquarters['responsibles'][$i]['id_responsibility'] = $responsible->id_responsibility;
 			$headquarters['responsibles'][$i]['responsibility'] = $responsible->responsibility;
 			$headquarters['responsibles'][$i]['employee'] = new Application_Model_Employee($responsible->toArray());
 			$i++;
