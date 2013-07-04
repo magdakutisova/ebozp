@@ -67,4 +67,18 @@ class Application_Model_DbTable_Responsibility extends Zend_Db_Table_Abstract{
 		return $responsibilities;
 	}
 	
+	public function assignToClient($clientId){
+		$select = $this->select()
+			->from('responsibility')
+			->where('client_id IS NULL')
+			->where('responsibility.id_responsibility > 6');
+		$results = $this->fetchAll($select);
+		if(count($results) > 0){
+			foreach ($results as $result){
+				$result->client_id = $clientId;
+				$result->save();
+			}
+		}
+	}
+	
 }

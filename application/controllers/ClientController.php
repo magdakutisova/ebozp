@@ -99,11 +99,12 @@ class ClientController extends Zend_Controller_Action
 		$clients->openClient ( $clientId );
 			
 		$client = $clients->getClient($clientId);
-		$subsidiary = $subsidiaries->getHeadquarters($clientId);
+		$headquarters = $subsidiaries->getHeadquartersWithDetails($clientId);
+		$subsidiary = $headquarters['subsidiary'];
 		
 		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
-		$this->view->subsidiary = $subsidiary;
+		$this->view->subsidiary = $headquarters;
 		
 		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
 		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());
@@ -300,6 +301,12 @@ class ClientController extends Zend_Controller_Action
 						$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 						$this->_helper->redirector->gotoRoute ( array (), 'clientNew' );
 					}
+					
+					//přidat u odpovědností a zaměstnanců nově přidaných číslo klienta
+					$responsibilities = new Application_Model_DbTable_Responsibility();
+					$responsibilities->assignToClient($clientId);
+					$employees = new Application_Model_DbTable_Employee();
+					$employees->assignToClient($clientId);
 						
 					$subsidiary->setSubsidiaryName($client->getCompanyName());
 					$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
@@ -307,13 +314,39 @@ class ClientController extends Zend_Controller_Action
 					$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 					$subsidiary->setClientId($clientId);
 					$subsidiary->setHq(true);
-					
-					//TODO přidat u odpovědností a zaměstnanců nově přidaných číslo klienta
-					
+													
 					//přidání pobočky
 					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 					$subsidiaryId = $subsidiaries->addSubsidiary ( $subsidiary);
 					
+					//přidání kontaktních osob, lékařů a odpovědných osob
+					$contactPersons = new Application_Model_DbTable_ContactPerson();
+					$doctors = new Application_Model_DbTable_Doctor();
+					$responsibles = new Application_Model_DbTable_Responsible();
+					
+					foreach($formData as $key => $value){
+						if($key == 'contactPerson101' || preg_match('/newContactPerson\d+/', $key)){
+							if($formData[$key]['name'] != ''){
+								$contactPerson = new Application_Model_ContactPerson($formData[$key]);
+								$contactPerson->setSubsidiaryId($subsidiaryId);
+								$contactPersons->addContactPerson($contactPerson);
+							}
+						}
+						if($key == 'doctor201' || preg_match('/newDoctor\d+/', $key)){
+							if($formData[$key]['name'] != ''){
+								$doctor = new Application_Model_Doctor($formData[$key]);
+								$doctor->setSubsidiaryId($subsidiaryId);
+								$doctors->addDoctor($doctor);
+							}
+						}
+						if($key == 'responsibility301' || preg_match('/newResponsibility\d+/', $key)){
+							if($formData[$key]['id_responsibility'] != 0 && $formData[$key]['id_employee'] != 0){
+								$responsibles->addRelation($formData[$key]['id_responsibility'], $formData[$key]['id_employee'], $subsidiaryId);
+							}
+						}
+					}
+					
+					//přiřazení práv
 					if($this->_user->getRole() == My_Role::ROLE_COORDINATOR){
 						$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
 						$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
@@ -594,6 +627,7 @@ class ClientController extends Zend_Controller_Action
     public function populateresponsibleemployeeAction(){
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
+    	$clientId = $this->getRequest()->getParam('clientId', null);
     	
     	$employees = new Application_Model_DbTable_Employee();
     	$this->_employeeList = $employees->getResponsibleEmployees($clientId);

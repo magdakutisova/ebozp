@@ -21,4 +21,16 @@ class Application_Model_DbTable_Responsible extends Zend_Db_Table_Abstract{
 					),
 			);
 	
+	public function addRelation($responsibilityId, $employeeId, $subsidiaryId){
+		try{
+			$data['id_responsibility'] = $responsibilityId;
+			$data['id_employee'] = $employeeId;
+			$data['id_subsidiary'] = $subsidiaryId;
+			$this->insert($data);
+		}
+		catch(Exception $e){
+			//porušení integrity se ignoruje
+		}
+	}
+	
 }

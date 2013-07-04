@@ -277,15 +277,15 @@ $(function(){
 			data: (clientId != undefined) ? 'clientId=' + clientId : undefined,
 			async: false,
 			success: function(json){
-				var el = $("select[id*='id_responsibility']");
+				var rowId = $('#new_responsibility_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_responsibility"]');
+				elSelected.empty();
+				var el = $("select[id*='id_responsibility']:not([id*='" + rowId + "'])");
 				var vals = [];
 				var i = 0;
 				el.children("option").each(function(){
 					vals[i++] = $(this).val();
 				});
-				var rowId = $('#new_responsibility_form #rowId').val();
-				var elSelected = $('select[id="' + rowId + '-id_responsibility"]');
-				elSelected.empty();
 				$.each(json, function(key, value){
 					if($.inArray(key, vals) != -1){
 						elSelected.append($("<option></option>").attr("value", key).text(value));
@@ -322,6 +322,8 @@ $(function(){
 	$('form').on('click', '#new_responsible_employee', function(){
 		$('#new_responsible_employee_form input[type=text]').val('');
 		validatorResponsibleEmployee.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsible_employee_form #rowId').val(rowId);
 		$('#new_responsible_employee_form').dialog('open');
 	});
 	
@@ -359,19 +361,22 @@ $(function(){
 			data: (clientId != undefined) ? 'clientId=' + clientId : undefined,
 			async: false,
 			success: function(json){
-				var el = $("select[id*='id_employee')");
+				var rowId = $('#new_responsible_employee_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_employee"]');
+				elSelected.empty();
+				var el = $("select[id*='id_employee']:not([id*='" + rowId + "'])");
 				var vals = [];
 				var i = 0;
 				el.children("option").each(function(){
 					vals[i++] = $(this).val();
 				});
-				el.empty();
 				$.each(json, function(key, value){
 					if($.inArray(key, vals) != -1){
-						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).text(value));
 					}
 					else{
-						el.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
 					}
 				});
 			}

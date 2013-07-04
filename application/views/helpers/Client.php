@@ -32,16 +32,48 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 			. ', ' . $client->getHeadquartersTown()
 			. ' ' . $client->getHeadquartersCode()
 			. '</p>';
-		if($subsidiary->getDistrict()){
+		if($subsidiary['subsidiary']->getDistrict()){
 			$content .= '<p class="no-margin"><span class="bold">Okres: </span>'
-					. $subsidiary->getDistrict()
+					. $subsidiary['subsidiary']->getDistrict()
 					. '</p>';
 		}
-		if($subsidiary->getContactPerson()){
-			$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
-				. $subsidiary->getContactPerson() . ', telefon: '
-				. $subsidiary->getPhone() . ', e-mail: '
-				. $subsidiary->getEmail() . '</p>';
+		if($subsidiary['contact_persons'][0]->getIdContactPerson() != null){
+			foreach($subsidiary['contact_persons'] as $contactPerson){
+				$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
+						. $contactPerson->getName();
+				if($contactPerson->getPhone() != ''){
+					$content .= ', telefon: '. $contactPerson->getPhone();
+				}
+				if($contactPerson->getEmail() != ''){
+					$content .= ', e-mail: ' . $contactPerson->getEmail();
+				}
+				$content .= '</p>';
+			}			
+		}
+		if($subsidiary['doctors'][0]->getIdDoctor() != null){
+			foreach($subsidiary['doctors'] as $doctor){
+				$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
+						. $doctor->getName();
+				if($doctor->getPhone() != ''){
+					$content .= ', telefon: '. $doctor->getPhone();
+				}
+				if($doctor->getEmail() != ''){
+					$content .= ', e-mail: ' . $doctor->getEmail();
+				}
+				$content .= '</p>';
+			}
+		}
+		if($subsidiary['responsibles'][0]['responsibility'] != null){
+			foreach($subsidiary['responsibles'] as $responsible){
+				$content .= '<p class="no-margin"><span class="bold">' . $responsible['responsibility'] . ': </span>'
+						. $responsible['employee']->getFirstName() . ' ' . $responsible['employee']->getSurname();
+				if($responsible['employee']->getPhone() != ''){
+					$content .= ', telefon: '. $responsible['employee']->getPhone();
+				}
+				if($responsible['employee']->getEmail() != ''){
+					$content .= ', e-mail: ' . $responsible['employee']->getEmail();
+				}
+			}
 		}
 		if ($client->getBusiness()){
 			$content .= '<p class="no-margin"><span class="bold">Činnost klienta: </span>'
@@ -53,27 +85,21 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 				. $this->view->technicians
 				. '</p>';
 		}
-		if($subsidiary->getSupervisionFrequency()){
+		if($subsidiary['subsidiary']->getSupervisionFrequency()){
 			$content .= '<p class="no-margin"><span class="bold">Četnost dohlídek: </span>'
-				. $subsidiary->getSupervisionFrequency()
+				. $subsidiary['subsidiary']->getSupervisionFrequency() . 'x ročně'
 				. '</p>';
 		}
-		if($subsidiary->getDifficulty()){
-			$content .= '<p class="no-margin"><span class="bold">Náročnost: </span>'
-					. $subsidiary->getDifficulty()
+		if($subsidiary['subsidiary']->getDifficulty()){
+			$content .= '<p class="no-margin"><span class="bold">Náročnost trvání dohlídky: </span>'
+					. $subsidiary['subsidiary']->getDifficulty() . ' dne'
 					. '</p>';
-		}
-		if ($subsidiary->getDoctor()){
-			$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
-				. $subsidiary->getDoctor()
-				. '</p>';
 		}
 		if($client->getInsuranceCompany()){
 			$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
 				. $client->getInsuranceCompany()
 				. '</p>';
 		}
-		//TODO odpovědní zaměstnanci
 		if($client->getPrivate() && $this->view->canViewPrivate){
 			$content .= '<p class="no-margin"><span class="bold">Soukromá poznámka: </span>'
 				. $client->getPrivate()

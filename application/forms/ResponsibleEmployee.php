@@ -90,6 +90,9 @@ class Application_Form_ResponsibleEmployee extends Zend_Form{
 				),
 				));
 		
+		$this->addElement('hidden', 'rowId', array(
+		));
+		
 		$this->addElement('button', 'save_responsible_employee', array(
 				'decorators' => $elementDecorator2,
 				'label' => 'Uložit zaměstnance',

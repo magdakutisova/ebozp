@@ -97,6 +97,19 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		return $employees;
 	}
 	
+	public function assignToClient($clientId){
+		$select = $this->select()
+			->from('employee')
+			->where('client_id IS NULL');
+		$results = $this->fetchAll($select);
+		if(count($results) > 0){
+			foreach ($results as $result){
+				$result->client_id = $clientId;
+				$result->save();
+			}
+		}
+	}
+	
 	private function process($result){
 		if($result->count()){
 			$employees = array();
