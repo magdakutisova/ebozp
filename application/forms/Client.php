@@ -8,6 +8,7 @@ class Application_Form_Client extends Zend_Form
         $this->setMethod('post');
         $this->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
         $this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+        $this->setAttrib('accept-charset', 'utf-8');
         
         $this->setDecorators(array(
         	'FormElements',
