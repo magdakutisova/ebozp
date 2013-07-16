@@ -12,23 +12,14 @@
 	<ul>
 	<?php foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
-		if($allowed){ ?>
-		</ul>
-		<p class="bold">
-			<a href="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName; ?> - <?php echo $companyAddress; ?></a>
-		</p>
-		<ul>
-		<?php }
 		$companyName = $subsidiary->getSubsidiaryName();
 		$companyAddress = $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
-		$clientId = $subsidiary->getClientId();
 		$allowed = $subsidiary->getAllowed();
-		continue;
 	}
 	if($subsidiary->getAllowed()){
-		if ($client != $subsidiary->getClientId()){?>
+		if ($clientId != $subsidiary->getClientId()){?>
 			</ul>
-			<?php $client = $subsidiary->getClientId(); ?>
+			<?php $clientId = $subsidiary->getClientId(); ?>
 			<p class="bold concealer">
 			<?php if($allowed){?><a><?php }?>
 				<span class="anchor"><?php echo $companyName . ' - ' . $companyAddress ?></span>
@@ -37,9 +28,13 @@
 			<ul class="hidden">
 			<?php if ($allowed){
 			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
-			$allowed = ''; }?>
-		<?php } ?>
+			$allowed = ''; }
+			if(!$subsidiary->getHq()){?>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+		<?php }}
+		else{ ?>
 		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+		<?php }?>
 	<?php }
 		endforeach; ?>
 	</ul>	
