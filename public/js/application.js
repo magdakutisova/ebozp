@@ -205,6 +205,184 @@ $(function(){
 		});
 	}
 	
+	$("#new_responsible").click(function(){
+		ajaxAddResponsible();
+	});
+	
+	function ajaxAddResponsible(){
+		var id = $("#id_responsible").val();
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/newresponsible/format/html',
+			data: "id_responsible=" + id + "&clientId=" + clientId,
+			success: function(newElement){
+				$('#new_responsible').parents('tr').before(newElement);
+				$('#id_responsible').val(++id);
+			}
+		});
+	}
+	
+	//přidávání odpovědnosti
+	var validatorResponsibility = $('#responsibility').validate({
+		rules: {
+			responsibility: {
+				required: true
+			},
+		},
+		messages: {
+			responsibility: "Uveďte název nové odpovědnosti.",
+		}
+	});
+	
+	$('form').on('click', '#new_responsibility', function(){
+		$('#new_responsibility_form input[type=text]').val('');
+		validatorResponsibility.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsibility_form #rowId').val(rowId);
+		$('#new_responsibility_form').dialog('open');
+	});
+	
+	$('#new_responsibility_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název nové odpovědnosti',
+	});
+	
+	$('#save_responsibility').click(function(){
+		ajaxSaveResponsibility();
+		ajaxPopulateResponsibilitySelect();
+	});
+	
+	function ajaxSaveResponsibility(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/addresponsibility/format/html',
+			data: $("#responsibility").serializeArray(),
+			async: false,
+			success: function(){
+				$('#new_responsibility_form').dialog("close");
+			}
+		});
+	}
+	
+	function ajaxPopulateResponsibilitySelect(){
+		var clientId = $("id_client").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/client/populateresponsibility',
+			data: (clientId != undefined) ? 'clientId=' + clientId : undefined,
+			async: false,
+			success: function(json){
+				var rowId = $('#new_responsibility_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_responsibility"]');
+				elSelected.empty();
+				var el = $("select[id*='id_responsibility']:not([id*='" + rowId + "'])");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						elSelected.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
+	}
+	
+	//přidávání odpovědného zaměstnance
+	var validatorResponsibleEmployee = $('#responsible_employee').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
+	
+	$('form').on('click', '#new_responsible_employee', function(){
+		$('#new_responsible_employee_form input[type=text]').val('');
+		validatorResponsibleEmployee.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsible_employee_form #rowId').val(rowId);
+		$('#new_responsible_employee_form').dialog('open');
+	});
+	
+	$('#new_responsible_employee_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového zaměstnance',
+	});
+	
+	$('#save_responsible_employee').click(function(){
+		ajaxSaveResponsibleEmployee();
+		ajaxPopulateResponsibleEmployeeSelect();
+	});
+	
+	function ajaxSaveResponsibleEmployee(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/addresponsibleemployee/format/html',
+			data: $("#responsible_employee").serializeArray(),
+			async: false,
+			success: function(){
+				$('#new_responsible_employee_form').dialog("close");
+			}
+		});
+	}
+	
+	function ajaxPopulateResponsibleEmployeeSelect(){
+		var clientId = $("id_client").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/client/populateresponsibleemployee',
+			data: (clientId != undefined) ? 'clientId=' + clientId : undefined,
+			async: false,
+			success: function(json){
+				var rowId = $('#new_responsible_employee_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_employee"]');
+				elSelected.empty();
+				var el = $("select[id*='id_employee']:not([id*='" + rowId + "'])");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						elSelected.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
+	}
+	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){
 		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');

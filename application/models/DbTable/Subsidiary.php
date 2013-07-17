@@ -137,6 +137,50 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return new Application_Model_Subsidiary($result->current()->toArray());
 	}
 	
+	public function getHeadquartersWithDetails($clientId){
+		$headquarters = array();
+		$headquarters['subsidiary'] = $this->getHeadquarters($clientId);
+		
+		$contactPersons = $this->select()->from('subsidiary')
+			->joinLeft('contact_person', 'subsidiary.id_subsidiary = contact_person.subsidiary_id')
+			->where('subsidiary.client_id = ?', $clientId)
+			->where('subsidiary.hq = 1');
+		$contactPersons->setIntegrityCheck(false);
+		$contactPersonsResult = $this->fetchAll($contactPersons);
+		
+		$doctors = $this->select()->from('subsidiary')
+			->joinLeft('doctor', 'subsidiary.id_subsidiary = doctor.subsidiary_id')
+			->where('subsidiary.client_id = ?', $clientId)
+			->where('subsidiary.hq = 1');
+		$doctors->setIntegrityCheck(false);
+		$doctorsResult = $this->fetchAll($doctors);
+		
+		$responsibles = $this->select()->from('subsidiary')
+			->joinLeft('responsible', 'subsidiary.id_subsidiary = responsible.id_subsidiary')
+			->joinLeft('responsibility', 'responsible.id_responsibility = responsibility.id_responsibility')
+			->joinLeft('employee', 'responsible.id_employee = employee.id_employee')
+			->where('subsidiary.client_id = ?', $clientId)
+			->where('subsidiary.hq = 1');
+		$responsibles->setIntegrityCheck(false);
+		$responsiblesResult = $this->fetchAll($responsibles);
+		
+		foreach($contactPersonsResult as $contactPerson){
+			$headquarters['contact_persons'][] = new Application_Model_ContactPerson($contactPerson->toArray());
+		}
+		foreach($doctorsResult as $doctor){
+			$headquarters['doctors'][] = new Application_Model_Doctor($doctor->toArray());
+		}
+		$i = 0;
+		foreach($responsiblesResult as $responsible){
+			$headquarters['responsibles'][$i]['id_responsibility'] = $responsible->id_responsibility;
+			$headquarters['responsibles'][$i]['responsibility'] = $responsible->responsibility;
+			$headquarters['responsibles'][$i]['employee'] = new Application_Model_Employee($responsible->toArray());
+			$i++;
+		}
+		
+		return $headquarters;
+	}
+	
 	public function getByTown() {
 		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq' ) )->where ( 'deleted = 0' )->order ( array('subsidiary_town', 'subsidiary_name') );
 		$result = $this->fetchAll ( $select );

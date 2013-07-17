@@ -56,6 +56,60 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		return $employees;
 	}
 	
+	/*************************************
+	 * Seznam ID - zaměstnanec pro odpovědné zaměnstnace.
+	 */
+	public function getResponsibleEmployees($clientId){
+		if($clientId == null){
+			$select = $this->select()
+				->from('employee')
+				->joinLeft('position', 'employee.position_id = position.id_position')
+				->where('employee.client_id IS NULL')
+				->order('employee.surname', 'employee.first_name')
+				->group('employee.id_employee');
+		}
+		else{
+			$select = $this->select()
+				->from('employee')
+				->joinLeft('position', 'employee.position_id = position.id_position')
+				->where('employee.client_id = ?', $clientId)
+				->order('employee.surname', 'employee.first_name')
+				->group('employee.id_employee');
+		}		
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$employees = array();
+		if(count($results) > 0){
+			foreach($results as $result){
+				$key = $result->id_employee;
+				$employees[$key] = $result->surname . ', ' . $result->first_name;
+				if($result->phone != ''){
+					$employees[$key] .= ', telefon: ' . $result->phone;
+				}
+				if($result->email != ''){
+					$employees[$key] .= ', email: ' . $result->email;
+				}
+				if($result->position_id != null){
+					$employees[$key] .= ', pracovní pozice: ' . $result->position;
+				}
+			}
+		}
+		return $employees;
+	}
+	
+	public function assignToClient($clientId){
+		$select = $this->select()
+			->from('employee')
+			->where('client_id IS NULL');
+		$results = $this->fetchAll($select);
+		if(count($results) > 0){
+			foreach ($results as $result){
+				$result->client_id = $clientId;
+				$result->save();
+			}
+		}
+	}
+	
 	private function process($result){
 		if($result->count()){
 			$employees = array();

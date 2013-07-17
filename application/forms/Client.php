@@ -8,6 +8,7 @@ class Application_Form_Client extends Zend_Form
         $this->setMethod('post');
         $this->addPrefixPath('My_Form_Element', 'My/Form/Element', 'Element');
         $this->addPrefixPath('My_Form_Decorator', 'My/Form/Decorator', 'decorator');
+        $this->setAttrib('accept-charset', 'utf-8');
         
         $this->setDecorators(array(
         	'FormElements',
@@ -276,7 +277,7 @@ class Application_Form_Client extends Zend_Form
         		'decorators' => $elementDecorator2,
         		));
         
-        $this->addElement('hidden', 'id_responsibility', array(
+        $this->addElement('hidden', 'id_responsible', array(
         		'value' => 302,
         		'order' => 1004,
         		));
@@ -291,7 +292,7 @@ class Application_Form_Client extends Zend_Form
         		'order' => 301,
         		));
         
-        $this->addElement('button', 'new_responsibility', array(
+        $this->addElement('button', 'new_responsible', array(
         		'label' => 'Přidat další odpovědnou osobu',
         		'order' => 998,
         		'decorators' => $elementDecorator2,
@@ -303,9 +304,10 @@ class Application_Form_Client extends Zend_Form
         ));
     }
 
-    public function prevalidation(array $data){
+    public function prevalidation(array $data, $responsibilityList, $employeeList){
     	$newContactPersons = array_filter(array_keys($data), array($this, 'findContactPersons'));
     	$newDoctors = array_filter(array_keys($data), array($this, 'findDoctors'));
+    	$newResponsibilities = array_filter(array_keys($data), array($this, 'findResponsibilities'));
     	
     	foreach($newContactPersons as $fieldName){
     		$order = preg_replace('/\D/', '', $fieldName) + 1;
@@ -326,6 +328,17 @@ class Application_Form_Client extends Zend_Form
     				));
     		$this->addElement($newDoctor);
     	}
+    	
+    	foreach($newResponsibilities as $fieldName){
+    		$order = preg_replace('/\D/', '', $fieldName) + 1;
+    		$newResponsibility = new My_Form_Element_Responsibility('newResponsibility' . strval($order - 1), array(
+    				'order' => $order,
+    				'value' => $data[$fieldName],
+    				'multiOptions' => $responsibilityList,
+    				'multiOptions2' => $employeeList,
+    				));
+    		$this->addElement($newResponsibility);
+    	}
     }
     
     private function findContactPersons($contactPerson){
@@ -337,6 +350,12 @@ class Application_Form_Client extends Zend_Form
     private function findDoctors($doctor){
     	if(strpos($doctor, 'newDoctor') !== false){
     		return $doctor;
+    	}
+    }
+    
+    private function findResponsibilities($responsibility){
+    	if(strpos($responsibility, 'newResponsibility') !== false){
+    		return $responsibility;
     	}
     }
 
