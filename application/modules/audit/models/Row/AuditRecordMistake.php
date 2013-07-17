@@ -52,10 +52,13 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	 * @return Zend_Db_Table_Row_Abstract
 	 */
 	public function getSubsidiary() {
-		if ($this->subsidiary_id)
-			return $this->findParentRow("Application_Model_DbTable_Subsidiary", "subsidiary");
+		if ($this->subsidiary_id) {
+			$retVal = $this->findParentRow("Application_Model_DbTable_Subsidiary", "subsidiary");
+		} else {
+			$retVal = null;
+		}
 		
-		return null;
+		return $retVal;
 	}
 	
 	/**
@@ -77,6 +80,8 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	 * @return bool
 	 */
 	public function isMarked($specialDate) {
+		if ($this->_data["is_removed"]) return false;
+		
 		$thisDate = (int) str_replace("-", "", $this->will_be_removed_at);
 		
 		return $thisDate > $specialDate;

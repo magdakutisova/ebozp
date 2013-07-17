@@ -1,8 +1,18 @@
+<?php 
+$user = Zend_Auth::getInstance()->getIdentity();
+$acl = new My_Controller_Helper_Acl();
+?>
 <script type="text/javascript">
 var CLIENTID = <?php echo $this->client->id_client; ?>
 </script>
 <?php
 echo $this->formButton("toggle-filter", "Zobrazit/skrýt filtraci");
+
+if ($acl->isAllowed($user->role, "audit:mistake", "post")) {
+	echo $this->formButton("new-mistake", "Přidat novou neshodu");
+}
+
+$this->formFilter->setAttrib("style", "display:none");
 echo $this->formFilter;
 ?>
 <table id="mistake-list" class="multirow-table">
@@ -27,9 +37,6 @@ foreach ($this->mistakes as $mistake) {
 ?>
 </table>
 <?php 
-$user = Zend_Auth::getInstance()->getIdentity();
-$acl = new My_Controller_Helper_Acl();
-
 if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 ?>
 <h2>Import neshod</h2>

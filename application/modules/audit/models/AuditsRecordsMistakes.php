@@ -174,4 +174,45 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		
 		return $this->fetchAll($where);
 	}
+	
+	public function getCategories($clientId = null) {
+		// sestaveni dotazu
+		$select = new Zend_Db_Select($this->getAdapter());
+		
+		$select->from($this->_name, array("category"))->group("category")->order("category");
+		
+		// vyhodnoceni klienta
+		if ($clientId) $select->where("client_id = ?", $clientId);
+		
+		// nacteni dat
+		$result = $this->getAdapter()->query($select)->fetchAll();
+		$retVal = array();
+		
+		foreach ($result as $item) {
+			$retVal[$item["category"]] = $item["category"];
+		}
+		
+		return $retVal;
+	}
+	
+	public function getSubcategories($category, $clientId = null) {
+		// sestaveni dotazu
+		$select = new Zend_Db_Select($this->getAdapter());
+		
+		$select->from($this->_name, array("subcategory"))
+				->where("category like ?", $category)
+				->group("subcategory")
+				->order("subcategory");
+		
+		if ($clientId) $select->where("client_id = ?", $clientId);
+		
+		$result = $this->getAdapter()->query($select)->fetchAll();
+		$retVal = array();
+		
+		foreach ($result as $item) {
+			$retVal[$item["subcategory"]] = $item["subcategory"];
+		}
+		
+		return $retVal;
+	}
 }

@@ -133,11 +133,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nacteni neshody
 		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
 
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistake = $tableMistakes->getById($mistakeId);
-
-		if (!$mistake) throw new Zend_Db_Table_Exception("Mistake id #$mistakeId not found");
-
+		$mistake = self::getMistake($mistakeId);
+		
 		// vyhodnoceni prislusnosti k auditu
 		if ($mistake->audit_id == $this->_audit->id) {
 			$mistake->delete();
@@ -213,11 +210,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	
 	public function editAction() {
 		// nacteni neshody
-		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistake = $tableMistakes->getById($mistakeId);
-
-		if (!$mistake) throw new Zend_Exception("Mistake id #$mistakeId not found");
+		$mistake = self::getMistake($this->_request->getParam("mistakeId", 0));
 
 		// formular a jeho naplneni
 		$data = $mistake->toArray();
@@ -233,7 +226,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// nacteni pracoviste
 			$this->view->workplace = $mistake->getWorkplace();
 			$record = null;
-		} else {
+		} elseif ($this->_audit) {
 			$form = new Audit_Form_MistakeCreate();
 				
 			$deleteForm = null;
@@ -274,22 +267,39 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			}
 			
 			$this->view->activeAssoc = $activeAssoc; 
+		} else {
+			$form = new Audit_Form_MistakeCreateAlone();
 		}
 
 		$form->populate(array("mistake" => $data));
 		$form->getElement("submit")->setLabel("Uložit");
-		$form->setAction($this->view->url(array(
-				"clientId" => $this->_audit->client_id,
+		
+		// vyhodnoceni auditu a parametru pro url
+		if ($this->_audit) {
+			$route = "audit-mistake-put";
+			
+			$params = array(
+				"clientId" => $mistake->client_id,
 				"auditId" => $this->_audit->id,
 				"mistakeId" => $mistake->id
-		), "audit-mistake-put"));
+			);
+		} else {
+			$route = "audit-mistake-put-html";
+			
+			$params = array(
+					"clientId" => $mistake->client_id,
+					"mistakeId" => $mistake->id
+			);
+		}
+		
+		$form->setAction($this->view->url($params, $route));
 
 		// nastaveni dat z requestu, pokud neco je k dispozici
 		$form->isValidPartial($_REQUEST);
 
 		$params = array(
-				"clientId" => $this->_audit->client_id,
-				"auditId" => $this->_audit->id,
+				"clientId" => $mistake->client_id,
+				"auditId" => $mistake->audit_id,
 				"mistakeId" => $mistake->id
 		);
 
@@ -316,10 +326,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->client = $mistake->getClient();
 		$this->view->subsidiary = $mistake->getSubsidiary();
 		$this->view->mistake = $mistake;
-		$this->view->deleteForm = $deleteForm;
+		$this->view->deleteForm = $formDelete;
 		$this->view->similars = $similars;
 		$this->view->audit = $this->_audit;
-		$this->view->record = $record;
+		$this->view->record = isset($record) ? $record : null;
 	}
 
 	public function editHtmlAction() {
@@ -329,8 +339,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		// nastaveni zemenne routy formulare
 		$params = array(
-				"clientId" => $this->_audit->client_id,
-				"auditId" => $this->_audit->id,
+				"clientId" => $this->view->mistake->client_id,
+				"auditId" => $this->view->mistake->audit_id,
 				"mistakeId" => $this->view->mistake->id
 		);
 
@@ -347,12 +357,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 	public function getAction() {
 		// nacteni neshdoy
-		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
-
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistake = $tableMistakes->getById($mistakeId);
-
-		if (!$mistake) throw new Zend_Exception("Mistake not found");
+		$mistake = self::getMistake($this->_request->getParam("mistakeId", 0));
 
 		// nacteni pracoviste
 		if ($mistake->workplace_id) {
@@ -520,43 +525,44 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$formFilter->addWorkplaces($workplaces);
 		}
 		
-		// nacteni kategorii
-		$tableCategories = new Audit_Model_Categories();
-		$categories = $tableCategories->fetchAll("parent_id IS NULL", "name");
-		$category = $formFilter->category->getValue();
-		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		// nacteni a nastaveni kategorii
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$formFilter->getElement("category")->setMultiOptions(
+				array_merge(array("0" => "---"), $tableMistakes->getCategories($clientId))
+		);
 		
-		foreach ($categories as $item) {
-			$formFilter->getElement("category")->addMultiOption($item->id, $item->name);
-			if ($item->id == $category) $where[] = "category like " . $adapter->quote($item->name);
-		}
+		$category = $formFilter->getValue("category");
 		
 		if (!$category) {
 			$formFilter->removeElement("subcategory");
 		} else {
 			// nacteni podkategorii
-			$categories = $tableCategories->fetchAll("parent_id = " . $adapter->quote($category), "name");
-			$subcategory = $formFilter->getElement("subcategory")->getValue();
+			$subcategories = $tableMistakes->getSubcategories($category, $clientId);
 			
-			foreach ($categories as $item) {
-				$formFilter->getElement("subcategory")->addMultiOption($item->id, $item->name);
-				if ($item->id == $subcategory) $where[] = "subcategory like " . $adapter->quote($item->name);
-			}
+			$formFilter->getElement("subcategory")->setMultiOptions(
+					array_merge(array("0" => "---"), $subcategories)
+			);
+			
+			$where["category like ?"] = $category;
+			
+			$subcategory = $formFilter->getValue("subcategory");
+			
+			if ($subcategory) $where["subcategory = ?"] = $subcategory;
 		}
 
 		$workplaceId = $formFilter->getValue("workplace_id");
 
 		// zapis filtraci do dotazu
 		if ($subsidiaryId) {
-			$where[] = "subsidiary_id = $subsidiaryId";
+			$where["subsidiary_id = ?"] = $subsidiaryId;
 		}
 
 		if ($workplaceId) {
-			$where[] = "workplace_id = $workplaceId";
+			$where["workplace_id = ?"] = $workplaceId;
 		}
 		
 		if ($weight = $formFilter->weight->getValue()) {
-			$where[] = "weight = " . $adapter->quote($weight);
+			$where["weight = ?"] = $weight;
 		}
 
 		switch ($filter) {
@@ -635,11 +641,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 	public function putAction($redirect = true, $forwardOnError = null) {
 		// nacteni neshody
-		$mistakeId = $this->getRequest()->getParam("mistakeId", 0);
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistake = $tableMistakes->getById($mistakeId);
-
-		if (!$mistake) throw new Zend_Db_Table_Exception("Mistake id #$mistakeId not found");
+		$mistake = self::getMistake($this->_request->getParam("mistakeId", 0));
 
 		$form = new Audit_Form_MistakeCreate();
 
@@ -670,7 +672,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
 
 		// presmerovani zpet na vypis
-		$params = array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id, "mistakeId" => $mistake->id);
+		$params = array("clientId" => $mistake->client_id, "auditId" => $mistake->audit_id, "mistakeId" => $mistake->id);
 
 		if ($redirect) $this->_redirect($this->view->url($params, "audit-mistake-edit"));
 
@@ -685,6 +687,46 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		// redirect na spravnou adresu
 		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));
+	}
+	
+	public function removeAction() {
+		// nacteni id neshody a klienta
+		$clientId = $this->_request->getParam("clientId", 0);
+		
+		// nactnei identity
+		$user = Zend_Auth::getInstance()->getIdentity();
+		
+		// nacteni dat neshody a pobocky
+		$mistake = self::getMistake($this->_request->getParam("mistakeId", 0));
+		$subsidiary = $mistake->getSubsidiary();
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		// pokud je pobocka NULL, pak musi mit uzivatel pod palcem centralu
+		if (is_null($subsidiary)) {
+			$subsidiary = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "hq"));
+		}
+		
+		// kontrola ACL
+		$acl = new My_Controller_Helper_Acl();
+		
+		if ($acl->isAllowed($user->role, "audit:mistake", "removeall")) {
+			// uzivatel nema opravneni manipulovat se vsema neshodama - zkontroluje se prislusnost ke klientovi
+			$tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+			$nameAssocs = $tableAssocs->info("name");
+			$nameSubsidiaries = $tableSubsidiaries->info("name");
+			
+			$select = new Zend_Db_Select($tableAssocs->getAdapter());
+			$select->from($nameSubsidiaries, array("subsidiary_name"))
+					->joinInner($nameAssocs, "$nameAssocs.id_subsidiary = $nameSubsidiaries.id_subsidiary", array("id_subsidiary"))
+					->where("id_user = ?", $user->id_user);
+			die(var_dump($tableAssocs->getAdapter()->query($select)->fetch()));
+			if (!$tableAssocs->getAdapter()->query($select)->fetch()) throw new Zend_Exception("Invalid user");
+		}
+		die;
+	}
+	
+	public function removeHtmlAction() {
+		$this->removeAction();
 	}
 
 	public function setstatusJsonAction() {
@@ -802,6 +844,21 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		return $form;
 	}
+	
+	/**
+	 * nacte neshodu podle id
+	 * 
+	 * @param int $mistakeId
+	 * @return Audit_Model_Row_AuditRecordMistake
+	 */
+	public static function getMistake($mistakeId) {
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$mistake = $tableMistakes->getById($mistakeId);
+		
+		if (!$mistake) throw new Zend_Db_Table_Exception("Mistake #$mistakeId not found");
+			
+		return $mistake;
+	}
 
 	protected function _loadCategories($actualBase = null) {
 		// nacteni kategorii a zapis do seznamu
@@ -870,6 +927,9 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	 * @param Audit_Model_Row_AuditRecordMistake $mistake
 	 */
 	public function _loadSimilarMistakes(Audit_Model_Row_AuditRecordMistake $mistake) {
+		// kontrola prazdneho auditu
+		if (!$mistake->audit_id) return new Audit_Model_Rowset_AuditsRecordsMistakes(array("data" => array()));
+		
 		// ziskani tabulky
 		$tableMistakes = $mistake->getTable();
 		$tableAudits = new Audit_Model_Audits();

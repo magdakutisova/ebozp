@@ -39,6 +39,12 @@ class Document_Form_Documentation extends Zend_Form {
 				"label" => "Jméno"
 		));
 		
+		$this->addElement("text", "comment", array(
+				"required" => true,
+				"decorators" => $elementDecorator,
+				"label" => "Komentář"
+		));
+		
 		$this->addElement("submit", "submit", array(
 				"label" => "Uložit",
 				"decorators" => $submitDecorator

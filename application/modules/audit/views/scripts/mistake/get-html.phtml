@@ -50,7 +50,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 			Odstraněno
 			</td>
 			<td>
-			<?php echo $this->is_removed ? "Ano" : "Ne"; ?>
+			<?php echo $mistake->is_removed ? "Ano" : "Ne"; ?>
 			</td>
 		</tr>
 		<tr>
@@ -110,6 +110,16 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 	</tbody>
 </table>
 <em>*) Kritická neshoda je taková, která byla nalezena ve více než jednom auditu nebo prověrce</em>
+<?php 
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "audit:mistake", "edit.html")) {
+	$url = $this->url(array("clientId" => $mistake->client_id, "mistakeId" => $mistake->id), "audit-mistake-edit-alone-html");
+
+	echo "<div class='button'><a href='$url'>Editovat</a></div>";
+}
+?>
 <h2>Audity a prověrky</h2>
 <table>
 	<thead>

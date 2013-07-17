@@ -24,6 +24,35 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
 	}
 	
+	public function clientsXmlAction() {
+		$this->view->layout()->disableLayout(true);
+		
+		// tabulka klientu a pobocek
+		$tableClients = new Application_Model_DbTable_Client();
+		$tableSubs = new Application_Model_DbTable_Subsidiary();
+		
+		// nacteni dat
+		$clients = $tableClients->fetchAll("1", "company_name");
+		$subsidiaries = $tableSubs->fetchAll("1", "subsidiary_name");
+		
+		// zpracovani klientu
+		$clientList = array();
+		$subList = array();
+		
+		foreach ($clients as $c) {
+			$clientList[] = $c->toArray();
+			$subList[$c->id_client] = array();
+		}
+		
+		// zpracovani poboce
+		foreach ($subsidiaries as $s) {
+			$subList[$s->client_id][] = $s->toArray();
+		}
+		
+		$this->view->clients = $clientList;
+		$this->view->subsidiaries = $subList;
+	}
+	
 	public function deleteAction() {
 		// nactei dat
 		$clientId = $this->_request->getParam("clientId", 0);
@@ -66,6 +95,84 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	
 	public function getAction() {
 		
+	}
+	
+	public function importAction() {
+		$tableClients = new Application_Model_DbTable_Client();
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		// nacitani dat
+		$clientId = $this->_request->getParam("clientId", 0);
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+		
+		// kontrola platnosti id
+		$client = $tableClients->find($clientId)->current();
+		
+		if (!$client) throw new Zend_Db_Table_Exception("Client #$clientId not found");
+		
+		// nacteni pobocky
+		$subsidiary = null;
+		$where = array("client_id = ?" => $client->id_client);
+		
+		if ($subsidiaryId) {
+			$subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+			if (!$subsidiary) throw new Zend_Exception("Subsidiary #$subsidiaryId not found");
+			
+			$subsidiaryId = $subsidiary->id_subsidiary;
+			
+			$where["subsidiary_id = ?"] = $subsidiaryId;
+		} else {
+			$subsidiaryId = "NULL";
+			$where[] = "subsidiary_id is null";
+		}
+		
+		// smazani puvodni dokumentace
+		$tableDocumentations = new Document_Model_Documentations();
+		$tableDocumentations->delete($where);
+		
+		// nacteni dat
+		$dotNet = $this->_request->getParam("dotnet", 0);
+		
+		if ($dotNet) {
+			$fp = $tmpFile = tmpfile();
+			fwrite($fp, $this->_request->getParam("data"));
+			
+			fseek($fp, 0, SEEK_SET);
+		} else {
+			/**
+			 * @todo dodelat vstup z formulare
+			 */
+		}
+		
+		$toInsert = array();
+		
+		// preskoceni prvniho radku
+		fgetcsv($fp);
+		
+		// zapis dat do pole pro insert
+		$adapter = $tableClients->getAdapter();
+		
+		while(!feof($fp)) {
+			$row = fgetcsv($fp);
+			
+			$line = "(" . $client->id_client . "," . $subsidiaryId . "," . $adapter->quote($row[2]) . "," . $adapter->quote($row[3]) . "," . $adapter->quote($row[4]) . ")";
+			$toInsert[] = $line;
+		}
+		
+		// pokud je neco k zapsani, zapise se
+		if ($toInsert) {
+			$nameDocumentation = $tableDocumentations->info("name");
+			
+			try {
+				$sql = "insert into $nameDocumentation (client_id, subsidiary_id, name, modified_at, comment) values " . implode("," , $toInsert);
+				$adapter->query($sql);
+			} catch (Zend_Exception $e) {
+				throw $e;
+			}
+		}
+		
+		$this->view->dotNet = $dotNet;
+		$this->view->client = $client;
 	}
 	
 	public function indexAction() {
@@ -199,7 +306,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId), "subsidiary_name");
 		$subIndex = array();
 		
-		foreach ($subsidiaries as $item) $subIndex[$item->id_subsidiary] = $item->subsidiary_name;
+		foreach ($subsidiaries as $item) $subIndex[$item->id_subsidiary] = $item->subsidiary_name . " (" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";
 		
 		$form->setSubsidiaries($subIndex);
 		

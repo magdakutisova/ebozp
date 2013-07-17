@@ -262,6 +262,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/html",
 						array("module" => "audit",
 								"controller" => "mistake",
+								"action" => "edit.html",
+								"auditId" => 0))
+		);
+		
+		$router->addRoute(
+				"audit-mistake-edit-alone-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistake/:mistakeId/edit-alone/html",
+						array("module" => "audit",
+								"controller" => "mistake",
 								"action" => "edit.html"))
 		);
 		
@@ -271,7 +280,8 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/put",
 						array("module" => "audit",
 								"controller" => "mistake",
-								"action" => "put"))
+								"action" => "put",
+								"auditId" => 0))
 		);
 		
 		// ulozi zmenenou neshodu jako html
@@ -280,7 +290,8 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/put/html",
 						array("module" => "audit",
 								"controller" => "mistake",
-								"action" => "put.html"))
+								"action" => "put.html",
+								"auditId" => 0))
 		);
 		
 		// smaze neshodu
@@ -289,7 +300,8 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/delete",
 						array("module" => "audit",
 								"controller" => "mistake",
-								"action" => "delete"))
+								"action" => "delete",
+								"auditId" => 0))
 		);
 		
 		// smaze neshodu v plovoucim okne
@@ -298,7 +310,8 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/mistake/:mistakeId/delete/html",
 						array("module" => "audit",
 								"controller" => "mistake",
-								"action" => "delete.html"))
+								"action" => "delete.html",
+								"auditId" => 0))
 		);
 		
 		// nastaveni stavu skupiny neshod

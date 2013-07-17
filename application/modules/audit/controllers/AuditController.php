@@ -392,6 +392,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// zapis do view
 		$this->view->clients = $clients;
 		$this->view->subSiDiaryIndex = $subSiDiaryIndex;
+		
+		$this->view->layout()->setLayout("layout");
 	}
 	
 	public function listAction() {
