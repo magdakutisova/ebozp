@@ -59,7 +59,7 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		));
 		
 		// konkretizace
-		$this->addElement("text", "concretization", array(
+		$this->addElement("text", "concretisation", array(
 				"label" => "Upřesnění",
 				"decorators" => $elementDecorator
 		));

@@ -86,6 +86,13 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$this->view->audit = $this->_audit;
 	}
 	
+	public function listJsonAction() {
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		
+		$this->view->workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $subsidiaryId));
+	}
+	
 	public function postAction() {
 		try {
 			$this->view->action("new", "workplace", "default", $this->getRequest()->getParams());
