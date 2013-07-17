@@ -546,6 +546,12 @@ class ClientController extends Zend_Controller_Action
 				$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 				$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
 			}
+
+			//přidat u odpovědností a zaměstnanců nově přidaných číslo klienta
+			$responsibilities = new Application_Model_DbTable_Responsibility();
+			$responsibilities->assignToClient($client->getIdClient());
+			$employees = new Application_Model_DbTable_Employee();
+			$employees->assignToClient($client->getIdClient());
 			 
 			$subsidiary->setSubsidiaryName($client->getCompanyName());
 			$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
