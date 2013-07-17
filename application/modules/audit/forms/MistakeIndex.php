@@ -94,7 +94,7 @@ class Audit_Form_MistakeIndex extends Zend_Form {
 		$values = $element->getMultiOptions();
 		
 		foreach ($subsidiaries as $item) {
-			$values[$item->id_subsidiary] = $item->subsidiary_name;
+			$values[$item->id_subsidiary] = $item->subsidiary_name . "(" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";
 		}
 		
 		$element->setMultiOptions($values);
