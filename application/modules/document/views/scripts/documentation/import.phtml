@@ -1,0 +1,7 @@
+<?php
+if ($this->dotNet) {
+	echo "1";
+} else {
+	$redirector = new Zend_Controller_Action_Helper_Redirector();
+	$redirector->gotoRouteAndExit(array("clientId" => $this->client->id_client), "document-documentation-index");
+}

@@ -41,6 +41,9 @@ if ($acl->isAllowed($user->role, "document:preset")) {
 			Pobočka
 			</td>
 			<td>
+			Komentář
+			</td>
+			<td>
 			Soubor
 			</td>
 			<td>
@@ -61,6 +64,7 @@ foreach ($this->documentations as $doc) {
 	
 	echo "<td>$doc->name</td>";
 	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";
+	echo "<td>" . $doc->comment . "</td>";
 	echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid)) : "-") . "</td>";
 	
 	echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
@@ -98,6 +102,14 @@ if ($acl->isAllowed($user->role, "document:documentation", "reset")) {
 		</tr>
 	</table>
 </form>
+	<?php 
+}
+
+// vypsani importu ze souboru, pokud ma uzivatel opravneni
+if ($acl->isAllowed($user->role, "document:documentation", "import")) {
+	?>
+<h2>Import dokumentace ze souboru</h2>
+<em>Funkce pro import souborů s definicí dokumentace vytvořených pomocí programu ClientReaper</em>
 	<?php 
 }
 ?>

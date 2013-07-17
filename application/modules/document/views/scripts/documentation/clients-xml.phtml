@@ -1,0 +1,24 @@
+<?php
+$this->layout()->disableLayout();
+?>
+<clients>
+<?php 
+foreach ($this->clients as $client) {
+	$name = $client["company_name"];
+	$id = $client["id_client"];
+	
+	echo "<client name='$name' id='$id'>\n";
+	echo "<subsidiaries>";
+	
+	foreach ($this->subsidiaries[$client["id_client"]] as $sub) {
+		$name = $sub["subsidiary_name"] . " (" . $sub["subsidiary_town"] . " - " . $sub["subsidiary_street"] .  ")";
+		$id = $sub["id_subsidiary"];
+		
+		echo "<subsidiary name='$name' id='$id' />\n";
+	}
+	
+	echo "</subsidiaries>\n";
+	echo "</client>\n";
+}
+?>
+</clients>
