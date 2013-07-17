@@ -451,6 +451,7 @@ class ClientController extends Zend_Controller_Action
 		if(!$this->getRequest()->isPost()){
 			$this->view->form = $form;
 			if (isset ( $defaultNamespace->formData )) {
+				Zend_Debug::dump('tady');
 				$form->populate ( $defaultNamespace->formData );
 				unset ( $defaultNamespace->formData );
 			} else {
@@ -497,6 +498,7 @@ class ClientController extends Zend_Controller_Action
 				if($subsidiary['responsibles'][0]['responsibility'] != null){
 					$rOrder = $form->getElement('id_responsible')->getValue();
 					foreach($subsidiary['responsibles'] as $responsible){
+						Zend_Debug::dump($responsible + $responsible['employee']->toArray());
 						$form->addElement('responsibility', 'newResponsibility' . $rOrder, array(
 								'order' => $rOrder,
 								'multiOptions' => $this->_responsibilityList,
@@ -542,7 +544,6 @@ class ClientController extends Zend_Controller_Action
 			 
 			//update klienta a kontrola IČO
 			if (!$clients->updateClient ( $client)) {
-				$defaultNamespace->formData = $formData;
 				$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 				$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
 			}
@@ -620,7 +621,8 @@ class ClientController extends Zend_Controller_Action
 			 
 			//uložení transakce
 			$adapter->commit();
-			 
+			unset ($defaultNamespace->form);
+			unset ( $defaultNamespace->formData );
 			$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> upraven' );
 			$this->_helper->redirector->gotoRoute ( array ('clientId' => $client->getIdClient() ), 'clientAdmin' );
 		}
