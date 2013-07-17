@@ -18,12 +18,15 @@ class My_View_Helper_Doctor extends Zend_View_Helper_FormElement{
 		$helperHidden->setView($this->view);
 		$helperText = new Zend_View_Helper_FormText();
 		$helperText->setView($this->view);
+		$helperButton = new Zend_View_Helper_FormButton();
+		$helperButton->setView($this->view);
 		
 		$this->html .= '<tr id="' . $name . '">';
 		$this->html .= $helperHidden->formHidden($name . '[id_doctor]', $idDoctor);
 		$this->html .= '<td><label for="' . $name . '[name]">Jméno a příjmení</label><br/>' . $helperText->formText($name . '[name]' , $names) . '</td>';
 		$this->html .= '<td><label for="' . $name . '[phone]">Telefon</label><br/>' . $helperText->formText($name . '[phone]', $phone) . '</td>';
 		$this->html .= '<td><label for="' . $name . '[email]">Email</label><br/>' . $helperText->formText($name . '[email]', $email) . '</td>';
+		$this->html .= '<td>' . $helperButton->formButton($name . '[delete]', 'Odebrat', array('class' => 'deleteDoctor')) . '</td>';
 		$this->html .= '</tr>';
 
 		return $this->html;

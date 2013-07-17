@@ -740,6 +740,24 @@ class ClientController extends Zend_Controller_Action
 		echo Zend_Json::encode($this->_employeeList);
 	}
 
+	public function removecontactpersonAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idContactPerson = $this->getRequest()->getParam('idContactPerson');
+		
+		$contactPersons = new Application_Model_DbTable_ContactPerson();
+		$contactPersons->deleteContactPerson($idContactPerson);
+	}
+	
+	public function removedoctorAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idDoctor = $this->getRequest()->getParam('idDoctor');
+		
+		$doctors = new Application_Model_DbTable_Doctor();
+		$doctors->deleteDoctor($idDoctor);
+	}
+	
 	private function fillMultiselects($form){
 		if($form->responsibility301 != null){
 			$form->responsibility301->setAttrib('multiOptions', $this->_responsibilityList);

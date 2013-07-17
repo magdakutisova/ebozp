@@ -383,6 +383,62 @@ $(function(){
 		});
 	}
 	
+	//odebrání kontaktní osoby
+	$("form").on("click", ".deleteContactPerson", function(){
+		var idContactPerson = $(this).parent('td').siblings().filter(":first").val();
+		
+		ajaxRemoveContactPerson(idContactPerson);
+		removeContactPerson(this);
+	});
+	
+	function removeContactPerson(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
+	}
+	
+	function ajaxRemoveContactPerson(idContactPerson){
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/removecontactperson/format/html',
+			data: "clientId=" + clientId + "&idContactPerson=" + idContactPerson,
+			success:function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	//odebrání lékaře
+	$("form").on("click", ".deleteDoctor", function(){
+		var idDoctor = $(this).parent('td').siblings().filter(":first").val();
+		
+		ajaxRemoveDoctor(idDoctor);
+		removeDoctor(this);
+	});
+	
+	function removeDoctor(row){
+		$(row).parent().parent().next().remove();
+		$(row).parent().parent().remove();
+	}
+	
+	function ajaxRemoveDoctor(idDoctor){
+		var clientId = $("#id_client").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/client/removedoctor/format/html',
+			data: "clientId=" + clientId + "&idDoctor=" + idDoctor,
+			success: function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	//odebrání odpovědné osoby
+	$("form").on("click", ".deleteResponsibility", function(){
+		$(this).parent().parent().next().remove();
+		$(this).parent().parent().remove();
+	});
+	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){
 		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');
