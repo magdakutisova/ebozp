@@ -95,9 +95,9 @@ class Zend_View_Helper_Client extends Zend_View_Helper_Abstract{
 					. $subsidiary['subsidiary']->getDifficulty() . ' dne'
 					. '</p>';
 		}
-		if($client->getInsuranceCompany()){
+		if($subsidiary['subsidiary']->getInsuranceCompany()){
 			$content .= '<p class="no-margin"><span class="bold">Pojišťovna: </span>'
-				. $client->getInsuranceCompany()
+				. $subsidiary['subsidiary']->getInsuranceCompany()
 				. '</p>';
 		}
 		if($client->getPrivate() && $this->view->canViewPrivate){

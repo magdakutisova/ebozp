@@ -13,6 +13,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	private $difficulty;
 	private $district;
 	private $allowed;
+	private $insuranceCompany;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -170,6 +171,20 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	}
 
 	/**
+	 * @return the $insuranceCompany
+	 */
+	public function getInsuranceCompany() {
+		return $this->insuranceCompany;
+	}
+	
+	/**
+	 * @param $insuranceCompany the $insuranceCompany to set
+	 */
+	public function setInsuranceCompany($insuranceCompany) {
+		$this->insuranceCompany = $insuranceCompany;
+	}
+	
+	/**
 	 * @return the $allowed
 	 */
 	public function getAllowed() {
@@ -195,6 +210,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$this->hq = isset($data['hq']) ? $data['hq'] : null;
 		$this->difficulty = isset($data['difficulty']) ? $data['difficulty'] : null;
 		$this->district = isset($data['district']) ? $data['district'] : null;
+		$this->insuranceCompany = isset($data['insurance_company']) ? $data['insurance_company'] : null;
 				
 		return $this;
 	}
@@ -214,6 +230,7 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$data['hq'] = $this->hq;
 		$data['difficulty'] = $this->difficulty;
 		$data['district'] = $this->district;
+		$data['insurance_company'] = $this->insuranceCompany;
 		
 		return $data;
 	}
