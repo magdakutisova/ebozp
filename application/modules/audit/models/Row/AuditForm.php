@@ -34,7 +34,7 @@ class Audit_Model_Row_AuditForm extends Zend_Db_Table_Row_Abstract {
 	 * 
 	 * @return Audit_Model_Rowset_AuditsRecords
 	 */
-	public function getRecords($group = null) {
+	public function getRecords($group = null, $order = null) {
 		// sestaveni vyhledavaciho dotazu
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
@@ -46,8 +46,8 @@ class Audit_Model_Row_AuditForm extends Zend_Db_Table_Row_Abstract {
 		
 		$select->from($nameRecords, array("score", "note", "mistake_id", "id"))
 				->where("audit_form_id = ?", $this->_data["id"])
-				->joinInner($nameQuestions, "$nameQuestions.id = $nameRecords.question_id", array("question", "weight"))
-				->order("position");
+				->joinInner($nameQuestions, "$nameQuestions.id = $nameRecords.question_id", array("question", "weight", "group_id"))
+				->order(is_null($order) ? "position" : $order);
 		
 		if ($group) $select->where("group_id = ?", $group->id);
 		

@@ -167,7 +167,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 	}
 	
 	public static function getFormsGroups($forms) {
-		$tableRecordsGroups = new Audit_Model_AuditsRecordsGroups();
+		$tableCategories = new Audit_Model_FormsCategories();
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
@@ -175,8 +175,17 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		foreach ($forms as $form) {
 			// nacteni skupin a zaznamu
-			$groups = $tableRecordsGroups->fetchAll("audit_form_id = " . $form->id, "name");
-			$records = $tableRecords->fetchAll("audit_form_id = " . $form->id, "group_id");
+			$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
+			$nameQuestions = $tableQuestions->info("name");
+			$nameRecords = $tableRecords->info("name");
+			
+			$select = new Zend_Db_Select($tableCategories->getAdapter());
+			$select->from($nameQuestions, array("group_id"))
+					->joinInner($nameRecords, "question_id = $nameQuestions.id", array())
+					->where("audit_form_id = ?", $form->id);
+			
+			$groups = $tableCategories->fetchAll(array("id in (?)" => new Zend_Db_Expr($select->assemble())), "name");
+			$records = $form->getRecords(null, "group_id");
 			
 			// indexace zaznamu
 			$lastGroupId = 0;
@@ -251,12 +260,27 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni neshod, ktere spadaji do skupin
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableRecords = new Audit_Model_AuditsRecords();
+		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
 		
 		$nameRecords = $tableRecords->info("name");
 		$nameMistakes = $tableMistakes->info("name");
+		$nameQuestions = $tableQuestions->info("name");
+		
+		// sestaveni dotazu
+		$select = new Zend_Db_Select($tableMistakes->getAdapter());
+		$select->from($nameMistakes, array(
+						"$nameMistakes.id", 
+						"$nameMistakes.weight", 
+						"$nameMistakes.mistake", 
+						"$nameMistakes.suggestion", 
+						"comment")
+				)->joinInner($nameRecords, "$nameMistakes.record_id = $nameRecords.id", array())
+				->joinInner($nameQuestions, "$nameRecords.question_id = $nameQuestions.id", array("group_id"))
+				->where("$nameMistakes.audit_id = ?", $audit->id)
+				->where("$nameRecords.score = ?", Audit_Model_AuditsRecords::SCORE_N);
 		
 		$sql = "select group_id, $nameMistakes.id, $nameMistakes.weight, mistake, suggestion, comment from $nameMistakes, $nameRecords where $nameMistakes.record_id = $nameRecords.id and $nameRecords.audit_id = $audit->id and score = " . Audit_Model_AuditsRecords::SCORE_N;
-		$mistakes = $tableMistakes->getAdapter()->query($sql)->fetchAll();
+		$mistakes = $select->query()->fetchAll();
 		
 		$mistakeIndex = array();
 		$lastId = 0;
