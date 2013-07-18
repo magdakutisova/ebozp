@@ -14,8 +14,18 @@ $(function () {
 	}
 	
 	function createMistake() {
+		// nacteni pobocky
+		var subsidiaryId = Number($("#mistake-subsidiary_id").val());
+		var data = {
+				clientId : CLIENTID
+		};
+		
+		
+		if (subsidiaryId)
+			data["mistake[subsidiary_id]"] = subsidiaryId;
+		
 		// nacteni dat a otevreni dialogu
-		$.get("/audit/mistake/create.html", { clientId : CLIENTID}, function (response) {
+		$.get("/audit/mistake/create.html", data, function (response) {
 			response = $(response);
 			response.find("#mistake-subsidiary_id").change(loadWorkplaces);
 			
