@@ -33,4 +33,8 @@ class Application_Model_DbTable_Responsible extends Zend_Db_Table_Abstract{
 		}
 	}
 	
+	public function removeResponsibles($subsidiaryId){
+		$this->delete('id_subsidiary = ' . (int)$subsidiaryId);
+	}
+	
 }

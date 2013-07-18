@@ -25,6 +25,7 @@ class My_View_Helper_Responsibility extends Zend_View_Helper_FormElement{
 		$this->html .= '<br/>' . $helperButton->formButton('new_responsibility', 'Nová odpovědnost') . '</td>';
 		$this->html .= '<td colspan=2><label for="' . $name . '[id_employee]">Zaměstnanec</label><br/>' . $helperSelect->formSelect($name . '[id_employee]', $idEmployee, null, $multiOptions2);
 		$this->html .= '<br/>' . $helperButton->formButton('new_responsible_employee', 'Nový zaměstnanec') . '</td>';
+		$this->html .= '<td>' . $helperButton->formButton($name . '[delete]', 'Odebrat', array('class' => 'deleteResponsibility')) . '</td>';
 		$this->html .= '</tr>';
 
 		return $this->html;

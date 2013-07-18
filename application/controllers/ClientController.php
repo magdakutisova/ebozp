@@ -542,10 +542,15 @@ class ClientController extends Zend_Controller_Action
 			 
 			//update klienta a kontrola IČO
 			if (!$clients->updateClient ( $client)) {
-				$defaultNamespace->formData = $formData;
 				$this->_helper->FlashMessenger ( 'Chyba! Klient s tímto IČO již existuje.' );
 				$this->_helper->redirector->gotoRoute ( array (), 'clientEdit' );
 			}
+
+			//přidat u odpovědností a zaměstnanců nově přidaných číslo klienta
+			$responsibilities = new Application_Model_DbTable_Responsibility();
+			$responsibilities->assignToClient($client->getIdClient());
+			$employees = new Application_Model_DbTable_Employee();
+			$employees->assignToClient($client->getIdClient());
 			 
 			$subsidiary->setSubsidiaryName($client->getCompanyName());
 			$subsidiary->setSubsidiaryStreet($client->getHeadquartersStreet());
@@ -557,15 +562,65 @@ class ClientController extends Zend_Controller_Action
 			//update pobočky
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 			$subsidiaries->updateSubsidiary ( $subsidiary, true);
+			$subsidiaryId = $subsidiary->getIdSubsidiary();
 			
-			//uložení odpovědných osob
+			//uložení kontaktních osob, lékařů a odpovědných osob
+			$contactPersons = new Application_Model_DbTable_ContactPerson();
+			$doctors = new Application_Model_DbTable_Doctor();
+			$responsibles = new Application_Model_DbTable_Responsible();
+			$responsibles->removeResponsibles($subsidiaryId);
+			
+			foreach($formData as $key => $value){
+				if(preg_match('/contactPerson\d+/', $key) || preg_match('/newContactPerson\d+/', $key)){
+					//update
+					if($formData[$key]['id_contact_person'] != ''){
+						if($formData[$key]['name'] != ''){
+							$contactPerson = new Application_Model_ContactPerson($formData[$key]);
+							$contactPerson->setSubsidiaryId($subsidiaryId);
+							$contactPersons->updateContactPerson($contactPerson);
+						}
+					}
+					//create
+					else{
+						if($formData[$key]['name'] != ''){
+							$contactPerson = new Application_Model_ContactPerson($formData[$key]);
+							$contactPerson->setSubsidiaryId($subsidiaryId);
+							$contactPersons->addContactPerson($contactPerson);
+						}
+					}
+					
+				}
+				if(preg_match('/doctor\d+/', $key) || preg_match('/newDoctor\d+/', $key)){
+					if($formData[$key]['id_doctor'] != ''){
+						if($formData[$key]['name'] != ''){
+							$doctor = new Application_Model_Doctor($formData[$key]);
+							$doctor->setSubsidiaryId($subsidiaryId);
+							$doctors->updateDoctor($doctor);
+						}
+					}
+					else{
+						if($formData[$key]['name'] != ''){
+							$doctor = new Application_Model_Doctor($formData[$key]);
+							$doctor->setSubsidiaryId($subsidiaryId);
+							$doctors->addDoctor($doctor);
+						}
+					}					
+				}
+				
+				if(preg_match('/responsibility\d+/', $key) || preg_match('/newResponsibility\d+/', $key)){
+					if($formData[$key]['id_responsibility'] != 0 && $formData[$key]['id_employee'] != 0){
+						$responsibles->addRelation($formData[$key]['id_responsibility'], $formData[$key]['id_employee'], $subsidiaryId);
+					}
+				}
+			}
 			
 			 
 			$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
 			 
 			//uložení transakce
 			$adapter->commit();
-			 
+			unset ($defaultNamespace->form);
+			unset ( $defaultNamespace->formData );
 			$this->_helper->FlashMessenger ( 'Klient <strong>' . $client->getCompanyName() . '</strong> upraven' );
 			$this->_helper->redirector->gotoRoute ( array ('clientId' => $client->getIdClient() ), 'clientAdmin' );
 		}
@@ -574,7 +629,7 @@ class ClientController extends Zend_Controller_Action
 			$adapter->rollback();
 			$defaultNamespace->formData = $formData;
 			$this->_helper->FlashMessenger('Uložení klienta do databáze selhalo. ' . $e . $e->getMessage() . $e->getTraceAsString());
-			$this->_helper->redirector->gotoRoute(array(), 'clientNew');
+			$this->_helper->redirector->gotoRoute(array('clientId' => $client->getIdClient()), 'clientEdit');
 		}
 		 
 	}
@@ -691,6 +746,24 @@ class ClientController extends Zend_Controller_Action
 		echo Zend_Json::encode($this->_employeeList);
 	}
 
+	public function removecontactpersonAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idContactPerson = $this->getRequest()->getParam('idContactPerson');
+		
+		$contactPersons = new Application_Model_DbTable_ContactPerson();
+		$contactPersons->deleteContactPerson($idContactPerson);
+	}
+	
+	public function removedoctorAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idDoctor = $this->getRequest()->getParam('idDoctor');
+		
+		$doctors = new Application_Model_DbTable_Doctor();
+		$doctors->deleteDoctor($idDoctor);
+	}
+	
 	private function fillMultiselects($form){
 		if($form->responsibility301 != null){
 			$form->responsibility301->setAttrib('multiOptions', $this->_responsibilityList);
