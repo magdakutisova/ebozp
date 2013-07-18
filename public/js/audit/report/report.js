@@ -46,20 +46,20 @@ $(function () {
 		
 		var vals = new Array();
 		var ticks = new Array("0");
-		var tick = 1;
+		var tick = 0;
 		
 		// zpracovani hodnocnei
 		table.find(".report-percent").each(function () {
 			var text = $(this).text();
 			var percent = Number(text.substr(0, text.length - 1));
 			
-			vals.push(percent);
+			vals.push([percent]);
 			ticks.push(String(tick++));
 		});
 		
 		ticks.push(String(tick++));
 		
-		$.jqplot("chart-" + index, [vals], {
+		$.jqplot("chart-" + index, vals, {
 			seriesDefaults:{
 	            renderer:$.jqplot.BarRenderer,
 	            rendererOptions: {fillToZero: true},

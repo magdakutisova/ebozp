@@ -47,7 +47,7 @@ class Audit_Form_FormInstanceCreate extends Zend_Form {
 		
 		// nacteni dat
 		$tableForms = new Audit_Model_Forms();
-		$forms = $tableForms->fetchAll($tableForms->getAdapter()->quoteInto("id not in (?)", $ids), "name");
+		$forms = $tableForms->fetchAll($tableForms->getAdapter()->quoteInto("!is_deleted and id not in (?)", $ids), "name");
 		
 		$element = $this->getElement("id");
 		

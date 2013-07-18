@@ -29,8 +29,9 @@ class Audit_FormController extends Zend_Controller_Action {
 			return;
 		}
 		
-		// smazani dat
-		$form->delete();
+		// oznaceni formulare jako smazaneho
+		$form->is_deleted = 1;
+		$form->save();
 		
 		// presmerovani na index
 		$this->_redirect("/audit/form/index");
@@ -90,12 +91,12 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		// nacteni stran
 		$groups = $form->getGroups();
-		
+
 		// nacteni zaznamu ze skupiny
 		$actualGroup = $groups[$pageIndex];
 		
 		// nacteni zaznmu
-		$records = $actualGroup->getRecords();
+		$records = $form->getRecords($actualGroup);
 		
 		// nacteni informaci o klientovi a podobne
 		$tableClients = new Application_Model_DbTable_Client();
@@ -192,7 +193,7 @@ class Audit_FormController extends Zend_Controller_Action {
 		$formForm = new Audit_Form_FormInstanceCreate();
 		$formForm->populate($_REQUEST);
 		
-		// nacteni dotazniku
+		// nacteni formulare
 		$tableForms = new Audit_Model_Forms();
 		$form = $tableForms->findById($formForm->getValue("id"));
 		
@@ -225,7 +226,7 @@ class Audit_FormController extends Zend_Controller_Action {
 	public function listAction() {
 		// nacteni formularu
 		$tableForms = new Audit_Model_Forms();
-		$forms = $tableForms->fetchAll(null, "name");
+		$forms = $tableForms->fetchAll("!is_deleted", "name");
 		
 		$this->view->forms = $forms;
 	}
