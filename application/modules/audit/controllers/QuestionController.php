@@ -87,13 +87,19 @@ class Audit_QuestionController extends Zend_Controller_Action {
 			return;
 		}
 		
+		// oznaceni otazky jako smazane
+		$question->is_deleted = 1;
+		
+		// kopirovani otazky
+		$newQuestion = $question->getTable()->createRow($from->getValues(true));
+		$newQuestion->position = $question->position;
+		
 		// zapis dat
-		$question->setFromArray($form->getValues(true));
-		$question->save();
+		$newQuestion->save();
 		
 		$section = $question->getCategory();
 		
-		$this->view->question = $question;
+		$this->view->question = $newQuestion;
 		$this->view->section = $section;
 	}
 	

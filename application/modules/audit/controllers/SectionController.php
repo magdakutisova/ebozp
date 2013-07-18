@@ -20,7 +20,8 @@ class Audit_SectionController extends Zend_Controller_Action {
 		
 		// nacteni formulare
 		$form = $category->findParentRow("Audit_Model_Forms", "form");
-		$category->delete();
+		$category->is_deleted = 1;
+		$category->save();
 		
 		$this->view->form = $form;
 	}

@@ -34,14 +34,12 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 	 */
 	public function createForm(Audit_Model_Row_Audit $audit, Audit_Model_Row_Form $form) {
 		// nacteni jmen
-		$tableGroups = new Audit_Model_AuditsRecordsGroups();
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAuditsMistakes = new Audit_Model_AuditsMistakes();
 		$tableItems = new Audit_Model_FormsCategoriesQuestions();
 		$tableCategories = new Audit_Model_FormsCategories();
 		
-		$nameGroups = $tableGroups->info("name");
 		$nameRecords = $tableRecords->info("name");
 		$nameMistakes = $tableMistakes->info("name");
 		$nameAuditMistakes = $tableAuditsMistakes->info("name");
@@ -64,12 +62,11 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 		
 		// nacteni skupin otazek
 		$groupList = $form->findCategories();
-		$adapter->query("lock tables `$this->_name` write, `$nameGroups` write, `$nameMistakes` write, `$nameRecords` write, `$nameAuditMistakes` write, `$nameItems` write, `$nameCategories` write");
+		$adapter->query("lock tables `$this->_name` write, `$nameMistakes` write, `$nameRecords` write, `$nameAuditMistakes` write, `$nameItems` write, `$nameCategories` write");
 		
 		try {
 			// nacteni poslednich id zaznamu
 			$recordId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameRecords' and table_schema = DATABASE()")->fetchColumn();
-			$groupId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameGroups' and table_schema = DATABASE()")->fetchColumn();
 			$mistakeId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameMistakes' and table_schema = DATABASE()")->fetchColumn();
 			
 			// nacteni prvku formulare
@@ -96,16 +93,12 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			// priprava dat
 			$mistakes = array();
-			$groups = array();
 			$records = array();
 			$assocs = array();
 			
 			$null = new Zend_Db_Expr("NULL");
 			
 			foreach ($groupList as $group) {
-				// zapis skupiny
-				$groups[] = "(" . $adapter->quote($group->name) . ", $retVal->id)";
-				
 				// zapis prvku
 				$items = $itemIndex[$group->id];
 				$maxI = count($items);
@@ -120,11 +113,9 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 							$recordId,
 							$audit->id,
 							$retVal->id,
-							$groupId,
 							$mistakeId,
-							$adapter->quote($item["question"]),
 							Audit_Model_AuditsRecords::SCORE_NT,
-							$adapter->quote($item["weight"])
+							$adapter->quote($item["id"])
 					);
 					
 					$records[] = "(" . implode(",", $record) . ")";
@@ -154,19 +145,11 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 					$recordId++;
 					$mistakeId++;
 				}
-				
-				$groupId++;
-			}
-			
-			// zpis skupin
-			if ($groups) {
-				$sql = "insert into `$nameGroups` (name, audit_form_id) values " . implode(",", $groups);
-				$adapter->query($sql);
 			}
 			
 			// zapis zaznamu
 			if ($records) {
-				$sqlBase = "insert into $nameRecords (id, audit_id, audit_form_id, group_id, mistake_id, question, score, weight) values ";
+				$sqlBase = "insert into $nameRecords (id, audit_id, audit_form_id, mistake_id, score, question_id) values ";
 				
 				$chunks = array_chunk($records, 1000);
 				
