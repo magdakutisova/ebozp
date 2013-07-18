@@ -9,3 +9,4 @@ library/Zend
 /logs
 application/modules/document/files
 application/searchIndex
+library/My/Tcpdf/cache
