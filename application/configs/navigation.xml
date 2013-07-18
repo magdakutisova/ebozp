@@ -55,5 +55,11 @@
 				</clientimport>
 			</pages>
 		</utility>
+		<forms>
+			<label>Formuláře auditů</label>
+			<uri>/audit/form/index</uri>
+			<resource>audit:form</resource>
+			<priviledge>post</priviledge>
+		</forms>
 	</nav>
 </configdata>

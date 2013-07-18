@@ -128,6 +128,28 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->workplace = $workplace;
 		$this->view->mistakes = $mistakes;
 	}
+	
+	/**
+	 * vytvoreni nove neshody z registru neshod
+	 */
+	public function createAction() {
+		// vytvoreni formulare
+		$form = new Audit_Form_MistakeCreateAlone();
+		$form->setAction("/audit/mistake/post?clientId=" . $this->_request->getParam("clientId", 0));
+		
+		$this->_preprareCreateForm($form);
+		
+		$form->isValidPartial($this->_request->getParams());
+		
+		$this->view->form = $form;
+	}
+	
+	/*
+	 * vytvoreni neshody primo z registru z dialogu
+	 */
+	public function createHtmlAction() {
+		$this->createAction();
+	}
 
 	public function deleteAction($redirect = true) {
 		// nacteni neshody
@@ -582,6 +604,45 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->formFilter = $formFilter;
 		$this->view->mistakes = $mistakes;
 		$this->view->client = $client;
+	}
+	
+	public function postAction() {
+		// priprava dat
+		$form = new Audit_Form_MistakeCreateAlone();
+		
+		$this->_preprareCreateForm($form);
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("create");
+			return;
+		}
+		
+		$clientId = $this->_request->getParam("clientId", 0);
+		$data = $form->getValues(true);
+		$data["client_id"] = $clientId;
+		$data["is_submited"] = 1;
+		
+		// kontrola id_subsidiary
+		if (!$data["subsidiary_id"]) {
+			$data["subsidiary_id"] = null;
+		} else {
+			if (!$data["workplace_id"]) {
+				$data["workplace_id"] = null;
+			}
+		}
+		
+		// prepis datumu
+		list($day, $month, $year) = explode(". ", trim($data["notified_at"]));
+		$data["notified_at"] = "$year-$month-$day";
+		list($day, $month, $year) = explode(". ", trim($data["will_be_removed_at"]));
+		$data["will_be_removed_at"] = "$year-$month-$day";
+		
+		unset($data["record_id"]);
+		
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableMistakes->insert($data);
+		
+		$this->view->clientId = $clientId;
 	}
 
 	public function postaloneAction() {
@@ -1065,5 +1126,69 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (strlen($exploded[1]) == 1) $exploded[1] = "0" . $exploded[1];
 		
 		return $exploded[2] . "-" . $exploded[1] . "-" . $exploded[0];
+	}
+	
+	private function _preprareCreateForm($form) {
+		// modifikace formulare - pridani vyberu pobocky
+		$decorator = array(
+				'ViewHelper',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+				array('Label', array('tag' => 'td')),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+		);
+		
+		$form->addElement("select", "subsidiary_id", array(
+				"decorators" => $decorator,
+				"label" => "Pobočka",
+				"order" => 3
+		));
+		
+		// naplneni pobocek
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $this->_request->getParam("clientId", 0)), "subsidiary_name");
+		$subList = array("0" => "--OBECNÁ NESHODA--");
+		
+		foreach ($subsidiaries as $item) $subList[$item->id_subsidiary] = $item->subsidiary_name . "(" . $item->subsidiary_town . ", " . $item->subsidiary_street . ")";
+		
+		$form->getElement("subsidiary_id")->setMultiOptions($subList);
+		
+		// odstraneni skryteho pracoviste a vlozeni noveho vyberu
+		$form->removeElement("workplace_id");
+		$form->addElement("select", "workplace_id", array(
+				"decorators" => $decorator,
+				"label" => "Pracoviště",
+				"order" => 4,
+				"disabled" => true,
+				"multiOptions" => array("--OBECNÁ NESHODA--")
+		));
+		
+		// kontrola nacteni workplaces
+		$form->populate($this->_request->getParams());
+		
+		$subsidiaryId = $form->getValue("subsidiary_id");
+		
+		if ($subsidiaryId) {
+			// nacteni dat
+			$tableWorkplaces = new Application_Model_DbTable_Workplace();
+			$workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $subsidiaryId));
+			$workList = array("0" => "--OBECNÁ NESHODA--");
+			
+			foreach ($workplaces as $workplace) $workList[$workplace["id_workplace"]] = $workplace["name"];
+			
+			$element = $form->getElement("workplace_id");
+			$element->setMultiOptions($workList)->setAttrib("disabled", null);
+			$form->populate($this->_request->getParams());
+		}
+		
+		// pridani polozky "poprve zjistena"
+		$form->addElement("text", "notified_at", array(
+				"decorators" => $decorator,
+				"label" => "Poprvé zjištěna",
+				"order" => 5,
+				"multiOptions" => array("--OBECNÁ NESHODA--"),
+				"value" => Zend_Date::now()->get("dd. MM. y"),
+				"required" => true
+		));
 	}
 }

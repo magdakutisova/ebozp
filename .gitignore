@@ -8,3 +8,4 @@ library/Zend
 *.log
 /logs
 application/modules/document/files
+application/searchIndex
