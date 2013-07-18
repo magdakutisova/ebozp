@@ -158,6 +158,17 @@ class Application_Form_Subsidiary extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('select', 'insurance_company', array(
+        		'label' => 'Pojišťovna',
+        		'required' => true,
+        		'decorators' => $elementDecorator,
+        		'multiOptions' => array('Kooperativa', 'Česká pojišťovna'),
+        		'validators' => array(
+        				array('validator' => 'StringLength',
+        						'options' => array(1,45)),
+        		),
+        ));
+        
      	$username = Zend_Auth::getInstance()->getIdentity()->username;
         $users = new Application_Model_DbTable_User();
         $user = $users->getByUsername($username);

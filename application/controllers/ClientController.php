@@ -285,7 +285,7 @@ class ClientController extends Zend_Controller_Action
 					$client->setInvoiceCode($client->getHeadquartersCode());
 					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
-				$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
+				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 					
 				$clients = new Application_Model_DbTable_Client ();
 				$adapter = $clients->getAdapter();
@@ -465,6 +465,13 @@ class ClientController extends Zend_Controller_Action
 				$data['supervision_frequency'] = $subsidiary['subsidiary']->getSupervisionFrequency();
 				$data['district'] = $subsidiary['subsidiary']->getDistrict();
 				$data['difficulty'] = $subsidiary['subsidiary']->getDifficulty();
+				
+				switch ($subsidiary['subsidiary']->getInsuranceCompany()) {
+					case "Kooperativa":
+						$data['insurance_company'] = 0;
+					case "Česká pojišťovna":
+						$data['insurance_company'] = 1;
+				}
 
 				$form->populate ( $data );
 				 

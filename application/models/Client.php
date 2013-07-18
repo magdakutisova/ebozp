@@ -12,7 +12,6 @@ class Application_Model_Client{
 	protected $invoiceCode;
 	protected $invoiceTown;
 	protected $business;
-	protected $insuranceCompany;
 	protected $private;
 	protected $subsidiaries;
 	
@@ -176,20 +175,6 @@ class Application_Model_Client{
 	}
 
 	/**
-	 * @return the $insuranceCompany
-	 */
-	public function getInsuranceCompany() {
-		return $this->insuranceCompany;
-	}
-
-	/**
-	 * @param $insuranceCompany the $insuranceCompany to set
-	 */
-	public function setInsuranceCompany($insuranceCompany) {
-		$this->insuranceCompany = $insuranceCompany;
-	}
-
-	/**
 	 * @return the $private
 	 */
 	public function getPrivate() {
@@ -229,7 +214,6 @@ class Application_Model_Client{
 		$this->invoiceCode = isset($data['invoice_code']) ? $data['invoice_code'] : null;
 		$this->invoiceTown = isset($data['invoice_town']) ? $data['invoice_town'] : null;
 		$this->business = isset($data['business']) ? $data['business'] : null;
-		$this->insuranceCompany = isset($data['insurance_company']) ? $data['insurance_company'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
 		
 		return $this;
@@ -250,7 +234,6 @@ class Application_Model_Client{
 		$data['invoice_code'] = $this->invoiceCode;
 		$data['invoice_town'] = $this->invoiceTown;
 		$data['business'] = $this->business;
-		$data['insurance_company'] = $this->insuranceCompany;
 		$data['private'] = $this->private;
 		
 		return $data;
