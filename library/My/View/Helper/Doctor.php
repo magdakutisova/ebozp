@@ -7,6 +7,8 @@ class My_View_Helper_Doctor extends Zend_View_Helper_FormElement{
 		$this->html = '';
 		$idDoctor = $names = $phone = $email = '';
 		
+		$calledFrom = isset($attribs['calledFrom']) ? $attribs['calledFrom'] : null;
+		
 		if($value){
 			$idDoctor = $value['id_doctor'];
 			$names = $value['name'];
@@ -21,13 +23,24 @@ class My_View_Helper_Doctor extends Zend_View_Helper_FormElement{
 		$helperButton = new Zend_View_Helper_FormButton();
 		$helperButton->setView($this->view);
 		
-		$this->html .= '<tr id="' . $name . '">';
-		$this->html .= $helperHidden->formHidden($name . '[id_doctor]', $idDoctor);
-		$this->html .= '<td><label for="' . $name . '[name]">Jméno a příjmení</label><br/>' . $helperText->formText($name . '[name]' , $names) . '</td>';
-		$this->html .= '<td><label for="' . $name . '[phone]">Telefon</label><br/>' . $helperText->formText($name . '[phone]', $phone) . '</td>';
-		$this->html .= '<td><label for="' . $name . '[email]">Email</label><br/>' . $helperText->formText($name . '[email]', $email) . '</td>';
-		$this->html .= '<td>' . $helperButton->formButton($name . '[delete]', 'Odebrat', array('class' => 'deleteDoctor')) . '</td>';
-		$this->html .= '</tr>';
+		if($calledFrom == 'subs'){
+			$this->html .= '<tr id="' . $name . '">';
+			$this->html .= $helperHidden->formHidden($name . '[id_doctor]', $idDoctor);
+			$this->html .= '<td><label for="' . $name . '[name]">Jméno a příjmení</label><br/>' . $helperText->formText($name . '[name]' , $names) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[phone]">Telefon</label><br/>' . $helperText->formText($name . '[phone]', $phone) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[email]">Email</label><br/>' . $helperText->formText($name . '[email]', $email) . '</td>';
+			$this->html .= '<td>' . $helperButton->formButton($name . '[delete]', 'Odebrat', array('class' => 'deleteDoctor_subs')) . '</td>';
+			$this->html .= '</tr>';
+		}
+		else{
+			$this->html .= '<tr id="' . $name . '">';
+			$this->html .= $helperHidden->formHidden($name . '[id_doctor]', $idDoctor);
+			$this->html .= '<td><label for="' . $name . '[name]">Jméno a příjmení</label><br/>' . $helperText->formText($name . '[name]' , $names) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[phone]">Telefon</label><br/>' . $helperText->formText($name . '[phone]', $phone) . '</td>';
+			$this->html .= '<td><label for="' . $name . '[email]">Email</label><br/>' . $helperText->formText($name . '[email]', $email) . '</td>';
+			$this->html .= '<td>' . $helperButton->formButton($name . '[delete]', 'Odebrat', array('class' => 'deleteDoctor')) . '</td>';
+			$this->html .= '</tr>';
+		}
 
 		return $this->html;
 	}

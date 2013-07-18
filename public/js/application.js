@@ -439,6 +439,270 @@ $(function(){
 		$(this).parent().parent().remove();
 	});
 	
+	//DYNAMICKÉ VĚCI U POBOČEK!!MODIFIKACE TOHO CO JE NAD TÍMHLE
+	$("#new_contact_person_subs").click(function(){
+		ajaxAddContactPersonSubs();
+	});
+	
+	function ajaxAddContactPersonSubs(){
+		var id = $("#id_contact_person").val();
+		var clientId = $("#id_client").val();
+		var subsidiary = $("#id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/newcontactperson/format/html',
+			data: "id_contact_person=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
+			success: function(newElement){
+				$('#new_contact_person').parents('tr').before(newElement);
+				$('#id_contact_person').val(++id);
+			}
+		});
+	}
+	
+	$("#new_doctor_subs").click(function(){
+		ajaxAddDoctorSubs();
+	});
+	
+	function ajaxAddDoctorSubs(){
+		var id = $("#id_doctor").val();
+		var clientId = $("#id_client").val();
+		var subsidiary = $("#id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/newdoctor/format/html',
+			data: "id_doctor=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
+			success: function(newElement){
+				$('#new_doctor').parents('tr').before(newElement);
+				$('#id_doctor').val(++id);
+			}
+		});
+	}
+	
+	$("#new_responsible_subs").click(function(){
+		ajaxAddResponsibleSubs();
+	});
+	
+	function ajaxAddResponsibleSubs(){
+		var id = $("#id_responsible").val();
+		var clientId = $("#id_client").val();
+		var subsidiary = $("#id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/newresponsible/format/html',
+			data: "id_responsible=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
+			success: function(newElement){
+				$('#new_responsible').parents('tr').before(newElement);
+				$('#id_responsible').val(++id);
+			}
+		});
+	}
+	
+	//přidávání odpovědnosti
+	var validatorResponsibility = $('#responsibility').validate({
+		rules: {
+			responsibility: {
+				required: true
+			},
+		},
+		messages: {
+			responsibility: "Uveďte název nové odpovědnosti.",
+		}
+	});
+	
+	$('form').on('click', '#new_responsibility_subs', function(){
+		$('#new_responsibility_form input[type=text]').val('');
+		validatorResponsibility.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsibility_form #rowId').val(rowId);
+		$('#new_responsibility_form').dialog('open');
+	});
+	
+	$('#new_responsibility_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte název nové odpovědnosti',
+	});
+	
+	$('#save_responsibility_subs').click(function(){
+		ajaxSaveResponsibilitySubs();
+		ajaxPopulateResponsibilitySelectSubs();
+	});
+	
+	function ajaxSaveResponsibilitySubs(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/addresponsibility/format/html',
+			data: $("#responsibility").serializeArray(),
+			async: false,
+			success: function(){
+				$('#new_responsibility_form').dialog("close");
+			}
+		});
+	}
+	
+	function ajaxPopulateResponsibilitySelectSubs(){
+		var clientId = $("id_client").val();
+		var subsidiary = $("id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/subsidiary/populateresponsibility',
+			data: 'clientId=' + clientId + ((subsidiary != undefined) ? '&subsidiary=' + subsidiary : undefined),
+			async: false,
+			success: function(json){
+				var rowId = $('#new_responsibility_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_responsibility"]');
+				elSelected.empty();
+				var el = $("select[id*='id_responsibility']:not([id*='" + rowId + "'])");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						elSelected.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
+	}
+	
+	//přidávání odpovědného zaměstnance
+	var validatorResponsibleEmployee = $('#responsible_employee').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
+	
+	$('form').on('click', '#new_responsible_employee_subs', function(){
+		$('#new_responsible_employee_form input[type=text]').val('');
+		validatorResponsibleEmployee.resetForm();
+		var rowId = $(this).parent().parent().attr("id");
+		$('#new_responsible_employee_form #rowId').val(rowId);
+		$('#new_responsible_employee_form').dialog('open');
+	});
+	
+	$('#new_responsible_employee_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového zaměstnance',
+	});
+	
+	$('#save_responsible_employee_subs').click(function(){
+		ajaxSaveResponsibleEmployeeSubs();
+		ajaxPopulateResponsibleEmployeeSelectSubs();
+	});
+	
+	function ajaxSaveResponsibleEmployeeSubs(){
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/addresponsibleemployee/format/html',
+			data: $("#responsible_employee").serializeArray(),
+			async: false,
+			success: function(){
+				$('#new_responsible_employee_form').dialog("close");
+			}
+		});
+	}
+	
+	function ajaxPopulateResponsibleEmployeeSelectSubs(){
+		var clientId = $("id_client").val();
+		var subsidiary = $("id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: baseUrl + '/subsidiary/populateresponsibleemployee',
+			data: 'clientId=' + clientId + ((subsidiary != undefined) ? '&subsidiary=' + subsidiary : undefined),
+			async: false,
+			success: function(json){
+				var rowId = $('#new_responsible_employee_form #rowId').val();
+				var elSelected = $('select[id="' + rowId + '-id_employee"]');
+				elSelected.empty();
+				var el = $("select[id*='id_employee']:not([id*='" + rowId + "'])");
+				var vals = [];
+				var i = 0;
+				el.children("option").each(function(){
+					vals[i++] = $(this).val();
+				});
+				$.each(json, function(key, value){
+					if($.inArray(key, vals) != -1){
+						elSelected.append($("<option></option>").attr("value", key).text(value));
+					}
+					else{
+						el.append($("<option></option>").attr("value", key).text(value));
+						elSelected.append($("<option></option>").attr("value", key).attr("selected", "selected").text(value));
+					}
+				});
+			}
+		});
+	}
+	
+	//odebrání kontaktní osoby
+	$("form").on("click", ".deleteContactPerson_subs", function(){
+		var idContactPerson = $(this).parent('td').siblings().filter(":first").val();
+		
+		ajaxRemoveContactPersonSubs(idContactPerson);
+		removeContactPerson(this);
+	});
+	
+	function ajaxRemoveContactPersonSubs(idContactPerson){
+		var clientId = $("#id_client").val();
+		var subsidiary = $("#id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/removecontactperson/format/html',
+			data: "clientId=" + clientId + "&idContactPerson=" + idContactPerson + "&subsidiary=" + subsidiary,
+			success:function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	//odebrání lékaře
+	$("form").on("click", ".deleteDoctor_subs", function(){
+		var idDoctor = $(this).parent('td').siblings().filter(":first").val();
+		
+		ajaxRemoveDoctorSubs(idDoctor);
+		removeDoctor(this);
+	});
+	
+	function ajaxRemoveDoctorSubs(idDoctor){
+		var clientId = $("#id_client").val();
+		var subsidiary = $("#id_subsidiary").val();
+		$.ajax({
+			type: "POST",
+			url: baseUrl + '/subsidiary/removedoctor/format/html',
+			data: "clientId=" + clientId + "&idDoctor=" + idDoctor + "&subsidiary=" + subsidiary,
+			success: function(){
+				console.log("OK");
+			}
+		});
+	}
+	
+	//DYNAMICKÉ VĚCI POBOČEK - KONEC!!
+	
 	//zaškrtnutí všech poboček - pracovní pozice	
 	$("form#position").on("click", "#subsidiariesAll", function(){
 		var checkboxes = $(".multiCheckboxSubsidiaries").find(':checkbox');

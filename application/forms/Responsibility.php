@@ -49,7 +49,7 @@ class Application_Form_Responsibility extends Zend_Form{
 				'label' => 'Uložit odpovědnost',
 				));
 		
-		$this->addElement('hidden', 'id_client', array());
+		$this->addElement('hidden', 'clientId', array());
 	}
 	
 }

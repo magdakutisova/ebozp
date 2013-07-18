@@ -181,6 +181,42 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $headquarters;
 	}
 	
+	public function getSubsidiaryWithDetails($subsidiaryId){
+		$subsidiary = array();
+		$subsidiary['subsidiary'] = $this->getSubsidiary($subsidiaryId);
+	
+		$contactPersons = $this->select()->from('contact_person')
+			->where('subsidiary_id = ?', $subsidiaryId);
+		$contactPersonsResult = $this->fetchAll($contactPersons);
+	
+		$doctors = $this->select()->from('doctor')
+			->where('subsidiary_id = ?', $subsidiaryId);
+		$doctorsResult = $this->fetchAll($doctors);
+	
+		$responsibles = $this->select()->from('responsible')
+			->joinLeft('responsibility', 'responsible.id_responsibility = responsibility.id_responsibility')
+			->joinLeft('employee', 'responsible.id_employee = employee.id_employee')
+			->where('id_subsidiary = ?', $subsidiaryId);
+		$responsibles->setIntegrityCheck(false);
+		$responsiblesResult = $this->fetchAll($responsibles);
+	
+		foreach($contactPersonsResult as $contactPerson){
+			$subsidiary['contact_persons'][] = new Application_Model_ContactPerson($contactPerson->toArray());
+		}
+		foreach($doctorsResult as $doctor){
+			$subsidiary['doctors'][] = new Application_Model_Doctor($doctor->toArray());
+		}
+		$i = 0;
+		foreach($responsiblesResult as $responsible){
+			$subsidiary['responsibles'][$i]['id_responsibility'] = $responsible->id_responsibility;
+			$subsidiary['responsibles'][$i]['responsibility'] = $responsible->responsibility;
+			$subsidiary['responsibles'][$i]['employee'] = new Application_Model_Employee($responsible->toArray());
+			$i++;
+		}
+	
+		return $subsidiary;
+	}
+	
 	public function getByTown() {
 		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq' ) )->where ( 'deleted = 0' )->order ( array('subsidiary_town', 'subsidiary_name') );
 		$result = $this->fetchAll ( $select );
