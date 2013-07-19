@@ -515,7 +515,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$data = $this->_getAllParams();
 		$responsibility = new Application_Model_Responsibility($data);
-		$responsibility->setClientId($this->getParam('clientId'));
+		$responsibility->setClientId($data['clientId']);
 		$responsibilities = new Application_Model_DbTable_Responsibility();
 		$responsibilities->addResponsibility($responsibility);
 	}

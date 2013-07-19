@@ -43,6 +43,15 @@ $(function(){
 	
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
 	var validatorPosition = $('#position').validate({
+		invalidHandler: function(form, validator){
+			var errors = validator.numberOfInvalids();
+			if(errors){
+				$("#error-message").show().text("Pracovní pozice nebyla uložena. Formulář obsahuje " + errors + " neplatných polí");
+				$("html, body").animate({scrollTop: 0}, "fast");
+			} else {
+				$("#error-message").hide();
+			}
+		},
 		rules: {
 			"subsidiaryListError": {
 				required: function(element){
@@ -249,6 +258,15 @@ $(function(){
 	
 	//PŘIDÁVÁNÍ PRACOVIŠTĚ
 	var validatorWorkplace = $('#workplace').validate({
+		invalidHandler: function(form, validator){
+			var errors = validator.numberOfInvalids();
+			if(errors){
+				$("#error-message").show().text("Pracoviště nebylo uloženo. Formulář obsahuje " + errors + " neplatných polí");
+				$("html, body").animate({scrollTop: 0}, "fast");
+			} else {
+				$("#error-message").hide();
+			}
+		},
 		rules: {
 			name: {
 				required: true,
