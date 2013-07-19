@@ -233,6 +233,16 @@ class ClientController extends Zend_Controller_Action
 				$this->view->subsidiaries = $subsidiaries;
 				$this->renderScript ( 'client/list.phtml' );
 				break;
+			case "abeceda":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+				$subsidiaries = $subsidiariesDb->getByClient();
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript('client/alphabet.phtml');
+				break;
 			default:
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 

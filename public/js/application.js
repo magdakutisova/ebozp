@@ -57,6 +57,11 @@ $(function(){
 		$("#filtered").load("./klienti/nazev/ #filtered");
 	});
 	
+	$(".alphabet").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./klienti/abeceda/ #filtered");
+	});
+	
 	$(".technician").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/bt/ #filtered");
