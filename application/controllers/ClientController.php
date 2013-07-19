@@ -278,13 +278,13 @@ class ClientController extends Zend_Controller_Action
 				$subsidiary = new Application_Model_Subsidiary($formData);
 				//checkbox zda je adresa fakturační stejná jako adresa sídla
 				$invoiceAddress = $form->getValue('invoice_address');
-				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
-
 				if($invoiceAddress){
 					$client->setInvoiceStreet($client->getHeadquartersStreet());
 					$client->setInvoiceCode($client->getHeadquartersCode());
 					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
+				
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 					
 				$clients = new Application_Model_DbTable_Client ();
@@ -747,8 +747,9 @@ class ClientController extends Zend_Controller_Action
 		$this->_helper->layout->disableLayout();
 		$clientId = $this->getRequest()->getParam('clientId', null);
 		 
+		$this->_employeeList[0] = '-----';
 		$employees = new Application_Model_DbTable_Employee();
-		$this->_employeeList = $employees->getResponsibleEmployees($clientId);
+		$this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($clientId);
 		 
 		echo Zend_Json::encode($this->_employeeList);
 	}

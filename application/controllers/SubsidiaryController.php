@@ -12,7 +12,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->title = 'Správa poboček';
 		$this->view->headTitle ( $this->view->title );
 		$action = $this->getRequest()->getActionName();
-		if($action == 'populateresponsibility'){
+		if($action == 'populateresponsibility' || $action == 'populateresponsibleemployee'){
 			$this->_helper->layout()->setLayout('layout');
 		}
 		else{
@@ -37,7 +37,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 			$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 		}
 		
-		$action = $this->getRequest()->getActionName();
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
@@ -52,9 +51,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 			}
 		}
 		
-		if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
+		if($action != 'populateresponsibility' && $action != 'populateresponsibleemployee'){
+			if($this->_acl->isAllowed($this->_user, $subsidiaries->getHeadquarters($this->_getParam('clientId')))){
 				$this->_canViewHeadquarters = true;
-		}
+			}
+		}		
 		
 		//do new a delete action může jen když má přístup k centrále
 		if ($action == 'new' || $action == 'delete'){
@@ -87,7 +88,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
 		
 		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
-		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());
+		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary['subsidiary']->getIdSubsidiary());
 		
 		//bezpečnostní deník
 		$diary = new Application_Model_DbTable_Diary();
@@ -151,11 +152,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$form->id_client->setValue($clientId);
 		
 		$formResponsibility = new Application_Form_Responsibility();
-		$formResponsibility->getElement('save_responsibility')->setName('set_responsibility_subs');
+		$formResponsibility->getElement('save_responsibility')->setName('save_responsibility_subs');
 		$formResponsibility->clientId->setValue($clientId);
 		$this->view->formResponsibility = $formResponsibility;
 		$formEmployee = new Application_Form_ResponsibleEmployee();
-		$formEmployee->getElement('save_responsible_employee')->setName('set_responsible_employee_subs');
+		$formEmployee->getElement('save_responsible_employee')->setName('save_responsible_employee_subs');
 		$formEmployee->clientId->setValue($clientId);
 		$this->view->formEmployee = $formEmployee;
 		
@@ -175,6 +176,8 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiary->setClientId($clientId);
 				$subsidiary->setHq(0);
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$adapter = $subsidiaries->getAdapter();
@@ -247,7 +250,10 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$form->save->setLabel ( 'Uložit' );
 		
 		$form = $this->fillMultiselects($form);
-		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->employeeList);
+		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->_employeeList);
+		$form->removeElement('contactPerson101');
+		$form->removeElement('doctor201');
+		$form->removeElement('responsibility301');
 		
 		$form->removeElement ( 'other' );
 		$this->view->form = $form;
@@ -257,11 +263,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$form->id_client->setValue($clientId);
 		
 		$formResponsibility = new Application_Form_Responsibility();
-		$formResponsibility->getElement('save_responsibility')->setName('set_responsibility_subs');
+		$formResponsibility->getElement('save_responsibility')->setName('save_responsibility_subs');
 		$formResponsibility->clientId->setValue($clientId);
 		$this->view->formResponsibility = $formResponsibility;
 		$formEmployee = new Application_Form_ResponsibleEmployee();
-		$formEmployee->getElement('save_responsible_employee')->setName('set_responsible_employee_subs');
+		$formEmployee->getElement('save_responsible_employee')->setName('save_responsible_employee_subs');
 		$formEmployee->clientId->setValue($clientId);
 		$this->view->formEmployee = $formEmployee;
 		
@@ -277,6 +283,8 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiary->setHq(0);
 				$subsidiary->setClientId($clientId);
+				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
+				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
 				$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 				$adapter = $subsidiaries->getAdapter();
@@ -374,9 +382,9 @@ class SubsidiaryController extends Zend_Controller_Action {
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
 			$subsidiary = $subsidiaries->getSubsidiaryWithDetails ( $subsidiaryId );
 					
-			$form->populate ( $subsidiary['subsidiary'] );
+			$form->populate ( $subsidiary['subsidiary']->toArray());
 			
-			if($subsidiary['contact_persons'][0]->getIdContactPerson() != null){
+			if(isset($subsidiary['contact_persons'])){
 				$cpOrder = $form->getElement('id_contact_person')->getValue();
 				foreach($subsidiary['contact_persons'] as $contactPerson){
 					$form->addElement('contactPerson', 'newContactPerson' . $cpOrder, array(
@@ -390,7 +398,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$form->getElement('id_contact_person')->setValue($cpOrder);
 			}
 			
-			if($subsidiary['doctors'][0]->getIdDoctor() != null){
+			if(isset($subsidiary['doctors'])){
 				$dOrder = $form->getElement('id_doctor')->getValue();
 				foreach($subsidiary['doctors'] as $doctor){
 					$form->addElement('doctor', 'newDoctor' . $dOrder, array(
@@ -404,7 +412,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 				$form->getElement('id_doctor')->setValue($dOrder);
 			}
 			
-			if($subsidiary['responsibles'][0]['responsibility'] != null){
+			if(isset($subsidiary['responsibles'])){
 				$rOrder = $form->getElement('id_responsible')->getValue();
 				foreach($subsidiary['responsibles'] as $responsible){
 					$form->addElement('responsibility', 'newResponsibility' . $rOrder, array(
@@ -520,7 +528,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$clientId = $this->getRequest()->getParam('clientId', null);
 		
 		$responsibilities = new Application_Model_DbTable_Responsibility();
-		$extraResponsibilites = $responsibilities->getExtraResponsibilities($clientId);
+		$extraResponsibilities = $responsibilities->getExtraResponsibilities($clientId);
 		$this->_responsibilityList = $this->_responsibilityList + $extraResponsibilities;
 		
 		echo Zend_Json::encode($this->_responsibilityList);
@@ -534,6 +542,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		$data = $this->_getAllParams();
 		$employee = new Application_Model_Employee($data);
+		$employee->setClientId($data['clientId']);
 		$employees = new Application_Model_DbTable_Employee();
 		$employees->addEmployee($employee);
 	}
@@ -543,10 +552,30 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->_helper->layout->disableLayout();
 		$clientId = $this->getRequest()->getParam('clientId', null);
 		
+		$this->_employeeList = array();
+		$this->_employeeList[0] = '-----';
 		$employees = new Application_Model_DbTable_Employee();
-		$this->_employeeList = $employees->getResponsibleEmployees($clientId);
+		$this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($clientId);
 		
 		echo Zend_Json::encode($this->_employeeList);
+	}
+	
+	public function removecontactpersonAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idContactPerson = $this->getRequest()->getParam('idContactPerson');
+	
+		$contactPersons = new Application_Model_DbTable_ContactPerson();
+		$contactPersons->deleteContactPerson($idContactPerson);
+	}
+	
+	public function removedoctorAction(){
+		$this->_helper->viewRenderer->setNoRender(true);
+		$this->_helper->layout->disableLayout();
+		$idDoctor = $this->getRequest()->getParam('idDoctor');
+	
+		$doctors = new Application_Model_DbTable_Doctor();
+		$doctors->deleteDoctor($idDoctor);
 	}
 	
 	private function fillMultiselects($form){

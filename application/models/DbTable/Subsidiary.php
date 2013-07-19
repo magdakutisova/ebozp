@@ -187,10 +187,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 		$contactPersons = $this->select()->from('contact_person')
 			->where('subsidiary_id = ?', $subsidiaryId);
+		$contactPersons->setIntegrityCheck(false);
 		$contactPersonsResult = $this->fetchAll($contactPersons);
 	
 		$doctors = $this->select()->from('doctor')
 			->where('subsidiary_id = ?', $subsidiaryId);
+		$doctors->setIntegrityCheck(false);
 		$doctorsResult = $this->fetchAll($doctors);
 	
 		$responsibles = $this->select()->from('responsible')
