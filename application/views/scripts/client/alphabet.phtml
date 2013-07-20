@@ -22,7 +22,13 @@ foreach ($this->subsidiaries as $subsidiary) :
 		$list .= '</ul>';		
 		$firstLetter = ucfirst(mb_substr($subsidiary->getSubsidiaryName(), 0, 1, 'utf-8'));
 		if ($firstLetter != $initial){
-			$initial = $firstLetter;
+			if($firstLetter == 'C' && $initial != '' && $initial != 'A' && $initial != 'B'){
+				$initial = 'Ch';
+			} else if ($firstLetter == 'C' && $initial == 'Ch') {
+				;
+			} else {
+				$initial = $firstLetter;
+			}
 			$alphabet .= '<a href="#' . $initial . '">' . $initial . '</a> ';
 			$list .= '<a class="letter" name="' . $initial . '">' . $initial . '</a>';
 		}
