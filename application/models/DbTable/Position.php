@@ -3,6 +3,19 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	
 	protected $_name = 'position';
 	
+	protected $_referenceMap = array(
+			'Subsidiary' => array(
+					'columns' => 'subsidiary_id',
+					'refTableClass' => 'Application_Model_DbTable_Subsidiary',
+					'refColumns' => 'id_subsidiary',
+			),
+			'Client' => array(
+					'columns' => 'client_id',
+					'refTableClass' => 'Application_Model_DbTable_Client',
+					'refColumns' => 'id_client',
+			),
+	);
+	
 	public function getPosition($id){
 		$id = (int)$id;
 		$row = $this->fetchRow('id_position = ' . $id);
@@ -86,10 +99,9 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		if(!$incomplete){
 			$select = $this->select()
 				->from('position')
-				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
-				->where('id_subsidiary = ?', $subsidiaryId)
+				->where('subsidiary_id = ?', $subsidiaryId)
 				->order('position.position');
-			$select->setIntegrityCheck(false);
+			//$select->setIntegrityCheck(false);
 			$result = $this->fetchAll($select);
 		}
 		else{
@@ -100,8 +112,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 			$subSelect->setIntegrityCheck(false);
 			$select = $this->select()
 				->from('position')
-				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
-				->where('subsidiary_has_position.id_subsidiary = ?', $subsidiaryId)
+				->where('subsidiary_id = ?', $subsidiaryId)
 				->where('position.working_hours IS NULL OR position.id_position NOT IN(' . $subSelect . ')')
 				->order('position.position');
 			$select->setIntegrityCheck(false);
