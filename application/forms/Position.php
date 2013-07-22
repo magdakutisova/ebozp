@@ -125,7 +125,7 @@ class Application_Form_Position extends Zend_Form{
        			'order' => 5,
        			'filters' => array('StringTrim', 'StripTags'),
        			'decorators' => $elementDecoratorColspanSeparator,
-       			'required' => true,
+       			//'required' => true,
        			'description' => $questionMarkStart . 'Uveďte údaj uvedený v pracovní smlouvě' . $questionMarkEnd,
        	));
        	$this->getElement('working_hours')->getDecorator('Description')->setEscape(false);

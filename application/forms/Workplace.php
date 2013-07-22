@@ -108,7 +108,7 @@ class Application_Form_Workplace extends Zend_Form
        	
        	$this->addElement('text', 'business_hours', array(
        		'label' => 'Provozní doba pracoviště',
-       		'required' => true,
+       		//'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 3,
@@ -118,7 +118,7 @@ class Application_Form_Workplace extends Zend_Form
        	
        	$this->addElement('textarea', 'description', array(
        		'label' => 'Popis pracoviště',
-       		'required' => true,
+       		//'required' => true,
        		'filters' => array('StringTrim', 'StripTags'),
        		'decorators' => $elementDecoratorColspan,
        		'order' => 4,

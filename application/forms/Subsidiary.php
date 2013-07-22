@@ -71,7 +71,7 @@ class Application_Form_Subsidiary extends Zend_Form
         
         $this->addElement('text', 'subsidiary_street', array(
         	'label' => 'Ulice a č. p.',
-        	'required' => true,
+        	//'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
         		'validators' => array(
@@ -83,7 +83,7 @@ class Application_Form_Subsidiary extends Zend_Form
         
         $this->addElement('text', 'subsidiary_code', array(
         	'label' => 'PSČ',
-        	'required' => true,
+        	//'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
         		new Zend_Validate_PostCode('cs_CZ')),
@@ -93,7 +93,7 @@ class Application_Form_Subsidiary extends Zend_Form
         
         $this->addElement('text', 'subsidiary_town', array(
         	'label' => 'Obec',
-        	'required' => true,
+        	//'required' => true,
         	'filters' => array('StripTags', 'StringTrim'),
         	'decorators' => $elementDecorator,
         		'validators' => array(
