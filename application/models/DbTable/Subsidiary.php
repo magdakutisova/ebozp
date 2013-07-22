@@ -85,7 +85,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	 */
 	public function getSubsidiaries($clientId = 0, $userId = 0, $hq = 0) {
 		if ($clientId != 0 && $hq == 0){
-			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' )->order('subsidiary_town');
 		}
 		elseif ($clientId != 0 && $hq == 1){
 			$select = $this->select()->from('subsidiary')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('client_id = ?', $clientId)->where('deleted = 0')->order('hq DESC');

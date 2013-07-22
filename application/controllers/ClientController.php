@@ -479,8 +479,10 @@ class ClientController extends Zend_Controller_Action
 				switch ($subsidiary['subsidiary']->getInsuranceCompany()) {
 					case "Kooperativa":
 						$data['insurance_company'] = 0;
+						break;
 					case "Česká pojišťovna":
 						$data['insurance_company'] = 1;
+						break;
 				}
 
 				$form->populate ( $data );
@@ -548,7 +550,7 @@ class ClientController extends Zend_Controller_Action
 			$client->setInvoiceCode($client->getInvoiceCode());
 		}
 		$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
-		$client->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
+		$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 		 
 		$clients = new Application_Model_DbTable_Client ();
 		$adapter = $clients->getAdapter();
