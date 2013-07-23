@@ -27,28 +27,15 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	}
 	
 	public function addPosition(Application_Model_Position $position){
-		$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
-		if(!$existingPosition){
-			$data = $position->toArray();
-			$positionId = $this->insert($data);
-			return $positionId;
-		}
-		return false;		
+		$data = $position->toArray();
+		$positionId = $this->insert($data);
+		return $positionId;		
 	}
 	
 	public function updatePosition(Application_Model_Position $position, $differentName = false){
 		$data = $position->toArray();
-		if($differentName){
-			$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
-		}
-		else{
-			$existingPosition = false;
-		}
-		if(!$existingPosition){
-			$this->update($data, 'id_position = ' . $position->getIdPosition());
-			return true;
-		}
-		return false;
+		$this->update($data, 'id_position = ' . $position->getIdPosition());
+		return true;
 	}
 	
 	public function deletePosition($id){

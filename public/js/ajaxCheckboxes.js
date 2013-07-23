@@ -65,24 +65,9 @@ $(function(){
 			},
 			position: {
 				required: true,
-				remote: {
-					url: baseUrl + "/position/validate",
-					type: "post",
-					data:{
-						position: function(){
-							return $('input#position').val();
-						},
-						clientId: function(){
-							return $('#client_id').val();
-						},
-						positionId: function(){
-							return $('#id_position').val();
-						}
-					}
-				}
 			},
 			working_hours: {
-				required: true
+				//required: true
 			},
 		},
 		messages: {
@@ -91,9 +76,8 @@ $(function(){
 			},
 			position: {
 				required: "Uveďte název pracovní pozice.",
-				remote: "Klient již má pracovní pozici s tímto názvem, zvolte jiný."
 			},
-			working_hours: "Uveďte pracovní dobu.",
+			//working_hours: "Uveďte pracovní dobu.",
 		}
 	});
 	
@@ -287,10 +271,10 @@ $(function(){
 				}
 			},
 			business_hours: {
-				required: true
+				//required: true
 			},
 			description: {
-				required: true
+				//required: true
 			},
 			boss_email: {
 				email: true
@@ -301,8 +285,8 @@ $(function(){
 				required: "Uveďte jméno pracoviště.",
 				remote: "Klient již má pracoviště s tímto názvem, zvolte jiný."
 			},
-			business_hours: "Uveďte pracovní dobu.",
-			description: "Uveďte popis pracoviště.",
+			//business_hours: "Uveďte pracovní dobu.",
+			//description: "Uveďte popis pracoviště.",
 			boss_email: "Uveďte platnou emailovou adresu.",
 		}
 	});

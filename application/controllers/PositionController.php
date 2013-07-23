@@ -221,19 +221,20 @@ class PositionController extends Zend_Controller_Action
     		//vložení pracovní pozice
     		$position = new Application_Model_Position($formData);
     		$position->setClientId($this->_clientId);
-    		$positionId = $positions->addPosition($position);
-    		if(!$positionId){
-    			$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
-    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+    		$positionIds = array();
+    		foreach($formData['subsidiaryList'] as $subs){
+    			$position->setSubsidiaryId($subs);
+    			$positionIds[] = $positions->addPosition($position);
     		}
     		
-    		$this->_helper->positionRelationships($formData, $positionId);
+    		$this->_helper->positionRelationships($formData, $positionIds);
     		
     		//uložení transakce
     		$adapter->commit();
-    		foreach($formData['subsidiaryList'] as $subs){
-    			$subsidiary = $subsidiaries->getSubsidiary($subs);
-    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    		foreach($positionIds as $positionId){
+    			$position = $positions->getPosition($positionId);
+    			$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
+    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     		}
     		$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' přidána.');
     		unset($defaultNamespace->form);
@@ -324,29 +325,6 @@ class PositionController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_workplaceList);
     }
        
-    public function validateAction(){
-    	$this->_helper->viewRenderer->setNoRender(true);
-    	$this->_helper->layout->disableLayout();
-    	$positions = new Application_Model_DbTable_Position();
-    	if($positions->existsPosition($this->getRequest()->getParam('position'), $this->getRequest()->getParam('clientId'))){
-    		if($this->getRequest()->getParam('positionId')){
-    			$position = $positions->getPosition($this->getRequest()->getParam('positionId'));
-    			if($position->getPosition() == $this->getRequest()->getParam('position')){
-    				echo Zend_Json::encode(true);
-    			}
-    			else{
-    				echo Zend_Json::encode(false);
-    			}
-    		}
-    		else{
-    			echo Zend_Json::encode(false);
-    		}
-    	}
-    	else{
-    		echo Zend_Json::encode(true);
-    	}
-    }
-
     public function environmentfactordetailAction()
     {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
