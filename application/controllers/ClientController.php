@@ -105,6 +105,7 @@ class ClientController extends Zend_Controller_Action
 		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
 		$this->view->subsidiary = $headquarters;
+		$this->view->archived = $client->getArchived();
 
 		$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
 		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary->getIdSubsidiary());
@@ -160,6 +161,7 @@ class ClientController extends Zend_Controller_Action
 	public function listAction()
 	{
 		$this->view->subtitle = 'Výběr klienta';
+		$this->view->archived = 0;
 
 		//nastavení pro ajax
 		if ($this->getRequest ()->isXmlHttpRequest ()) {
@@ -676,6 +678,145 @@ class ClientController extends Zend_Controller_Action
 			throw new Zend_Controller_Action_Exception ( 'Nekorektní pokus o smazání klienta.', 500 );
 		}
 
+	}
+	
+	public function archiveAction(){
+		if($this->getRequest()->getMethod() == 'POST'){
+			$clientId = $this->_getParam('clientId');
+			$clients = new Application_Model_DbTable_Client();
+			$client = $clients->getClient($clientId);
+			$subsidiaries = new Application_Model_DbTable_Subsidiary();
+			$subsidiary = $subsidiaries->getHeadquarters($clientId);
+			$companyName = $client->getCompanyName();
+			$subsidiaryId = $subsidiary->getIdSubsidiary();
+			$client->setArchived(1);
+			$clients->updateClient($client);
+			
+			$this->_helper->diaryRecord($this->_username, 'archivoval klienta', null, null, $companyName, $subsidiaryId);
+			$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl přesunut do archivu');
+			$this->_helper->redirector->gotoRoute(array(), 'clientList');
+		}
+		else{
+			throw new Zend_Controller_Action_Exception('Nekorektní pokus o archivaci klienta.', 500);
+		}
+	}
+	
+	public function recoverAction(){
+		$clientId = $this->_getParam('clientId');
+		$clients = new Application_Model_DbTable_Client();
+		$client = $clients->getClient($clientId);
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiary = $subsidiaries->getHeadquarters($clientId);
+		$companyName = $client->getCompanyName();
+		$subsidiaryId = $subsidiary->getIdSubsidiary();
+		$client->setArchived(0);
+		$clients->updateClient($client);
+		
+		$this->_helper->diaryRecord($this->_username, 'obnovil z archivu klienta', null, null, $companyName, $subsidiaryId);
+		$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl obnoven z archivu');
+		$this->_helper->redirector->gotoRoute(array(), 'clientList');
+	}
+	
+	public function archivelistAction(){
+		$this->view->subtitle = 'Archiv klientů';
+		$this->view->archived = 1;
+		
+		//nastavení pro ajax
+		if ($this->getRequest ()->isXmlHttpRequest ()) {
+			$this->_helper->layout->disableLayout ();
+			$this->_helper->viewRenderer->setNoRender ( true );
+		}
+		$ajaxContext = $this->_helper->getHelper ( 'AjaxContext' );
+		$ajaxContext->addActionContext ( 'list', 'html' )->initContext ();
+		
+		$this->_helper->layout()->setLayout('layout');
+		
+		$mode = $this->_getParam ( 'mode' );
+			
+		switch($mode){
+			case "bt":
+			case "koo":
+				$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
+		
+				if ($mode == "bt"){
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_TECHNICIAN, 1);
+				}
+				else{
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_COORDINATOR, 1);
+				}
+		
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary['subsidiary']->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary['subsidiary']));
+				}
+		
+				$this->view->subsidiaries = $subsidiaries;
+		
+				$this->renderScript ( 'client/assigned.phtml' );
+				break;
+			case "obec":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+		
+				$subsidiaries = $subsidiariesDb->getByTown (1);
+		
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+		
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript ( 'client/town.phtml' );
+				break;
+			case "okres":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+		
+				$subsidiaries = $subsidiariesDb->getByDistrict(1);
+		
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+		
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript('client/district.phtml');
+				break;
+			case "naposledy":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+		
+				$subsidiaries = $subsidiariesDb->getLastOpen (1);
+		
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+		
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript ( 'client/list.phtml' );
+				break;
+			case "abeceda":
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
+				$subsidiaries = $subsidiariesDb->getByClient(1);
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript('client/alphabet.phtml');
+				break;
+			default:
+				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
+		
+				$subsidiaries = $subsidiariesDb->getByClient (1);
+		
+				//kontrola jestli user má přístup
+				foreach($subsidiaries as $subsidiary){
+					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				}
+		
+				$this->view->subsidiaries = $subsidiaries;
+				$this->renderScript ( 'client/list.phtml' );
+				break;
+		}
 	}
 
 	public function newcontactpersonAction(){

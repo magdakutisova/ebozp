@@ -72,6 +72,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$clients->openClient ( $clientId );
 		
 		$client = $clients->getClient($clientId);
+		$this->view->archived = $client->getArchived();
 		
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();		
 		

@@ -69,7 +69,8 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 			//když ičo není zadáno - výhradně import klientů, nikoli zadání z formuláře
 			$data = $client->toArray();
 			$clientId = $this->insert ( $data );
-				
+			$client->setIdClient($clientId);
+			
 			//indexace pro vyhledávání
 			$index = $this->getSearchIndex();
 			$document = $this->composeDocument($client);
@@ -82,41 +83,58 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 	}
 	
 	public function updateClient(Application_Model_Client $client) {
-		$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
-		if(!($companyNumberRow) || $client->getCompanyNumber() == $this->getCompanyNumber($client->getIdClient())){
-			$this->getClient($client->getIdClient());
-			$data = $client->toArray();
-			$this->update ( $data, 'id_client = ' . $client->getIdClient() );
-		
-			//indexace pro vyhledávání
-			$index = $this->getSearchIndex();
-			$companyNumber = $client->getCompanyNumber();
-			$this->removeClientFromSearchIndex($index, $companyNumber);
-			$document = $this->composeDocument($client);
-			$index->addDocument ( $document );
-			$index->commit ();
-			$index->optimize ();
-			return true;
-		}
-		elseif ($companyNumberRow->deleted == "1"){
-			$companyNumber = $companyNumberRow->company_number;
-			$this->delete(array('company_number = ?', $companyNumber));
-			$this->getClient($client->getIdClient());
-			$data = $client->toArray();
-			$this->update ( $data, 'id_client = ' . $client->getIdClient() );
-		
-			//indexace pro vyhledávání
-			$index = $this->getSearchIndex();
-			$companyNumber = $client->getCompanyNumber();
-			$this->removeClientFromSearchIndex($index, $companyNumber);
-			$document = $this->composeDocument($client);
-			$index->addDocument ( $document );
-			$index->commit ();
-			$index->optimize ();
-			return true;
+		if($client->getCompanyNumber()){
+			$companyNumberRow = $this->existsCompanyNumber($client->getCompanyNumber());
+			if(!($companyNumberRow) || $client->getCompanyNumber() == $this->getCompanyNumber($client->getIdClient())){
+				$this->getClient($client->getIdClient());
+				$data = $client->toArray();
+				$this->update ( $data, 'id_client = ' . $client->getIdClient() );
+			
+				//indexace pro vyhledávání
+				$index = $this->getSearchIndex();
+				$companyNumber = $client->getCompanyNumber();
+				$this->removeClientFromSearchIndex($index, $companyNumber);
+				$document = $this->composeDocument($client);
+				$index->addDocument ( $document );
+				$index->commit ();
+				$index->optimize ();
+				return true;
+			}
+			elseif ($companyNumberRow->deleted == "1"){
+				$companyNumber = $companyNumberRow->company_number;
+				$this->delete(array('company_number = ?', $companyNumber));
+				$this->getClient($client->getIdClient());
+				$data = $client->toArray();
+				$this->update ( $data, 'id_client = ' . $client->getIdClient() );
+			
+				//indexace pro vyhledávání
+				$index = $this->getSearchIndex();
+				$companyNumber = $client->getCompanyNumber();
+				$this->removeClientFromSearchIndex($index, $companyNumber);
+				$document = $this->composeDocument($client);
+				$index->addDocument ( $document );
+				$index->commit ();
+				$index->optimize ();
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
-			return false;
+			$this->getClient($client->getIdClient());
+			$data = $client->toArray();
+			$this->update ( $data, 'id_client = ' . $client->getIdClient() );
+				
+			//indexace pro vyhledávání
+			$index = $this->getSearchIndex();
+			$companyNumber = $client->getCompanyNumber();
+			$this->removeClientFromSearchIndex($index, $companyNumber);
+			$document = $this->composeDocument($client);
+			$index->addDocument ( $document );
+			$index->commit ();
+			$index->optimize ();
+			return true;
 		}
 	}
 	

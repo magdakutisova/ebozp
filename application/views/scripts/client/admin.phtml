@@ -31,6 +31,7 @@
 		<td></td>
 	</tr>
 </table>
+<form id="archivovat" action="<?php echo $this->url(array('clientId' => $this->clientId), 'clientArchive')?>" method="post"><input class="anchor" type="submit" value="PŘESUNOUT KLIENTA DO ARCHIVU"/></form>
 <?php if ($this->canDeleteClient){ ?>
 <form id="smazat" action="<?php echo $this->url(array('clientId' =>$this->clientId), 'clientDelete')?>" method="post"><input class="anchor" type="submit" value="SMAZAT KLIENTA" onclick="return confirm('Opravdu chcete klienta smazat?')"/></form>
 <?php }?>

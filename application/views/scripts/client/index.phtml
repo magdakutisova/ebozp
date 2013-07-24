@@ -10,7 +10,11 @@
 <p>*****</p></div>
 
 <div class="span-5 floating-box">
+<?php if(!$this->archived){?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Edituj klienta</a>
+	<?php }else{?>
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientRecover')?>">Obnovit klienta z archivu</a>
+	<?php }?>
 </div>
 
 <div class="box clear">

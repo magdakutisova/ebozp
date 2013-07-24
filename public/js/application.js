@@ -87,6 +87,43 @@ $(function(){
 		$("#filtered").load("./klienti/naposledy/ #filtered");
 	});
 	
+	//archiv
+	$(".archive-list").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/nazev/ #filtered");
+	});
+	
+	$(".archive-alphabet").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/abeceda/ #filtered");
+	});
+	
+	$(".archive-technician").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/bt/ #filtered");
+	});
+	
+	$(".archive-coordinator").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/koo/ #filtered");
+	});
+	
+	$(".archive-town").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/obec/ #filtered");
+	});
+	
+	$(".archive-district").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/okres/ #filtered");
+	});
+	
+	$(".archive-lastOpen").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/naposledy/ #filtered");
+	});
+	//archiv - konec
+	
 	$(".register").click(function(){
 		$.get($(this).attr("action"));
 		$("#user-content").load("./administrace-uzivatelu/vytvorit/ #user-content");

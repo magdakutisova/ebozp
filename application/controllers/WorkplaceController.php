@@ -417,6 +417,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$clients = new Application_Model_DbTable_Client();
         $client = $clients->getClient($this->_clientId);
+        $this->view->archived = $client->getArchived();
         
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
         $this->view->clientId = $this->_clientId;

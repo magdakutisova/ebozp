@@ -35,6 +35,12 @@
 					</audit>
 				</pages>
 		</client>
+		<clientArchivelist>
+			<label>Archiv klientů</label>
+			<route>clientArchivelist</route>
+			<resource>client</resource>
+			<privilege>archivelist</privilege>
+		</clientArchivelist>
 		<userAdmin>
 			<label>Administrace uživatelů</label>
 			<route>userRights</route>

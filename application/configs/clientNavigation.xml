@@ -82,7 +82,7 @@
 			</pages>
 		</print>
 		<workplace>
-			<label>Pracoviště</label>
+			<label>Databáze pracovišť</label>
 			<route>workplaceList</route>
 			<resource>workplace</resource>
 			<privilege>list</privilege>
