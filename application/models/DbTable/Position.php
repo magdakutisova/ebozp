@@ -32,7 +32,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		return $positionId;		
 	}
 	
-	public function updatePosition(Application_Model_Position $position, $differentName = false){
+	public function updatePosition(Application_Model_Position $position){
 		$data = $position->toArray();
 		$this->update($data, 'id_position = ' . $position->getIdPosition());
 		return true;
@@ -48,14 +48,16 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	 */
 	public function getPositions($clientId){
 		$select = $this->select()->from('position')
-			->where('client_id = ?', $clientId)
+			->where('position.client_id = ?', $clientId)
+			->join('subsidiary', 'position.subsidiary_id = subsidiary.id_subsidiary')
 			->order('position');
+		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$positions = array();
 		if(count($results) > 0){
 			foreach ($results as $result){
 				$key = $result->id_position;
-				$positions[$key] = $result->position;
+				$positions[$key] = $result->position . ' (' . $result->subsidiary_name . ', ' . $result->subsidiary_street . ', ' . $result->subsidiary_town . ')';
 			}
 		}
 		return $positions;
@@ -239,18 +241,6 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		$position = $this->fetchAll($select);
 		if(count($position) > 0){
 			$position = $position->current()->toArray();
-		}
-		
-		$select = $this->select()->from('subsidiary_has_position')
-			->where('id_position = ?', $positionId);
-		$select->setIntegrityCheck(false);
-		$subsidiaries = $this->fetchAll($select);
-		if(count($subsidiaries) > 0){
-			$i = 0;
-			foreach($subsidiaries as $subsidiary){
-				$position['subsidiaryList'][$i] = $subsidiary->id_subsidiary;
-				$i++;
-			}
 		}
 		
 		$select = $this->select()->from('workplace_has_position')

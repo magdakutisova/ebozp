@@ -55,11 +55,17 @@ $(function(){
 		rules: {
 			"subsidiaryListError": {
 				required: function(element){
-					var checkboxes = $('input[id*=subsidiaryList]');
-					if(checkboxes.filter(':checked').length == 0){
-						return true;
+					if($(document).find('select#subsidiaryList').length){
+						return false;
 					}
-					return false;
+					else{
+						var checkboxes = $('input[id*=subsidiaryList]');
+						if(checkboxes.filter(':checked').length == 0){
+							return true;
+						}
+						return false;
+					}
+					
 				},
 				minlength: 1,
 			},
@@ -574,6 +580,10 @@ $(function(){
 		ajaxToggleWorkplaces();
 	});
 	
+	$('select#subsidiaryList').change(function(){
+		ajaxToggleWorkplaces();
+	});
+	
 	$(document).ready(function(){
 		ajaxToggleWorkplaces();
 	});
@@ -586,6 +596,7 @@ $(function(){
 		checkedSubsidiaries.each(function(){
 			subIds[i++] = $(this).val();
 		});
+		subIds[i++] = $('select#subsidiaryList option:selected').val();
 		$.ajax({
 			type: "POST",
 			dataType: "json",

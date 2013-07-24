@@ -381,17 +381,19 @@ class WorkplaceController extends Zend_Controller_Action
     	$position = new Application_Model_Position($data);
     	$positions = new Application_Model_DbTable_Position();
     	$position->setClientId($this->_getParam('clientId'));
-    	$positionId = $positions->addPosition($position);
-    	if(!$positionId){
-    		return;
+    	$positionIds = array();
+    	foreach($data['subsidiaryList'] as $subs){
+    		$position->setSubsidiaryId($subs);
+    		$positionIds[] = $positions->addPosition($position);
     	}
     	
-    	$this->_helper->positionRelationships($data, $positionId);
+    	$this->_helper->positionRelationships($data, $positionIds);
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-    	foreach($data['subsidiaryList'] as $subs){
-    		$subsidiary = $subsidiaries->getSubsidiary($subs);
-    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    	foreach($positionIds as $positionId){
+    		$position = $positions->getPosition($positionId);
+    		$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
+    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     	}
     }
     
@@ -770,10 +772,12 @@ class WorkplaceController extends Zend_Controller_Action
     	$formPosition->workList->setMultiOptions($this->_workList);
     	$formPosition->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	$formPosition->chemicalList->setMultiOptions($this->_chemicalList);
-    	$formPosition->employeeList->setMultiOptions($this->_employeeList);
     	$formPosition->removeElement('new_workplace');
     	$formPosition->removeElement('other');
     	$formPosition->removeElement('save');
+    	$formPosition->removeElement('employees');
+    	$formPosition->removeElement('employeeList');
+    	$formPosition->removeElement('new_employee');
     	$formPosition->addElement('button', 'save', array(
     			'decorators' => array(
        				'ViewHelper',
@@ -787,14 +791,6 @@ class WorkplaceController extends Zend_Controller_Action
     			));
     	$this->view->formPosition = $formPosition;
     	 
-    	$formEmployee = new Application_Form_Employee();
-    	$formEmployee->clientId->setValue($this->_clientId);
-    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
-    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
-    	$formEmployee->sex->setMultiOptions($this->_sexList);
-    	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
-    	$this->view->formEmployee = $formEmployee;
-    	
     	$formSchooling = new Application_Form_Schooling();
     	$formSchooling->clientId->setValue($this->_clientId);
     	$formSchooling->save_schooling->setAttrib('class', array('schooling', 'position', 'ajaxSave'));

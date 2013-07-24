@@ -8,10 +8,27 @@ class My_Controller_Helper_PositionRelationships extends Zend_Controller_Action_
 		$positionHasWork = new Application_Model_DbTable_PositionHasWork();
 		$positionHasTechnicalDevice = new Application_Model_DbTable_PositionHasTechnicalDevice();
 		$positionHasChemical = new Application_Model_DbTable_PositionHasChemical();
-		$employees = new Application_Model_DbTable_Employee();
-		 
-		foreach($positionIds as $positionId){
-			foreach($formData['workplaceList'] as $workplaceId){
+		$employees = new Application_Model_DbTable_Employee();		
+		
+		if(is_array($positionIds)){
+			foreach($positionIds as $positionId){
+				$this->addRelations($formData, $positionId, $workplaceHasPosition,
+						$positionHasEnvironmentFactor, $positionHasSchooling, $positionHasWork,
+						$positionHasTechnicalDevice, $positionHasChemical, $employees, $toEdit);
+			}
+		}
+		else{
+			//My_Debug::dump($positionIds);
+			$this->addRelations($formData, $positionIds, $workplaceHasPosition,
+					$positionHasEnvironmentFactor, $positionHasSchooling, $positionHasWork,
+					$positionHasTechnicalDevice, $positionHasChemical, $employees, $toEdit);
+		}
+	}
+	
+	private function addRelations($formData, $positionId, $workplaceHasPosition,
+			$positionHasEnvironmentFactor, $positionHasSchooling, $positionHasWork,
+			$positionHasTechnicalDevice, $positionHasChemical, $employees, $toEdit){
+		foreach($formData['workplaceList'] as $workplaceId){
 				$workplaceHasPosition->addRelation($workplaceId, $positionId);
 			}
 			if($formData['categorization'] == 1){
@@ -89,18 +106,20 @@ class My_Controller_Helper_PositionRelationships extends Zend_Controller_Action_
 				}
 				$positionHasChemical->addRelation($positionId, $chemicalId, $exposition);
 			}
-			foreach($formData['employeeList'] as $employeeId){
-				$employee = $employees->getEmployee($employeeId);
-				if($employee->getPositionId() != null && $employee->getPositionId() != $positionId){
-					$positions = new Application_Model_DbTable_Position();
-					$currentPosition = $positions->getPosition($employee->getPositionId());
-					$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
-					$flashMessenger->addMessage('Upozornění: Zaměstnanec ' . $employee->getFirstName() . ' ' . $employee->getSurname() . ' byl přesunut z pracovní pozice ' . $currentPosition->getPosition() . ' na pracovní pozici ' . $positions->getPosition($positionId)->getPosition());
+			if(isset($formData['employeeList'])){
+				foreach($formData['employeeList'] as $employeeId){
+					$employee = $employees->getEmployee($employeeId);
+					if($employee->getPositionId() != null && $employee->getPositionId() != $positionId){
+						$positions = new Application_Model_DbTable_Position();
+						$currentPosition = $positions->getPosition($employee->getPositionId());
+						$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
+						$flashMessenger->addMessage('Upozornění: Zaměstnanec ' . $employee->getFirstName() . ' ' . $employee->getSurname() . ' byl přesunut z pracovní pozice ' . $currentPosition->getPosition() . ' na pracovní pozici ' . $positions->getPosition($positionId)->getPosition());
+					}
+					$employee->setPositionId($positionId);
+					$employees->updateEmployee($employee);
 				}
-				$employee->setPositionId($positionId);
-				$employees->updateEmployee($employee);
 			}
-				
+		
 			if($toEdit){
 				$workplaces = $workplaceHasPosition->getWorkplaces($positionId);
 				foreach($workplaces as $workplace){
@@ -152,7 +171,6 @@ class My_Controller_Helper_PositionRelationships extends Zend_Controller_Action_
 					}
 				}
 			}
-		}
 	}
 	
 	private function findEnvironmentFactorDetails($environmentFactorDetail)
