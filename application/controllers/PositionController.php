@@ -792,21 +792,17 @@ class PositionController extends Zend_Controller_Action
         	$position = $positions->getPosition($positionId);
         	$name = $position->getPosition();
         	
-        	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
-        	$subsidiaries = $subsidiaryHasPosition->getSubsidiaries($positionId);
         	$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
         	
         	$positions->deletePosition($positionId);
-        	foreach($subsidiaries as $subs){
-        		$subsidiary = $subsidiariesDb->getSubsidiary($subs);
-        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
-        	}
+        	$subsidiary = $subsidiariesDb->getSubsidiary($subsidiaryId);
+        	$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $name . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
         	
         	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
         }
         else{
-        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště', 403);
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracovní pozice', 403);
         }
     }
 
