@@ -176,57 +176,20 @@ class Application_Form_Workplace extends Zend_Form
        		));
         }
         
-        $this->addElement('hidden', 'boss', array(
+        //vedoucí
+        $this->addElement('select', 'boss_id', array(
         	'label' => 'Vedoucí pracoviště',
         	'decorators' => $elementDecoratorColspanSeparator,
         	'order' => 10,
         ));
         
-        $this->addElement('text', 'boss_name', array(
-       		'label' => 'Jméno',
-       		'filters' => array('StringTrim', 'StripTags'),
-       		'decorators' => $elementDecoratorColspan,
-       		'order' => 11,
-        		'validators' => array(
-        				array('validator' => 'StringLength',
-        						'options' => array(0,45)),
-        		),
-        ));
+        $this->addElement('button', 'new_boss', array(
+        		'label' => 'Nový zaměstnanec',
+        		'order' => 11,
+        		'decorators' => $elementDecorator2,
+        		)); 
         
-        $this->addElement('text', 'boss_surname', array(
-        	'label' => 'Příjmení',
-        	'filters' => array('StringTrim', 'StripTags'),
-        	'decorators' => $elementDecoratorColspan,
-        	'order' => 12,
-        		'validators' => array(
-        				array('validator' => 'StringLength',
-        						'options' => array(0,45)),
-        		),
-        ));
-        
-        $this->addElement('text', 'boss_phone', array(
-        	'label' => 'Telefon',
-        	'filters' => array('StringTrim', 'StripTags'),
-        	'decorators' => $elementDecoratorColspan,
-        	'order' => 13,
-        		'validators' => array(
-        				array('validator' => 'StringLength',
-        						'options' => array(0,45)),
-        		),
-        ));
-        
-        $this->addElement('text', 'boss_email', array(
-        	'label' => 'E-mail',
-        	'filters' => array('StringTrim', 'StripTags'),
-        	'validators' => array('EmailAddress'),
-        	'decorators' => $elementDecoratorColspan,
-        	'order' => 14,
-        		'validators' => array(
-        				array('validator' => 'StringLength',
-        						'options' => array(0,255)),
-        		),
-        ));
-        
+        //pozice
 		$this->addElement('hidden', 'positions', array(
         	'label' => 'Pracovní pozice:',
         	'decorators' => $elementDecoratorColspanSeparator,

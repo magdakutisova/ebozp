@@ -246,6 +246,40 @@ $(function(){
 		title: 'Zadejte nové umístění pro pracoviště',
 	});
 	
+	//PŘIDÁVÁNÍ VEDOUCÍHO
+	var validatorBoss = $('#boss').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
+	
+	$('#new_boss').click(function(){
+		$('#new_boss_form input[type=text]').val('');
+		validatorBoss.resetForm();
+		$('#new_boss_form').dialog('open');
+	});
+	
+	$('#new_boss_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového zaměstnance',
+	});
+	
 	//PŘIDÁVÁNÍ PRACOVIŠTĚ
 	var validatorWorkplace = $('#workplace').validate({
 		invalidHandler: function(form, validator){
@@ -533,7 +567,7 @@ $(function(){
 		}
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
-			if(identifier == 'folder'){
+			if(identifier == 'folder' || identifier == 'boss'){
 				ajaxPopulateSelect(identifier, controller);
 			}
 			else{
@@ -628,7 +662,7 @@ $(function(){
 		});
 	}
 	
-	//volat při přidávání folder
+	//volat při přidávání folder, boss
 	function ajaxPopulateSelect(identifier, controller){
 		var clientId = $("#client_id").val();
 		$.ajax({
@@ -638,7 +672,7 @@ $(function(){
 			data: "clientId=" + clientId,
 			async: false,
 			success: function(json){
-				var el = $("select[id*='folder_id']");
+				var el = $("select[id*='" + identifier + "_id']");
 				var vals = [];
 				var i = 0;
 				el.children("option").each(function(){

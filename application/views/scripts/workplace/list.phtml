@@ -62,13 +62,13 @@
 				if($workplace['workplace']->getRiskPrivate()){?>
 				<p class="no-margin"><span class="bold">Soukromá poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskPrivate()?></p>
 			<?php }}?>
-			<?php if($workplace['workplace']->getBossSurname()){?>
-				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['workplace']->getBossName() . ' ' . $workplace['workplace']->getBossSurname();
-								if ($workplace['workplace']->getBossPhone()){
-									echo ', telefon: ' . $workplace['workplace']->getBossPhone();
+			<?php if($workplace['boss']->getSurname()){?>
+				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['boss']->getFirstName() . ' ' . $workplace['boss']->getSurname();
+								if ($workplace['boss']->getPhone()){
+									echo ', telefon: ' . $workplace['boss']->getPhone();
 								}
-								if ($workplace['workplace']->getBossEmail()){
-									echo ', e-mail: ' . $workplace['workplace']->getBossEmail();
+								if ($workplace['boss']->getEmail()){
+									echo ', e-mail: ' . $workplace['boss']->getEmail();
 								}?></p>
 			<?php }?>
 			<?php if($workplace['workplace']->getNote()){?>

@@ -74,6 +74,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$select = $this->select()
 				->from('workplace')
 				->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
+				->joinLeft('employee', 'workplace.boss_id = employee.id_employee')
 				->where('workplace.subsidiary_id = ?', $subsidiaryId)
 				->order(array('folder.folder', 'workplace.name'));
 			$select->setIntegrityCheck(false);
@@ -91,6 +92,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			$select = $this->select()
 				->from('workplace')
 				->joinLeft('folder', 'workplace.folder_id = folder.id_folder')
+				->joinLeft('employee', 'workplace.boss_id = employee.id_employee')
 				->where('workplace.subsidiary_id = ?', $subsidiaryId)
 				->where('workplace.business_hours IS NULL OR workplace.id_workplace NOT IN (' . $subSelectA . ') OR workplace.id_workplace NOT IN (' . $subSelectB . ')')
 				->order(array('folder.folder', 'workplace.name'));
@@ -104,6 +106,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 			foreach($result as $workplace){
 				$workplaces[$i]['workplace'] = $this->processWorkplace($workplace);
 				$workplaces[$i]['folder'] = $workplace->folder;
+				$workplaces[$i]['boss'] = new Application_Model_Employee($workplace->toArray());
 				
 				$selectPositions = $this->select()
 					->from('position')
