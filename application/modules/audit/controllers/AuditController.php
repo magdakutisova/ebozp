@@ -111,9 +111,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 	}
 	
 	public function cloneAction() {
+		// ziskani adapteru a zapocnuti transakce
+		$adapter = Zend_Db_Table::getDefaultAdapter();
+		$adapter->beginTransaction();
+		
 		// protoze je klonovani omezeno na povoleni, musi se toto povoleni zkontrolovat
 		$tableCopyables = new Audit_Model_Copyables();
-		if (!$tableCopyables->isCopyable($this->_user)) throw new Zend_Exception("You are have not permision to clone audits");
+		if (!$tableCopyables->isCopyable($this->_user)) throw new Zend_Exception("You do not have permision to clone audits");
 		
 		// nacteni auditu
 		$tableAudits = new Audit_Model_Audits();
@@ -137,61 +141,157 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$newAudit = $tableAudits->createRow($auditData);
 		$newAudit->save();
 		
+		/*
+		 * nasleduje kopirovani dat auditu
+		 * 
+		 * klonovat se musi:
+		 * - neshody (zkopiruje se pouze asociace, nikoliv cela neshoda)
+		 *     - neshody z formularu
+		 *     - neshody z pracovist
+		 *     - volne neshody
+		 * - formulare
+		 *     - otazky ktere se nezmenili se kopiruji normalne
+		 *     - otazky ktere se zmenili se kopiruje jejich nova verze
+		 *     - otazky ktere byly smazany se nekopiruji
+		 *     - otazky ktere byly pridany se nakopiruji prazdne
+		 * - komentare pracovist
+		 */
+		
 		// prekopirovani formularu
-		$tableForms = new Audit_Model_AuditsForms();
+		$tableAuditForms = new Audit_Model_AuditsForms();
+		$tableForms = new Audit_Model_Forms();
 		
-		// nacteni id formularu stareho auditu
+		// nacteni id formularu, ktere byly v puvodnim auditu a jejich serazeni
 		$oldForms = $audit->getForms();
-		$formIds = array(0);
-		$formIndex = array();
+		$oldFormIds = array(0);
 		
-		// musi se zjistit vsechny id formularu a naindexovat se podle id definice
-		foreach ($oldForms as $form) {
-			if ($form->form_id) {
-				$formIds[] = $form->form_id;
-			}
-			
-			$formIndex[$form->form_id] = $form;
-		}
+		foreach ($oldForms as $form) $oldFormIds[] = $form->form_id;
+		sort($oldFormIds);
 		
-		// nacteni jmen tabulek
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableAuditsMistake = new Audit_Model_AuditsMistakes();
+		// prekopirovani starych formularu
+		$nameAuditsForms = $tableAuditForms->info("name");
+		$nameForms = $tableForms->info("name");
+		
+		$sql = "insert into `$nameAuditsForms` (form_id, audit_id, name) select id, $newAudit->id, name from `$nameForms` where " . $adapter->quoteInto("id in (?)", $oldFormIds) . " order by id";
+		$adapter->query($sql);
+		
+		// nacteni id formularu, ktere se skutecne prekopirovaly a serazeni podle id
+		$newFormIds = array();
+		$newForms = $newAudit->getForms();
+		
+		foreach ($newForms as $form) $newFormIndex[] = $form;
+		
+		// nakopirovani instanci otazek, ktere jsou ve starem auditu (zatim bez aktualizaci)
+		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
 		$tableRecords = new Audit_Model_AuditsRecords();
-		$nameMistakes = $tableMistakes->info("name");
+		$tableCategories = new Audit_Model_FormsCategories();
+		
+		$nameQuestions = $tableQuestions->info("name");
 		$nameRecords = $tableRecords->info("name");
-		$nameAuditsMistake = $tableAuditsMistake->info("name");
+		$nameCategories = $tableCategories->info("name");
 		
-		// nacteni radku formularu a prekopirovani dat
-		$tableFormsDefs = new Audit_Model_Forms();
-		$forms = $tableFormsDefs->find($formIds);
-		
-		$adapter = $tableAudits->getAdapter();
-		
-		// zapis formularu a zapis neshod
-		foreach ($forms as $form) {
-			$instance = $tableForms->createForm($newAudit, $form);
-			$oldFormId = $formIndex[$form->questionary_id]->id;
+		// kopirovani musi probihat postupne, kvuli ruznym audit_form_id
+		foreach ($newFormIndex as $form) {
+			$select = new Zend_Db_Select($adapter);
 			
-			// zjisteni offsetu stare a nove prvni neshody
-			$offset = $this->_getMistakeOffset($nameMistakes, $nameRecords, $oldFormId, $instance->id, $adapter);
-			$sql = "update `$nameAuditsMistake` as t1, `$nameRecords` as t2 set t1.mistake_id = t2.mistake_id where t2.mistake_id = t1.mistake_id - $offset and t1.audit_id = $newAudit->id and t2.audit_form_id = $oldFormId";
-			$adapter->query($sql);
+			// select z tabulky otazek
+			$select->from($nameQuestions, array(new Zend_Db_Expr($newAudit->id), new Zend_Db_Expr($form->id), "$nameQuestions.id"))
+						->where("!$nameQuestions.is_deleted");
 			
-			// update skore
-			$offset = $this->_getRecordOffset($nameRecords, $oldFormId, $instance->id, $adapter);
-			$sql = "update $nameRecords as t1, $nameRecords as t2 set t1.score = t2.score where t2.id = t1.id - $offset";
+			// spojeni s tabulkou kategorii
+			$select->joinInner($nameCategories, "group_id = $nameCategories.id", array());
+			
+			// spojeni s tabulkou formularu
+			$select->joinInner($nameForms, "$nameForms.id = form_id", array())->where("$nameForms.id = ?", $form->form_id);
+			
+			$sql = "insert into $nameRecords (audit_id, audit_form_id, question_id) " . $select->assemble();
 			$adapter->query($sql);
 		}
 		
-		// presmerovani na get
-		$url = $this->view->url(array(
-				"clientId" => $newAudit->client_id,
-				"subsidiaryId" => $newAudit->subsidiary_id,
-				"auditId" => $newAudit->id
-		), "audit-edit");
+		// nastaveni poznamek a identifikatoru neshod u prvku, ktere se nezmenily
+		$sql = "update $nameRecords as r1, $nameRecords as r2 set r1.note = r2.note, r1.mistake_id = r2.mistake_id, r1.score = r2.score where r1.audit_id = $newAudit->id and r2.audit_id = $audit->id and r1.question_id = r2.question_id";
+		$adapter->query($sql);
 		
-		$this->_redirect($url);
+		// nastaveni poznamek a identifikatoru neshod u prvku, ktere se zmenili
+		$sql = "update $nameRecords as r1, $nameRecords as r2, $nameQuestions as q set r1.note = r2.note, r1.mistake_id = r2.mistake_id, r1.score = r2.score where r1.audit_id = $newAudit->id and r2.audit_id = $audit->id and r1.question_id = q.new_id and q.id = r2.question_id";
+		$adapter->query($sql);
+		
+		// zapis neshod pro zaznamy, ktere neshodu nemaji
+		$select = new Zend_Db_Select($adapter);
+		$select->from($nameQuestions, array(
+				new Zend_Db_Expr($newAudit->id),
+				new Zend_Db_Expr($newAudit->client_id),
+				new Zend_Db_Expr($newAudit->subsidiary_id),
+				"weight",
+				"question",
+				"category",
+				"subcategory",
+				"concretisation",
+				"mistake",
+				"suggestion",
+				new Zend_Db_Expr("''"),			// comment
+				new Zend_Db_Expr("NOW()"),		// notified_at
+				new Zend_Db_Expr("NOW()"),		// will_be_removed_at
+				new Zend_Db_Expr("''")			// responsible name
+		));
+		
+		// sjednoceni s tabulkou zaznamu
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$nameMistakes = $tableMistakes->info("name");
+		$select->joinInner($nameRecords, "question_id = $nameQuestions.id", array("$nameRecords.id"));
+		
+		// omezeni na audit a na zaznamy, ktere nemaji pridelenou neshodu a provedeni operace
+		$select->where("audit_id = ?", $newAudit->id)->where("mistake_id is null");
+		$sql = "insert into $nameMistakes (audit_id, client_id, subsidiary_id, weight, question, category, subcategory, concretisation, mistake, suggestion, comment, notified_at, will_be_removed_at, responsibile_name, record_id) " . $select->assemble();
+		
+		$adapter->query($sql);
+		
+		// krizove navazani id neshod na zaznamy
+		$sql = "update $nameRecords, $nameMistakes set mistake_id = $nameMistakes.id where $nameRecords.id = $nameMistakes.record_id and $nameMistakes.audit_id = $newAudit->id and $nameRecords.audit_id = $newAudit->id and mistake_id is null";
+		$adapter->query($sql);
+		
+		// prekopirovani komentaru pracovist
+		$select = new Zend_Db_Select($adapter);
+		$tableComments = new Audit_Model_AuditsWorkcomments();
+		$nameComments = $tableComments->info("name");
+		
+		$select->from($nameComments, array(new Zend_Db_Expr($newAudit->id), "workplace_id", "comment"))
+				->where("audit_id = ?", $audit->id);
+		
+		$sql = "insert into $nameComments (audit_id, workplace_id, comment) " . $select->assemble();
+		$adapter->query($sql);
+		
+		// prekopirovani asociaci neshod
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		
+		// neshody, ktere nejsou vazany na formular
+		$select = new Zend_Db_Select($adapter);
+		$select->from($nameAssocs, array(new Zend_Db_Expr($newAudit->id), "mistake_id", "status"));
+		$select->where("audit_id = ?", $audit->id)->where("status <> 2")->where("record_id is null");
+		
+		$sql = "insert into $nameAssocs (audit_id, mistake_id, status) " . $select->assemble();
+		$adapter->query($sql);
+		
+		// neshody, ktere jsou vazany na formular
+		$select = new Zend_Db_Select($adapter);
+		$select->from($nameAssocs, array(new Zend_Db_Expr($newAudit->id), "mistake_id", "status"))
+				->joinInner($nameRecords, "$nameRecords.mistake_id = $nameAssocs.mistake_id", array("id"));
+		
+		// podminka stareho auditu v Assocs a noveho auditu v Records
+		$select->where("$nameAssocs.audit_id = ?", $audit->id)->where("$nameRecords.audit_id = ?", $newAudit->id);
+		
+		// podminka nenullovosti neshod
+		$select->where("$nameAssocs.mistake_id is not null")->where("$nameRecords.mistake_id is not null");
+		
+		// odeslani dotazu
+		$sql = "insert into $nameAssocs (audit_id, mistake_id, status, record_id) " . $select->assemble();
+		$adapter->query($sql);
+		
+		// potvrzeni transkace
+		$adapter->commit();
+		
+		$this->view->audit = $newAudit;
 	}
 	
 	public function editAction() {

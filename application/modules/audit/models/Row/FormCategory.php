@@ -8,6 +8,6 @@ class Audit_Model_Row_FormCategory extends Zend_Db_Table_Row_Abstract {
 	public function findQuestions() {
 		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
 		
-		return $tableQuestions->fetchAll("group_id = " . $this->_data["id"], "position");
+		return $tableQuestions->fetchAll("!is_deleted and group_id = " . $this->_data["id"], "position");
 	}
 }

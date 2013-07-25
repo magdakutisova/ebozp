@@ -70,7 +70,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			$mistakeId = $adapter->query("select Auto_increment from information_schema.tables where table_name='$nameMistakes' and table_schema = DATABASE()")->fetchColumn();
 			
 			// nacteni prvku formulare
-			$sql = "select `$nameItems`.* from `$nameItems` inner join `$nameCategories` on $nameCategories.id = $nameItems.group_id where form_id = " . $retVal->form_id . " order by group_id, position";
+			$sql = "select `$nameItems`.* from `$nameItems` inner join `$nameCategories` on $nameCategories.id = $nameItems.group_id where !$nameItems.is_deleted and form_id = " . $retVal->form_id . " order by group_id, position";
 			$items = $adapter->query($sql);
 			$itemIndex = array();
 			

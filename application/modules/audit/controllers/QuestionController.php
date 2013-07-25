@@ -91,11 +91,16 @@ class Audit_QuestionController extends Zend_Controller_Action {
 		$question->is_deleted = 1;
 		
 		// kopirovani otazky
-		$newQuestion = $question->getTable()->createRow($from->getValues(true));
+		$newQuestion = $question->getTable()->createRow($form->getValues(true));
 		$newQuestion->position = $question->position;
+		$newQuestion->group_id = $question->group_id;
 		
 		// zapis dat
 		$newQuestion->save();
+		
+		// zapis reference na novou otazku
+		$question->new_id = $newQuestion->id;
+		$question->save();
 		
 		$section = $question->getCategory();
 		
