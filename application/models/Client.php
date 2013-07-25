@@ -14,6 +14,7 @@ class Application_Model_Client{
 	protected $business;
 	protected $private;
 	protected $subsidiaries;
+	protected $archived;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -201,6 +202,14 @@ class Application_Model_Client{
 	public function setSubsidiaries($subsidiaries) {
 		$this->subsidiaries = $subsidiaries;
 	}
+	
+	public function getArchived(){
+		return $this->archived;
+	}
+	
+	public function setArchived($archived){
+		$this->archived = $archived;
+	}
 
 	public function populate(array $data){
 		$this->idClient = isset($data['id_client']) ? $data['id_client'] : null;
@@ -215,6 +224,7 @@ class Application_Model_Client{
 		$this->invoiceTown = isset($data['invoice_town']) ? $data['invoice_town'] : null;
 		$this->business = isset($data['business']) ? $data['business'] : null;
 		$this->private = isset($data['private']) ? $data['private'] : null;
+		$this->archived = isset($data['archived']) ? $data['archived'] : null;
 		
 		return $this;
 	}
@@ -235,6 +245,7 @@ class Application_Model_Client{
 		$data['invoice_town'] = $this->invoiceTown;
 		$data['business'] = $this->business;
 		$data['private'] = $this->private;
+		$data['archived'] = $this->archived;
 		
 		return $data;
 	}

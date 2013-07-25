@@ -20,7 +20,7 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 					. $subsidiary['subsidiary']->getDistrict()
 					. '</p>';
 		}
-		if($subsidiary['contact_persons'][0]->getIdContactPerson() != null){
+		if(isset($subsidiary['contact_persons'])){
 			foreach($subsidiary['contact_persons'] as $contactPerson){
 				$content .= '<p class="no-margin"><span class="bold">Kontaktní osoba BOZP a PO: </span>'
 						. $contactPerson->getName();
@@ -33,7 +33,7 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 				$content .= '</p>';
 			}
 		}
-		if($subsidiary['doctors'][0]->getIdDoctor() != null){
+		if(isset($subsidiary['doctors'])){
 			foreach($subsidiary['doctors'] as $doctor){
 				$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
 						. $doctor->getName();
@@ -46,7 +46,7 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 				$content .= '</p>';
 			}
 		}
-		if($subsidiary['responsibles'][0]['responsibility'] != null){
+		if(isset($subsidiary['responsibles'])){
 			foreach($subsidiary['responsibles'] as $responsible){
 				$content .= '<p class="no-margin"><span class="bold">' . $responsible['responsibility'] . ': </span>'
 						. $responsible['employee']->getFirstName() . ' ' . $responsible['employee']->getSurname();

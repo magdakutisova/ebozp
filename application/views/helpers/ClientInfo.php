@@ -14,6 +14,9 @@ class Zend_View_Helper_ClientInfo extends Zend_View_Helper_Abstract{
 			$clients = new Application_Model_DbTable_Client();
 			$client = $clients->getClient($params['clientId']);
 			$info .= 'Klient: <a href="' . $this->view->url(array('clientId' => $params['clientId']), 'clientIndex') . '">' . $client->getCompanyName() . '</a>';
+			if($client->getArchived()){
+				$info .=  ' (archivováno) ';
+			}
 		}
 		if(isset($params['subsidiary'])){
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();

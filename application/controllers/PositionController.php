@@ -168,6 +168,10 @@ class PositionController extends Zend_Controller_Action
     	$form->new_workplace->setAttrib('class', $subsidiaryId);
     	$form->save->setLabel('Uložit');
     	
+    	$form->removeElement('employees');
+    	$form->removeElement('employeeList');
+    	$form->removeElement('new_employee');
+    	
     	$form->preValidation($this->getRequest()->getPost(), $this->_canViewPrivate, $this->_categoryList,
     			$this->_yesNoList, $this->_frequencyList);
     	
@@ -221,19 +225,20 @@ class PositionController extends Zend_Controller_Action
     		//vložení pracovní pozice
     		$position = new Application_Model_Position($formData);
     		$position->setClientId($this->_clientId);
-    		$positionId = $positions->addPosition($position);
-    		if(!$positionId){
-    			$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
-    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
+    		$positionIds = array();
+    		foreach($formData['subsidiaryList'] as $subs){
+    			$position->setSubsidiaryId($subs);
+    			$positionIds[] = $positions->addPosition($position);
     		}
     		
-    		$this->_helper->positionRelationships($formData, $positionId);
+    		$this->_helper->positionRelationships($formData, $positionIds);
     		
     		//uložení transakce
     		$adapter->commit();
-    		foreach($formData['subsidiaryList'] as $subs){
-    			$subsidiary = $subsidiaries->getSubsidiary($subs);
-    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    		foreach($positionIds as $positionId){
+    			$position = $positions->getPosition($positionId);
+    			$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
+    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     		}
     		$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' přidána.');
     		unset($defaultNamespace->form);
@@ -324,29 +329,6 @@ class PositionController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_workplaceList);
     }
        
-    public function validateAction(){
-    	$this->_helper->viewRenderer->setNoRender(true);
-    	$this->_helper->layout->disableLayout();
-    	$positions = new Application_Model_DbTable_Position();
-    	if($positions->existsPosition($this->getRequest()->getParam('position'), $this->getRequest()->getParam('clientId'))){
-    		if($this->getRequest()->getParam('positionId')){
-    			$position = $positions->getPosition($this->getRequest()->getParam('positionId'));
-    			if($position->getPosition() == $this->getRequest()->getParam('position')){
-    				echo Zend_Json::encode(true);
-    			}
-    			else{
-    				echo Zend_Json::encode(false);
-    			}
-    		}
-    		else{
-    			echo Zend_Json::encode(false);
-    		}
-    	}
-    	else{
-    		echo Zend_Json::encode(true);
-    	}
-    }
-
     public function environmentfactordetailAction()
     {
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
@@ -449,6 +431,7 @@ class PositionController extends Zend_Controller_Action
     	
     	$clients = new Application_Model_DbTable_Client();
     	$client = $clients->getClient($this->_clientId);
+    	$this->view->archived = $client->getArchived();
     	
     	$this->view->subtitle = "Databáze pracovních pozic - " . $client->getCompanyName();
     	$this->view->clientId = $this->_clientId;
@@ -649,6 +632,23 @@ class PositionController extends Zend_Controller_Action
         $position = $positions->getPositionComplete($positionId);
         
         $this->view->subtitle = "Upravit pracovní pozici " . $position["position"];
+        $elementDecoratorColspan = array(
+        		'ViewHelper',
+        		array('Errors'),
+        		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 5)),
+        		array('Description', array('tag' => 'td')),
+        		array(array('closeTd' => 'HtmlTag'), array('tag' => 'td', 'closeOnly' => true, 'placement' => 'prepend')),
+        		array('Label', array()),
+        		array(array('openTd' => 'HtmlTag'), array('tag' => 'td', 'openOnly' => true, 'colspan' => 1)),
+        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+        );
+        $form->removeElement('subsidiaryList');
+        $form->removeElement('subsidiariesAll');
+        $form->addElement('select', 'subsidiaryList', array(
+        		'label' => 'Vyberte pobočku',
+        		'order' => 1,
+        		'decorators' => $elementDecoratorColspan,
+        		));
         
         //naplnění multiselectu pobočkami
         $subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -758,40 +758,18 @@ class PositionController extends Zend_Controller_Action
         	//zahájení transakce
         	$adapter->beginTransaction();
         	
-        	if(!array_key_exists('subsidiaryList', $formData)){
-        		throw new Exception("Vyberte alespoň jednu pobočku.");
-        	}
-        	
-        	//kontrola na pracoviště na pobočkách
-        	if(isset($formData['workplaceList'])){
-        		$workplaces = new Application_Model_DbTable_Workplace();
-        		foreach($formData['workplaceList'] as $workplaceId){
-        			$result = $workplaces->existsWithinSubsidiaries($workplaceId, $formData['subsidiaryList']);
-        			if($result != "OK"){
-        				throw new Exception($result);
-        			}
-        		}
-        	}
-        	
         	//update pracovní pozice
         	$positionNew = new Application_Model_Position($formData);
-        	$differentName = true;
-        	if($position['position'] == $positionNew->getPosition()){
-        		$differentName = false;
-        	}
-        	if(!$positions->updatePosition($positionNew, $differentName)){
-        		$this->_helper->FlashMessenger('Chyba! Pracovní pozice s tímto názvem již existuje. Zvolte prosím jiný název.');
-    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId), 'positionNew');
-        	}
+        	$positionNew->setSubsidiaryId($formData['subsidiaryList']);
+        	$positions->updatePosition($positionNew);
         	
       		$this->_helper->positionRelationships($formData, $positionId, true);
         	
         	//uložení transakce
         	$adapter->commit();
-        	foreach($formData['subsidiaryList'] as $subs){
-        		$subsidiary = $subsidiaries->getSubsidiary($subs);
-        		$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
-        	}
+        	$subsidiary = $subsidiaries->getSubsidiary($positionNew->getSubsidiaryId());
+        	$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $positionNew->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $positionNew->getSubsidiaryId());
+        	
         	$this->_helper->FlashMessenger('Pracovní pozice ' . $positionNew->getPosition() . ' upravena.');
         	unset($defaultNamespace->form);
         	unset($defaultNamespace->formData);
@@ -815,21 +793,17 @@ class PositionController extends Zend_Controller_Action
         	$position = $positions->getPosition($positionId);
         	$name = $position->getPosition();
         	
-        	$subsidiaryHasPosition = new Application_Model_DbTable_SubsidiaryHasPosition();
-        	$subsidiaries = $subsidiaryHasPosition->getSubsidiaries($positionId);
         	$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
         	
         	$positions->deletePosition($positionId);
-        	foreach($subsidiaries as $subs){
-        		$subsidiary = $subsidiariesDb->getSubsidiary($subs);
-        		$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $position->getPosition() . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
-        	}
+        	$subsidiary = $subsidiariesDb->getSubsidiary($subsidiaryId);
+        	$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $name . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
         	
         	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
         }
         else{
-        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracoviště', 403);
+        	throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracovní pozice', 403);
         }
     }
 

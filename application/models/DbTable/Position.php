@@ -3,6 +3,19 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	
 	protected $_name = 'position';
 	
+	protected $_referenceMap = array(
+			'Subsidiary' => array(
+					'columns' => 'subsidiary_id',
+					'refTableClass' => 'Application_Model_DbTable_Subsidiary',
+					'refColumns' => 'id_subsidiary',
+			),
+			'Client' => array(
+					'columns' => 'client_id',
+					'refTableClass' => 'Application_Model_DbTable_Client',
+					'refColumns' => 'id_client',
+			),
+	);
+	
 	public function getPosition($id){
 		$id = (int)$id;
 		$row = $this->fetchRow('id_position = ' . $id);
@@ -14,28 +27,15 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	}
 	
 	public function addPosition(Application_Model_Position $position){
-		$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
-		if(!$existingPosition){
-			$data = $position->toArray();
-			$positionId = $this->insert($data);
-			return $positionId;
-		}
-		return false;		
+		$data = $position->toArray();
+		$positionId = $this->insert($data);
+		return $positionId;		
 	}
 	
-	public function updatePosition(Application_Model_Position $position, $differentName = false){
+	public function updatePosition(Application_Model_Position $position){
 		$data = $position->toArray();
-		if($differentName){
-			$existingPosition = $this->existsPosition($position->getPosition(), $position->getClientId());
-		}
-		else{
-			$existingPosition = false;
-		}
-		if(!$existingPosition){
-			$this->update($data, 'id_position = ' . $position->getIdPosition());
-			return true;
-		}
-		return false;
+		$this->update($data, 'id_position = ' . $position->getIdPosition());
+		return true;
 	}
 	
 	public function deletePosition($id){
@@ -48,14 +48,16 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 	 */
 	public function getPositions($clientId){
 		$select = $this->select()->from('position')
-			->where('client_id = ?', $clientId)
+			->where('position.client_id = ?', $clientId)
+			->join('subsidiary', 'position.subsidiary_id = subsidiary.id_subsidiary')
 			->order('position');
+		$select->setIntegrityCheck(false);
 		$results = $this->fetchAll($select);
 		$positions = array();
 		if(count($results) > 0){
 			foreach ($results as $result){
 				$key = $result->id_position;
-				$positions[$key] = $result->position;
+				$positions[$key] = $result->position . ' (' . $result->subsidiary_name . ', ' . $result->subsidiary_street . ', ' . $result->subsidiary_town . ')';
 			}
 		}
 		return $positions;
@@ -86,10 +88,9 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		if(!$incomplete){
 			$select = $this->select()
 				->from('position')
-				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
-				->where('id_subsidiary = ?', $subsidiaryId)
+				->where('subsidiary_id = ?', $subsidiaryId)
 				->order('position.position');
-			$select->setIntegrityCheck(false);
+			//$select->setIntegrityCheck(false);
 			$result = $this->fetchAll($select);
 		}
 		else{
@@ -100,8 +101,7 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 			$subSelect->setIntegrityCheck(false);
 			$select = $this->select()
 				->from('position')
-				->join('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
-				->where('subsidiary_has_position.id_subsidiary = ?', $subsidiaryId)
+				->where('subsidiary_id = ?', $subsidiaryId)
 				->where('position.working_hours IS NULL OR position.id_position NOT IN(' . $subSelect . ')')
 				->order('position.position');
 			$select->setIntegrityCheck(false);
@@ -241,18 +241,6 @@ class Application_Model_DbTable_Position extends Zend_Db_Table_Abstract{
 		$position = $this->fetchAll($select);
 		if(count($position) > 0){
 			$position = $position->current()->toArray();
-		}
-		
-		$select = $this->select()->from('subsidiary_has_position')
-			->where('id_position = ?', $positionId);
-		$select->setIntegrityCheck(false);
-		$subsidiaries = $this->fetchAll($select);
-		if(count($subsidiaries) > 0){
-			$i = 0;
-			foreach($subsidiaries as $subsidiary){
-				$position['subsidiaryList'][$i] = $subsidiary->id_subsidiary;
-				$i++;
-			}
 		}
 		
 		$select = $this->select()->from('workplace_has_position')

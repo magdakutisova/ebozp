@@ -13,6 +13,23 @@ label.required:after{
 	background: #b7ceec; padding: 10px
 }
 
+.letter{
+	color: black;
+	font-size: 150%;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 10px 0 7px 0;
+}
+
+#error-message { 
+    
+    padding: 5px;
+    border: 1px solid red;
+    color: red;
+    display: none;
+    margin-bottom: 10px;
+}
+
 .hidden{
 	display: none;
 }

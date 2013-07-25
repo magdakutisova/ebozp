@@ -93,6 +93,8 @@ class SearchController extends Zend_Controller_Action
     		$post = true;
 			if ($form->isValid ( $formData )) {
 				$query = $form->getValue('query');
+				$query = '*' . $query . '*';
+				Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 				$message = "";
 				try{
 					$index = Zend_Search_Lucene::open(APPLICATION_PATH . '/searchIndex');

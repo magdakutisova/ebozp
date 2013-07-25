@@ -57,6 +57,11 @@ $(function(){
 		$("#filtered").load("./klienti/nazev/ #filtered");
 	});
 	
+	$(".alphabet").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./klienti/abeceda/ #filtered");
+	});
+	
 	$(".technician").click(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/bt/ #filtered");
@@ -81,6 +86,43 @@ $(function(){
 		$.get($(this).attr("action"));
 		$("#filtered").load("./klienti/naposledy/ #filtered");
 	});
+	
+	//archiv
+	$(".archive-list").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/nazev/ #filtered");
+	});
+	
+	$(".archive-alphabet").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/abeceda/ #filtered");
+	});
+	
+	$(".archive-technician").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/bt/ #filtered");
+	});
+	
+	$(".archive-coordinator").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/koo/ #filtered");
+	});
+	
+	$(".archive-town").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/obec/ #filtered");
+	});
+	
+	$(".archive-district").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/okres/ #filtered");
+	});
+	
+	$(".archive-lastOpen").click(function(){
+		$.get($(this).attr("action"));
+		$("#filtered").load("./archiv/naposledy/ #filtered");
+	});
+	//archiv - konec
 	
 	$(".register").click(function(){
 		$.get($(this).attr("action"));
@@ -453,7 +495,7 @@ $(function(){
 			url: baseUrl + '/subsidiary/newcontactperson/format/html',
 			data: "id_contact_person=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
 			success: function(newElement){
-				$('#new_contact_person').parents('tr').before(newElement);
+				$('#new_contact_person_subs').parents('tr').before(newElement);
 				$('#id_contact_person').val(++id);
 			}
 		});
@@ -472,7 +514,7 @@ $(function(){
 			url: baseUrl + '/subsidiary/newdoctor/format/html',
 			data: "id_doctor=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
 			success: function(newElement){
-				$('#new_doctor').parents('tr').before(newElement);
+				$('#new_doctor_subs').parents('tr').before(newElement);
 				$('#id_doctor').val(++id);
 			}
 		});
@@ -491,7 +533,7 @@ $(function(){
 			url: baseUrl + '/subsidiary/newresponsible/format/html',
 			data: "id_responsible=" + id + "&clientId=" + clientId + "&subsidiary=" + subsidiary,
 			success: function(newElement){
-				$('#new_responsible').parents('tr').before(newElement);
+				$('#new_responsible_subs').parents('tr').before(newElement);
 				$('#id_responsible').val(++id);
 			}
 		});
@@ -543,13 +585,12 @@ $(function(){
 	}
 	
 	function ajaxPopulateResponsibilitySelectSubs(){
-		var clientId = $("id_client").val();
-		var subsidiary = $("id_subsidiary").val();
+		var clientId = $("#id_client").val();
 		$.ajax({
 			type: "POST",
 			dataType: 'json',
 			url: baseUrl + '/subsidiary/populateresponsibility',
-			data: 'clientId=' + clientId + ((subsidiary != undefined) ? '&subsidiary=' + subsidiary : undefined),
+			data: 'clientId=' + clientId,
 			async: false,
 			success: function(json){
 				var rowId = $('#new_responsibility_form #rowId').val();
@@ -628,13 +669,12 @@ $(function(){
 	}
 	
 	function ajaxPopulateResponsibleEmployeeSelectSubs(){
-		var clientId = $("id_client").val();
-		var subsidiary = $("id_subsidiary").val();
+		var clientId = $("#id_client").val();
 		$.ajax({
 			type: "POST",
 			dataType: 'json',
 			url: baseUrl + '/subsidiary/populateresponsibleemployee',
-			data: 'clientId=' + clientId + ((subsidiary != undefined) ? '&subsidiary=' + subsidiary : undefined),
+			data: 'clientId=' + clientId,
 			async: false,
 			success: function(json){
 				var rowId = $('#new_responsible_employee_form #rowId').val();

@@ -2,10 +2,11 @@
 <?php if ($this->subsidiaryId != null){?>
 
 <div class="box">
+<?php if(!$this->archived){?>
 	<?php if($this->canCreateWorkplace){?><a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'workplaceNew'); ?>">Přidat pracoviště</a>
 	| <?php } if ($this->canCreateFolder){?><a class="large show-folder-form">Umístění pracoviště - přidat nové</a>
 	| <?php } if ($this->canDeleteFolder){?><a class="large show-folder-delete">Smazat umístění</a>
-	| <?php } if($this->filter == 'vse'){?> 
+	| <?php }} if($this->filter == 'vse'){?> 
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'neuplna'), 'workplaceList'); ?>">Vyfiltrovat neúplná pracoviště</a>
 	<?php }else{?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList'); ?>">Zobrazit všechna pracoviště</a>
@@ -39,10 +40,11 @@
 		<?php } ?>
 		<div>
 			&bull; <a class="show-info workplace-title"><?php echo $workplace['workplace']->getName()?></a>
+			<?php if(!$this->archived){?>
 			<?php if($this->canEditWorkplace){?>| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceEdit');?>">Editovat</a>
 			<?php }if($this->canDeleteWorkplace){?>| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workplaceId' => $workplace['workplace']->getIdWorkplace()), 'workplaceDelete') ?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat toto pracoviště?')" /></form>
 			<?php }if($this->canSwitchFolder){?>| <?php echo $this->folderSwitch($workplace['workplace']->getIdWorkplace())?>
-		<?php }?></div>
+		<?php }}?></div>
 		<div class="workplace-info hidden">
 			<?php if($workplace['workplace']->getBusinessHours()){?>
 				<p class="no-margin"><span class="bold">Provozní doba: </span> <?php echo $workplace['workplace']->getBusinessHours()?></p>
@@ -60,13 +62,13 @@
 				if($workplace['workplace']->getRiskPrivate()){?>
 				<p class="no-margin"><span class="bold">Soukromá poznámka k rizikům: </span> <?php echo $workplace['workplace']->getRiskPrivate()?></p>
 			<?php }}?>
-			<?php if($workplace['workplace']->getBossSurname()){?>
-				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['workplace']->getBossName() . ' ' . $workplace['workplace']->getBossSurname();
-								if ($workplace['workplace']->getBossPhone()){
-									echo ', telefon: ' . $workplace['workplace']->getBossPhone();
+			<?php if($workplace['boss']->getSurname()){?>
+				<p class="no-margin"><span class="bold">Vedoucí pracoviště: </span> <?php echo $workplace['boss']->getFirstName() . ' ' . $workplace['boss']->getSurname();
+								if ($workplace['boss']->getPhone()){
+									echo ', telefon: ' . $workplace['boss']->getPhone();
 								}
-								if ($workplace['workplace']->getBossEmail()){
-									echo ', e-mail: ' . $workplace['workplace']->getBossEmail();
+								if ($workplace['boss']->getEmail()){
+									echo ', e-mail: ' . $workplace['boss']->getEmail();
 								}?></p>
 			<?php }?>
 			<?php if($workplace['workplace']->getNote()){?>

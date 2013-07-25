@@ -1,5 +1,5 @@
 <h3>
-	Pobočka: <?php echo $this->subsidiary->getSubsidiaryName();?>
+	Pobočka: <?php echo $this->subsidiary['subsidiary']->getSubsidiaryName();?>
 </h3>
 
 <div class="box clear" id="pobocky">
@@ -17,12 +17,13 @@
 <p>*****</p></div>
 	
 <div class="box clear">
+<?php if(!$this->archived){?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
-	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
-	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
-	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary->getIdSubsidiary(), 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
+	 | <?php }?><a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
 	 <?php if ($this->createAuditAllowed) { ?>
-	 | <a href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary->getIdSubsidiary()), "audit-create"); ?>">Provést audit</a>
+	 | <a href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-create"); ?>">Provést audit</a>
 	 <?php } ?>
 </div>
 

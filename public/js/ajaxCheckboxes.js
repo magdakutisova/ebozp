@@ -43,37 +43,37 @@ $(function(){
 	
 	//PŘIDÁVÁNÍ PRACOVNÍ POZICE
 	var validatorPosition = $('#position').validate({
+		invalidHandler: function(form, validator){
+			var errors = validator.numberOfInvalids();
+			if(errors){
+				$("#error-message").show().text("Pracovní pozice nebyla uložena. Formulář obsahuje " + errors + " neplatných polí");
+				$("html, body").animate({scrollTop: 0}, "fast");
+			} else {
+				$("#error-message").hide();
+			}
+		},
 		rules: {
 			"subsidiaryListError": {
 				required: function(element){
-					var checkboxes = $('input[id*=subsidiaryList]');
-					if(checkboxes.filter(':checked').length == 0){
-						return true;
+					if($(document).find('select#subsidiaryList').length){
+						return false;
 					}
-					return false;
+					else{
+						var checkboxes = $('input[id*=subsidiaryList]');
+						if(checkboxes.filter(':checked').length == 0){
+							return true;
+						}
+						return false;
+					}
+					
 				},
 				minlength: 1,
 			},
 			position: {
 				required: true,
-				remote: {
-					url: baseUrl + "/position/validate",
-					type: "post",
-					data:{
-						position: function(){
-							return $('input#position').val();
-						},
-						clientId: function(){
-							return $('#client_id').val();
-						},
-						positionId: function(){
-							return $('#id_position').val();
-						}
-					}
-				}
 			},
 			working_hours: {
-				required: true
+				//required: true
 			},
 		},
 		messages: {
@@ -82,9 +82,8 @@ $(function(){
 			},
 			position: {
 				required: "Uveďte název pracovní pozice.",
-				remote: "Klient již má pracovní pozici s tímto názvem, zvolte jiný."
 			},
-			working_hours: "Uveďte pracovní dobu.",
+			//working_hours: "Uveďte pracovní dobu.",
 		}
 	});
 	
@@ -247,8 +246,51 @@ $(function(){
 		title: 'Zadejte nové umístění pro pracoviště',
 	});
 	
+	//PŘIDÁVÁNÍ VEDOUCÍHO
+	var validatorBoss = $('#boss').validate({
+		rules: {
+			first_name: {
+				required: true
+			},
+			surname: {
+				required: true
+			},
+			email: {
+				email: true
+			}
+		},
+		messages: {
+			first_name: "Uveďte křestní jméno",
+			surname: "Uveďte příjmení",
+			email: "Uveďte platnou emailovou adresu."
+		}
+	});
+	
+	$('#new_boss').click(function(){
+		$('#new_boss_form input[type=text]').val('');
+		validatorBoss.resetForm();
+		$('#new_boss_form').dialog('open');
+	});
+	
+	$('#new_boss_form').dialog({
+		autoOpen: false,
+		height: 500,
+		width: 700,
+		modal: true,
+		title: 'Zadejte údaje nového zaměstnance',
+	});
+	
 	//PŘIDÁVÁNÍ PRACOVIŠTĚ
 	var validatorWorkplace = $('#workplace').validate({
+		invalidHandler: function(form, validator){
+			var errors = validator.numberOfInvalids();
+			if(errors){
+				$("#error-message").show().text("Pracoviště nebylo uloženo. Formulář obsahuje " + errors + " neplatných polí");
+				$("html, body").animate({scrollTop: 0}, "fast");
+			} else {
+				$("#error-message").hide();
+			}
+		},
 		rules: {
 			name: {
 				required: true,
@@ -269,10 +311,10 @@ $(function(){
 				}
 			},
 			business_hours: {
-				required: true
+				//required: true
 			},
 			description: {
-				required: true
+				//required: true
 			},
 			boss_email: {
 				email: true
@@ -283,8 +325,8 @@ $(function(){
 				required: "Uveďte jméno pracoviště.",
 				remote: "Klient již má pracoviště s tímto názvem, zvolte jiný."
 			},
-			business_hours: "Uveďte pracovní dobu.",
-			description: "Uveďte popis pracoviště.",
+			//business_hours: "Uveďte pracovní dobu.",
+			//description: "Uveďte popis pracoviště.",
 			boss_email: "Uveďte platnou emailovou adresu.",
 		}
 	});
@@ -525,7 +567,7 @@ $(function(){
 		}
 		if($('#' + identifier).valid()){
 			ajaxSaveItem(identifier, controller);
-			if(identifier == 'folder'){
+			if(identifier == 'folder' || identifier == 'boss'){
 				ajaxPopulateSelect(identifier, controller);
 			}
 			else{
@@ -572,6 +614,10 @@ $(function(){
 		ajaxToggleWorkplaces();
 	});
 	
+	$('select#subsidiaryList').change(function(){
+		ajaxToggleWorkplaces();
+	});
+	
 	$(document).ready(function(){
 		ajaxToggleWorkplaces();
 	});
@@ -584,6 +630,7 @@ $(function(){
 		checkedSubsidiaries.each(function(){
 			subIds[i++] = $(this).val();
 		});
+		subIds[i++] = $('select#subsidiaryList option:selected').val();
 		$.ajax({
 			type: "POST",
 			dataType: "json",
@@ -615,7 +662,7 @@ $(function(){
 		});
 	}
 	
-	//volat při přidávání folder
+	//volat při přidávání folder, boss
 	function ajaxPopulateSelect(identifier, controller){
 		var clientId = $("#client_id").val();
 		$.ajax({
@@ -625,7 +672,7 @@ $(function(){
 			data: "clientId=" + clientId,
 			async: false,
 			success: function(json){
-				var el = $("select[id*='folder_id']");
+				var el = $("select[id*='" + identifier + "_id']");
 				var vals = [];
 				var i = 0;
 				el.children("option").each(function(){

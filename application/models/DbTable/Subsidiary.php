@@ -85,7 +85,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	 */
 	public function getSubsidiaries($clientId = 0, $userId = 0, $hq = 0) {
 		if ($clientId != 0 && $hq == 0){
-			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
+			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' )->order('subsidiary_town');
 		}
 		elseif ($clientId != 0 && $hq == 1){
 			$select = $this->select()->from('subsidiary')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('client_id = ?', $clientId)->where('deleted = 0')->order('hq DESC');
@@ -187,10 +187,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	
 		$contactPersons = $this->select()->from('contact_person')
 			->where('subsidiary_id = ?', $subsidiaryId);
+		$contactPersons->setIntegrityCheck(false);
 		$contactPersonsResult = $this->fetchAll($contactPersons);
 	
 		$doctors = $this->select()->from('doctor')
 			->where('subsidiary_id = ?', $subsidiaryId);
+		$doctors->setIntegrityCheck(false);
 		$doctorsResult = $this->fetchAll($doctors);
 	
 		$responsibles = $this->select()->from('responsible')
@@ -217,27 +219,52 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $subsidiary;
 	}
 	
-	public function getByTown() {
-		$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq' ) )->where ( 'deleted = 0' )->order ( array('subsidiary_town', 'subsidiary_name') );
+	public function getByTown($archived = 0) {
+		$select = $this->select ()
+			->from ( 'subsidiary' )
+			->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq' ) )
+			->join('client', 'subsidiary.client_id = client.id_client')
+			->where ( 'subsidiary.deleted = 0' )
+			->where('archived = ?', $archived)
+			->order ( array('subsidiary_town', 'subsidiary_name') );
+		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll ( $select );
 		return $this->process($result);
 	}
 	
-	public function getByDistrict(){
-		$select = $this->select()->from('subsidiary')->where('deleted = 0')->order(array('district', 'subsidiary_name'));
-		$result = $this->fetchAll($select);
-		return $this->process($result);
-	}
-	
-	public function getByClient(){
-		$select = $this->select()->from('subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))->where('subsidiary.deleted = 0')->order(array('client.company_name', 'hq DESC', 'subsidiary.subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
+	public function getByDistrict($archived = 0){
+		$select = $this->select()
+			->from('subsidiary')
+			->join('client', 'subsidiary.client_id = client.id_client')
+			->where('subsidiary.deleted = 0')
+			->where('archived = ?', $archived)
+			->order(array('district', 'subsidiary_name'));
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->process($result);
 	}
 	
-	public function getLastOpen(){
-		$select = $this->select()->from('subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))->where('subsidiary.deleted = 0')->order(array('client.open DESC', 'hq DESC'));
+	public function getByClient($archived = 0){
+		$select = $this->select()
+			->from('subsidiary')
+			->join('client', 'subsidiary.client_id = client.id_client')
+			->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))
+			->where('subsidiary.deleted = 0')
+			->where('archived = ?', $archived)
+			->order(array('client.company_name', 'hq DESC', 'subsidiary.subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		return $this->process($result);
+	}
+	
+	public function getLastOpen($archived = 0){
+		$select = $this->select()
+			->from('subsidiary')
+			->join('client', 'subsidiary.client_id = client.id_client')
+			->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))
+			->where('subsidiary.deleted = 0')
+			->where('archived = ?', $archived)
+			->order(array('client.open DESC', 'hq DESC'));
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->process($result);

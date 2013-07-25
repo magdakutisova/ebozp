@@ -60,7 +60,8 @@ class WorkplaceController extends Zend_Controller_Action
         
         //získání seznamu zaměstnanců
         $employees = new Application_Model_DbTable_Employee();
-        $this->_employeeList = $employees->getEmployees($this->_clientId);
+        $this->_employeeList[0] = '-----';
+        $this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($this->_clientId);
         
         //získání seznamu FPP
         $this->_environmentFactorList = My_EnvironmentFactor::getEnvironmentFactors();
@@ -190,6 +191,9 @@ class WorkplaceController extends Zend_Controller_Action
 	    	$workplace->setClientId($this->_clientId);
 	    	if($formData['folder_id'] == 0){
 	    		$workplace->setFolderId(null);
+	    	}
+	    	if($formData['boss_id'] == 0){
+	    		$workplace->setBossId(null);
 	    	}
 
 	    	$workplaceId = $workplaces->addWorkplace($workplace);
@@ -328,6 +332,28 @@ class WorkplaceController extends Zend_Controller_Action
     	echo Zend_Json::encode($this->_folderList);
     }
     
+    public function addbossAction(){
+    	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+    	$ajaxContext->addActionContext('addboss', 'html')->initContext();
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	
+    	$data = $this->_getAllParams();
+    	$employee = new Application_Model_Employee($data);
+    	$employees = new Application_Model_DbTable_Employee();
+    	$employee->setClientId($this->_getParam('clientId'));
+    	$employees->addEmployee($employee);
+    }
+    
+    public function populatebosssAction(){
+    	$this->_helper->viewRenderer->setNoRender(true);
+    	$this->_helper->layout->disableLayout();
+    	$employees = new Application_Model_DbTable_Employee();
+    	$this->_employeeList[0] = '-----';
+        $this->_employeeList = $this->_employeeList + $employees->getResponsibleEmployees($this->_clientId);
+        echo Zend_Json::encode($this->_employeeList);
+    }
+    
     public function addchemicalAction(){
     	$ajaxContext = $this->_helper->getHelper('AjaxContext');
     	$ajaxContext->addActionContext('addchemical', 'html')->initContext();
@@ -381,17 +407,19 @@ class WorkplaceController extends Zend_Controller_Action
     	$position = new Application_Model_Position($data);
     	$positions = new Application_Model_DbTable_Position();
     	$position->setClientId($this->_getParam('clientId'));
-    	$positionId = $positions->addPosition($position);
-    	if(!$positionId){
-    		return;
+    	$positionIds = array();
+    	foreach($data['subsidiaryList'] as $subs){
+    		$position->setSubsidiaryId($subs);
+    		$positionIds[] = $positions->addPosition($position);
     	}
     	
-    	$this->_helper->positionRelationships($data, $positionId);
+    	$this->_helper->positionRelationships($data, $positionIds);
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-    	foreach($data['subsidiaryList'] as $subs){
-    		$subsidiary = $subsidiaries->getSubsidiary($subs);
-    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subs, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subs);
+    	foreach($positionIds as $positionId){
+    		$position = $positions->getPosition($positionId);
+    		$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
+    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     	}
     }
     
@@ -415,6 +443,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	$clients = new Application_Model_DbTable_Client();
         $client = $clients->getClient($this->_clientId);
+        $this->view->archived = $client->getArchived();
         
         $this->view->subtitle = "Databáze pracovišť - " . $client->getCompanyName();
         $this->view->clientId = $this->_clientId;
@@ -554,6 +583,9 @@ class WorkplaceController extends Zend_Controller_Action
     		$workplaceNew = new Application_Model_Workplace($formData);
     		if($formData['folder_id'] == 0){
     			$workplaceNew->setFolderId(null);
+    		}
+    		if($formData['boss_id'] == 0){
+    			$workplace->setBossId(null);
     		}
     		$differentName = true;
     		if($workplace['name'] == $workplaceNew->getName()){
@@ -756,6 +788,9 @@ class WorkplaceController extends Zend_Controller_Action
     	if($form->chemicalList != null){
 			$form->chemicalList->setMultiOptions($this->_chemicalList);
     	}
+    	if($form->boss_id != null){
+    		$form->boss_id->setMultiOptions($this->_employeeList);
+    	}
 		return $form;
     }
     
@@ -770,10 +805,12 @@ class WorkplaceController extends Zend_Controller_Action
     	$formPosition->workList->setMultiOptions($this->_workList);
     	$formPosition->technicaldeviceList->setMultiOptions($this->_technicalDeviceList);
     	$formPosition->chemicalList->setMultiOptions($this->_chemicalList);
-    	$formPosition->employeeList->setMultiOptions($this->_employeeList);
     	$formPosition->removeElement('new_workplace');
     	$formPosition->removeElement('other');
     	$formPosition->removeElement('save');
+    	$formPosition->removeElement('employees');
+    	$formPosition->removeElement('employeeList');
+    	$formPosition->removeElement('new_employee');
     	$formPosition->addElement('button', 'save', array(
     			'decorators' => array(
        				'ViewHelper',
@@ -787,14 +824,6 @@ class WorkplaceController extends Zend_Controller_Action
     			));
     	$this->view->formPosition = $formPosition;
     	 
-    	$formEmployee = new Application_Form_Employee();
-    	$formEmployee->clientId->setValue($this->_clientId);
-    	$formEmployee->year_of_birth->setMultiOptions($this->_yearOfBirthList);
-    	$formEmployee->manager->setMultiOptions($this->_yesNoList);
-    	$formEmployee->sex->setMultiOptions($this->_sexList);
-    	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
-    	$this->view->formEmployee = $formEmployee;
-    	
     	$formSchooling = new Application_Form_Schooling();
     	$formSchooling->clientId->setValue($this->_clientId);
     	$formSchooling->save_schooling->setAttrib('class', array('schooling', 'position', 'ajaxSave'));
@@ -819,6 +848,23 @@ class WorkplaceController extends Zend_Controller_Action
     	$formFolder->clientId->setValue($this->_clientId);
     	$formFolder->save_folder->setAttrib('class', array('folder', 'workplace', 'ajaxSave'));
     	$this->view->formFolder = $formFolder;
+    	
+    	$formBoss = new Application_Form_ResponsibleEmployee();
+    	$formBoss->clientId->setValue($this->_clientId);
+    	$formBoss->removeElement('save_responsible_employee');
+    	$elementDecorator2 = array(
+    			'ViewHelper',
+    			array('Errors'),
+    			array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+    			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+    	);
+    	$formBoss->addElement('button', 'save_boss', array(
+				'decorators' => $elementDecorator2,
+				'label' => 'Uložit zaměstnance',
+    			));
+    	$formBoss->save_boss->setAttrib('class', array('boss', 'workplace', 'ajaxSave'));
+    	$formBoss->setName('boss');
+    	$this->view->formBoss = $formBoss;
     }
     
 }

@@ -2,7 +2,7 @@
 <?php if ($this->subsidiaryId != null){?>
 
 	<div class="box">
-	<?php if ($this->canCreatePosition){?>
+	<?php if ($this->canCreatePosition && !$this->archived){?>
 		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId), 'positionNew'); ?>">Přidat pracovní pozici</a>
 		| <?php }
 		if($this->filter == 'vse'){?>
@@ -17,12 +17,13 @@
 		<?php foreach($this->positions as $position){?>
 		<div>
 			&bull; <a class="show-info position-title"><?php echo $position['position']->getPosition();?></a>
+			<?php if(!$this->archived){?>
 			<?php if ($this->canEditPosition){ ?>
 			| <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionEdit');?>">Editovat</a>
 			<?php }
 			if ($this->canDeletePosition){?>
 			| <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'positionId' => $position['position']->getIdPosition()), 'positionDelete')?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat tuto pracovní pozici?')" /></form>
-			<?php }?>
+			<?php }}?>
 		</div>
 		<div class="position-info hidden">
 			<?php if($position['position']->getWorkingHours()){?>

@@ -170,6 +170,34 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+				'clientArchive',
+				new Zend_Controller_Router_Route('klient/:clientId/archivovat',
+						array('controller' => 'client',
+								'action' => 'archive'))
+				);
+		
+		$router->addRoute(
+				'clientRecover',
+				new Zend_Controller_Router_Route('klient/:clientId/obnovit',
+						array('controller' => 'client',
+								'action' => 'recover'))
+				);
+		
+		$router->addRoute(
+				'clientArchivelist',
+				new Zend_Controller_Router_Route('archiv',
+						array('controller' => 'client',
+								'action' => 'archivelist'))
+				);
+		
+		$router->addRoute(
+				'clientArchivefilter',
+				new Zend_Controller_Router_Route('archiv/:mode',
+						array('controller' => 'client',
+								'action' => 'archivelist'))
+				);
+		
+		$router->addRoute(
 			'subsidiaryNew',
 			new Zend_Controller_Router_Route('klient/:clientId/nova-pobocka',
 											array('controller' => 'subsidiary',
