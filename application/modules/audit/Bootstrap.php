@@ -401,5 +401,27 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "import"
 						))
 		);
+		
+		// vytvoreni dohlidky
+		$router->addRoute(
+				"audit-watch-create",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/watch/create",
+						array(
+								"module" => "audit",
+								"controller" => "watch",
+								"action" => "create"
+						))
+		);
+		
+		// editace dohlidky
+		$router->addRoute(
+				"audit-watch-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/watch/:watchId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "watch",
+								"action" => "edit"
+						))
+		);
 	}
 }

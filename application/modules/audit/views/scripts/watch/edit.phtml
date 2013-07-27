@@ -1,0 +1,82 @@
+<div id="watch-tabs">
+	<ul>
+		<li><a href="#overview">Přehled</a></li>
+		<li><a href="#discuss">Projednáno</a></li>
+		<li><a href="#changes">Změny</a></li>
+		<li><a href="#orders">Objednávky</a></li>
+	</ul>
+	<div id="overview">
+		<h1>Dohlídka</h1>
+		<?php
+		echo $this->form;
+		?>
+		<h2>Jiná kontaktní osoba</h2>
+		<?php 
+		echo $this->contactForm;
+		?>
+	</div>
+	<div id="discuss">
+		<form action="/audit/watch/discuss" method="post" id="form-discuss">
+			<ol id="discuss-list">
+			<?php 
+			foreach ($this->discussed as $item) {
+				echo "<li>";
+				echo $this->formTextarea("discussed[content][]", $item->content, array("rows" => 4, "cols" => 50));
+				echo $this->formButton("discussed-$item->id-delete", "Smazat");
+				echo "</li>";
+			}
+			?>
+			</ol>
+			<div>
+			<?php 
+			echo $this->formHidden("watchId", $this->watch->id);
+			echo $this->formSubmit("discuss-submit", "Uložit");
+			echo $this->formButton("add-discuss", "Přidat položku");
+			?>
+			</div>
+		</form>
+	</div>
+	<div id="changes">
+		<form action="/audit/watch/changes" method="post" id="form-changes">
+			<ol id="change-list">
+			<?php 
+			foreach ($this->changes as $item) {
+				echo "<li>";
+				echo $this->formTextarea("change[content][]", $item->content, array("rows" => 4, "cols" => 50));
+				echo $this->formButton("change-$item->id-delete", "Smazat");
+				echo "</li>";
+			}
+			?>
+			</ol>
+			<div>
+			<?php 
+			echo $this->formHidden("watchId", $this->watch->id);
+			echo $this->formSubmit("change-submit", "Uložit");
+			echo $this->formButton("add-change", "Přidat položku");
+			?>
+			</div>
+		</form>
+	</div>
+	<div id="orders">
+		<form action="/audit/watch/orders" method="post" id="form-orders">
+			<ol id="order-list">
+			<?php 
+			foreach ($this->orders as $item) {
+				echo "<li>";
+				echo $this->formTextarea("order[content][]", $item->content, array("rows" => 4, "cols" => 50));
+				echo $this->formButton("order-$item->id-delete", "Smazat");
+				echo "</li>";
+			}
+			?>
+			</ol>
+			<div>
+			<?php 
+			echo $this->formHidden("watchId", $this->watch->id);
+			echo $this->formSubmit("order-submit", "Uložit");
+			echo $this->formButton("add-order", "Přidat položku");
+			?>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript" src="/js/audit/watch.js"></script>
