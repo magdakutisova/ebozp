@@ -4,6 +4,7 @@
 		<li><a href="#discuss">Projednáno</a></li>
 		<li><a href="#changes">Změny</a></li>
 		<li><a href="#orders">Objednávky</a></li>
+		<li><a href="#outputs">Realizační výstup</a></li>
 	</ul>
 	<div id="overview">
 		<h1>Dohlídka</h1>
@@ -74,6 +75,27 @@
 			echo $this->formHidden("watchId", $this->watch->id);
 			echo $this->formSubmit("order-submit", "Uložit");
 			echo $this->formButton("add-order", "Přidat položku");
+			?>
+			</div>
+		</form>
+	</div>
+	<div id="outputs">
+		<form action="/audit/watch/outputs" method="post" id="form-output">
+			<ol id="output-list">
+			<?php 
+			foreach ($this->outputs as $item) {
+				echo "<li>";
+				echo $this->formTextarea("output[content][]", $item->content, array("rows" => 4, "cols" => 50));
+				echo $this->formButton("output-$item->id-delete", "Smazat");
+				echo "</li>";
+			}
+			?>
+			</ol>
+			<div>
+			<?php 
+			echo $this->formHidden("watchId", $this->watch->id);
+			echo $this->formSubmit("output-submit", "Uložit");
+			echo $this->formButton("add-output", "Přidat položku");
 			?>
 			</div>
 		</form>

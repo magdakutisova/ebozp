@@ -18,4 +18,10 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 	
 		return $tableOrders->fetchAll(array("watch_id = ?" => $this->_data["id"]), "id");
 	}
+	
+	public function findOutputs() {
+		$tableOutputs = new Audit_Model_WatchesOutputs();
+	
+		return $tableOutputs->fetchAll(array("watch_id = ?" => $this->_data["id"]), "id");
+	}
 }

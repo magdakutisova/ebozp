@@ -65,12 +65,16 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni objednavek
 		$orders = $watch->findOrders();
 		
+		// realizacni vystup
+		$outputs = $watch->findOutputs();
+		
 		$this->view->form = $form;
 		$this->view->contactForm = $contactForm;
 		$this->view->watch = $watch;
 		$this->view->discussed = $discussed;
 		$this->view->changes = $changes;
 		$this->view->orders = $orders;
+		$this->view->outputs = $outputs;
 	}
 	
 	public function getAction() {
@@ -138,6 +142,21 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$contents = array_merge(array("content" => array()), $contents);
 	
 		self::_writeListItems($tableOrders, $watch, $contents["content"]);
+	
+		$this->view->watch = $watch;
+	}
+	
+	public function outputsAction() {
+		// nacteni dohlidky
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+	
+		// nacteni dat a rpiprava tabulky
+		$tableOutputs = new Audit_Model_WatchesOutputs();
+		$contents = (array) $this->_request->getParam("output", array());
+		$contents = array_merge(array("content" => array()), $contents);
+	
+		self::_writeListItems($tableOutputs, $watch, $contents["content"]);
 	
 		$this->view->watch = $watch;
 	}

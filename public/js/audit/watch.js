@@ -45,14 +45,24 @@ $(function() {
 		target.sortable("refresh");
 	}
 	
+	function addOutput() {
+		// vytvoreni polozky
+		li = createItem("output[content][]");
+		
+		var target = $("#output-list");
+		li.appendTo(target);
+		target.sortable("refresh");
+	}
+	
 	function removeDiscuss() {
 		if (confirm("Skutečně odebrat položku?")) $(this).parents("li:first").remove();
 	}
 	
 	$("#watch-tabs").tabs();
-	$("#discuss-list,#change-list,#order-list").sortable();
-	$("#discuss-list button,#change-list button,#order-list button").click(removeDiscuss).button(removeButtonSet);
+	$("#discuss-list,#change-list,#order-list,#output-list").sortable();
+	$("#discuss-list button,#change-list button,#order-list button,#output-list button").click(removeDiscuss).button(removeButtonSet);
 	$("#add-discuss").click(addDiscuss);
 	$("#add-change").click(addChange);
 	$("#add-order").click(addOrder);
+	$("#add-output").click(addOutput);
 });
