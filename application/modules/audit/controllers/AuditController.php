@@ -38,6 +38,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$tableAudits = new Audit_Model_Audits();
 			$this->_audit = $tableAudits->getById($auditId);
 			$this->_auditId = $auditId;
+			
+			$this->_request->setParam("subsidiaryId", $this->_audit->subsidiary_id);
 		}
 		
 		$this->view->layout()->setLayout("client-layout");
@@ -650,13 +652,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
 			$tableMistakes->getAdapter()->query($sql);
 			
+			// nastaveni odeslani neshod v asociacni tabulce auditu
+			$tableAssocs->update(array("is_submited" => 1), array("audit_id = ?" => $auditId));
+			
 			// potvrdi se audit
 			$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
 			$this->_audit->is_closed = 1;
 			$this->_audit->save();
 			
 			// presmerovani na get
-			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-get");
+			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id), "audit-get");
 			$this->_redirect($url);
 				
 			return;

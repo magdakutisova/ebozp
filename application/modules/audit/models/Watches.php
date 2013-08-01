@@ -24,6 +24,12 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 					"columns" => array("user_id"),
 					"refTableClass" => "Application_Model_DbTable_User",
 					"refColumns" => array("id_user")
+					),
+			
+			"contact" => array(
+					"columns" => array("contactperson_id"),
+					"refTableClass" => "Application_Model_DbTable_ContactPerson",
+					"refColumns" => "id_contact_person"
 					)
 	);
 	
@@ -38,5 +44,37 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 	 */
 	public function findById($id) {
 		return $this->find($id)->current();
+	}
+	
+	/**
+	 * najde rozsirene informace o dohlidce
+	 * filtruje dle klienta a pripadne dle pobocky
+	 * 
+	 * @param int $clientId
+	 * @param int $subsidiaryId
+	 * @return Audit_Model_Rowset_Watches
+	 */
+	public function findWatches($clientId, $subsidiaryId = -1) {
+		$tableUsers = new Application_Model_DbTable_User();
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$nameUsers = $tableUsers->info("name");
+		$nameContacts = $tableContacts->info("name");
+		
+		// sestaveni selectu
+		$select = new Zend_Db_Select($this->getAdapter());
+		$select->from($this->_name);
+		
+		// asociace na technika a na kontaktni osobu
+		$select->joinLeft($nameContacts, "contactperson_id = id_contact_person")->joinLeft($nameUsers, "user_id = id_user");
+		
+		// podminky
+		$select->where("$this->_name.client_id = ?", $clientId);
+		
+		if ($subsidiaryId != -1) {
+			$select->where("$this->_name.subsidiary_id = ?", $subsidiaryId);
+		}
+		
+		// navrat dat
+		return new Audit_Model_Rowset_Watches(array("data" => $select->query()->fetchAll(), "rowClass" => $this->_rowClass, "table" => $this));
 	}
 }

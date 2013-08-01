@@ -5262,7 +5262,7 @@
         <dia:point val="27.4233,-18.9878"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="27.3733,-19.0378;44.1433,-9.73781"/>
+        <dia:rectangle val="27.3733,-19.0378;44.1433,-9.7378"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="27.4233,-18.9878"/>
@@ -5804,7 +5804,7 @@
         <dia:point val="53.2733,-12.0878"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="53.2233,-12.1378;64.4333,-7.63781"/>
+        <dia:rectangle val="53.2233,-12.1378;64.4333,-7.6378"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="53.2733,-12.0878"/>
@@ -5981,14 +5981,14 @@
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O33">
       <dia:attribute name="obj_pos">
-        <dia:point val="53.2733,-9.38781"/>
+        <dia:point val="53.2733,-9.3878"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="43.9815,-17.4187;53.3851,-9.05691"/>
+        <dia:rectangle val="43.9815,-17.4187;53.3851,-9.0569"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="53.2733,-9.38781"/>
-        <dia:point val="48.6833,-9.38781"/>
+        <dia:point val="53.2733,-9.3878"/>
+        <dia:point val="48.6833,-9.3878"/>
         <dia:point val="48.6833,-17.0878"/>
         <dia:point val="44.0933,-17.0878"/>
       </dia:attribute>
@@ -6028,7 +6028,7 @@
         <dia:point val="53.2733,-4.78781"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="53.2233,-4.83781;64.7218,-0.337808"/>
+        <dia:rectangle val="53.2233,-4.83781;64.7218,0.46219"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="53.2733,-4.78781"/>
@@ -6037,7 +6037,7 @@
         <dia:real val="11.398515625"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="4.4000000000000004"/>
+        <dia:real val="5.2000000000000011"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_watches_mistakes#</dia:string>
@@ -6185,6 +6185,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#Stav neshody po skončení dohlídky#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#is_submited#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#bool#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#0#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#Přepínač odeslání záznamu#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>

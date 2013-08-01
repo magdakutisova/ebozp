@@ -76,6 +76,11 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$session = $this->_updateSession();
 		$info = $this->_getWorkplace($session->workplaceId);
 		
+		if (!$info) {
+			$this->view->notFound = true;
+			return;
+		}
+		
 		// nacteni paginace
 		$pagination = $this->_loadPagination($session->workplaceId);
 		
@@ -161,6 +166,9 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$sql = "select `$nameWorkplaces`.*, `$nameComments`.`comment`, `$nameComments`.workplace_id, (comment is null) as `create` from `$nameWorkplaces` left join `$nameComments` on workplace_id = id_workplace and audit_id = " . $adapter->quote($this->_auditId) . " where id_workplace = $workplaceIdQ";
 		
 		$workplaceInfo = $adapter->query($sql)->fetch();
+		
+		// pokud je workplaceInfo == False, pak zadne pracoviste nebylo nalezeno a nema cenu pokracovat
+		if (!$workplaceInfo) return false;
 		
 		if (is_null($workplaceInfo["workplace_id"])) $workplaceInfo["workplace_id"] = $workplaceInfo["id_workplace"];
 		

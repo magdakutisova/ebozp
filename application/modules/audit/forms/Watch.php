@@ -52,7 +52,7 @@ class Audit_Form_Watch extends Zend_Form {
 		));
 		
 		// pole pro zacatek dohlidky
-		$this->addElement("text", "time_to", array(
+		$this->addElement("text", "time_from", array(
 				"label" => "Začáek (čas)",
 				"decorators" => $elementDecorator,
 				"validators" => array(
@@ -67,7 +67,7 @@ class Audit_Form_Watch extends Zend_Form {
 		));
 		
 		// pole pro konec dohlidky
-		$this->addElement("text", "time_from", array(
+		$this->addElement("text", "time_to", array(
 				"label" => "Konec (čas)",
 				"decorators" => $elementDecorator,
 				"validators" => array(
@@ -75,10 +75,22 @@ class Audit_Form_Watch extends Zend_Form {
 								"Regex",
 								false,
 								array(
-										"pattern" => "/^[0-9]{2}:[0-9]{2}$/",
+										"pattern" => "/^[0-9]{2}(:[0-9]{2}){1,2}$/",
 										"messages" => "Špatný formát času"
 								)
 						))
+		));
+		
+		// pole pro jmeno dohlizitele
+		$this->addElement("textarea", "guard_person", array(
+				"label" => "Jméno a tituly našeho zástupce",
+				"decorators" => $elementDecorator
+		));
+		
+		// pole pro jmeno pobocky
+		$this->addElement("text", "client_description", array(
+				"label" => "Jméno a popis klienta",
+				"decorators" => $elementDecorator
 		));
 		
 		$this->addElement("submit", "submit", array(

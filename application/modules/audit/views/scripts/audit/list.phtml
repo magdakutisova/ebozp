@@ -55,7 +55,7 @@
 				break;
 		}
 		
-		$href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), $route);
+		$href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), $route);
 		$action = "<a href='$href'>$caption</a>";
 		?>
 		<tr>

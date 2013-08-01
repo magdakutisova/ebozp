@@ -1,0 +1,64 @@
+<h2>Dohlídky</h2>
+<?php 
+$url = $this->url(array("clientId" => $this->clientId, "subsidiaryId" => $this->subsidiaryId), "audit-watch-create");
+
+echo "<a href='$url'>Nová dohlídka</a>";
+?>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Technik
+			</th>
+			<th>
+			Jednáno s
+			</th>
+			<th>
+			Datum
+			</th>
+			<th>
+			Uzavřeno
+			</th>
+			<th>
+			Akce
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	foreach ($this->watches as $watch) {
+		?>
+		<tr>
+			<td>
+			<?php echo $watch->username; ?>
+			</td>
+			<td>
+			<?php echo $watch->name; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($watch->watched_at); ?>
+			</td>
+			<td>
+			<?php echo $watch->is_closed ? "Ano" : "Ne"; ?>
+			</td>
+			<td>
+			<?php 
+			// vyhodnoceni URL
+			if ($watch->user_id == Zend_Auth::getInstance()->getIdentity()->id_user) {
+				$url = $this->url(array("watchId" => $watch->id, "clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id), "audit-watch-edit");
+				$caption = "Upravit";
+			} else {
+				$url = "#";
+				$caption = "Zorbazit";
+			}
+			
+			echo "<a href='$url'>$caption</a>";
+			?>
+			</td>
+		</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
+<?php

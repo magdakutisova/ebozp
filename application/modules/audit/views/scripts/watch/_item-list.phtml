@@ -1,0 +1,16 @@
+<h2><?php echo $this->caption; ?></h2>
+<?php
+if ($this->items->count()) {
+	?>
+<ol>
+<?php 
+foreach ($this->items as $item) {
+		echo "<li style='padding: 0 5px'>" . $item->content . "<br /></li>";
+	}
+?>
+</ol>
+<?php 
+} else {
+	echo $this->notFound;
+}
+?>

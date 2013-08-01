@@ -1,0 +1,6 @@
+<?php
+$watch = $this->watch;
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$params = array("watchId" => $watch->id, "clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id);
+
+$redirector->gotoRouteAndExit($params, "audit-watch-edit");

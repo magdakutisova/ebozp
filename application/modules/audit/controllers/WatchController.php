@@ -16,6 +16,38 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 	
+	public function createmistakeAction() {
+		// nacteni dat dohlidky
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+		
+		// nastaveni hodnot requestu
+		$this->_request->setParam("clientId", $watch->client_id);
+		$this->_request->setParam("subsidiaryId", $watch->subsidiary_id);
+		
+		// nacteni id pracoviste, pokud je treba
+		$workplaceId = $this->_request->getParam("workplaceId", 0);
+		$workplace = null;
+		
+		// sestaveni URL
+		$url = "/audit/watch/postmistake?watchId=" . $watch->id . "&clientId=" . $watch->client_id . "&subsidiaryId=" . $watch->subsidiary_id;
+		
+		if ($workplaceId) {
+			$tableWorkplaces = new Application_Model_DbTable_Workplace();
+			$workplace = $tableWorkplaces->find($workplaceId)->current();
+		}
+		
+		// priprava formulare a nastaveni akce
+		$form = new Audit_Form_MistakeCreateAlone();
+		$form->setAction($url);
+		$form->isValidPartial($this->_request->getParams());
+		$form->getElement("workplace_id")->setValue($workplaceId);
+		
+		$this->view->form = $form;
+		$this->view->workplace = $workplace;
+		$this->view->watch = $watch;
+	}
+	
 	public function deleteAction() {
 		
 	}
@@ -68,6 +100,13 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// realizacni vystup
 		$outputs = $watch->findOutputs();
 		
+		// neshody vazane k dohlidce
+		$mistakes = $watch->findMistakes();
+		
+		// nacteni pracovist pobocky
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $watch->subsidiary_id), "name");
+		
 		$this->view->form = $form;
 		$this->view->contactForm = $contactForm;
 		$this->view->watch = $watch;
@@ -75,6 +114,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->changes = $changes;
 		$this->view->orders = $orders;
 		$this->view->outputs = $outputs;
+		$this->view->mistakes = $mistakes;
+		$this->view->workplaces = $workplaces;
 	}
 	
 	public function getAction() {
@@ -100,7 +141,60 @@ class Audit_WatchController extends Zend_Controller_Action {
 	 * zobrazi seznam dohlidek u klienta / pobocky
 	 */
 	public function indexAction() {
+		// nacteni dat
+		$clientId = $this->_request->getParam("clientId", 0);
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
 		
+		// pokud je pobocka rovna nule, pak se nacte id vychoti pobocky
+		if ($subsidiaryId == 0) {
+			$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+			$subsidiary = $tableSubsidiaries->fetchRow(array("client_id = ?" => $clientId, "hq"));
+			$subsidiaryId = $subsidiary->id_subsidiary;
+		}
+		
+		// vygenerovani vyhledavaciho dotazu
+		$tableWatches = new Audit_Model_Watches();
+		$watches = $tableWatches->findWatches($clientId, $subsidiaryId);
+		
+		$this->view->watches = $watches;
+		$this->view->clientId = $clientId;
+		$this->view->subsidiaryId = $subsidiaryId;
+	}
+	
+	public function mistakesAction() {
+		// nacteni dohlidky
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+		
+		// nacteni id neshod
+		$mistakes = (array) $this->_request->getParam("mistake", array());
+		
+		$removed = array(0);
+		$notRemoved = array(0);
+		
+		foreach ($mistakes as $id => $val) {
+			if ($val["select"]) {
+				$removed[] = $id;
+			} else {
+				$notRemoved[] = $id;
+			}
+		}
+		
+		// zapis odstranenych neshod
+		$where = array(
+				"watch_id = ?" => $watch->id,
+				"mistake_id in (?)" => $removed
+		);
+		
+		$tableAssocs = new Audit_Model_WatchesMistakes();
+		$tableAssocs->update(array("set_removed" => 1), $where);
+		
+		// zapis neodstranenych neshod
+		$where["mistake_id in (?)"] = $notRemoved;
+		
+		$tableAssocs->update(array("set_removed" => 0), $where);
+		
+		$this->view->watch = $watch;
 	}
 	
 	public function newcontactAction() {
@@ -181,7 +275,88 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = $tableWatches->createRow($data);
 		$watch->save();
 		
+		// vlozeni neshod, ktere jsou vazany k pobocce
+		$tableAssocs = new Audit_Model_WatchesMistakes();
+		$tableAssocs->insertByWatch($watch);
+		
 		$this->view->watch = $watch;
+	}
+	
+	public function postmistakeAction() {
+		// nacteni dat
+		$watchId = $this->_request->getParam("watchId", 0);
+		$workplaceId = $this->_request->getParam("workplaceId", 0);
+		
+		$watch = self::loadWatch($watchId);
+		
+		// kontrola validity
+		$form = new Audit_Form_MistakeCreateAlone();
+		$form->removeElement("record_id");
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("createmistake");
+			return;
+		}
+		
+		// zapis neshody a presun na editaci dohlidky
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$data = $form->getValues(true);
+		
+		$removedAt = new Zend_Date($data["will_be_removed_at"], "MM. dd. y");
+		
+		$mistake = $tableMistakes->createMistake(
+				null, 
+				$removedAt, 
+				$form->getValue("mistake"), 
+				$form->getValue("suggestion"), 
+				$data["comment"], 
+				$data["hidden_comment"], 
+				$data["category"], 
+				$data["subcategory"], 
+				$data["concretisation"], 
+				null, 
+				$data["weight"], 
+				$watch);
+		
+		// zapis asociace
+		$tableAssocs = new Audit_Model_WatchesMistakes();
+		$tableAssocs->insert(array(
+				"watch_id" => $watch->id,
+				"mistake_id" => $mistake->id
+				));
+		
+		$this->view->watch = $watch;
+		$this->view->mistake = $mistake;
+	}
+	
+	public function protocolPdfAction() {
+		// nacteni dat
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+		
+		$mistakes = $watch->findMistakes();
+		$outputs = $watch->findOutputs();
+		$orders = $watch->findOrders();
+		$discussed = $watch->findDiscussed();
+		$changes = $watch->findChanges();
+		
+		// nacteni dat o klientovi
+		$client = $watch->getClient();
+		$subsidiary = $watch->getSubsidiary();
+		$person = $watch->getContactPerson();
+		$user = $watch->getUser();
+		
+		$this->view->watch = $watch;
+		$this->view->mistakes = $mistakes;
+		$this->view->outputs = $outputs;
+		$this->view->orders = $orders;
+		$this->view->discussed = $discussed;
+		$this->view->changes = $changes;
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->user = $user;
+		$this->view->person = $person;
+		$this->view->logo = __DIR__ . "/../resources/logo.png";
 	}
 	
 	public function putAction() {

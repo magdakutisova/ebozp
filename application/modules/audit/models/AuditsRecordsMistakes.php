@@ -64,14 +64,14 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 			$concretization = null,
 			Audit_Model_Row_Audit $audit = null,
 			$weight = null,
-			Audit_Model_Row_Check $check = null
+			Audit_Model_Row_Watch $watch = null
 			) 
 	{	
 		// kontrola auditu a recordu
-		if (is_null($check) && is_null($audit) && is_null($record)) throw new Zend_Db_Table_Exception("Audit, check and Record can not be null both");
+		if (is_null($watch) && is_null($audit) && is_null($record)) throw new Zend_Db_Table_Exception("Audit, check and Record can not be null both");
 		
 		// kontrola auditu a pripadne jeho nacteni
-		if (is_null($audit) && is_null($check)) {
+		if (is_null($audit) && is_null($watch)) {
 			$audit = $record->getAudit();
 		}
 		
@@ -83,9 +83,9 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		$retVal = $this->createRow(array(
 				"record_id" => $record ? $record->id : null,
 				"audit_id" => $audit ? $audit->id : null,
-				"check_id" => $check ? $check->id : null,
-				"client_id" => $audit ? $audit->client_id : $check->client_id,
-				"subsidiary_id" => $audit ? $audit->subsidiary_id : $check->subsidiary_id,
+				"watch_id" => $watch ? $watch->id : null,
+				"client_id" => $audit ? $audit->client_id : $watch->client_id,
+				"subsidiary_id" => $audit ? $audit->subsidiary_id : $watch->subsidiary_id,
 				"questionary_item_id" => $record ? $record->questionary_item_id : null,
 				"weight" => $weight,
 				"question" => $question,
@@ -96,7 +96,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				"suggestion" => $suggestion,
 				"comment" => $comment,
 				"hidden_comment" => $hiddenComment,
-				"notified_at" => $audit ? $audit->done_at : $check->done_at,
+				"notified_at" => $audit ? $audit->done_at : $watch->watched_at,
 				"will_be_removed_at" => $willBeRemoved->get("y-MM-dd"),
 				"responsibile_name" => ""
 				
@@ -137,6 +137,16 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		}
 		
 		return $this->fetchAll($where);
+	}
+	
+	public function getByWatch(Audit_Model_Row_Watch $watch) {
+		$tableAssocs = new Audit_Model_WatchesMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		
+		return $this->_findMistakes(
+				array("id in (select mistake_id from $nameAssocs where watch_id = ?)" => $watch->id),
+				array("$nameAssocs.set_removed")
+				);
 	}
 	
 	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $order, $actualsOnly = true) {
@@ -214,5 +224,36 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		}
 		
 		return $retVal;
+	}
+	
+	private function _findMistakes(array $where, array $columns = array()) {
+		// nacteni asociacnich tabulek
+		$tableAWatches = new Audit_Model_WatchesMistakes();
+		$tableAAudits = new Audit_Model_AuditsMistakes();
+		$nameAWatches = $tableAWatches->info("name");
+		$nameAAudits = $tableAAudits->info("name");
+		
+		// sestaveni vyhledavaciho dotazu
+		$select = new Zend_Db_Select($this->getAdapter());
+		$select->from($this->_name, array_merge(array(
+				new Zend_Db_Expr("$this->_name.*"),
+				new Zend_Db_Expr("(COUNT($nameAAudits.is_submited) + COUNT($nameAWatches.is_submited) - 1) AS is_marked")
+				), $columns));
+		
+		// spojeni s asociacemi
+		$select->joinLeft($nameAAudits, "$nameAAudits.mistake_id = id", array())->joinLeft($nameAWatches, "$nameAWatches.mistake_id = id", array());
+		
+		// vlozeni omezeni z parametru
+		foreach ($where as $cond => $val) {
+			$select->where($cond, $val);
+		}
+		
+		// nastaveni seskupovani
+		$select->group("id");
+
+		// nacteni dat a sestaveni vysledku
+		$data = $select->query()->fetchAll();
+		
+		return new Audit_Model_Rowset_AuditsRecordsMistakes(array("data" => $data, "table" => $this, "rowClass" => $this->_rowClass));
 	}
 }

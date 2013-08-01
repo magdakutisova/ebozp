@@ -1,3 +1,11 @@
+<?php 
+// kontrola, jestli je nejake pracoviste nalezeno
+if ($this->notFound) {
+	// nic nebylo nalezeno
+	echo "<strong>Pobočka nemá žádné pracoviště</strong>";
+	return;
+}
+?>
 <table>
 	<tr>
 		<td width="30%" align="left">

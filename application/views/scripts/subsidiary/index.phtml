@@ -25,6 +25,8 @@
 	 <?php if ($this->createAuditAllowed) { ?>
 	 | <a href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-create"); ?>">Provést audit</a>
 	 <?php } ?>
+	 |
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
 </div>
 
 <div class="box tasks clear">

@@ -2,6 +2,7 @@
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#discuss">Projednáno</a></li>
+		<li><a href="#mistakes">Neshody</a></li>
 		<li><a href="#changes">Změny</a></li>
 		<li><a href="#orders">Objednávky</a></li>
 		<li><a href="#outputs">Realizační výstup</a></li>
@@ -9,7 +10,14 @@
 	<div id="overview">
 		<h1>Dohlídka</h1>
 		<?php
+		$watch = $this->watch;
+		
 		echo $this->form;
+		
+		$url = "/audit/watch/protocol.pdf";
+		
+		echo "<form action='$url' target='_blank' method='get'>" . 
+			$this->formHidden("watchId", $watch->id) . $this->formSubmit("protocol", "Náhled protokolu") . "</form>";
 		?>
 		<h2>Jiná kontaktní osoba</h2>
 		<?php 
@@ -56,6 +64,63 @@
 			echo $this->formButton("add-change", "Přidat položku");
 			?>
 			</div>
+		</form>
+	</div>
+	<div id="mistakes">
+		<h2>Nová neshoda</h2>
+		<?php 
+		$url = "/audit/watch/createmistake?watchId=$watch->id&clientId=$watch->client_id&subsidiary_id=$watch->subsidiary_id";
+		?>
+		<form action="<?php echo $url; ?>" method="post">
+			<table>
+				<tr>
+					<td>
+					<?php echo $this->formLabel("mistake-workplace_id", "Pracoviště"); ?>
+					</td>
+					<td>
+					<?php 
+					// zpracovani pobocek
+					$workplaces = array("0" => "--- MIMO PRACOVIŠTĚ ---");
+					
+					foreach ($this->workplaces as $item) {
+						$workplaces[$item->id_workplace] = $item->name;
+					}
+					
+					echo $this->formSelect("mistake[workplace_id]", null, array(), $workplaces);
+					?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+					<?php echo $this->formSubmit("mistake-new", "Nová neshoda"); ?>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<h2>Neshody</h2>
+		<form action="/audit/watch/mistakes?watchId=<?php echo $this->watch->id; ?>" method="post">
+			<em>Vyberte neshody, které budou označeny jako odstraněné</em>
+			<table class="multirow-table">
+			<?php 
+			echo $this->mistakeTable()->header();
+			$params = array("selector" => true, "actions" => array("get" => "Zobrazit"));
+			
+			foreach ($this->mistakes as $mistake) {
+				// vyhodnoceni, zda je neshoda kriticka
+				if ($mistake->is_marked)
+					$params["classes"] = array("mistake-marked");
+				else
+					$params["classes"] = array();
+				
+				$params["selected"] = $mistake->set_removed;
+				
+				echo $this->mistakeTable()->mistake($mistake, $params);
+			}
+			?>
+			</table>
+			<p>
+			<?php echo $this->formSubmit("mistake-submit", "Uložit"); ?>
+			</p>
 		</form>
 	</div>
 	<div id="orders">

@@ -9,7 +9,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// seznam auditu
 		$router->addRoute(
 				"audit-list",
-				new Zend_Controller_Router_Route("/klient/:clientId/adits",
+				new Zend_Controller_Router_Route("/klient/:clientId/audits",
 						array(
 								"module" => "audit",
 								"controller" => "audit",
@@ -149,7 +149,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// routa na vyplneni dotazniku auditu ze strany technika
 		$router->addRoute(
 				"audit-edit",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/edit",
 						array(
 								"module" => "audit",
 								"controller" => "audit",
@@ -173,7 +173,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// routa na zobrazeni auditu (read-only)
 		$router->addRoute(
 				"audit-get",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/get",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/get",
 						array(
 								"module" => "audit",
 								"controller" => "audit",
@@ -421,6 +421,26 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"module" => "audit",
 								"controller" => "watch",
 								"action" => "edit"
+						))
+		);
+		
+		// seznamy dohlidek
+		$router->addRoute(
+				"audit-watch-index",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/watches",
+						array(
+								"module" => "audit",
+								"controller" => "watch",
+								"action" => "index"
+						))
+		);
+		$router->addRoute(
+				"audit-watch-index-client",
+				new Zend_Controller_Router_Route("/klient/:clientId/watches",
+						array(
+								"module" => "audit",
+								"controller" => "watch",
+								"action" => "index"
 						))
 		);
 	}

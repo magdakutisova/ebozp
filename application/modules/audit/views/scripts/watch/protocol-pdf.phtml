@@ -1,0 +1,20 @@
+<?php
+// vypnuti layotu
+$this->layout()->disableLayout();
+
+$content = $this->partial("watch/_protocol.phtml", $this);
+
+$pdf = new My_Pdf();
+$pdf->AddPage();
+$pdf->SetMargins(15, 20);
+$pdf->SetAutoPageBreak(true, 35);
+$pdf->SetFont("dejavusans", 12, "");
+$pdf->SetAutoPageBreak(true, 35);
+$pdf->writeHTML($content);
+
+$this->pdf()->footer($pdf, $this->logo, "Zpracoval:
+G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622
+Zapsána u Rejstříkového soudu vedeného Krajským soudem v Hradci Králové, oddíl A, vložka 3503
+Telefon: 466535700, E-mail: guard7@guard7.cz, www. guard7.cz");
+
+$pdf->Output("zprava.pdf", "D");

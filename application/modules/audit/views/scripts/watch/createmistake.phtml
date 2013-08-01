@@ -1,0 +1,15 @@
+<h2>Nová neshoda k dohlídce</h2>
+<?php
+// odkaz zpet
+$watch = $this->watch;
+$url = $this->url(array("watchId" => $watch->id, "clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id), "audit-watch-edit");
+
+echo "<a href='$url'>Zpět na dohlídku</a>";
+
+if ($this->workplace) {
+	echo "<h3>" . $this->workplace->id_workplace . "</h3>";
+}
+
+echo $this->form;
+?>
+<script type="text/javascript" src="/js/audit/watch.js"></script>

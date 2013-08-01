@@ -1,0 +1,92 @@
+<h1 align="center">Protokol BOZP a PO</h1>
+<table border="1" cellpadding="5">
+	<tr>
+		<td>
+		Provedl
+		</td>
+		<td>
+		<?php echo $this->user->username; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		Čas
+		</td>
+		<td>
+		<?php echo substr($this->watch->time_from, 0, 5) . " - " . substr($this->watch->time_to, 0, 5); ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		Jednáno s
+		</td>
+		<td>
+		<?php echo $this->person->name; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		E-mail
+		</td>
+		<td>
+		<?php echo $this->person->email; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		Telefon
+		</td>
+		<td>
+		<?php echo $this->person->phone; ?>
+		</td>
+	</tr>
+</table>
+<?php 
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Projednáno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podniku", "items" => $this->changes, "notFound" => "Nic nebylo změněno"));
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Realizační výstup", "items" => $this->outputs, "notFound" => "Žádné připomínky klienta"));
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno"));
+
+// rozrazeni neshod na nove, odstranene a neodstranene
+$new = array();
+$removed = array();
+$marked = array();
+$watch = $this->watch;
+
+foreach ($this->mistakes as $mistake) {
+	// vyhodnoceni neshody
+	if ($mistake->set_removed) {
+		$removed[] = $mistake;
+	} elseif ($mistake->watch_id == $watch->id) {
+		$new[] = $mistake;
+	} else {
+		$marked[] = $mistake;
+	}
+}
+
+// nove neshody
+?>
+<h2>Nově nalezené závady</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new)); ?>
+<h2>Odstraněné závady</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed)); ?>
+<h2>Neodstraněné závady z minulých kontrol</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked)); ?>
+<table cellpadding="10">
+	<tr>
+		<td>
+		Za G U A R D 7, v.o.s. předal
+		</td>
+		<td>
+		<?php echo $this->watch->guard_person; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<?php echo $this->watch->client_description; ?>
+		</td>
+		<td>
+		<?php echo $this->person->name; ?>
+		</td>
+	</tr>
+</table>

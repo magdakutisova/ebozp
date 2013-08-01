@@ -65,4 +65,9 @@ $(function() {
 	$("#add-change").click(addChange);
 	$("#add-order").click(addOrder);
 	$("#add-output").click(addOutput);
+	$("#mistake-will_be_removed_at,#watch-watched_at").datepicker({
+		"dateFormat" : "dd. mm. yy",
+		"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
+	});
 });
