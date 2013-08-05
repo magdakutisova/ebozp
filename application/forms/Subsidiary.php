@@ -197,7 +197,6 @@ class Application_Form_Subsidiary extends Zend_Form
         
         $this->addElement('doctor', 'doctor201', array(
         		'order' => 201,
-        		'validators' => array(new My_Form_Validator_PersonEmail()),
         		'calledFrom' => 'subs',
         ));
         
@@ -262,7 +261,6 @@ class Application_Form_Subsidiary extends Zend_Form
     		$newDoctor = new My_Form_Element_Doctor('newDoctor' . strval($order - 1), array(
     				'order' => $order,
     				'value' => $data[$fieldName],
-    				'validators' => array(new My_Form_Validator_PersonEmail()),
     				'calledFrom' => 'subs',
     		));
     		$this->addElement($newDoctor);

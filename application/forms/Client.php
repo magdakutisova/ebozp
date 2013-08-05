@@ -268,7 +268,6 @@ class Application_Form_Client extends Zend_Form
         
         $this->addElement('doctor', 'doctor201', array(
         		'order' => 201,
-        		'validators' => array(new My_Form_Validator_PersonEmail()),
         		));
         
         $this->addElement('button', 'new_doctor', array(
@@ -324,7 +323,6 @@ class Application_Form_Client extends Zend_Form
     		$newDoctor = new My_Form_Element_Doctor('newDoctor' . strval($order - 1), array(
     				'order' => $order,
     				'value' => $data[$fieldName],
-    				'validators' => array(new My_Form_Validator_PersonEmail()),
     				));
     		$this->addElement($newDoctor);
     	}

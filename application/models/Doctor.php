@@ -3,8 +3,8 @@ class Application_Model_Doctor{
 	
 	private $idDoctor;
 	private $name;
-	private $phone;
-	private $email;
+	private $street;
+	private $town;
 	private $subsidiaryId;
 	
 	public function __construct($options = array()){
@@ -28,17 +28,17 @@ class Application_Model_Doctor{
 	}
 
 	/**
-	 * @return the $phone
+	 * @return the $street
 	 */
-	public function getPhone() {
-		return $this->phone;
+	public function getStreet() {
+		return $this->street;
 	}
 
 	/**
-	 * @return the $email
+	 * @return the $town
 	 */
-	public function getEmail() {
-		return $this->email;
+	public function getTown() {
+		return $this->town;
 	}
 
 	/**
@@ -63,17 +63,17 @@ class Application_Model_Doctor{
 	}
 
 	/**
-	 * @param field_type $phone
+	 * @param field_type $street
 	 */
-	public function setPhone($phone) {
-		$this->phone = $phone;
+	public function setStreet($street) {
+		$this->street = $street;
 	}
 
 	/**
-	 * @param field_type $email
+	 * @param field_type $town
 	 */
-	public function setEmail($email) {
-		$this->email = $email;
+	public function setTown($town) {
+		$this->town = $town;
 	}
 
 	/**
@@ -86,8 +86,8 @@ class Application_Model_Doctor{
 	public function populate(array $data){
 		$this->idDoctor = $data['id_doctor'];
 		$this->name = $data['name'];
-		$this->phone = $data['phone'];
-		$this->email = $data['email'];
+		$this->street = $data['street'];
+		$this->town = $data['town'];
 		$this->subsidiaryId = $data['subsidiary_id'];
 		
 		return $this;
@@ -99,8 +99,8 @@ class Application_Model_Doctor{
 			$data['id_doctor'] = $this->idDoctor;
 		}
 		$data['name'] = $this->name;
-		$data['phone'] = $this->phone;
-		$data['email'] = $this->email;
+		$data['street'] = $this->street;
+		$data['town'] = $this->town;
 		$data['subsidiary_id'] = $this->subsidiaryId;
 			
 		return $data;

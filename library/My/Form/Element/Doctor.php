@@ -4,8 +4,8 @@ class My_Form_Element_Doctor extends Zend_Form_Element_Xhtml{
 	public $helper = 'doctor';
 	protected $_idDoctor;
 	protected $_names;
-	protected $_phone;
-	protected $_email;
+	protected $_street;
+	protected $_town;
 	
 	public function loadDefaultDecorators(){
 		if ($this->loadDefaultDecoratorsIsDisabled()){
@@ -29,12 +29,12 @@ class My_Form_Element_Doctor extends Zend_Form_Element_Xhtml{
 		return $this->_names;
 	}
 	
-	public function getPhone(){
-		return $this->_phone;
+	public function getStreet(){
+		return $this->_street;
 	}
 	
-	public function getEmail(){
-		return $this->_email;
+	public function getTown(){
+		return $this->_town;
 	}
 	
 	public function setIdDoctor($_idDoctor){
@@ -45,19 +45,19 @@ class My_Form_Element_Doctor extends Zend_Form_Element_Xhtml{
 		$this->_names = $_names;
 	}
 	
-	public function setPhone($_phone){
-		$this->_phone = $_phone;
+	public function setStreet($_street){
+		$this->_street = $_street;
 	}
 	
-	public function setEmail($_email){
-		$this->_email = $_email;
+	public function setTown($_town){
+		$this->_town = $_town;
 	}
 	
 	public function setValue($values){
 		$this->setIdDoctor($values['id_doctor']);
 		$this->setNames($values['name']);
-		$this->setPhone($values['phone']);
-		$this->setEmail($values['email']);
+		$this->setStreet($values['street']);
+		$this->setTown($values['town']);
 		return $this;
 	}
 	
@@ -65,8 +65,8 @@ class My_Form_Element_Doctor extends Zend_Form_Element_Xhtml{
 		$values = array();
 		$values['id_doctor'] = $this->getIdDoctor();
 		$values['name'] = $this->getNames();
-		$values['phone'] = $this->getPhone();
-		$values['email'] = $this->getEmail();
+		$values['street'] = $this->getStreet();
+		$values['town'] = $this->getTown();
 		return $values;
 	}
 	
