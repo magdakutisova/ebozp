@@ -21,13 +21,16 @@
 		if ($clientId != $subsidiary->getClientId()){?>
 			</ul>
 			<?php $clientId = $subsidiary->getClientId(); ?>
+			<?php if($companyName != ''){ ?>
 			<p class="bold concealer">
 			<?php if($allowed){?><a><?php }?>
 				<span class="anchor"><?php echo $companyName . ' - ' . $companyAddress ?></span>
 			<?php if($allowed){?></a><?php }?>
 			</p>
 			<ul class="hidden">
-			<?php if ($allowed){
+			<?php } else{?>
+			<ul>
+			<?php }if ($allowed){
 			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 			$allowed = ''; }
 			if(!$subsidiary->getHq()){?>

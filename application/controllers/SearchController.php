@@ -48,6 +48,7 @@ class SearchController extends Zend_Controller_Action
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed('clientId', $subsidiary->getClientId(), 'utf-8'));
+				$document->addField ( Zend_Search_Lucene_Field::unIndexed('active', $subsidiary->getActive(), 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
 				$message .= "Indexována pobočka: " . $subsidiary->getSubsidiaryName() . "<br />";
 				$index->addDocument ( $document );

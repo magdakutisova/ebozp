@@ -41,6 +41,7 @@ foreach ($this->subsidiaries as $subsidiary) :
 			
 			$clientId = $subsidiary->getClientId();
 			
+			if($companyName != ''){
 			$list .= '<p class="bold concealer">';
 			
 			if($allowed){
@@ -51,6 +52,9 @@ foreach ($this->subsidiaries as $subsidiary) :
 				$list .= '</a>';
 			}
 			$list .= '</p><ul class="hidden">';
+			} else{
+				$list .= '<ul>';
+			}
 			if ($allowed){
 				$list .= '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 				$allowed = '';

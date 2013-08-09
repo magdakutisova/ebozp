@@ -175,9 +175,9 @@ class ClientController extends Zend_Controller_Action
 
 		$mode = $this->_getParam ( 'mode' );
 		
-		$active = $this->_getParam('active');
+		$active = $this->_getParam('active', null);
 		$activeDb = null;		
-		if($active == 'active'){
+		if($active == 'active' || $active === null){
 			$activeDb = 1;
 		}
 		if($active == 'inactive'){
@@ -742,9 +742,9 @@ class ClientController extends Zend_Controller_Action
 		
 		$mode = $this->_getParam ( 'mode' );
 		
-		$active = $this->_getParam('active');
+		$active = $this->_getParam('active', null);
 		$activeDb = null;
-		if($active == 'active'){
+		if($active == 'active' || $active === null){
 			$activeDb = 1;
 		}
 		if($active == 'inactive'){

@@ -25,6 +25,13 @@ class Application_Form_Search extends Zend_Form
     		array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
     		array(array('row' => 'HtmlTag'), array('tag' => 'span')),
 		);
+		
+		$elementDecorator3 = array(
+				'ViewHelper',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
+				array(array('row' => 'HtmlTag'), array('tag' => 'div')),
+		);
     	
     	$this->setName('search');
         
@@ -33,10 +40,21 @@ class Application_Form_Search extends Zend_Form
         	'decorators' => $elementDecorator,
         ));
         
+        $this->addElement('multiCheckbox', 'active', array(
+        		'multiOptions' => array(
+        				1 => 'Aktivní pobočky',
+        				0 => 'Neaktivní pobočky',
+        		),
+        		'value' => 1,
+        		'decorators' => $elementDecorator3,
+        ));
+        
         $this->addElement('submit', 'search', array(
         	'label' => 'Hledat',
         	'decorators' => $elementDecorator2,
         ));
+        
+        
     }
 
 
