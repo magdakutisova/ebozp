@@ -10,7 +10,8 @@
 	$clientId = "";
 	$allowed = ""?>
 	<ul>
-	<?php foreach ($this->subsidiaries as $subsidiary) :
+	<?php if(count($this->subsidiaries)){ 
+	foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
 		$companyName = $subsidiary->getSubsidiaryName();
 		$companyAddress = $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
@@ -36,7 +37,11 @@
 		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
 		<?php }?>
 	<?php }
-		endforeach; ?>
+		endforeach;
+	}
+	else{
+		echo '<p>V archivu nejsou momentálně žádní klienti.</p>';
+	} ?>
 	</ul>	
 	
 <a name="down"></a>

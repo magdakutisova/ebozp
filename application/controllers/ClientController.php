@@ -809,8 +809,10 @@ class ClientController extends Zend_Controller_Action
 				$subsidiaries = $subsidiariesDb->getByClient (1);
 		
 				//kontrola jestli user má přístup
-				foreach($subsidiaries as $subsidiary){
-					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				if(count($subsidiaries)){
+					foreach($subsidiaries as $subsidiary){
+						$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+					}
 				}
 		
 				$this->view->subsidiaries = $subsidiaries;
