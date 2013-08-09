@@ -129,7 +129,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'clientFilter',
-			new Zend_Controller_Router_Route('klienti/:mode',
+			new Zend_Controller_Router_Route('klienti/:mode/:active',
 											 array('controller' => 'client',
 											 	   'action' => 'list'))
 		);
@@ -192,7 +192,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 				'clientArchivefilter',
-				new Zend_Controller_Router_Route('archiv/:mode',
+				new Zend_Controller_Router_Route('archiv/:mode/:active',
 						array('controller' => 'client',
 								'action' => 'archivelist'))
 				);

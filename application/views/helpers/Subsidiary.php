@@ -10,6 +10,13 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 		$subsidiary = $this->view->subsidiary;
 		$content = '';
 		
+		$content .= '<p class="no-margin"><span class="bold">Status: </span> ';
+		if($subsidiary['subsidiary']->getActive()){
+			$content .= 'aktivní</p>';
+		}
+		else{
+			$content .= 'neaktivní</p>';
+		}
 		$content .= '<p class="no-margin"><span class="bold">Adresa pobočky: </span>'
 			. $subsidiary['subsidiary']->getSubsidiaryStreet()
 			. ', ' . $subsidiary['subsidiary']->getSubsidiaryTown()

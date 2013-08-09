@@ -16,7 +16,7 @@ $allowed = "";
 $initial = "";
 
 $list .= '<ul>';
-
+if(count($this->subsidiaries)){
 foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
 		$list .= '</ul>';		
@@ -56,14 +56,25 @@ foreach ($this->subsidiaries as $subsidiary) :
 				$allowed = '';
 			}
 			if(!$subsidiary->getHq()){
-				$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a></li>';
+				$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+				if(!$subsidiary->getActive()){
+					$list .= ' (neaktivní)';
+				}
+				$list .= '</a></li>';
 			}
 		}
 		else{
-			$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a></li>';
+			$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+				if(!$subsidiary->getActive()){
+					$list .= ' (neaktivní)';
+				}
+				$list .= '</a></li>';
 		}
 	}
-endforeach;
+endforeach;}
+else{
+	$list .= '<p>Žádní klienti k zobrazení.</p>';
+}
 $list .= '</ul><a name="down"></a><a href="#up">&#x25B2; Nahoru &#x25B2;</a>';
 
 echo $alphabet;

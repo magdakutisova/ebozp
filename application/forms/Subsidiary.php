@@ -51,6 +51,16 @@ class Application_Form_Subsidiary extends Zend_Form
         		'order' => 1001,
         		));
         
+        $this->addElement('radio', 'active', array(
+        		'label' => 'Tato pobočka je:',
+        		'multiOptions' => array(
+        				1 => 'Aktivní',
+        				0 => 'Neaktivní',        				
+        				),
+        		'value' => 1,
+        		'decorators' => $elementDecorator,
+        		));
+        
         $this->addElement('text', 'subsidiary_name', array(
         	'label' => 'Název pobočky',
         	'required' => false,
@@ -60,13 +70,13 @@ class Application_Form_Subsidiary extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(0,255)),
         		),
-        	'order' => 1,
+        	'order' => 2,
         ));
         
          $this->addElement('hidden', 'subsidiary', array(
         	'label' => 'Adresa pobočky',
         	'decorators' => $elementDecorator,
-         		'order' => 2,
+         		'order' => 3,
         ));
         
         $this->addElement('text', 'subsidiary_street', array(
@@ -78,7 +88,7 @@ class Application_Form_Subsidiary extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(1,128)),
         		),
-        		'order' => 3,
+        		'order' => 4,
         ));
         
         $this->addElement('text', 'subsidiary_code', array(
@@ -88,7 +98,7 @@ class Application_Form_Subsidiary extends Zend_Form
         	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
         		new Zend_Validate_PostCode('cs_CZ')),
         	'decorators' => $elementDecorator,
-        		'order' => 4,
+        		'order' => 5,
         ));
         
         $this->addElement('text', 'subsidiary_town', array(
@@ -100,7 +110,7 @@ class Application_Form_Subsidiary extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(1,128)),
         		),
-        		'order' => 5,
+        		'order' => 6,
         ));
         
         $this->addElement('text', 'district', array(
@@ -112,7 +122,7 @@ class Application_Form_Subsidiary extends Zend_Form
         						'options' => array(0,128)),
         		),
         		'decorators' => $elementDecorator,
-        		'order' => 6,
+        		'order' => 7,
         ));
         
         $this->addElement('text', 'supervision_frequency', array(
@@ -121,7 +131,7 @@ class Application_Form_Subsidiary extends Zend_Form
         	'filters' => array('Int', 'StripTags', 'StringTrim'),
         	'validators' => array('Digits'),
         	'decorators' => $elementDecorator,
-        		'order' => 7,
+        		'order' => 8,
         ));
         
         $this->addElement('text', 'difficulty', array(
@@ -130,7 +140,7 @@ class Application_Form_Subsidiary extends Zend_Form
         		'filters' => array('StripTags', 'StringTrim'),
         		'validators' => array('Float'),
         		'decorators' => $elementDecorator,
-        		'order' => 8,
+        		'order' => 9,
         ));
         
         $this->addElement('select', 'insurance_company', array(
@@ -142,7 +152,7 @@ class Application_Form_Subsidiary extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(1,45)),
         		),
-        		'order' => 9,
+        		'order' => 10,
         ));
         
      	$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -156,7 +166,7 @@ class Application_Form_Subsidiary extends Zend_Form
         		'required' => false,
         		'filters' => array('StripTags', 'StringTrim'),
         		'decorators' => $elementDecorator,
-        			'order' => 10,
+        			'order' => 11,
         	));
         }
         

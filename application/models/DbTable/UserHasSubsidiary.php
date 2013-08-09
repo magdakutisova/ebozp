@@ -35,8 +35,21 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 		));
 	}
 	
-	public function getByRole($role, $archived = 0){
-		$select = $this->select ()
+	public function getByRole($role, $archived = 0, $active = null){
+		if($active !== null){
+			$select = $this->select ()
+			->from ( 'user_has_subsidiary' )
+			->join('user', 'user.id_user = user_has_subsidiary.id_user')
+			->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')
+			->join('client', 'subsidiary.client_id = client.id_client')
+			->where('client.archived = ?', $archived)
+			->where('subsidiary.active = ?', $active)
+			->where ( 'subsidiary.deleted = 0' )
+			->where('user.role = ?', $role)
+			->order ( array('user.username', 'subsidiary.subsidiary_name'));
+		}
+		else{
+			$select = $this->select ()
 			->from ( 'user_has_subsidiary' )
 			->join('user', 'user.id_user = user_has_subsidiary.id_user')
 			->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')
@@ -45,6 +58,7 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			->where ( 'subsidiary.deleted = 0' )
 			->where('user.role = ?', $role)
 			->order ( array('user.username', 'subsidiary.subsidiary_name'));
+		}
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll ( $select );
 		return $this->processByRole($result);

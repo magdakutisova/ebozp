@@ -22,11 +22,17 @@ class Zend_View_Helper_ClientInfo extends Zend_View_Helper_Abstract{
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiary']);
 			$info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+			if(!$subsidiary->getActive()){
+				$info .= ' (neaktivní pobočka) ';
+			}
 		}
 		if(isset($params['subsidiaryId'])){
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiaryId']);
 			$info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiaryId']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+			if(!$subsidiary->getActive()){
+				$info .= ' (neaktivní pobočka) ';
+			}
 		}
 		return $info;
 	}
