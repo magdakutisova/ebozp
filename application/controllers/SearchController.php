@@ -94,6 +94,7 @@ class SearchController extends Zend_Controller_Action
     		$post = true;
 			if ($form->isValid ( $formData )) {
 				$query = $form->getValue('query');
+				$active = $form->getValue('active');
 				$query = '*' . $query . '*';
 				Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 				$message = "";
@@ -139,12 +140,15 @@ class SearchController extends Zend_Controller_Action
 							if(!$acl->isAllowed($user, $subsidiariesDb->getSubsidiary($result->subsidiaryId))){
 								continue;
 							}
-							$subsidiaries[$countS]['subsidiaryId'] = $result->subsidiaryId;
-							$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
-							$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;
-							$subsidiaries[$countS]['subsidiaryTown'] = $result->subsidiaryTown;
-							$subsidiaries[$countS]['clientId'] = $result->clientId;
-							$countS++;
+							if(count($active) == 2 || (in_array("1", $active) && $result->active == 1) || (in_array("0", $active) && $result->active == 0)){
+								$subsidiaries[$countS]['subsidiaryId'] = $result->subsidiaryId;
+								$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
+								$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;
+								$subsidiaries[$countS]['subsidiaryTown'] = $result->subsidiaryTown;
+								$subsidiaries[$countS]['clientId'] = $result->clientId;
+								$subsidiaries[$countS]['active'] = $result->active;
+								$countS++;
+							}
 						}
 					}
 													
