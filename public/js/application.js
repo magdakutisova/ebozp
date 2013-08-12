@@ -803,6 +803,11 @@ $(function(){
 		}
 	});
 	
+	//barva neaktivních poboček v menu
+	$(document).ready(function(){
+		$("ul.navigation li ul li a:contains('neaktivní')").addClass('inactive');
+	});
+	
 });
 
 /**

@@ -21,6 +21,10 @@ label.required:after{
 	padding: 10px 0 7px 0;
 }
 
+.inactive{
+	color: gray;
+}
+
 #error-message { 
     
     padding: 5px;

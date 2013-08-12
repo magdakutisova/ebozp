@@ -25,9 +25,13 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			$acl = new My_Controller_Helper_Acl();
 			$subIds = array();
 			foreach($subsidiaries as $subsidiary){
-				if($acl->isAllowed($user, $subsidiary)){				 
+				if($acl->isAllowed($user, $subsidiary)){
+					$active = '';
+					if(!$subsidiary->getActive()){
+						$active = ' (neaktivní)';
+					}				 
 					$subs->addPage(array(
-						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown(),
+						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . $active,
 						'route' => 'subsidiaryIndex',
 						'resource' => 'subsidiary',
 						'privilege' => 'index',
