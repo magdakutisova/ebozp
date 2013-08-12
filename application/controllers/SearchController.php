@@ -85,6 +85,21 @@ class SearchController extends Zend_Controller_Action
     	$this->view->subtitle = 'Vyhledávání';
     	
         $form = new Application_Form_Search();
+        $elementDecorator = array(
+        		'ViewHelper',
+        		array('Errors'),
+        		array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
+        		array(array('row' => 'HtmlTag'), array('tag' => 'div')),
+        );
+        $form->addElement('multiCheckbox', 'active', array(
+        		'multiOptions' => array(
+        				1 => 'Aktivní pobočky',
+        				0 => 'Neaktivní pobočky',
+        		),
+        		'value' => 1,
+        		'decorators' => $elementDecorator,
+        		'order' => 2,
+        ));
     	$this->view->form = $form;
     	
     	$post = false;
