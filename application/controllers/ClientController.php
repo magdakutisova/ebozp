@@ -335,6 +335,7 @@ class ClientController extends Zend_Controller_Action
 					$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 					$subsidiary->setClientId($clientId);
 					$subsidiary->setHq(true);
+					$subsidiary->setActive(true);
 						
 					//přidání pobočky
 					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
