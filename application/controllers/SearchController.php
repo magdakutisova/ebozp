@@ -139,6 +139,8 @@ class SearchController extends Zend_Controller_Action
 					
 					foreach($results as $result){
 						if($result->type == 'client'){
+							var_dump($result->companyName);
+							var_dump($result->clientId);
 							if(!$acl->isAllowed($user, $subsidiariesDb->getHeadquarters($result->clientId))){
 								continue;
 							}

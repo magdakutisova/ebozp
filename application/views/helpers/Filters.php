@@ -10,10 +10,7 @@ class Zend_View_Helper_Filters extends Zend_View_Helper_Abstract{
 					<a class="archive-coordinator">Podle koordinátora</a> | 
 					<a class="archive-town">Podle obce</a> | 
 					<a class="archive-district">Podle okresu</a> | 
-					<a class="archive-lastOpen">Naposledy otevřené</a>'
-					. '<br/><input type="checkbox" checked="checked" class="active" value="1">Aktivní pobočky</input>
-					<br/><input type="checkbox" class="inactive" value="0">Neaktivní pobočky</input></div>
-					<div class="current" name="nazev"><div class="type" name="archiv"></div></div>';
+					<a class="archive-lastOpen">Naposledy otevřené</a>';
 		}
 		else{
 			return '<div class="box"><h3>Filtrování</h3>

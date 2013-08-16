@@ -3,6 +3,9 @@
 	<li>
 		<a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex')?>">
 			<?php echo $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();?>
+		<?php if(!$subsidiary->getActive()){
+			echo ' (neaktivní)';
+		}?>
 		</a>
 	</li>
 <?php } ?>
