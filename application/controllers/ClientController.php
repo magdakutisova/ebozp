@@ -562,6 +562,7 @@ class ClientController extends Zend_Controller_Action
 			$client->setInvoiceTown($client->getInvoiceTown());
 			$client->setInvoiceCode($client->getInvoiceCode());
 		}
+		$client->setArchived(0);
 		$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 		$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 		 
