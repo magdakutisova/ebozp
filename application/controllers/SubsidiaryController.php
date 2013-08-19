@@ -82,7 +82,6 @@ class SubsidiaryController extends Zend_Controller_Action {
 			$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'clientIndex');
 		}
 		
-		$this->view->subtitle = $client->getCompanyName();
 		$this->view->client = $client;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
