@@ -296,6 +296,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				);
 		
 		$router->addRoute(
+				'workEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/pracovni-cinnost/:workId/editovat',
+						array('controller' => 'work',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'workDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/pracovni-cinnost/:workId/smazat',
+						array('controller' => 'work',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',

@@ -23,6 +23,76 @@ class WorkController extends Zend_Controller_Action
     	$users = new Application_Model_DbTable_User();
     	$this->_user = $users->getByUsername($this->_username);
     }
+    
+    public function editAction(){
+    	$this->view->subtitle = 'Editace pracovní činnosti';
+    	
+    	$form = new Application_Form_Work();
+    	
+    	$elementDecorator2 = array(
+    			'ViewHelper',
+    			array('Errors'),
+    			array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+    			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+    	);
+    	
+    	$form->removeElement('save_work');
+    	$form->addElement('submit', 'save_work', array(
+    			'label' => 'Uložit pracovní činnost',
+    			'decorators' => $elementDecorator2,
+    			));
+    	$this->view->form = $form;
+    	
+    	$works = new Application_Model_DbTable_Work();
+    	$work = $works->getWork($this->getParam('workId'));
+    	
+    	$form->populate($work->toArray());
+    	
+    	if($this->getRequest()->isPost()){
+    		$formData = $this->getRequest()->getPost();
+    		if($form->isValid($formData)){
+    			$work = new Application_Model_Work($formData);
+    			$works->updateWork($work);
+    			$this->_helper->FlashMessenger('Pracovní činnost ' . $work->getWork() . ' byla upravena.');
+    			
+    			$defaultNamespace = new Zend_Session_Namespace();
+    			if(isset($defaultNamespace->refererWork)){
+    				$path = $defaultNamespace->refererWork;
+    				unset($defaultNamespace->refererWork);
+    				$this->_redirect($path);
+    			}
+    			else{
+    				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
+    			}
+    		}
+    	}
+    }
+    
+    public function deleteAction(){
+    	if($this->getRequest()->getMethod() == 'POST'){
+    		$clientId = $this->_getParam('clientId');
+    		$subsidiaryId = $this->_getParam('subsidiaryId');
+    		$workId = $this->_getParam('workId');
+    		
+    		$works = new Application_Model_DbTable_Work();
+    		$works->deleteWork($workId);
+    		
+    		$this->_helper->FlashMessenger('Pracovní činnost byla vymazána');
+    		
+    		$defaultNamespace = new Zend_Session_Namespace();
+    		if(isset($defaultNamespace->refererWork)){
+    			$path = $defaultNamespace->refererWork;
+    			unset($defaultNamespace->refererWork);
+    			$this->_redirect($path);
+    		}
+    		else{
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
+    		}
+    	}
+    	else{
+    		throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání pracovní činnosti.', 500);
+    	}
+    }
 
     public function listAction(){
     	$clients = new Application_Model_DbTable_Client();
@@ -32,6 +102,9 @@ class WorkController extends Zend_Controller_Action
     	$this->view->clientId = $this->_clientId;
     	$filter = $this->getRequest()->getParam('filter');
     	$this->view->filter = $filter;
+    	
+    	$defaultNamespace = new Zend_Session_Namespace();
+    	$defaultNamespace->refererWork = $this->_request->getPathInfo();
     	
     	//výběr poboček
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();

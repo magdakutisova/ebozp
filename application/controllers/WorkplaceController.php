@@ -580,7 +580,7 @@ class WorkplaceController extends Zend_Controller_Action
     			$workplaceNew->setFolderId(null);
     		}
     		if($formData['boss_id'] == 0){
-    			$workplace->setBossId(null);
+    			$workplaceNew->setBossId(null);
     		}
     		$differentName = true;
     		if($workplace['name'] == $workplaceNew->getName()){
