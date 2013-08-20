@@ -1,3 +1,10 @@
+<div class="box">
+	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Zpět na centrálu</a>
+	<?php if($this->subsidiary['subsidiary']->getActive()){?>
+	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiary' => $this->subsidiary['subsidiary']->getIdSubsidiary()), 'subsidiaryEdit')?>">Editovat pobočku</a>
+	 <?php }?>
+</div>
+
 <div class="box overflow span-11" id="informations">
 		<?php echo $this->subsidiary();?>
 	</div>
@@ -6,7 +13,7 @@
 <p>*****</p></div>
 	
 <div class="box clear">
-<?php if(!$this->archived){?>
+<?php if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
 	 | <?php }?><a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>

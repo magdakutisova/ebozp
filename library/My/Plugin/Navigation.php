@@ -30,8 +30,12 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 					if(!$subsidiary->getActive()){
 						$active = ' (neaktivní)';
 					}				 
+					$hqOnly = '';
+					if($subsidiary->getHqOnly()){
+						$hqOnly = ' (pouze sídlo)';
+					}
 					$subs->addPage(array(
-						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . $active,
+						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . $active . $hqOnly,
 						'route' => 'subsidiaryIndex',
 						'resource' => 'subsidiary',
 						'privilege' => 'index',
@@ -44,18 +48,23 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 				}
 			}
 			
+			$defSubId = $subIds[0];
+			if($subsidiariesDb->getSubsidiary($defSubId)->getHqOnly() && count($subIds) > 1){
+				$defSubId = $subIds[1];
+			}
+			
 			$pages = $clientNavigation->findAllBy('subsidiaryId', 'subsidiaryId');
 			foreach ($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0]));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId));
 			}
 			
 			$pages = $clientNavigation->findAllBy('filter', 'filter');
 			foreach($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0], 'filter' => 'vse'));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId, 'filter' => 'vse'));
 			}
 			$pages = $clientNavigation->findAllBy('filter2', 'filter2');
 			foreach($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subIds[0], 'filter' => 'podle-pracovist'));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId, 'filter' => 'podle-pracovist'));
 			}
 		}
 		

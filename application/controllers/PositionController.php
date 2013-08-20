@@ -153,7 +153,7 @@ class PositionController extends Zend_Controller_Action
     	 
     	//naplnění multiselectu pobočkami
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
     	if ($formContent != 0){
     		$formContent = $this->filterSubsidiarySelect($formContent);
     		$form->subsidiaryList->setMultiOptions ( $formContent );
@@ -440,7 +440,7 @@ class PositionController extends Zend_Controller_Action
     	
     	//výběr poboček
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
-    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
     	
     	if ($formContent != 0){
     		$formContent = $this->filterSubsidiarySelect($formContent);
@@ -652,7 +652,7 @@ class PositionController extends Zend_Controller_Action
         
         //naplnění multiselectu pobočkami
         $subsidiaries = new Application_Model_DbTable_Subsidiary ();
-        $formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+        $formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
         if ($formContent != 0){
         	$formContent = $this->filterSubsidiarySelect($formContent);
         	$form->subsidiaryList->setMultiOptions ( $formContent );

@@ -25,6 +25,16 @@ label.required:after{
 	color: gray;
 }
 
+.hqOnly{
+	color: black;
+	text-decoration: none;
+}
+
+a:hover.hqOnly, a:focus.hqOnly{
+	color:black;
+	cursor: default;
+}
+
 #error-message { 
     
     padding: 5px;

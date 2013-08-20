@@ -115,11 +115,6 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
     }
 
-    public function indexAction()
-    {
-        // action body
-    }
-
     public function newAction()
     {
     	$defaultNamespace = new Zend_Session_Namespace();
@@ -134,7 +129,7 @@ class WorkplaceController extends Zend_Controller_Action
     	
     	//naplnění multiselectu pobočkami
     	$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
     	if ($formContent != 0){
     		$formContent = $this->filterSubsidiarySelect($formContent);
     		$form->subsidiary_id->setMultiOptions ( $formContent );
@@ -452,7 +447,7 @@ class WorkplaceController extends Zend_Controller_Action
         
         //výběr poboček
         $subsidiaries = new Application_Model_DbTable_Subsidiary();
-    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+    	$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
 		
     	if ($formContent != 0){
 			$formContent = $this->filterSubsidiarySelect($formContent);
@@ -514,7 +509,7 @@ class WorkplaceController extends Zend_Controller_Action
         
         //naplnění comboboxu s pobočkami
    		$subsidiaries = new Application_Model_DbTable_Subsidiary ();
-		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 1 );
+		$formContent = $subsidiaries->getSubsidiaries ( $this->_clientId, 0, 0 );
 		if ($formContent != 0){
 			$formContent = $this->filterSubsidiarySelect($formContent);
 			$form->subsidiary_id->setMultiOptions ( $formContent );

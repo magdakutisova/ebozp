@@ -93,10 +93,9 @@ class Application_Model_DbTable_Work extends Zend_Db_Table_Abstract{
 			->from('work')
 			->joinRight('position_has_work', 'work.id_work = position_has_work.id_work')
 			->joinRight('position', 'position_has_work.id_position = position.id_position')
-			->joinRight('subsidiary_has_position', 'position.id_position = subsidiary_has_position.id_position')
 			->joinLeft('workplace_has_work', 'work.id_work = workplace_has_work.id_work')
 			->joinLeft('workplace', 'workplace_has_work.id_workplace = workplace.id_workplace')
-			->where('subsidiary_has_position.id_subsidiary = ?', $subsidiaryId)
+			->where('position.subsidiary_id = ?', $subsidiaryId)
 			->order('position.position');
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);

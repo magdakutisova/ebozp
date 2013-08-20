@@ -1,3 +1,4 @@
+<?php if(count($this->subsidiaries)){ ?>
 <ul>
 <?php foreach ($this->subsidiaries as $subsidiary){?>
 	<li>
@@ -8,5 +9,8 @@
 		}?>
 		</a>
 	</li>
-<?php } ?>
+<?php }?>
 </ul>
+<?php } else {?>
+	<p>Klient nemá žádné pobočky, nebo k nim nemáte přístup.</p>
+	<?php }?>

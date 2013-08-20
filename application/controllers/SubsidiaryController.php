@@ -176,6 +176,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 				
 				$subsidiary->setClientId($clientId);
 				$subsidiary->setHq(0);
+				$subsidiary->setHqOnly(0);
 				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 				
@@ -282,6 +283,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 				}
 				
 				$subsidiary->setHq(0);
+				$subsidiary->setHqOnly(0);
 				$subsidiary->setClientId($clientId);
 				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
@@ -458,7 +460,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$subsidiaries = $subsidiariesDb->getSubsidiariesComplete($this->getRequest()->getParam('clientId'));
 		$subsidiaryList = array();
 		foreach($subsidiaries as $subsidiary){
-			if($this->_acl->isAllowed($this->_user, $subsidiary)){
+			if($this->_acl->isAllowed($this->_user, $subsidiary) && !$subsidiary->getHqOnly()){
 				$subsidiaryList[] = $subsidiary;
 			}
 		}

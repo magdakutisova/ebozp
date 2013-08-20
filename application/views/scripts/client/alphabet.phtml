@@ -55,7 +55,7 @@ foreach ($this->subsidiaries as $subsidiary) :
 			} else{
 				$list .= '<ul>';
 			}
-			if ($allowed){
+			if ($allowed && !$subsidiary->getHqOnly()){
 				$list .= '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 				$allowed = '';
 			}

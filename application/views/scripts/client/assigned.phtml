@@ -7,6 +7,9 @@
 	<ul>
 	<?php foreach ($this->subsidiaries as $subs) :
 	$subsidiary = $subs['subsidiary'];
+	if($subsidiary->getHqOnly()){
+		continue;
+	}
 	if($subsidiary->getAllowed()){
 		if ($assigned != $subs['username']){?>
 			</ul>

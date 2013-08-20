@@ -7,6 +7,9 @@
 	<ul>
 	<?php if(count($this->subsidiaries)){ 
 	foreach ($this->subsidiaries as $subsidiary) :
+	if($subsidiary->getHqOnly()){
+		continue;
+	}
 	if($subsidiary->getAllowed()){
 		if ($town != $subsidiary->getSubsidiaryTown()){?>
 			</ul>

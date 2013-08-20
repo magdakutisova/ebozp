@@ -306,6 +306,17 @@ class ClientController extends Zend_Controller_Action
 				}
 				$client->setArchived(0);
 				
+				if($form->getValue('hq_only')){
+					$subsidiary->setHqOnly(1);
+				}
+				else{
+					$subsidiary->setHqOnly(0);
+				}
+				
+				if($subsidiary->getSupervisionFrequency() == ''){
+					$subsidiary->setSupervisionFrequency(null);
+				}
+				
 				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 					
@@ -488,6 +499,7 @@ class ClientController extends Zend_Controller_Action
 				$data['supervision_frequency'] = $subsidiary['subsidiary']->getSupervisionFrequency();
 				$data['district'] = $subsidiary['subsidiary']->getDistrict();
 				$data['difficulty'] = $subsidiary['subsidiary']->getDifficulty();
+				$data['hq_only'] = $subsidiary['subsidiary']->getHqOnly();
 				
 				switch ($subsidiary['subsidiary']->getInsuranceCompany()) {
 					case "Kooperativa":
@@ -562,6 +574,18 @@ class ClientController extends Zend_Controller_Action
 			$client->setInvoiceTown($client->getInvoiceTown());
 			$client->setInvoiceCode($client->getInvoiceCode());
 		}
+		
+		if($form->getValue('hq_only')){
+			$subsidiary->setHqOnly(1);
+		}
+		else{
+			$subsidiary->setHqOnly(0);
+		}
+		
+		if($subsidiary->getSupervisionFrequency() == ''){
+			$subsidiary->setSupervisionFrequency(null);
+		}
+		
 		$client->setArchived(0);
 		$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 		$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);

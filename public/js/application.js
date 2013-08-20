@@ -52,6 +52,11 @@ $(function(){
 		$(".folder-delete").toggleClass("hidden");
 	});
 	
+	$(".expandable").dblclick(function(){
+		var url = $(this).attr("title");
+		window.location = url;
+	});
+	
 	$(".list").click(function(){
 		var active = getActiveInactive();
 		$("#filtered").load("./klienti/nazev/" + active + "/ #filtered");
@@ -189,7 +194,19 @@ $(function(){
 	});
 	
 	$("#invoice_address").click(function(){
-		var checkbox = $(this);
+		toggleInvoiceAddress($(this));
+	});
+	
+	$("#hq_only").click(function(){
+		toggleHqOnly($(this));
+	});
+	
+	$(document).ready(function(){
+		toggleInvoiceAddress($("#invoice_address"));
+		toggleHqOnly($("#hq_only"));
+	});
+	
+	function toggleInvoiceAddress(checkbox){
 		if (checkbox.is(':checked')){
 			$("#invoice_street").attr('disabled', true).val('');
 			$("#invoice_code").attr('disabled', true).val('');
@@ -200,7 +217,18 @@ $(function(){
 			$("#invoice_code").removeAttr('disabled');
 			$("#invoice_town").removeAttr('disabled');
 		}
-	});
+	}
+	
+	function toggleHqOnly(checkbox){
+		if(checkbox.is(':checked')){
+			$("#supervision_frequency").attr('disabled', true).val('');
+			$("#difficulty").attr('disabled', true).val('');
+		}
+		else{
+			$("#supervision_frequency").removeAttr('disabled');
+			$("#difficulty").removeAttr('disabled');
+		}
+	}
 	
 	//checkboxy v adresáři
 	$('form#tree > div > span > ul > li > input').click(function(){
@@ -806,6 +834,10 @@ $(function(){
 	//barva neaktivních poboček v menu
 	$(document).ready(function(){
 		$("ul.navigation li ul li a:contains('neaktivní')").addClass('inactive');
+	});
+	
+	$(document).ready(function(){
+		$("ul.navigation li ul li a:contains('pouze sídlo')").addClass('hqOnly');
 	});
 	
 });

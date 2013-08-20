@@ -24,13 +24,13 @@
 			<?php if($companyName != ''){ ?>
 			<p class="bold concealer">
 			<?php if($allowed){?><a><?php }?>
-				<span class="anchor"><?php echo $companyName . ' - ' . $companyAddress ?></span>
+				<span class="anchor expandable" title="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName . ' - ' . $companyAddress ?></span>
 			<?php if($allowed){?></a><?php }?>
 			</p>
 			<ul class="hidden">
 			<?php } else{?>
 			<ul>
-			<?php }if ($allowed){
+			<?php }if ($allowed && !$subsidiary->getHqOnly()){
 			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 			$allowed = ''; }
 			if(!$subsidiary->getHq()){?>
