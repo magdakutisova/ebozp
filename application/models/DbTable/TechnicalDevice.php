@@ -110,6 +110,100 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		return $this->process($result);
 	}
 	
+	public function getBySubsidiaryWithPositions($subsidiaryId){
+		$select = $this->select()
+			->from('technical_device')
+			->joinRight('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
+			->joinRight('workplace', 'workplace_has_technical_device.id_workplace = workplace.id_workplace')
+			->where('workplace.subsidiary_id = ?', $subsidiaryId)
+			->order(array('technical_device.sort', 'technical_device.type'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$technicalDevices = array();
+			foreach($result as $technicalDevice){
+				if($technicalDevice->sort != ''){
+					$technicalDevices[$technicalDevice->name][$technicalDevice->id_technical_device]['technical_device'] = $technicalDevice->sort . ' ' . $technicalDevice->type;
+					$select = $this->select()
+						->from('technical_device')
+						->join('position_has_technical_device', 'technical_device.id_technical_device = position_has_technical_device.id_technical_device')
+						->join('position', 'position_has_technical_device.id_position = position.id_position')
+						->where('technical_device.id_technical_device = ?', $technicalDevice->id_technical_device)
+						->order('position.position');
+					$select->setIntegrityCheck(false);
+					$subResult = $this->fetchAll($select);
+					if(count($subResult) > 0){
+						$technicalDevices[$technicalDevice->name][$technicalDevice->id_technical_device]['positions'] = ', vyskytuje se na pracovních pozicích: ';
+						$isFirst = true;
+						foreach($subResult as $position){
+							if($isFirst){
+								$technicalDevices[$technicalDevice->name][$technicalDevice->id_technical_device]['positions'] .= $position->position;
+							}
+							else{
+								$technicalDevices[$technicalDevice->name][$technicalDevice->id_technical_device]['positions'] .= ', ' . $position->position;
+							}
+							$isFirst = false;
+						}
+					}
+				}
+				else{
+					$technicalDevices[$technicalDevice->name] = null;
+				}
+			}
+			return $technicalDevices;
+		}
+		else{
+			return null;
+		}
+	}
+	
+	public function getBySubsidiaryWithWorkplaces($subsidiaryId){
+		$select = $this->select()
+			->from('technical_device')
+			->join('position_has_technical_device', 'technical_device.id_technical_device = position_has_technical_device.id_technical_device')
+			->join('position', 'position_has_technical_device.id_position = position.id_position')
+			->where('position.subsidiary_id = ?', $subsidiaryId)
+			->order('position.position');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$technicalDevices = array();
+			foreach($result as $technicalDevice){
+				if($technicalDevice->sort != ''){
+					$technicalDevices[$technicalDevice->position][$technicalDevice->id_technical_device]['technical_device'] = $technicalDevice->sort . ' ' . $technicalDevice->type;
+					$select = $this->select()
+						->from('technical_device')
+						->join('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
+						->join('workplace', 'workplace_has_technical_device.id_workplace = workplace.id_workplace')
+						->where('technical_device.id_technical_device = ?', $technicalDevice->id_technical_device)
+						->order(array('technical_device.sort', 'technical_device.type'));
+					$select->setIntegrityCheck(false);
+					$subResult = $this->fetchAll($select);
+					if(count($subResult) > 0){
+						$technicalDevices[$technicalDevice->position][$technicalDevice->id_technical_device]['workplaces'] = ', vyskytuje se na pracovištích: ';
+						$isFirst = true;
+						foreach($subResult as $workplace){
+							if($isFirst){
+								$technicalDevices[$technicalDevice->position][$technicalDevice->id_technical_device]['workplaces'] .= $workplace->name;
+							}
+							else{
+								$technicalDevices[$technicalDevice->position][$technicalDevice->id_technical_device]['workplaces'] .= ', ' . $workplace->name;
+							}
+							$isFirst = false;
+						}
+					}
+				}
+				else{
+					$technicalDevices[$technicalDevice->position] = null;
+				}
+			}
+			return $technicalDevices;
+		}
+		else{
+			return null;
+		}
+	}
+	
 	public function existsTechnicalDevice($sort, $type){
 		$select = $this->select()
 			->from('technical_device')

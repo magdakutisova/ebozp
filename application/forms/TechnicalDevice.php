@@ -26,6 +26,9 @@ class Application_Form_TechnicalDevice extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$this->addElement('hidden', 'id_technical_device', array(
+				));
+		
 		$this->addElement('text', 'sort', array(
 				'label' => 'Druh technického prostředku',
 				'filters' => array('StripTags', 'StringTrim'),

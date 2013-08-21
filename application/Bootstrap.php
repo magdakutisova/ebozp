@@ -310,6 +310,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				);
 		
 		$router->addRoute(
+				'technicalList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-technickych-prostredku/:filter',
+						array('controller' => 'technical',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'technicalEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/technicky-prostredek/:technicalDeviceId/editovat',
+						array('controller' => 'technical',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'technicalDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/technicky-prostredek/:technicalDeviceId/smazat',
+						array('controller' => 'technical',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',

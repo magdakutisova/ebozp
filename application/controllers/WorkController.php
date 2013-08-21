@@ -7,6 +7,8 @@ class WorkController extends Zend_Controller_Action
 	private $_user = null;
 	private $_acl = null;
 	private $_username = null;
+	private $_canEditWork;
+	private $_canDeleteWork;
 
     public function init()
     {
@@ -22,6 +24,11 @@ class WorkController extends Zend_Controller_Action
     	$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
     	$users = new Application_Model_DbTable_User();
     	$this->_user = $users->getByUsername($this->_username);
+    	
+    	/* $this->_canEditWork = $this->_acl->isAllowed($this->_user, 'work', 'edit');
+    	$this->view->canEditWork = $this->_canEditWork;
+    	$this->_canDeleteWork = $this->_acl->isAllowed($this->_user, 'work', 'delete');
+    	$this->view->canDeleteWork = $this->_canDeleteWork; */
     }
     
     public function editAction(){
@@ -29,7 +36,7 @@ class WorkController extends Zend_Controller_Action
     	
     	$form = new Application_Form_Work();
     	
-    	$elementDecorator2 = array(
+    	$elementDecorator = array(
     			'ViewHelper',
     			array('Errors'),
     			array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
@@ -39,7 +46,7 @@ class WorkController extends Zend_Controller_Action
     	$form->removeElement('save_work');
     	$form->addElement('submit', 'save_work', array(
     			'label' => 'Uložit pracovní činnost',
-    			'decorators' => $elementDecorator2,
+    			'decorators' => $elementDecorator,
     			));
     	$this->view->form = $form;
     	

@@ -1,0 +1,65 @@
+<?php echo $this->selectForm; ?>
+<?php if ($this->subsidiaryId != null){?>
+
+	<div class="box">
+	<?php if($this->filter == 'podle-pracovist'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovnich-pozic'), 'technicalList');?>">Filtrovat podle pracovních pozic</a>
+	<?php } if($this->filter == 'podle-pracovnich-pozic'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovist'), 'technicalList');?>">Filtrovat podle pracovišť</a>
+	<?php } ?>
+	</div>
+	
+	<?php if($this->filter == 'podle-pracovist'){?>
+		<?php if($this->technicalDevices != null){?>
+			<div class="box">
+			<?php foreach($this->technicalDevices as $workplace => $technicalDevices){?>
+				<p class="bold"><?php echo $workplace;?></p>
+				<?php if($technicalDevices != null){ ?>
+					<ul>
+					<?php foreach($technicalDevices as $id => $technicalDevice){?>
+						<li><?php echo $technicalDevice['technical_device'];?>
+						<?php if(isset($technicalDevice['positions'])){
+							echo $technicalDevice['positions'];
+						}?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						</li>
+					<?php } ?>
+					</ul>
+				<?php } else {
+					echo '<p>Pracoviště nemá přiřazena žádné technické prostředky.</p>';
+				}
+			}?>
+			</div>
+			
+		<?php } else {?>
+			<p>K pracovištím nejsou přiřazena žádné technické prostředky.</p>
+		<?php }
+	}
+	if($this->filter == 'podle-pracovnich-pozic'){
+		if($this->technicalDevices != null){?>
+			<div class="box">
+			<?php foreach($this->technicalDevices as $position => $technicalDevices){?>
+				<p class="bold"><?php echo $position;?></p>
+				<?php if($technicalDevices != null){?>
+					<ul>
+					<?php foreach($technicalDevices as $id => $technicalDevice){?>
+						<li><?php echo $technicalDevice['technical_device'];
+						if(isset($technicalDevice['workplaces'])){
+							echo $technicalDevice['workplaces'];
+						}?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						 </li>
+					<?php }?>
+					</ul>
+				<?php } else {
+					echo '<p>Pracovní pozice nemá přiřazena žádné technické prostředky.</p>';
+				}
+			}?>
+			</div>
+		<?php } else {?>
+			<p>K pracovním pozicím nejsou přiřazena žádné technické prostředky.</p>
+		<?php }
+	}
+}?>
