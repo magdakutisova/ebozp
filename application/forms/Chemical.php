@@ -26,6 +26,9 @@ class Application_Form_Chemical extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$this->addElement('hidden', 'id_chemical', array(
+				));
+		
 		$this->addElement('text', 'chemical', array(
 				'label' => 'Název chemické látky',
 				'filters' => array('StripTags', 'StringTrim'),

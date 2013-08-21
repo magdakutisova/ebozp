@@ -117,5 +117,14 @@
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 			<filter2>filter2</filter2>
 		</technical>
+		<chemical>
+			<label>Databáze chemických látek</label>
+			<route>chemicalList</route>
+			<resource>chemical</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter2>filter2</filter2>
+		</chemical>
 	</nav>
 </configdata>

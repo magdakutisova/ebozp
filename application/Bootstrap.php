@@ -331,6 +331,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				);
 		
 		$router->addRoute(
+				'chemicalList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-chemickych-latek/:filter',
+						array('controller' => 'chemical',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'chemicalEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/chemicka-latka/:chemicalId/editovat',
+						array('controller' => 'chemical',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'chemicalDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/chemicka-latka/:chemicalId/smazat',
+						array('controller' => 'chemical',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',

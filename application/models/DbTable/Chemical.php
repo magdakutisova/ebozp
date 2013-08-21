@@ -63,6 +63,73 @@ class Application_Model_DbTable_Chemical extends Zend_Db_Table_Abstract{
 		return $this->processComplete($result);
 	}
 	
+	public function getBySubsidiaryWithPositions($subsidiaryId){
+		$select = $this->select()
+			->from('chemical')
+			->joinRight('workplace_has_chemical', 'chemical.id_chemical = workplace_has_chemical.id_chemical')
+			->joinRight('workplace', 'workplace_has_chemical.id_workplace = workplace.id_workplace')
+			->where('workplace.subsidiary_id = ?', $subsidiaryId)
+			->order(array('chemical.chemical'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$chemicals = array();
+			foreach($result as $chemical){
+				if($chemical->chemical != ''){
+					$chemicals[$chemical->name][$chemical->id_chemical]['chemical'] = $chemical->chemical;
+					$select = $this->select()
+						->from('chemical')
+						->join('position_has_chemical', 'chemical.id_chemical = position_has_chemical.id_chemical')
+						->join('position', 'position_has_chemical.id_position = position.id_position')
+						->where('chemical.id_chemical = ?', $chemical->id_chemical)
+						->order('position.position');
+					$select->setIntegrityCheck(false);
+					$subResult = $this->fetchAll($select);
+					if(count($subResult) > 0){
+						$chemicals[$chemical->name][$chemical->id_chemical]['positions'] = ', vyskytuje se na pracovních pozicích: ';
+						$isFirst = true;
+						foreach($subResult as $position){
+							if($isFirst){
+								$chemicals[$chemical->name][$chemical->id_chemical]['positions'] .= $chemical->chemical;
+							}
+							else{
+								$chemicals[$chemical->name][$chemical->id_chemical]['positions'] .= ', ' . $chemical->chemical;
+							}
+							$isFirst = false;
+						}
+					}
+				}
+				else{
+					$chemicals[$chemical->name] = null;
+				}
+			}
+			return $chemicals;
+		}
+		else{
+			return null;
+		}
+	}
+	
+	public function getBySubsidiaryWithWorkplaces($subsidiaryId){
+		$select = $this->select()
+			->from('chemical')
+			->join('position_has_chemical', 'chemical.id_chemical = position_has_chemical.id_chemical')
+			->join('position', 'position_has_chemical.id_position = position.id_position')
+			->where('position.subsidiary_id = ?', $subsidiaryId)
+			->order('position.position');
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$chemicals = array();
+			foreach($result as $chemical){
+				if($chemical->chemical != ''){
+					$chemicals[$chemical->position][$chemical->id_chemical]['chemical'] = $chemical.chemical;
+					//TODO
+				}
+			}
+		}
+	}
+	
 	public function existsChemical($chemical){
 		$select = $this->select()
 			->from('chemical')

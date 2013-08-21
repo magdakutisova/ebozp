@@ -1,5 +1,5 @@
 <?php
-class TechnicalController extends Zend_Controller_Action{
+class ChemicalController extends Zend_Controller_Action{
 	
 	private $_clientId = null;
 	private $_user = null;
@@ -8,7 +8,7 @@ class TechnicalController extends Zend_Controller_Action{
 	
 	public function init(){
 		//globální nastavení view
-		$this->view->title = 'Technické prostředky';
+		$this->view->title = 'Chemické látky';
 		$this->view->headTitle($this->view->title);
 		$this->_helper->layout()->setLayout('clientLayout');
 		
@@ -25,13 +25,13 @@ class TechnicalController extends Zend_Controller_Action{
 		$clients = new Application_Model_DbTable_Client();
 		$client = $clients->getClient($this->_clientId);
 		
-		$this->view->subtitle = "Databáze technických prostředků - " . $client->getCompanyName();
+		$this->view->subtitle = 'Databáze chemických látek - ' . $client->getCompanyName();
 		$this->view->clientId = $this->_clientId;
 		$filter = $this->getRequest()->getParam('filter');
 		$this->view->filter = $filter;
 		
 		$defaultNamespace = new Zend_Session_Namespace();
-		$defaultNamespace->refererTechnical = $this->_request->getPathInfo();
+		$defaultNamespace->refererChemical = $this->_request->getPathInfo();
 		
 		//výběr poboček
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
@@ -56,23 +56,23 @@ class TechnicalController extends Zend_Controller_Action{
 				$this->_helper->redirector->gotoSimple('denied', 'error');
 			}
 			
-			//vypisování technických prostředků
-			$technicalDb = new Application_Model_DbTable_TechnicalDevice();
-			$technicalDevices = null;
+			//vypisování chemických látek
+			$chemicalDb = new Application_Model_DbTable_Chemical();
+			$chemicals = null;
 			if($filter == 'podle-pracovist'){
-				$technicalDevices = $technicalDb->getBySubsidiaryWithPositions($subsidiaryId);
+				$chemicals = $chemicalDb->getBySubsidiaryWithPositions($subsidiaryId);
 			}
 			if($filter == 'podle-pracovnich-pozic'){
-				$technicalDevices = $technicalDb->getBySubsidiaryWithWorkplaces($subsidiaryId);
+				$chemicals = $chemicalDb->getBySubsidiaryWithWorkplaces($subsidiaryId);
 			}
-			$this->view->technicalDevices = $technicalDevices;
+			$this->view->chemicals = $chemicals;
 		}
 	}
 	
 	public function editAction(){
-		$this->view->subtitle = 'Editace technických prostředků';
+		$this->view->subtitle = 'Editace chemických látek';
 		
-		$form = new Application_Form_TechnicalDevice();
+		$form = new Application_Form_Chemical();
 		
 		$elementDecorator = array(
 				'ViewHelper',
@@ -81,33 +81,33 @@ class TechnicalController extends Zend_Controller_Action{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 				);
 		
-		$form->removeElement('save_technicaldevice');
-		$form->addElement('submit', 'save_technicaldevice', array(
-				'label' => 'Uložit technický prostředek',
+		$form->removeElement('save_chemical');
+		$form->addElement('submit', 'save_chemical', array(
+				'label' => 'Uložit chemickou látku',
 				'decorators' => $elementDecorator,
 				));
 		$this->view->form = $form;
 		
-		$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-		$technicalDevice = $technicalDevices->getTechnicalDevice($this->getParam('technicalDeviceId'));
+		$chemicals = new Application_Model_DbTable_Chemical();
+		$chemical = $chemicals->getChemical($this->getParam('chemicalId'));
 		
-		$form->populate($technicalDevice->toArray());
+		$form->populate($chemical->toArray());
 		
 		if($this->getRequest()->isPost()){
 			$formData = $this->getRequest()->getPost();
 			if($form->isValid($formData)){
-				$technicalDevice = new Application_Model_TechnicalDevice($formData);
-				$technicalDevices->updateTechnicalDevice($technicalDevice);
-				$this->_helper->FlashMessenger('Technický prostředek ' . $technicalDevice->getSort() . ' ' . $technicalDevice->getType() . ' byl upraven.');
+				$chemical = new Application_Model_Chemical($formData);
+				$chemicals->updateChemical($chemical);
+				$this->_helper->FlashMessenger('Chemická látka ' . $chemical->getChemical() . ' byla upravena.');
 				
 				$defaultNamespace = new Zend_Session_Namespace();
-				if(isset($defaultNamespace->refererTechnical)){
-					$path = $defaultNamespace->refererTechnical;
-					unset($defaultNamespace->refererTechnical);
+				if(isset($defaultNamespace->refererChemical)){
+					$path = $defaultNamespace->refererChemical;
+					unset($defaultNamespace->refererChemical);
 					$this->_redirect($path);
 				}
 				else{
-					$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'technicalList');
+					$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'chemicalList');
 				}
 			}
 		}
@@ -117,52 +117,50 @@ class TechnicalController extends Zend_Controller_Action{
 		if($this->getRequest()->getMethod() == 'POST'){
 			$clientId = $this->_getParam('clientId');
 			$subsidiaryId = $this->getParam('subsidiaryId');
-			$technicalDeviceId = $this->getParam('technicalDeviceId');
+			$chemicalId = $this->getParam('chemicalId');
 			
-			$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-			$technicalDevices->deleteTechnicalDevice($technicalDeviceId);
+			$chemicals = new Application_Model_DbTable_Chemical();
+			$chemicals->deleteChemical($chemicalId);
 			
-			$this->_helper->FlashMessenger('Technický prostředek byl vymazán.');
+			$this->_helper->FlashMessenger('Chemická látka byla vymazána.');
 			
 			$defaultNamespace = new Zend_Session_Namespace();
-			if(isset($defaultNamespace->refererTechnical)){
-				$path = $defaultNamespace->refererTechnical;
-				unset($defaultNamespace->refererTechnical);
+			if(isset($defaultNamespace->refererChemical)){
+				$path = $defaultNamespace->refererChemical;
+				unset($defaultNamespace->refererChemical);
 				$this->_redirect($path);
 			}
 			else{
-				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'technicalDelete');
+				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidairyId'), 'filter' => 'podle-pracovist'), 'chemicalDelete');
 			}
 		}
 		else{
-			throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání technického prostředku.', 500);
+			throw new Zend_Controller_Action_Exception('Nekorektní pokus o smazání chemické látky.', 500);
 		}
 	}
 	
-	private function filterSubsidiarySelect($formContent)
-	{
+	private function filterSubsidiarySelect($formContent){
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
-		foreach ($formContent as $key => $subsidiary){
-			if (!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
+		foreach($formContent as $key => $subsidiary){
+			if(!$this->_acl->isAllowed($this->_user, $subsidiaries->getSubsidiary($key))){
 				unset($formContent[$key]);
 			}
 		}
 		return $formContent;
 	}
 	
-	private function initSubsidiarySwitch($formContent, $subsidiaryId)
-	{
-		$selectForm = new Application_Form_Select ();
-		$selectForm->select->setMultiOptions ( $formContent );
+	private function initSubsidiarySwitch($formContent, $subsidiaryId){
+		$selectForm = new Application_Form_Select();
+		$selectForm->select->setMultiOptions($formContent);
 		$selectForm->select->setLabel('Vyberte pobočku:');
 		$selectForm->submit->setLabel('Vybrat');
 		$this->view->selectForm = $selectForm;
 		$subsidiaryId = array_shift(array_keys($formContent));
-	
-		if ($this->getRequest ()->isPost () && in_array('Vybrat', $this->getRequest()->getPost())) {
-			$formData = $this->getRequest ()->getPost ();
+		
+		if($this->getRequest()->isPost() && in_array('Vybrat', $this->getRequest()->getPost())){
+			$formData = $this->getRequest()->getPost();
 			$subsidiaryId = $formData['select'];
-			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'technicalList');
+			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'chemicalList');
 		}
 		else{
 			$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');
