@@ -17,6 +17,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('utility'));
 		$this->add(new Zend_Acl_Resource('work'));
 		$this->add(new Zend_Acl_Resource('technical'));
+		$this->add(new Zend_Acl_Resource('chemical'));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 
@@ -65,6 +66,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, 'work');
 		$this->allow($client, 'technical');
+		$this->allow($client, 'chemical');
 		$this->allow($client, "audit:audit", array("list", "get"));
 		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
 		$this->allow($client, "audit:form", array("get"));

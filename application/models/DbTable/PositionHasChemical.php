@@ -51,4 +51,36 @@ class Application_Model_DbTable_PositionHasChemical extends Zend_Db_Table_Abstra
 		}
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			try{
+				$data['id_position'] = $position->id_position;
+				$data['id_chemical'] = $newId;
+				$this->update($data, "id_position = $position->id_position AND id_chemical = $oldId");
+			}
+			catch(Exception $e){
+				//už to tam je ale musím vymazat aspoň starý záznam
+				$this->delete("id_position = $position->id_position AND id_chemical = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $chemicalId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			$this->delete("id_position = $position->id_position AND id_chemical = $chemicalId");
+		}
+	}
+	
 }

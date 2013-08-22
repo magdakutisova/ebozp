@@ -52,4 +52,36 @@ class Application_Model_DbTable_WorkplaceHasChemical extends Zend_Db_Table_Abstr
 		));
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('workplace')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+	
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			try{
+				$data['id_workplace'] = $workplace->id_workplace;
+				$data['id_chemical'] = $newId;
+				$this->update($data, "id_workplace = $workplace->id_workplace AND id_chemical = $oldId");
+			}
+			catch(Exception $e){
+				//už to tam je ale musím vymazat aspoň starý záznam
+				$this->delete("id_workplace = $workplace->id_workplace AND id_chemical = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $chemicalId){
+		$select = $this->select()
+			->from('workplace')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			$this->delete("id_workplace = $workplace->id_workplace AND id_chemical = $chemicalId");
+		}
+	}
+	
 }

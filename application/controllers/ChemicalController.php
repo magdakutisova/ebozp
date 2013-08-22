@@ -97,7 +97,7 @@ class ChemicalController extends Zend_Controller_Action{
 			$formData = $this->getRequest()->getPost();
 			if($form->isValid($formData)){
 				$chemical = new Application_Model_Chemical($formData);
-				$chemicals->updateChemical($chemical);
+				$chemicals->updateChemicalAtClient($chemical, $this->_clientId);
 				$this->_helper->FlashMessenger('Chemická látka ' . $chemical->getChemical() . ' byla upravena.');
 				
 				$defaultNamespace = new Zend_Session_Namespace();
@@ -120,7 +120,7 @@ class ChemicalController extends Zend_Controller_Action{
 			$chemicalId = $this->getParam('chemicalId');
 			
 			$chemicals = new Application_Model_DbTable_Chemical();
-			$chemicals->deleteChemical($chemicalId);
+			$chemicals->deleteChemicalFromClient($chemicalId, $this->_clientId);
 			
 			$this->_helper->FlashMessenger('Chemická látka byla vymazána.');
 			
