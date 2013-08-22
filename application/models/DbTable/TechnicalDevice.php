@@ -28,6 +28,36 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 		$this->delete('id_technical_device = ' . (int)$id);
 	}
 	
+	public function updateTechnicalDeviceAtClient(Application_Model_TechnicalDevice $technicalDevice, $clientId){
+		$existsTechnicalDevice = $this->existsTechnicalDevice($technicalDevice->getSort(), $technicalDevice->getType());
+		$oldId = $technicalDevice->getIdTechnicalDevice();
+		$newId = '';
+		
+		if($existsTechnicalDevice){
+			$newId = $existsTechnicalDevice;
+		}
+		else{
+			$technicalDevice->setIdTechnicalDevice(null);
+			$newId = $this->addTechnicalDevice($technicalDevice);
+		}
+		
+		$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
+		$clientHasTechnicalDevice->updateRelation($clientId, $oldId, $newId);
+		$positionHasTechnicalDevice = new Application_Model_DbTable_PositionHasTechnicalDevice();
+		$positionHasTechnicalDevice->updateRelation($clientId, $oldId, $newId);
+		$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+		$workplaceHasTechnicalDevice->updateRelation($clientId, $oldId, $newId);
+	}
+	
+	public function deleteTechnicalDeviceFromClient($id, $clientId){
+		$clientHasTechnicalDevice = new Application_Model_DbTable_ClientHasTechnicalDevice();
+		$clientHasTechnicalDevice->removeRelation($clientId, $id);
+		$positionHasTechnicalDevice = new Application_Model_DbTable_PositionHasTechnicalDevice();
+		$positionHasTechnicalDevice->removeAllClientRelations($clientId, $id);
+		$workplaceHasTechnicalDevice = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+		$workplaceHasTechnicalDevice->removeAllClientRelations($clientId, $id);
+	}
+	
 	/****************************************************************
 	 * Vrací seznam ID - druh techniky.
 	 */
@@ -113,8 +143,8 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 	public function getBySubsidiaryWithPositions($subsidiaryId){
 		$select = $this->select()
 			->from('technical_device')
-			->joinRight('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
-			->joinRight('workplace', 'workplace_has_technical_device.id_workplace = workplace.id_workplace')
+			->join('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
+			->join('workplace', 'workplace_has_technical_device.id_workplace = workplace.id_workplace')
 			->where('workplace.subsidiary_id = ?', $subsidiaryId)
 			->order(array('technical_device.sort', 'technical_device.type'));
 		$select->setIntegrityCheck(false);
@@ -128,7 +158,7 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 						->from('technical_device')
 						->join('position_has_technical_device', 'technical_device.id_technical_device = position_has_technical_device.id_technical_device')
 						->join('position', 'position_has_technical_device.id_position = position.id_position')
-						->where('technical_device.id_technical_device = ?', $technicalDevice->id_technical_device)
+						->where('technical_device.id_technical_device = ' . $technicalDevice->id_technical_device . ' AND position.subsidiary_id = ' . $subsidiaryId)
 						->order('position.position');
 					$select->setIntegrityCheck(false);
 					$subResult = $this->fetchAll($select);
@@ -175,7 +205,7 @@ class Application_Model_DbTable_TechnicalDevice extends Zend_Db_Table_Abstract{
 						->from('technical_device')
 						->join('workplace_has_technical_device', 'technical_device.id_technical_device = workplace_has_technical_device.id_technical_device')
 						->join('workplace', 'workplace_has_technical_device.id_workplace = workplace.id_workplace')
-						->where('technical_device.id_technical_device = ?', $technicalDevice->id_technical_device)
+						->where('technical_device.id_technical_device = ' . $technicalDevice->id_technical_device . ' AND workplace.subsidiary_id = ' . $subsidiaryId)
 						->order(array('technical_device.sort', 'technical_device.type'));
 					$select->setIntegrityCheck(false);
 					$subResult = $this->fetchAll($select);

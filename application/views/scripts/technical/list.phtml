@@ -22,7 +22,7 @@
 							echo $technicalDevice['positions'];
 						}?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
-						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
 						</li>
 					<?php } ?>
 					</ul>
@@ -49,7 +49,7 @@
 							echo $technicalDevice['workplaces'];
 						}?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
-						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
 						 </li>
 					<?php }?>
 					</ul>

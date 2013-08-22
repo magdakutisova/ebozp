@@ -97,7 +97,7 @@ class TechnicalController extends Zend_Controller_Action{
 			$formData = $this->getRequest()->getPost();
 			if($form->isValid($formData)){
 				$technicalDevice = new Application_Model_TechnicalDevice($formData);
-				$technicalDevices->updateTechnicalDevice($technicalDevice);
+				$technicalDevices->updateTechnicalDeviceAtClient($technicalDevice, $this->_clientId);
 				$this->_helper->FlashMessenger('Technický prostředek ' . $technicalDevice->getSort() . ' ' . $technicalDevice->getType() . ' byl upraven.');
 				
 				$defaultNamespace = new Zend_Session_Namespace();
@@ -120,7 +120,7 @@ class TechnicalController extends Zend_Controller_Action{
 			$technicalDeviceId = $this->getParam('technicalDeviceId');
 			
 			$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-			$technicalDevices->deleteTechnicalDevice($technicalDeviceId);
+			$technicalDevices->deleteTechnicalDeviceFromClient($technicalDeviceId, $this->_clientId);
 			
 			$this->_helper->FlashMessenger('Technický prostředek byl vymazán.');
 			
