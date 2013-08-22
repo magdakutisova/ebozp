@@ -126,5 +126,13 @@
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 			<filter2>filter2</filter2>
 		</chemical>
+		<employee>
+			<label>Databáze zaměstnanců</label>
+			<route>employeeList</route>
+			<resource>employee</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+		</employee>
 	</nav>
 </configdata>

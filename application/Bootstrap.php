@@ -352,6 +352,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				);
 		
 		$router->addRoute(
+				'employeeList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-zamestnancu',
+						array('controller' => 'employee',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'employeeEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/zamestnanec/:employeeId/editovat',
+						array('controller' => 'employee',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'employeeDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/zamestnanec/:employeeId/smazat',
+						array('controller' => 'employee',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
 			'searchIndex',
 			new Zend_Controller_Router_Route('indexace',
 											 array('controller' => 'search',
