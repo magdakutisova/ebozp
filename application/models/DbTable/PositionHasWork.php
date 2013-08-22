@@ -54,7 +54,7 @@ class Application_Model_DbTable_PositionHasWork extends Zend_Db_Table_Abstract{
 	public function updateRelation($clientId, $oldId, $newId){
 		$select = $this->select()
 			->from('position')
-			->where('clientId = ?', $clientId);
+			->where('client_id = ?', $clientId);
 		$select->setIntegrityCheck(false);
 		
 		$positions = $this->fetchAll($select);

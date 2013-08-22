@@ -48,7 +48,7 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 	public function updateRelation($clientId, $oldId, $newId){
 		$select = $this->select()
 			->from('workplace')
-			->where('clientId = ?', $clientId);
+			->where('client_id = ?', $clientId);
 		$select->setIntegrityCheck(false);
 		
 		$workplaces = $this->fetchAll($select);
