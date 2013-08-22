@@ -27,4 +27,22 @@ class Application_Model_DbTable_ClientHasWork extends Zend_Db_Table_Abstract{
 		}
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		try{
+			$data['id_client'] = $clientId;
+			$data['id_work'] = $newId;
+			$this->update($data, "id_work = $oldId");
+		}
+		catch(Exception $e){
+			$this->delete("id_client = $clientId AND id_work = $oldId");
+		}
+	}
+	
+	public function removeRelation($clientId, $workId){
+		$this->delete(array(
+				'id_client = ?' => $clientId,
+				'id_work = ?' => $workId
+				));
+	}
+	
 }

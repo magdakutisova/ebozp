@@ -45,4 +45,35 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 		));
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('workplace')
+			->where('clientId = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			try{
+				$data['id_workplace'] = $workplace->id_workplace;
+				$data['id_work'] = $newId;
+				$this->update($data, "id_workplace = $workplace->idWorkplace AND id_work = $oldId");
+			}
+			catch(Exception $e){
+				$this->delete("id_workplace = $workplace->id_workplace AND id_work = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $workId){
+		$select = $this->select()
+			->from('workplace')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			$this->delete("id_workplace = $workplace->id_workplace AND id_work = $workId");
+		}
+	}
+	
 }

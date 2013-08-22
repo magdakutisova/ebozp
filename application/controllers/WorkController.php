@@ -59,7 +59,7 @@ class WorkController extends Zend_Controller_Action
     		$formData = $this->getRequest()->getPost();
     		if($form->isValid($formData)){
     			$work = new Application_Model_Work($formData);
-    			$works->updateWork($work);
+    			$works->updateWorkAtClient($work, $this->_clientId);
     			$this->_helper->FlashMessenger('Pracovní činnost ' . $work->getWork() . ' byla upravena.');
     			
     			$defaultNamespace = new Zend_Session_Namespace();
@@ -82,7 +82,7 @@ class WorkController extends Zend_Controller_Action
     		$workId = $this->_getParam('workId');
     		
     		$works = new Application_Model_DbTable_Work();
-    		$works->deleteWork($workId);
+    		$works->deleteWorkFromClient($workId, $this->_clientId);
     		
     		$this->_helper->FlashMessenger('Pracovní činnost byla vymazána');
     		

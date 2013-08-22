@@ -22,7 +22,7 @@
 							echo $work['positions'];
 						}?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
-						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
 						</li>
 					<?php }?>
 					</ul>
@@ -49,7 +49,7 @@
 							echo $work['workplaces'];
 						}?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
-						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
 						</li>
 					<?php }?>
 					</ul>
