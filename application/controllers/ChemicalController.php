@@ -131,7 +131,7 @@ class ChemicalController extends Zend_Controller_Action{
 				$this->_redirect($path);
 			}
 			else{
-				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidairyId'), 'filter' => 'podle-pracovist'), 'chemicalDelete');
+				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidairyId'), 'filter' => 'podle-pracovist'), 'chemicalList');
 			}
 		}
 		else{

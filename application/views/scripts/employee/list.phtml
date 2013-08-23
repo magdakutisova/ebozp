@@ -1,0 +1,37 @@
+<?php echo $this->selectForm; ?>
+<?php if ($this->subsidiaryId != null){
+	if($this->employees != null){?>
+		<div class="box">
+		<?php foreach($this->employees as $position => $employees){?>
+			<p class="bold"><?php echo $position;?></p>
+			<?php if($employees != null){?>
+				<ul>
+				<?php foreach($employees as $id => $employee){?>
+					<li><?php echo $employee;?>
+					 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $id), 'employeeEdit');?>">Upravit zaměstnance</a>
+					 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $id), 'employeeDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete zaměstanance smazat?')" /></form>
+					</li>
+				<?php }?>
+				</ul>
+			<?php } else {
+				echo '<p>Pracovní pozice nemá přiřazeny žádné zaměstnance.</p>';
+			}
+		}?>			
+		</div>
+	<?php } else {?>
+		<p>K pracovním pozicím této pobočky nejsou přiřazeni žádní zaměstnanci.</p>
+	<?php }
+	if($this->unassignedEmployees != null){?>
+		<div class="box">
+			<p class="bold">Nezařazení zaměstnanci</p>
+			<ul>
+			<?php foreach($this->unassignedEmployees as $employee){?>
+				<li><?php echo $employee->getFirstName() . ' ' . $employee->getSurname();?>
+					 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $employee->getIdEmployee()), 'employeeEdit');?>">Upravit zaměstnance</a>
+					 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $employee->getIdEmployee()), 'employeeDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete zaměstanance smazat?')" /></form>
+				</li>
+			<?php }?>
+			</ul>
+		</div>
+	<?php }
+}?>

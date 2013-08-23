@@ -131,7 +131,7 @@ class TechnicalController extends Zend_Controller_Action{
 				$this->_redirect($path);
 			}
 			else{
-				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'technicalDelete');
+				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'technicalList');
 			}
 		}
 		else{
