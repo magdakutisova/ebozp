@@ -101,7 +101,7 @@ class EmployeeController extends Zend_Controller_Action{
 		$this->view->form = $form;
 		
 		$employees = new Application_Model_DbTable_Employee();
-		$employee = $employees->getEmployee($this->getParam('employeeId'));
+		$employee = $employees->getEmployee($this->_getParam('employeeId'));
 		
 		$form->populate($employee->toArray());
 		
@@ -114,16 +114,16 @@ class EmployeeController extends Zend_Controller_Action{
 				}
 				$employees->updateEmployee($employee);
 				$this->_helper->FlashMessenger('Zaměstnanec ' . $employee->getFirstName() . ' ' . $employee->getSurname() . ' byl upraven.');
-				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId')), 'employeeList');
+				$this->_helper->redirector->gotoRoute(array('clientId' => $this->_getParam('clientId'), 'subsidiaryId' => $this->_getParam('subsidiaryId')), 'employeeList');
 			}
 		}
 	}
 	
 	public function deleteAction(){
 		if($this->getRequest()->getMethod() == 'POST'){
-			$clientId = $this->getParam('clientId');
-			$subsidiaryId = $this->getParam('subsidiaryId');
-			$employeeId = $this->getParam('employeeId');
+			$clientId = $this->_getParam('clientId');
+			$subsidiaryId = $this->_getParam('subsidiaryId');
+			$employeeId = $this->_getParam('employeeId');
 			
 			$employees = new Application_Model_DbTable_Employee();
 			$employees->deleteEmployee($employeeId);

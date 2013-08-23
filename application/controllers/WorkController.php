@@ -51,7 +51,7 @@ class WorkController extends Zend_Controller_Action
     	$this->view->form = $form;
     	
     	$works = new Application_Model_DbTable_Work();
-    	$work = $works->getWork($this->getParam('workId'));
+    	$work = $works->getWork($this->_getParam('workId'));
     	
     	$form->populate($work->toArray());
     	
@@ -69,7 +69,7 @@ class WorkController extends Zend_Controller_Action
     				$this->_redirect($path);
     			}
     			else{
-    				$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
+    				$this->_helper->redirector->gotoRoute(array('clientId' => $this->_getParam('clientId'), 'subsidiaryId' => $this->_getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
     			}
     		}
     	}
@@ -93,7 +93,7 @@ class WorkController extends Zend_Controller_Action
     			$this->_redirect($path);
     		}
     		else{
-    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->getParam('clientId'), 'subsidiaryId' => $this->getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
+    			$this->_helper->redirector->gotoRoute(array('clientId' => $this->_getParam('clientId'), 'subsidiaryId' => $this->_getParam('subsidiaryId'), 'filter' => 'podle-pracovist'), 'workList');
     		}
     	}
     	else{
@@ -172,7 +172,7 @@ class WorkController extends Zend_Controller_Action
     	if ($this->getRequest ()->isPost () && in_array('Vybrat', $this->getRequest()->getPost())) {
     		$formData = $this->getRequest ()->getPost ();
     		$subsidiaryId = $formData['select'];
-    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->getParam('filter')), 'workList');
+    		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => $this->getRequest()->_getParam('filter')), 'workList');
     	}
     	else{
     		$subsidiaryId = $this->getRequest()->getParam('subsidiaryId');

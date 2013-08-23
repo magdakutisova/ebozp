@@ -56,7 +56,7 @@ class Application_Model_DbTable_WorkplaceHasWork extends Zend_Db_Table_Abstract{
 			try{
 				$data['id_workplace'] = $workplace->id_workplace;
 				$data['id_work'] = $newId;
-				$this->update($data, "id_workplace = $workplace->idWorkplace AND id_work = $oldId");
+				$this->update($data, "id_workplace = $workplace->id_workplace AND id_work = $oldId");
 			}
 			catch(Exception $e){
 				$this->delete("id_workplace = $workplace->id_workplace AND id_work = $oldId");

@@ -89,7 +89,7 @@ class TechnicalController extends Zend_Controller_Action{
 		$this->view->form = $form;
 		
 		$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
-		$technicalDevice = $technicalDevices->getTechnicalDevice($this->getParam('technicalDeviceId'));
+		$technicalDevice = $technicalDevices->getTechnicalDevice($this->_getParam('technicalDeviceId'));
 		
 		$form->populate($technicalDevice->toArray());
 		
@@ -116,8 +116,8 @@ class TechnicalController extends Zend_Controller_Action{
 	public function deleteAction(){
 		if($this->getRequest()->getMethod() == 'POST'){
 			$clientId = $this->_getParam('clientId');
-			$subsidiaryId = $this->getParam('subsidiaryId');
-			$technicalDeviceId = $this->getParam('technicalDeviceId');
+			$subsidiaryId = $this->_getParam('subsidiaryId');
+			$technicalDeviceId = $this->_getParam('technicalDeviceId');
 			
 			$technicalDevices = new Application_Model_DbTable_TechnicalDevice();
 			$technicalDevices->deleteTechnicalDeviceFromClient($technicalDeviceId, $this->_clientId);

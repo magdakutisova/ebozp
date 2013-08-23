@@ -89,7 +89,7 @@ class ChemicalController extends Zend_Controller_Action{
 		$this->view->form = $form;
 		
 		$chemicals = new Application_Model_DbTable_Chemical();
-		$chemical = $chemicals->getChemical($this->getParam('chemicalId'));
+		$chemical = $chemicals->getChemical($this->_getParam('chemicalId'));
 		
 		$form->populate($chemical->toArray());
 		
@@ -116,8 +116,8 @@ class ChemicalController extends Zend_Controller_Action{
 	public function deleteAction(){
 		if($this->getRequest()->getMethod() == 'POST'){
 			$clientId = $this->_getParam('clientId');
-			$subsidiaryId = $this->getParam('subsidiaryId');
-			$chemicalId = $this->getParam('chemicalId');
+			$subsidiaryId = $this->_getParam('subsidiaryId');
+			$chemicalId = $this->_getParam('chemicalId');
 			
 			$chemicals = new Application_Model_DbTable_Chemical();
 			$chemicals->deleteChemicalFromClient($chemicalId, $this->_clientId);
