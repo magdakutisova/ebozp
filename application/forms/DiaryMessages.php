@@ -32,16 +32,19 @@ class Application_Form_DiaryMessages extends Zend_Form
         $this->addElement('treeView', 'tree', array(
         	'label' => 'Adresář:',
         	'decorators' => $inlineDecoratorTree,
+        		'order' => 1,
         ));
         
         $this->addElement('textarea', 'message', array(
         	'filters' => array('StripTags'),
         	'required' => true,
         	'decorators' => $inlineDecorator,
+        		'order' => 2,
         ));
         
         $this->addElement('submit', 'send', array(
         	'label' => 'Odeslat',
+        		'order' => 3,
         ));
     }
 

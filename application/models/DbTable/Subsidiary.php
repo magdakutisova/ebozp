@@ -324,6 +324,21 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		return $this->process($result);
 	}
 	
+	public function getContactEmails($subsidiaryId){
+		$select = $this->select()
+			->from('subsidiary')
+			->join('contact_person', 'subsidiary.id_subsidiary = contact_person.subsidiary_id')
+			->where('subsidiary.id_subsidiary = ?', $subsidiaryId)
+			->group('contact_person.email');
+		$select->setIntegrityCheck(false);
+		$results = $this->fetchAll($select);
+		$addresses = array();
+		foreach($results as $result){
+			$addresses[] = $result->email;
+		}
+		return $addresses;
+	}
+	
 	private function process($result){
 		if ($result->count()){
 			$subsidiaries = array();

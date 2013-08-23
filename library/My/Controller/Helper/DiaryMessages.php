@@ -16,7 +16,18 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     	
     	$addressBook = new My_Controller_Helper_AddressBook();
     	$multiOptions = $addressBook->direct();
-    	$formMessages->tree->setMultiOptions($multiOptions);
+    	if($multiOptions != null){
+    		$formMessages->tree->setMultiOptions($multiOptions);
+    	}
+    	else{
+    		$formMessages->removeElement('tree');
+    		$formMessages->addElement('hidden', 'tree', array(
+    				'label' => 'Nelze zasílat zprávy neaktivním pobočkám.',
+    				'order' => 1,
+    				));
+    		$formMessages->getElement('message')->setAttrib('disabled', true);
+    		$formMessages->getElement('send')->setAttrib('disabled', true);
+    	}
     	
     	$this->view->formMessages = $formMessages;
     	
@@ -36,6 +47,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     					$diary->addMessage($toSave);
     				}
     			}
+    			$this->sendEmails($recipients, $username, $message);
     			$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
     			$flashMessenger->addMessage('Zpráva odeslána');
 				$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('Redirector');
@@ -46,6 +58,21 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 				$redirector->gotoSimple($action, $controller, $module, $params);
     		}
     	}  
+	}
+	
+	private function sendEmails($recipients, $username, $message){
+		//TODO přidat podklady@guard7.cz
+		
+		//adresy příjemců
+		$addresses = array();
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		foreach($recipients as $subsidiaryId){
+			$newAddresses = $subsidiaries->getContactEmails($subsidiaryId);
+			$addresses = array_merge($addresses, $newAddresses);
+		}
+		$addresses = array_unique($addresses);
+		
+		//TODO odesílání mailu
 	}
 	
 }
