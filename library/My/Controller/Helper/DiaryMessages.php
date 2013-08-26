@@ -72,7 +72,25 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 		}
 		$addresses = array_unique($addresses);
 		
-		//TODO odesílání mailu
+		$settings = array(
+				'ssl' => 'tls',
+				'port' => 587,
+				'auth' => 'login',
+				'username' => 'guardian@guard7.cz',
+				'password' => 'guardian',
+				);
+		$transport = new Zend_Mail_Transport_Smtp('smtp.gmail.com', $settings);
+		
+		foreach($addresses as $to){
+			$mail = new Zend_Mail('utf-8');
+			$mail->setFrom('guardian@guard7.cz', 'Guardian');
+			$mail->addTo($to);
+			$mail->setSubject('Guardian: Nová zpráva v bezpečnostním deníku');
+			$mail->setBodyHtml('Uživatel ' . $username . ' zaslal následující zprávu do bezpečnostního deníku:<br/><br/>'
+					. $message
+					. '<br/><br/>Na tuto zprávu, prosím, neodpovídejte.');
+			$mail->send($transport);
+		}
 	}
 	
 }
