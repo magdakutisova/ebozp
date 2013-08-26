@@ -5,6 +5,8 @@ class EmployeeController extends Zend_Controller_Action{
 	private $_user = null;
 	private $_acl = null;
 	private $_username = null;
+	private $_canEditEmployee;
+	private $_canDeleteEmployee;
 	
 	public function init(){
 		//globální nastavení view
@@ -19,6 +21,11 @@ class EmployeeController extends Zend_Controller_Action{
 		$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
+		
+		$this->_canEditEmployee = $this->_acl->isAllowed($this->_user, 'employee', 'edit');
+		$this->view->canEditEmployee = $this->_canEditEmployee;
+		$this->_canDeleteEmployee = $this->_acl->isAllowed($this->_user, 'employee', 'delete');
+		$this->view->canDeleteEmployee = $this->_canDeleteEmployee;
 	}
 	
 	public function listAction(){

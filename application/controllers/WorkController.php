@@ -25,10 +25,10 @@ class WorkController extends Zend_Controller_Action
     	$users = new Application_Model_DbTable_User();
     	$this->_user = $users->getByUsername($this->_username);
     	
-    	/* $this->_canEditWork = $this->_acl->isAllowed($this->_user, 'work', 'edit');
+    	$this->_canEditWork = $this->_acl->isAllowed($this->_user, 'work', 'edit');
     	$this->view->canEditWork = $this->_canEditWork;
     	$this->_canDeleteWork = $this->_acl->isAllowed($this->_user, 'work', 'delete');
-    	$this->view->canDeleteWork = $this->_canDeleteWork; */
+    	$this->view->canDeleteWork = $this->_canDeleteWork;
     }
     
     public function editAction(){

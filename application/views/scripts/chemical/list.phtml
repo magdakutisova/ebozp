@@ -20,9 +20,11 @@ if($this->subsidiaryId != null){ ?>
 						<li><?php echo $chemical['chemical'];
 						if(isset($chemical['positions'])){
 							echo $chemical['positions'];
-						}?>
+						} if($this->canEditChemical){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteChemical){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat chemickou látku ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
 						</li>
 					<?php }?>
 					</ul>
@@ -47,9 +49,11 @@ if($this->subsidiaryId != null){ ?>
 						<li><?php echo $chemical['chemical'];
 						if(isset($chemical['workplaces'])){
 							echo $chemical['workplaces'];
-						}?>
+						} if($this->canEditChemical){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalEdit');?>">Upravit název</a>
+						 <?php }if($this->canDeleteChemical){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat chemickou látku ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
 						</li>
 					<?php }?>
 					</ul>

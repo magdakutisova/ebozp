@@ -7,9 +7,12 @@
 			<?php if($employees != null){?>
 				<ul>
 				<?php foreach($employees as $id => $employee){?>
-					<li><?php echo $employee;?>
+					<li><?php echo $employee;
+					if($this->canEditEmployee){?>
 					 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $id), 'employeeEdit');?>">Upravit zaměstnance</a>
+					 <?php } if($this->canDeleteEmployee){?>
 					 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $id), 'employeeDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete zaměstanance smazat?')" /></form>
+					 <?php }?>
 					</li>
 				<?php }?>
 				</ul>
@@ -26,9 +29,12 @@
 			<p class="bold">Nezařazení zaměstnanci</p>
 			<ul>
 			<?php foreach($this->unassignedEmployees as $employee){?>
-				<li><?php echo $employee->getFirstName() . ' ' . $employee->getSurname();?>
+				<li><?php echo $employee->getFirstName() . ' ' . $employee->getSurname();
+				if($this->canEditEmployee){?>
 					 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $employee->getIdEmployee()), 'employeeEdit');?>">Upravit zaměstnance</a>
+					 <?php }if($this->canDeleteEmployee){?>
 					 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'employeeId' => $employee->getIdEmployee()), 'employeeDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat" onclick="return confirm('Opravdu si přejete zaměstanance smazat?')" /></form>
+					 <?php }?>
 				</li>
 			<?php }?>
 			</ul>

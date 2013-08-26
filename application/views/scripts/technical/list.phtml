@@ -20,9 +20,11 @@
 						<li><?php echo $technicalDevice['technical_device'];?>
 						<?php if(isset($technicalDevice['positions'])){
 							echo $technicalDevice['positions'];
-						}?>
+						} if($this->canEditTechnical){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
+						 <?php } if($this->canDeleteTechnical){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						<?php }?>
 						</li>
 					<?php } ?>
 					</ul>
@@ -47,9 +49,11 @@
 						<li><?php echo $technicalDevice['technical_device'];
 						if(isset($technicalDevice['workplaces'])){
 							echo $technicalDevice['workplaces'];
-						}?>
+						} if($this->canEditTechnical){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalEdit');?>">Upravit druh a typ</a>
+						 <?php } if($this->canDeleteTechnical){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'technicalDeviceId' => $id), 'technicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat technický prostředek ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
 						 </li>
 					<?php }?>
 					</ul>

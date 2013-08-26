@@ -5,6 +5,8 @@ class ChemicalController extends Zend_Controller_Action{
 	private $_user = null;
 	private $_acl = null;
 	private $_username = null;
+	private $_canEditChemical;
+	private $_canDeleteChemical;
 	
 	public function init(){
 		//globální nastavení view
@@ -19,6 +21,11 @@ class ChemicalController extends Zend_Controller_Action{
 		$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
+		
+		$this->_canEditChemical = $this->_acl->isAllowed($this->_user, 'chemical', 'edit');
+		$this->view->canEditChemical = $this->_canEditChemical;
+		$this->_canDeleteChemical = $this->_acl->isAllowed($this->_user, 'chemical', 'delete');
+		$this->view->canDeleteChemical = $this->_canDeleteChemical;
 	}
 	
 	public function listAction(){

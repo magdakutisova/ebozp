@@ -5,6 +5,8 @@ class TechnicalController extends Zend_Controller_Action{
 	private $_user = null;
 	private $_acl = null;
 	private $_username = null;
+	private $_canEditTechnical;
+	private $_canDeleteTechnical;
 	
 	public function init(){
 		//globální nastavení view
@@ -19,6 +21,11 @@ class TechnicalController extends Zend_Controller_Action{
 		$this->_username = Zend_Auth::getInstance()->getIdentity()->username;
 		$users = new Application_Model_DbTable_User();
 		$this->_user = $users->getByUsername($this->_username);
+		
+		$this->_canEditTechnical = $this->_acl->isAllowed($this->_user, 'technical', 'edit');
+		$this->view->canEditTechnical = $this->_canEditTechnical;
+		$this->_canDeleteTechnical = $this->_acl->isAllowed($this->_user, 'technical', 'delete');
+		$this->view->canDeleteTechnical = $this->_canDeleteTechnical;
 	}
 	
 	public function listAction(){

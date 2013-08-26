@@ -20,9 +20,11 @@
 						<li><?php echo $work['work'];?>
 						<?php if(isset($work['positions'])){
 							echo $work['positions'];
-						}?>
+						} if($this->canEditWork){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteWork){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
 						</li>
 					<?php }?>
 					</ul>
@@ -47,9 +49,11 @@
 						<li><?php echo $work['work']?>
 						<?php if(isset($work['workplaces'])){
 							echo $work['workplaces'];
-						}?>
+						} if($this->canEditWork){?>
 						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteWork){?>
 						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
 						</li>
 					<?php }?>
 					</ul>
