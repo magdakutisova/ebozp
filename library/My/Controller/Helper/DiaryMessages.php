@@ -73,8 +73,8 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 		$addresses = array_unique($addresses);
 		
 		$settings = array(
-				'ssl' => 'tls',
-				'port' => 587,
+				'ssl' => 'ssl',
+				'port' => 465,
 				'auth' => 'login',
 				'username' => 'guardian@guard7.cz',
 				'password' => 'guardian',
