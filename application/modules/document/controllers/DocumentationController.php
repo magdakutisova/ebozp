@@ -16,8 +16,15 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		
 		$documentation = self::loadDocumentation($documentationId);
 		
-		// nastaveni dat
-		$documentation->file_id = $fileId ? $fileId : null;
+		// vyhodnoceni typu odeslani a nastaveni dat
+		if ($this->_request->getParam("submit-client", false)) {
+			// soubor je verejny a urceny pro klienta (napr. PDF)
+			$documentation->file_id = $fileId ? $fileId : null;
+		} else {
+			// soubor je interni a urceny jen pro nas (napr. DOC)
+			$documentation->internal_file_id = $fileId ? $fileId : null;
+		}
+		
 		$documentation->save();
 		
 		$this->view->documentation = $documentation;

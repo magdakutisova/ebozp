@@ -1,24 +1,26 @@
 <?php
 $this->layout()->disableLayout();
-?>
-<clients>
-<?php 
+
+// prirpava dokumentu
+$xml = new SimpleXMLElement("<clients/>");
+
 foreach ($this->clients as $client) {
-	$name = $client["company_name"];
-	$id = $client["id_client"];
+	$clientNode = $xml->addChild("client");
+	$clientNode->addAttribute("name", $client["company_name"]);
+	$clientNode->addAttribute("id", $client["id_client"]);
 	
-	echo "<client name='$name' id='$id'>\n";
-	echo "<subsidiaries>";
+	// pridani pobocek
+	$subContainer = $clientNode->addChild("subsidiaries");
 	
 	foreach ($this->subsidiaries[$client["id_client"]] as $sub) {
 		$name = $sub["subsidiary_name"] . " (" . $sub["subsidiary_town"] . " - " . $sub["subsidiary_street"] .  ")";
 		$id = $sub["id_subsidiary"];
 		
-		echo "<subsidiary name='$name' id='$id' />\n";
+		$subElement = $subContainer->addChild("subsidiary");
+		$subElement->addAttribute("name", $name);
+		$subElement->addAttribute("id", $id);
 	}
-	
-	echo "</subsidiaries>\n";
-	echo "</client>\n";
 }
+
+echo $xml->asXML()
 ?>
-</clients>

@@ -11,6 +11,25 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$form = new Audit_Form_Watch();
 		$this->prepareWatchForm($form);
 		
+		// prednastaveni technika
+		$form->getElement("guard_person")->setValue(Zend_Auth::getInstance()->getIdentity()->username);
+		
+		// nacteni klienta a pobocky
+		$tableClients = new Application_Model_DbTable_Client();
+		$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
+		
+		$client = $tableClients->find($this->_request->getParams("clientId", 0))->current();
+		$subsidiary = $tableSubsidiary->find($this->_request->getParam("subsidiaryId", 0))->current();
+		
+		$clientData = "Za " . $client->company_name;
+		
+		if ($subsidiary) {
+			$clientData .= " - " . $subsidiary->subsidiary_town . ", " . $subsidiary->subsidiary_street;
+		}
+		
+		$clientData .= " převzal";
+		$form->getElement("client_description")->setValue($clientData);
+		
 		$form->isValidPartial($this->_request->getParams());
 		
 		$this->view->form = $form;
@@ -86,6 +105,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// formular pridani kontaktni osoby
 		$contactForm = new Audit_Form_ContactPerson();
 		$contactForm->setActionParams($watch->id);
+		$contactForm->populate($watch->toArray());
 		$contactForm->isValidPartial($this->_request->getParams());
 		
 		// nacteni probranych polozek
@@ -119,7 +139,33 @@ class Audit_WatchController extends Zend_Controller_Action {
 	}
 	
 	public function getAction() {
+		// nacteni dohlidky
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
 		
+		// nacteni dat
+		$user = $watch->findParentRow("Application_Model_DbTable_User", "user");
+		$changes = $watch->findChanges();
+		$discussed = $watch->findDiscussed();
+		$mistakes = $watch->findMistakes();
+		$orders = $watch->findOrders();
+		$outputs = $watch->findOutputs();
+		
+		// nacteni kontaktni osoby
+		if ($watch->contactperson_id) {
+			$person = $watch->findParentRow("Application_Model_DbTable_ContactPerson", "contact");
+		} else {
+			$person = (object) array("name" => $watch->contact_name, "phone" => $watch->contact_phone, "email" => $watch->contact_email);
+		}
+		
+		$this->view->user = $user;
+		$this->view->watch = $watch;
+		$this->view->changes = $changes;
+		$this->view->discussed = $discussed;
+		$this->view->mistakes = $mistakes;
+		$this->view->orders = $orders;
+		$this->view->outputs = $outputs;
+		$this->view->person = $person;
 	}
 	
 	public function changesAction() {
@@ -197,6 +243,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->watch = $watch;
 	}
 	
+	/**
+	 * zapise jinou kontaktni osobou nez je v seznamu
+	 */
 	public function newcontactAction() {
 		// nacteni dat
 		$watchId = $this->_request->getParam("watchId", 0);
@@ -214,15 +263,11 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
 		
 		// nastaveni dat a zapis radku
-		$tableContacts = new Application_Model_DbTable_ContactPerson();
-		$contactPerson = new Application_Model_ContactPerson();
-		$contactPerson->populate($form->getValues(true));
-		$contactPerson->setSubsidiaryId($watch->subsidiary_id);
-		$watch->contactperson_id = $tableContacts->addContactPerson($contactPerson);
+		$watch->setFromArray($form->getValues(true));
+		$watch->contactperson_id = null;
 		$watch->save();
 		
 		$this->view->watch = $watch;
-		$this->view->contactPerson = $contactPerson;
 	}
 	
 	public function ordersAction() {
@@ -346,6 +391,14 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$person = $watch->getContactPerson();
 		$user = $watch->getUser();
 		
+		// vyhodnoceni zastupce
+		if (!$person) {
+			$person = (object) array(
+					"name" => $watch->contact_name,
+					"phone" => $watch->contact_phone,
+					"email" => $watch->contact_email);
+		}
+		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
 		$this->view->outputs = $outputs;
@@ -374,6 +427,45 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$data = self::prepareForSave($form);
 		
 		$watch->setFromArray($data)->save();
+		$this->view->watch = $watch;
+	}
+	
+	/**
+	 * uzavre dohlidku
+	 */
+	public function submitAction() {
+		// nacteni dat
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+		
+		// kontrola uzivatele
+		$user = Zend_Auth::getInstance()->getIdentity();
+		
+		if ($user->id_user != $watch->user_id && $user->role != My_Role::ROLE_ADMIN) {
+			// chyba opravneni
+			throw new Zend_Auth_Exception("Invalid user for submit watch #$watch->id");
+		}
+		
+		if ($watch->is_closed) throw new Zend_Db_Table_Row_Exception("Watch #$watch->id is closed");
+		
+		$watch->is_closed = 1;
+		$watch->save();
+		
+		// odeslani neshod v asociaci
+		$tableAssocs = new Audit_Model_WatchesMistakes();
+		$tableAssocs->update(array("is_submited" => 1), array("watch_id = ?" => $watch->id));
+		
+		// odeslani novych neshod v neshodach
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$tableMistakes->update(array("is_submited" => 1), array("watch_id = ?" => $watch->id));
+		
+		// oznaceni neshod jako odebranych
+		$select = new Zend_Db_Select($tableAssocs->getAdapter());
+		$select->from($tableAssocs->info("name"), array("mistake_id"));
+		$select->where("set_removed")->where("watch_id = ?", $watch->id);
+		
+		$tableMistakes->update(array("is_removed" => 1), array("id in (?)" => new Zend_Db_Expr($select->assemble())));
+		
 		$this->view->watch = $watch;
 	}
 	
@@ -418,7 +510,14 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$data = $form->getValues(true);
 		
 		// kontrola nevybrane kontaktni osoby a casu
-		if (!$data["contactperson_id"]) $data["contactperson_id"] = null;
+		if ($data["contactperson_id"]) {
+			// anulace osoby v radku
+			$data["contact_name"] = null;
+			$data["contact_phone"] = null;
+			$data["contact_email"] = null;
+		} else {
+			$data["contactperson_id"] = null;
+		}
 		if (!$data["time_from"]) $data["time_from"] = null;
 		if (!$data["time_to"]) $data["time_to"] = null;
 		

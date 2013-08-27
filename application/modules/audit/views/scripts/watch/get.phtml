@@ -1,0 +1,152 @@
+<div id="watch-tabs">
+	<ul>
+		<li><a href="#overview">Přehled</a></li>
+		<li><a href="#discuss">Projednáno</a></li>
+		<li><a href="#mistakes">Neshody</a></li>
+		<li><a href="#changes">Změny</a></li>
+		<li><a href="#orders">Objednávky</a></li>
+		<li><a href="#outputs">Realizační výstup</a></li>
+	</ul>
+	<div id="overview">
+		<h1>Dohlídka</h1>
+		<table border="1" cellpadding="5">
+			<tr>
+				<td>
+				Provedl
+				</td>
+				<td>
+				<?php echo $this->user->username; ?>
+				</td>
+			</tr>
+			<?php 
+			if ($this->watch->other_guard) {
+				?>
+			<tr>
+				<td>
+				Dále se za G U A R D 7, v.o.s. zúčastnil
+				</td>
+				<td>
+				<?php echo $this->watch->other_guard; ?>
+				</td>
+			</tr>
+				<?php 
+			}
+			?>
+			<tr>
+				<td>
+				Čas
+				</td>
+				<td>
+				<?php echo substr($this->watch->time_from, 0, 5) . " - " . substr($this->watch->time_to, 0, 5); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				Zástupce klienta
+				</td>
+				<td>
+				<?php echo $this->person->name; ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				E-mail
+				</td>
+				<td>
+				<?php echo $this->person->email; ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				Telefon
+				</td>
+				<td>
+				<?php echo $this->person->phone; ?>
+				</td>
+			</tr>
+			<?php 
+			if ($this->watch->other_client) {
+				?>
+			<tr>
+				<td>
+				Dále se za klienta zúčastnil
+				</td>
+				<td>
+				<?php echo $this->watch->other_client; ?>
+				</td>
+			</tr>
+				<?php 
+			}
+			?>
+		</table>
+		<?php
+		echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>" . 
+			$this->formHidden("watchId", $this->watch->id) . $this->formSubmit("protocol", "Stáhnout protokol") . "</form>";
+		?>
+	</div>
+	<div id="discuss">
+		<ol>
+		<?php 
+		foreach ($this->discussed as $item) {
+			echo "<li>$item->content</li>";
+		}
+		?>
+		</ol>
+	</div>
+	<div id="changes">
+		<ol>
+			<?php 
+			foreach ($this->changes as $item) {
+				echo "<li>$item->content</li>";
+			}
+			?>
+		</ol>
+	</div>
+	<div id="mistakes">
+<?php 
+// rozrazeni neshod na nove, odstranene a neodstranene
+$new = array();
+$removed = array();
+$marked = array();
+$watch = $this->watch;
+
+foreach ($this->mistakes as $mistake) {
+	// vyhodnoceni neshody
+	if ($mistake->set_removed) {
+		$removed[] = $mistake;
+	} elseif ($mistake->watch_id == $watch->id) {
+		$new[] = $mistake;
+	} else {
+		$marked[] = $mistake;
+	}
+}
+
+// nove neshody
+?>
+<h2>Nově nalezené závady</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
+<h2>Odstraněné závady</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění"))); ?>
+<h2>Neodstraněné závady z minulých kontrol</h2>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
+	</div>
+	<div id="orders">
+		<ol>
+			<?php 
+			foreach ($this->orders as $item) {
+				echo "<li>$item->content</li>";
+			}
+			?>
+		</ol>
+	</div>
+	<div id="outputs">
+		<ol>
+			<?php 
+			foreach ($this->outputs as $item) {
+				echo "<li>$item->content</li>";
+			}
+			?>
+		</ol>
+	</div>
+</div>
+<script type="text/javascript" src="/js/audit/watch.js"></script>

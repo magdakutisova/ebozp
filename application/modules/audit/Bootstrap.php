@@ -443,5 +443,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "index"
 						))
 		);
+		
+		$router->addRoute(
+				"audit-watch-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/watch/:watchId/get",
+						array(
+								"module" => "audit",
+								"controller" => "watch",
+								"action" => "get"
+						))
+		);
 	}
 }

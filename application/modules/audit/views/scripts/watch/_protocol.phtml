@@ -1,4 +1,30 @@
 <h1 align="center">Protokol BOZP a PO</h1>
+<table>
+	<tr>
+		<td>
+		<strong>Ve společnosti</strong>
+		</td>
+		<td>
+		<?php echo $this->client->company_name; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<strong>Provozovna</strong>
+		</td>
+		<td>
+		<?php echo $this->subsidiary->subsidiary_name; ?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<strong>Dne</strong>
+		</td>
+		<td>
+		<?php echo $this->sqlDate($this->watch->watched_at); ?>
+		</td>
+	</tr>
+</table>&nbsp;<br />&nbsp;<br />&nbsp;
 <table border="1" cellpadding="5">
 	<tr>
 		<td>
@@ -8,6 +34,20 @@
 		<?php echo $this->user->username; ?>
 		</td>
 	</tr>
+	<?php 
+	if ($this->watch->other_guard) {
+		?>
+	<tr>
+		<td>
+		Dále se za G U A R D 7, v.o.s. zúčastnil
+		</td>
+		<td>
+		<?php echo $this->watch->other_guard; ?>
+		</td>
+	</tr>
+		<?php 
+	}
+	?>
 	<tr>
 		<td>
 		Čas
@@ -18,7 +58,7 @@
 	</tr>
 	<tr>
 		<td>
-		Jednáno s
+		Zástupce klienta
 		</td>
 		<td>
 		<?php echo $this->person->name; ?>
@@ -40,6 +80,20 @@
 		<?php echo $this->person->phone; ?>
 		</td>
 	</tr>
+	<?php 
+	if ($this->watch->other_client) {
+		?>
+	<tr>
+		<td>
+		Dále se za klienta zúčastnil
+		</td>
+		<td>
+		<?php echo $this->watch->other_client; ?>
+		</td>
+	</tr>
+		<?php 
+	}
+	?>
 </table>
 <?php 
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Projednáno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
@@ -67,11 +121,11 @@ foreach ($this->mistakes as $mistake) {
 // nove neshody
 ?>
 <h2>Nově nalezené závady</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new)); ?>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
 <h2>Odstraněné závady</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed)); ?>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění"))); ?>
 <h2>Neodstraněné závady z minulých kontrol</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked)); ?>
+<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
 <table cellpadding="10">
 	<tr>
 		<td>

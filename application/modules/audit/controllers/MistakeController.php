@@ -608,6 +608,14 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->client = $client;
 	}
 	
+	public function indexJsonAction() {
+		$this->indexAction();
+	}
+	
+	public function indexXmlAction() {
+		$this->indexAction();
+	}
+	
 	public function postAction() {
 		// priprava dat
 		$form = new Audit_Form_MistakeCreateAlone();

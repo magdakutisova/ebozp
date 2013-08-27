@@ -53,7 +53,7 @@ class Audit_Form_Watch extends Zend_Form {
 		
 		// pole pro zacatek dohlidky
 		$this->addElement("text", "time_from", array(
-				"label" => "Začáek (čas)",
+				"label" => "Začátek (čas)",
 				"decorators" => $elementDecorator,
 				"validators" => array(
 						array(
@@ -90,6 +90,18 @@ class Audit_Form_Watch extends Zend_Form {
 		// pole pro jmeno pobocky
 		$this->addElement("text", "client_description", array(
 				"label" => "Jméno a popis klienta",
+				"decorators" => $elementDecorator
+		));
+		
+		// další zástupce guardu
+		$this->addElement("textarea", "other_guard", array(
+				"label" => "Další zástupce G U A R D 7, v.o.s.",
+				"decorators" => $elementDecorator
+		));
+		
+		// další zástupce klienta
+		$this->addElement("textarea", "other_client", array(
+				"label" => "Další zástupce klienta",
 				"decorators" => $elementDecorator
 		));
 		

@@ -25,7 +25,8 @@ $attachUrl = $this->url(array("documentationId" => $this->documentation->id, "cl
 		Vybraný soubor: <strong id="attach-selected">-</strong>
 		<input type="hidden" name="fileId" value="0" id="fileId1" />
 		<input type="hidden" name="directoryId" value="0" id="directoryId1" />
-		<input type="submit" value="Připojit" id="attach-submit" />
+		<button name="submit-client">Připojit jako veřejný</button>
+		<button name="submit-internal">Připojit jako interní</button>
 	</form>
 </div>
 <ul id="attach-content" style="list-style: none;"></ul>

@@ -29,6 +29,9 @@ echo "</h1>";
 if ($acl->isAllowed($user->role, "document:preset")) {
 	echo "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
 }
+
+// vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
+$editable = $acl->isAllowed($user->role, "document:documentation", "put");
 ?>
 </div>
 <table id="docs-table">
@@ -46,6 +49,11 @@ if ($acl->isAllowed($user->role, "document:preset")) {
 			<td>
 			Soubor
 			</td>
+			<?php 
+			if ($editable) {
+				echo "<td>Interní</td>";
+			}
+			?>
 			<td>
 			Akce
 			</td>
@@ -53,8 +61,6 @@ if ($acl->isAllowed($user->role, "document:preset")) {
 	</thead>
 	<tbody>
 	<?php 
-// vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
-$editable = $acl->isAllowed($user->role, "document:documentation", "put");
 
 foreach ($this->documentations as $doc) {
 	// vyhodnoceni, zda se jedna o prazdny
@@ -66,6 +72,9 @@ foreach ($this->documentations as $doc) {
 	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";
 	echo "<td>" . $doc->comment . "</td>";
 	echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid)) : "-") . "</td>";
+	
+	if ($editable)
+		echo "<td>" . ($doc->i_fileid ? $this->file((object) array("name" => $doc->i_filename, "id" => $doc->i_fileid)) : "-") . "</td>";
 	
 	echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
 	

@@ -18,8 +18,12 @@
 		
 		echo "<form action='$url' target='_blank' method='get'>" . 
 			$this->formHidden("watchId", $watch->id) . $this->formSubmit("protocol", "Náhled protokolu") . "</form>";
+		
+		$url = "/audit/watch/submit?watchId=" . $this->watch->id;
+		
+		echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>"
 		?>
-		<h2>Jiná kontaktní osoba</h2>
+		<h2>Jiný zástupce klienta</h2>
 		<?php 
 		echo $this->contactForm;
 		?>

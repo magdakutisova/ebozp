@@ -191,7 +191,7 @@ $(function () {
 			var rootId = response.find("#root-id").val();
 			loadDirectoryAndFiles(rootId);
 			
-			createDialog(response, 450, "Editace dokumentace");
+			createDialog(response, 800, "Editace dokumentace");
 		});
 	}
 	

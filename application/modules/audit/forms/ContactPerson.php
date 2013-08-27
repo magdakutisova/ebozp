@@ -29,18 +29,18 @@ class Audit_Form_ContactPerson extends Zend_Form {
 				array(array("row" => "HtmlTag"), array("tag" => "tr"))
 		);
 		
-		$this->addElement("text", "name", array(
+		$this->addElement("text", "contact_name", array(
 				"required" => true,
 				"decorators" => $elementDecorator,
 				"label" => "Jméno"
 				));
 		
-		$this->addElement("text", "phone", array(
+		$this->addElement("text", "contact_phone", array(
 				"decorators" => $elementDecorator,
 				"label" => "Telefon"
 				));
 		
-		$this->addElement("text", "email", array(
+		$this->addElement("text", "contact_email", array(
 				"decorators" => $elementDecorator,
 				"label" => "E-mail",
 				"validators" => array(new Zend_Validate_EmailAddress())

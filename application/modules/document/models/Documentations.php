@@ -20,11 +20,17 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 					"refColumns" => "id_subsidiary"
 			),
 			
-			"assoc" => array(
-					"columns" => array("directory_id", "file_id"),
-					"refTableClass" => "Document_Model_DirectoriesFiles",
-					"refColumns" => array("directory_id", "file_id")
-			)
+			"file" => array(
+					"columns" => "file_id",
+					"refTableClass" => "Document_Model_Files",
+					"refColumns" => "id"
+					),
+			
+			"internal" => array(
+					"columns" => "internal_file_id",
+					"refTableClass" => "Document_Model_Files",
+					"refColumns" => "id"
+					)
 	);
 	
 	protected $_rowClass = "Document_Model_Row_Documentation";
@@ -79,6 +85,7 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		
 		// propojeni asociaci na soubory
 		$select->joinLeft(array("file" => $nameFiles), "file.id = doc.file_id", array("filename" => "name", "fileid" => "id"));
+		$select->joinLeft(array("file2" => $nameFiles), "file2.id = internal_file_id", array("i_filename" => "name", "i_fileid" => "id"));
 		
 		$result = $this->getAdapter()->query($select);
 		

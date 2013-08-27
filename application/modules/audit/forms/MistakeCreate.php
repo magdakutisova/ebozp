@@ -107,7 +107,7 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		
 		// datum odstraneni
 		$this->addElement("text", "will_be_removed_at", array(
-				"label" => "Bude odstraněno",
+				"label" => "Navrhovaný termín odstranění",
 				"required" => true,
 				"decorators" => $elementDecorator,
 				"validators" => array(

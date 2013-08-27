@@ -1,0 +1,39 @@
+<?php
+$this->layout()->disableLayout();
+
+$xml = new SimpleXMLElement("<mistakes />");
+
+// iterace nad neshodami a jejich zapis
+foreach ($this->mistakes as $mistake) {
+	$melement = $xml->addChild("mistake");
+	
+	// zapisovani dat do elementu, aby bylo zajisteno poradi
+	$melement->addChild("id", $mistake["id"]);								// 0
+	$melement->addChild("id", $mistake["audit_id"]);						// 1
+	$melement->addChild("id", $mistake["watch_id"]);						// 2
+	$melement->addChild("id", $mistake["client_id"]);						// 3
+	$melement->addChild("id", $mistake["subsidiary_id"]);					// 4
+	$melement->addChild("id", $mistake["workplace_id"]);					// 5
+	$melement->addChild("id", $mistake["record_id"]);						// 6
+	$melement->addChild("id", $mistake["weight"]);							// 7
+	$melement->addChild("id", $mistake["question"]);						// 8
+	$melement->addChild("id", $mistake["category"]);						// 9
+	$melement->addChild("id", $mistake["subcategory"]);						// 10
+	$melement->addChild("id", $mistake["concretisation"]);					// 11
+	$melement->addChild("id", $mistake["mistake"]);							// 12
+	$melement->addChild("id", $mistake["suggestion"]);						// 13
+	$melement->addChild("id", $mistake["comment"]);							// 14
+	$melement->addChild("id", $mistake["hidden_comment"]);					// 15
+	$melement->addChild("id", $mistake["notified_at"]);						// 16
+	$melement->addChild("id", $mistake["created_at"]);						// 17
+	$melement->addChild("id", $mistake["will_be_removed_at"]);				// 18
+	$melement->addChild("id", $mistake["removed_at"]);						// 19
+	$melement->addChild("id", $mistake["responsibile_id"]);					// 20
+	$melement->addChild("id", $mistake["responsibilit_name"]);				// 21
+	$melement->addChild("id", $mistake["is_removed"]);						// 22
+	$melement->addChild("id", $mistake["is_marked"]);						// 23
+	$melement->addChild("id", $mistake["is_submited"]);						// 24
+	
+}
+
+echo $xml->asXML();

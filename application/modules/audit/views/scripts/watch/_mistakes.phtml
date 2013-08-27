@@ -1,51 +1,44 @@
 <table border="1" cellpadding="2">
 	<thead>
 		<tr>
-			<td valign="middle" align="center">
-			Závada
-			</td>
-			<td valign="middle" align="center">
-			Odpovědná<br />osoba
-			</td>
-			<td valign="middle" align="center">
-			Datum<br />zjištění
-			</td>
-			<td valign="middle" align="center">
-			Termín<br />odstranění
-			</td>
-			<td valign="middle" align="center">
-			Splněno
-			</td>
-			<td valign="middle" align="center">
-			Poznámka
-			</td>
+<?php 
+// nacteni hlavicky
+$columnList = $this->columns;
+$columns = array_keys($columnList);
+
+foreach ($columnList as $name) {
+	echo "<th valign=\"middle\" align=\"center\"><small>$name</small></th>";
+}
+?>
 		</tr>
 	</thead>
 	<tbody>
 	<?php 
 	foreach ($this->mistakes as $mistake) {
-		?>
-		<tr>
-			<td>
-			<?php echo $mistake->mistake; ?>
-			</td>
-			<td>
-			<?php echo $mistake->responsibile_name; ?>
-			</td>
-			<td>
-			<?php echo $this->sqlDate($mistake->notified_at); ?>
-			</td>
-			<td>
-			<?php echo $mistake->removed_at ? $this->sqlDate($mistake->removed_at) : "-"; ?>
-			</td>
-			<td>
-			<?php echo $mistake->is_removed ? "ANO" : "NE"; ?>
-			</td>
-			<td>
-			<?php echo $mistake->comment; ?>
-			</td>
-		</tr>
-		<?php 
+		echo "<tr>";
+		
+		foreach ($columns as $name) {
+			$value = $mistake[$name];
+			$align = "left";
+			
+			// vyhodnoceni datumu
+			switch ($name) {
+				case "will_be_removed_at":
+				case "notified_at":
+				case "removed_at":
+					if ($value && $value != "0000-00-00")
+						$value = $this->sqlDate($value);
+					else
+						$value = "?";
+				
+				case "weight":
+					$align = "center";
+			}
+			
+			echo "<td align=\"$align\"><small>" . $value . "</small></td>";
+		}
+		
+		echo "</tr>";
 	}
 	?>
 	</tbody>
