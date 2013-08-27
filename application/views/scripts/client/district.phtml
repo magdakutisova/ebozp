@@ -5,7 +5,11 @@
 <a href="#down">&#x25BC; Dolů &#x25BC;</a>
 	<?php $district = ""; ?>
 	<ul>
-	<?php foreach ($this->subsidiaries as $subsidiary) :
+	<?php if(count($this->subsidiaries)){ 
+	foreach ($this->subsidiaries as $subsidiary) :
+	if($subsidiary->getHqOnly()){
+		continue;
+	}
 	if($subsidiary->getAllowed()){
 		if ($district != $subsidiary->getDistrict()){?>
 			</ul>
@@ -19,10 +23,17 @@
 			</a></li>
 		<?php }
 		else {?>
-			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+			if(!$subsidiary->getActive()){
+				echo ' (neaktivní)';
+			}
+			echo '</a>'?></li>
 		<?php }
 	}
-		endforeach; ?>
+		endforeach;}
+		else{
+			echo '<p>Žádní klienti k zobrazení.</p>';
+			} ?>
 	</ul>
 	<a name="down"></a>
 <a href="#up">&#x25B2; Nahoru &#x25B2;</a>		

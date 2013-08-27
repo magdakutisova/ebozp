@@ -115,11 +115,6 @@ class WorkplaceController extends Zend_Controller_Action
 		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
     }
 
-    public function indexAction()
-    {
-        // action body
-    }
-
     public function newAction()
     {
     	$defaultNamespace = new Zend_Session_Namespace();
@@ -585,7 +580,7 @@ class WorkplaceController extends Zend_Controller_Action
     			$workplaceNew->setFolderId(null);
     		}
     		if($formData['boss_id'] == 0){
-    			$workplace->setBossId(null);
+    			$workplaceNew->setBossId(null);
     		}
     		$differentName = true;
     		if($workplace['name'] == $workplaceNew->getName()){

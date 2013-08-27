@@ -10,71 +10,60 @@
 	</div>
 	
 	<?php if($this->filter == 'podle-pracovist'){?>
-	<?php if($this->works != null){ ?>		
-		<div class="box">
-		<?php foreach($this->works as $workplace => $works){?>
-			<p class="bold"><?php echo $workplace;?></p>
-			<?php if($works != null){ ?>
-				<ul>
-					<?php foreach($works as $work => $positions){?>
-					<li><?php echo $work?>
-						<?php if($positions[0] != ''){
-						echo " (pracovní pozice: ";
-						$i = 0;
-						$length = count($positions);
-						foreach($positions as $position){
-							echo $position;
-							if($i != ($length - 1)){
-								echo ', ';
-							}
-							else{
-								echo ')';
-							}
-							$i++;
-						}?>
-					</li>
-					<?php }}?>
-				</ul>
-			<?php } else {
-				echo "<p>Pracoviště nemá přiřazeny pracovní činnosti.</p>"?>
-		<?php }}?>
-		</div>
-	
-<?php }else {?>
-	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
-<?php }}
-if($this->filter == 'podle-pracovnich-pozic'){?>
-	<?php if($this->works != null){?>		
-		<div class="box">
-		<?php foreach($this->works as $position => $works){?>
-			<p class="bold"><?php echo $position;?></p>
-			<?php if($works != null){ ?>
-				<ul>
-					<?php foreach($works as $work => $workplaces){?>
-					<li><?php echo $work?>
-						<?php if($workplaces[0] != ''){
-						echo " (provádí se na pracovištích: ";
-						$i = 0;
-						$length = count($workplaces);
-						foreach($workplaces as $workplace){
-							echo $workplace;
-							if($i != ($length - 1)){
-								echo ', ';
-							}
-							else{
-								echo ')';
-							}
-							$i++;
-						}?>
-					</li>
-					<?php }}?>
-				</ul>
-			<?php }
-			else{
-				echo '<p>Pracovní pozice nemá přiřazeny pracovní činnosti.';
+		<?php if($this->works != null){ ?>		
+			<div class="box">
+			<?php foreach($this->works as $workplace => $works){?>
+				<p class="bold"><?php echo $workplace;?></p>
+				<?php if($works != null){ ?>
+					<ul>
+					<?php foreach($works as $id => $work){?>
+						<li><?php echo $work['work'];?>
+						<?php if(isset($work['positions'])){
+							echo $work['positions'];
+						} if($this->canEditWork){?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteWork){?>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
+						</li>
+					<?php }?>
+					</ul>
+				<?php } else {
+					echo "<p>Pracoviště nemá přiřazeny pracovní činnosti.</p>"?>
+				<?php }
 			}?>
-		<?php }?>
-		</div>	
-<?php } else {?>
-	<p>Na pobočce se neprovádějí žádné pracovní činnosti.</p>
-<?php }}} ?>
+			</div>
+	
+		<?php }else {?>
+			<p>K pracovištím nejsou přiřazeny žádné pracovní činnosti.</p>
+		<?php }
+	}
+	if($this->filter == 'podle-pracovnich-pozic'){?>
+		<?php if($this->works != null){?>		
+			<div class="box">
+			<?php foreach($this->works as $position => $works){?>
+				<p class="bold"><?php echo $position;?></p>
+				<?php if($works != null){ ?>
+					<ul>
+					<?php foreach($works as $id => $work){?>
+						<li><?php echo $work['work']?>
+						<?php if(isset($work['workplaces'])){
+							echo $work['workplaces'];
+						} if($this->canEditWork){?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteWork){?>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'workId' => $id), 'workDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat pracovní činnost ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
+						</li>
+					<?php }?>
+					</ul>
+				<?php } else{
+					echo '<p>Pracovní pozice nemá přiřazeny pracovní činnosti.';
+				}
+			}?>
+			</div>	
+		<?php } else {?>
+			<p>K pracovním pozicím nejsou přiřazeny žádné pracovní činnosti.</p>
+		<?php } 
+	}?>	
+<?php } ?>

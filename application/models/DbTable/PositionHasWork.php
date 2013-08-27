@@ -51,4 +51,35 @@ class Application_Model_DbTable_PositionHasWork extends Zend_Db_Table_Abstract{
 		}
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			try{
+				$data['id_position'] = $position->id_position;
+				$data['id_work'] = $newId;
+				$this->update($data, "id_position = $position->id_position AND id_work = $oldId");
+			}
+			catch(Exception $e){
+				$this->delete("id_position = $position->id_position AND id_work = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $workId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			$this->delete("id_position = $position->id_position AND id_work = $workId");
+		}
+	}
+	
 }

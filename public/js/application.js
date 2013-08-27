@@ -52,77 +52,131 @@ $(function(){
 		$(".folder-delete").toggleClass("hidden");
 	});
 	
+	$(".expandable").dblclick(function(){
+		var url = $(this).attr("title");
+		window.location = url;
+	});
+	
 	$(".list").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/nazev/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/nazev/" + active + "/ #filtered");
+		$(".current").attr("name", "nazev");
 	});
 	
 	$(".alphabet").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/abeceda/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/abeceda/" + active + "/ #filtered");
+		$(".current").attr("name", "abeceda");
 	});
 	
 	$(".technician").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/bt/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/bt/" + active + "/ #filtered");
+		$(".current").attr("name", "bt");
 	});
 	
 	$(".coordinator").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/koo/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/koo/" + active + "/ #filtered");
+		$(".current").attr("name", "koo");
 	});
 	
 	$(".town").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/obec/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/obec/" + active + "/ #filtered");
+		$(".current").attr("name", "obec");
 	});
 	
 	$(".district").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/okres/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/okres/" + active + "/ #filtered");
+		$(".current").attr("name", "okres");
 	});
 	
 	$(".lastOpen").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./klienti/naposledy/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./klienti/naposledy/" + active + "/ #filtered");
+		$(".current").attr("name", "naposledy");
 	});
 	
 	//archiv
 	$(".archive-list").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/nazev/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/nazev/" + active + "/ #filtered");
+		$(".current").attr("name", "nazev");
 	});
 	
 	$(".archive-alphabet").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/abeceda/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/abeceda/" + active + "/ #filtered");
+		$(".current").attr("name", "abeceda");
 	});
 	
 	$(".archive-technician").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/bt/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/bt/" + active + "/ #filtered");
+		$(".current").attr("name", "bt");
 	});
 	
 	$(".archive-coordinator").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/koo/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/koo/" + active + "/ #filtered");
+		$(".current").attr("name", "koo");
 	});
 	
 	$(".archive-town").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/obec/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/obec/" + active + "/ #filtered");
+		$(".current").attr("name", "obec");
 	});
 	
 	$(".archive-district").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/okres/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/okres/" + active + "/ #filtered");
+		$(".current").attr("name", "okres");
 	});
 	
 	$(".archive-lastOpen").click(function(){
-		$.get($(this).attr("action"));
-		$("#filtered").load("./archiv/naposledy/ #filtered");
+		var active = getActiveInactive();
+		$("#filtered").load("./archiv/naposledy/" + active + "/ #filtered");
+		$(".current").attr("name", "naposledy");
 	});
 	//archiv - konec
+	
+	//filtr aktivní-neaktivní
+	
+	function getActiveInactive(){
+		var active = $(".active").is(':checked');
+		var inactive = $(".inactive").is(':checked');
+		if(active && inactive){
+			return 'both';
+		}
+		if(active){
+			return 'active';
+		}
+		if(inactive){
+			return 'inactive';
+		}
+		if(!active && !inactive){
+			return 'none';
+		}
+	}
+	
+	$(".box").on("change", ".active", function(){
+		var active = getActiveInactive();
+		var filter = $(".current").attr("name");
+		var type = $(".type").attr("name");
+		$("#filtered").load("./" + type + "/" + filter + "/" + active + "/ #filtered");
+	});
+	
+	$(".box").on("change", ".inactive", function(){
+		var active = getActiveInactive();
+		var filter = $(".current").attr("name");
+		var type = $(".type").attr("name");
+		$("#filtered").load("./" + type + "/" + filter + "/" + active + "/ #filtered");
+	});
+	
+	//filtr - konec
 	
 	$(".register").click(function(){
 		$.get($(this).attr("action"));
@@ -140,7 +194,19 @@ $(function(){
 	});
 	
 	$("#invoice_address").click(function(){
-		var checkbox = $(this);
+		toggleInvoiceAddress($(this));
+	});
+	
+	$("#hq_only").click(function(){
+		toggleHqOnly($(this));
+	});
+	
+	$(document).ready(function(){
+		toggleInvoiceAddress($("#invoice_address"));
+		toggleHqOnly($("#hq_only"));
+	});
+	
+	function toggleInvoiceAddress(checkbox){
 		if (checkbox.is(':checked')){
 			$("#invoice_street").attr('disabled', true).val('');
 			$("#invoice_code").attr('disabled', true).val('');
@@ -151,7 +217,18 @@ $(function(){
 			$("#invoice_code").removeAttr('disabled');
 			$("#invoice_town").removeAttr('disabled');
 		}
-	});
+	}
+	
+	function toggleHqOnly(checkbox){
+		if(checkbox.is(':checked')){
+			$("#supervision_frequency").attr('disabled', true).val('');
+			$("#difficulty").attr('disabled', true).val('');
+		}
+		else{
+			$("#supervision_frequency").removeAttr('disabled');
+			$("#difficulty").removeAttr('disabled');
+		}
+	}
 	
 	//checkboxy v adresáři
 	$('form#tree > div > span > ul > li > input').click(function(){
@@ -752,6 +829,15 @@ $(function(){
 		else{
 			checkboxes.prop('checked', false);
 		}
+	});
+	
+	//barva neaktivních poboček v menu
+	$(document).ready(function(){
+		$("ul.navigation li ul li a:contains('neaktivní')").addClass('inactive');
+	});
+	
+	$(document).ready(function(){
+		$("ul.navigation li ul li a:contains('pouze sídlo')").addClass('hqOnly');
 	});
 	
 });

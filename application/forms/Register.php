@@ -39,6 +39,16 @@ class Application_Form_Register extends Zend_Form{
        		'decorators' => $elementDecorator,
        	));
        	
+       	$this->addElement('text', 'name', array(
+       			'label' => 'Jméno a příjmení',
+       			'required' => true,
+       			'filters' => array('StripTags', 'StringTrim'),
+       			'validators' => array(
+       					array('StringLength', false, array(1,120)),
+       					),
+       			'decorators' => $elementDecorator,
+       			));
+       	
        	$this->addElement('password', 'password', array(
        		'label' => 'Heslo',
        		'required' => true,

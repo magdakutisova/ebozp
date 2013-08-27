@@ -612,6 +612,8 @@ class PositionController extends Zend_Controller_Action
     	$formEmployee->manager->setMultiOptions($this->_yesNoList);
     	$formEmployee->sex->setMultiOptions($this->_sexList);
     	$formEmployee->save_employee->setAttrib('class', array('employee', 'position', 'ajaxSave'));
+    	$formEmployee->removeElement('position_id');
+    	$formEmployee->removeElement('client_id');
     	$this->view->formEmployee = $formEmployee;
     }
 

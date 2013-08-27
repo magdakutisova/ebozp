@@ -3,6 +3,7 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 	
 	private $idUser;
 	private $username;
+	private $name;
 	private $password;
 	private $salt;
 	private $role;
@@ -40,6 +41,14 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 	 */
 	public function setUsername($username) {
 		$this->username = $username;
+	}
+	
+	public function getName(){
+		return $this->name;
+	}
+	
+	public function setName($name){
+		$this->name = $name;
 	}
 
 	/**
@@ -98,6 +107,7 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		$this->password = isSet($data['password']) ? $data['password'] : null;
 		$this->salt = isSet($data['salt']) ? $data['salt'] : null;
 		$this->role = isSet($data['role']) ? $data['role'] : null;
+		$this->name = isSet($data['name']) ? $data['name'] : null;
 		
 		$this->userSubsidiaries = array();
 		$subsidiaries = isSet($data['user_subsidiaries']) ? $data['user_subsidiaries'] : null;
@@ -115,6 +125,7 @@ class Application_Model_User implements Zend_Acl_Role_Interface{
 		$data['password'] = $this->password;
 		$data['salt'] = $this->salt;
 		$data['role'] = $this->role;
+		$data['name'] = $this->name;
 		
 		if($withSubsidiaries){
 			$data['user_subsidiaries'] = $this->userSubsidiaries;

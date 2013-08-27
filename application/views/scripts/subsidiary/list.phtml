@@ -1,9 +1,16 @@
+<?php if(count($this->subsidiaries)){ ?>
 <ul>
 <?php foreach ($this->subsidiaries as $subsidiary){?>
 	<li>
 		<a href="<?php echo $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex')?>">
 			<?php echo $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();?>
+		<?php if(!$subsidiary->getActive()){
+			echo ' (neaktivní)';
+		}?>
 		</a>
 	</li>
-<?php } ?>
+<?php }?>
 </ul>
+<?php } else {?>
+	<p>Klient nemá žádné pobočky, nebo k nim nemáte přístup.</p>
+	<?php }?>

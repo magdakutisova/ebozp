@@ -50,6 +50,12 @@ class Application_Form_Client extends Zend_Form
         	'order' => 1001
         ));
         
+        $this->addElement('checkbox', 'hq_only', array(
+        		'label' => 'Pouze sídlo',
+        		'decorators' => $elementDecorator,
+        		'order' => 1,
+        		));
+        
         $this->addElement('text', 'company_name', array(
         	'label' => 'Název organizace',
         	'required' => true,
@@ -59,13 +65,13 @@ class Application_Form_Client extends Zend_Form
         					'options' => array(1,255)),
         			),
         	'decorators' => $elementDecorator,
-        		'order' => 1,
+        		'order' => 2,
         ));
         
         $this->addElement('hidden', 'headquarters', array(
         	'label' => 'Adresa sídla',
         	'decorators' => $elementDecorator,
-        		'order' => 2,
+        		'order' => 3,
         ));
         
         $this->addElement('text', 'headquarters_street', array(
@@ -77,7 +83,7 @@ class Application_Form_Client extends Zend_Form
         						'options' => array(1,128)),
         		),
         	'decorators' => $elementDecorator,
-        		'order' => 3,
+        		'order' => 4,
         ));
         
         $this->addElement('text', 'headquarters_code', array(
@@ -87,7 +93,7 @@ class Application_Form_Client extends Zend_Form
         	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max' => 6)),
         		new Zend_Validate_PostCode('cs_CZ')),
         	'decorators' => $elementDecorator,
-        		'order' => 4,
+        		'order' => 5,
         ));
         
         $this->addElement('text', 'headquarters_town', array(
@@ -99,7 +105,7 @@ class Application_Form_Client extends Zend_Form
         						'options' => array(1,128)),
         		),
         	'decorators' => $elementDecorator,
-        		'order' => 5,
+        		'order' => 6,
         ));
         
         $this->addElement('text', 'district', array(
@@ -111,7 +117,7 @@ class Application_Form_Client extends Zend_Form
         						'options' => array(0,128)),
         				),
         		'decorators' => $elementDecorator,
-        		'order' => 6,
+        		'order' => 7,
         		));
         
         $this->addElement('textarea', 'business', array(
@@ -119,7 +125,7 @@ class Application_Form_Client extends Zend_Form
         	'required' => false,
         	'filters' => array('StripTags', 'StringTrim'),
             'decorators' => $elementDecorator,
-        		'order' => 7,
+        		'order' => 8,
         ));
         
         $this->addElement('text', 'company_number', array(
@@ -128,7 +134,7 @@ class Application_Form_Client extends Zend_Form
         	'filters' => array('StripTags', 'StringTrim'),
         	'validators' => array('Digits', new Zend_Validate_StringLength(array('max' => 8))),
         	'decorators' => $elementDecorator,
-        		'order' => 8,
+        		'order' => 9,
         ));
         
         $this->addElement('text', 'tax_number', array(
@@ -137,20 +143,20 @@ class Application_Form_Client extends Zend_Form
         	'filters' => array('StripTags', 'StringTrim'),
         	'validators' => array(new Zend_Validate_Regex(array('pattern' => '/^CZ[0-9]{8,10}$/'))),
         	'decorators' => $elementDecorator,
-        		'order' => 9,
+        		'order' => 10,
         ));
         
         $this->addElement('hidden', 'invoice', array(
         	'label' => 'Fakturační adresa',
         	'decorators' => $elementDecorator,
-        		'order' => 10,
+        		'order' => 11,
         ));
         
         $this->addElement('checkbox', 'invoice_address', array(
         	'label' => 'Stejná jako adresa sídla',
         	'required' => false,
         	'decorators' => $elementDecorator,
-        		'order' => 11,
+        		'order' => 12,
         ));
         
         $this->addElement('text', 'invoice_street', array(
@@ -162,7 +168,7 @@ class Application_Form_Client extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(0,128)),
         		),
-        		'order' => 12,
+        		'order' => 13,
         ));
         
         $this->addElement('text', 'invoice_code', array(
@@ -172,7 +178,7 @@ class Application_Form_Client extends Zend_Form
         	'validators' => array(new Zend_Validate_StringLength(array('min' => 5, 'max => 6')),
         		new Zend_Validate_PostCode('cs_CZ')),
         	'decorators' => $elementDecorator,
-        		'order' => 13,
+        		'order' => 14,
         ));
         
         $this->addElement('text', 'invoice_town', array(
@@ -184,7 +190,7 @@ class Application_Form_Client extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(0,128)),
         		),
-        		'order' => 14,
+        		'order' => 15,
         ));
         
         $this->addElement('select', 'insurance_company', array(
@@ -196,7 +202,7 @@ class Application_Form_Client extends Zend_Form
         				array('validator' => 'StringLength',
         						'options' => array(1,45)),
         		),
-        		'order' => 15,
+        		'order' => 16,
         ));
         
         $this->addElement('text', 'supervision_frequency', array(
@@ -205,7 +211,7 @@ class Application_Form_Client extends Zend_Form
         	'filters' => array('Int', 'StripTags', 'StringTrim'),
         	'validators' => array('Digits'),
         	'decorators' => $elementDecorator,
-        		'order' => 16,
+        		'order' => 17,
         ));
         
         $this->addElement('text', 'difficulty', array(
@@ -214,7 +220,7 @@ class Application_Form_Client extends Zend_Form
         		'filters' => array('StripTags', 'StringTrim'),
         		'validators' => array('Float'),
         		'decorators' => $elementDecorator,
-        		'order' => 17,
+        		'order' => 18,
         		));
         
         $username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -228,7 +234,7 @@ class Application_Form_Client extends Zend_Form
         		'required' => false,
         		'filters' => array('StripTags', 'StringTrim'),
         		'decorators' => $elementDecorator,
-        			'order' => 18,
+        			'order' => 19,
         	));
         }
         
@@ -268,7 +274,6 @@ class Application_Form_Client extends Zend_Form
         
         $this->addElement('doctor', 'doctor201', array(
         		'order' => 201,
-        		'validators' => array(new My_Form_Validator_PersonEmail()),
         		));
         
         $this->addElement('button', 'new_doctor', array(
@@ -324,7 +329,6 @@ class Application_Form_Client extends Zend_Form
     		$newDoctor = new My_Form_Element_Doctor('newDoctor' . strval($order - 1), array(
     				'order' => $order,
     				'value' => $data[$fieldName],
-    				'validators' => array(new My_Form_Validator_PersonEmail()),
     				));
     		$this->addElement($newDoctor);
     	}

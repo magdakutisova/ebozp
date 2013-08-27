@@ -10,7 +10,8 @@
 	$clientId = "";
 	$allowed = ""?>
 	<ul>
-	<?php foreach ($this->subsidiaries as $subsidiary) :
+	<?php if(count($this->subsidiaries)){ 
+	foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
 		$companyName = $subsidiary->getSubsidiaryName();
 		$companyAddress = $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
@@ -20,23 +21,38 @@
 		if ($clientId != $subsidiary->getClientId()){?>
 			</ul>
 			<?php $clientId = $subsidiary->getClientId(); ?>
+			<?php if($companyName != ''){ ?>
 			<p class="bold concealer">
 			<?php if($allowed){?><a><?php }?>
-				<span class="anchor"><?php echo $companyName . ' - ' . $companyAddress ?></span>
+				<span class="anchor expandable" title="<?php echo $this->url(array('clientId' => $clientId), 'clientIndex')?>"><?php echo $companyName . ' - ' . $companyAddress ?></span>
 			<?php if($allowed){?></a><?php }?>
 			</p>
 			<ul class="hidden">
-			<?php if ($allowed){
+			<?php } else{?>
+			<ul>
+			<?php }if ($allowed && !$subsidiary->getHqOnly()){
 			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 			$allowed = ''; }
 			if(!$subsidiary->getHq()){?>
-			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+			if(!$subsidiary->getActive()){
+				echo ' (neaktivní)';
+			}
+			echo '</a>'?></li>
 		<?php }}
 		else{ ?>
-		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>'?></li>
+		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+			if(!$subsidiary->getActive()){
+				echo ' (neaktivní)';
+			}
+			echo '</a>'?></li>
 		<?php }?>
 	<?php }
-		endforeach; ?>
+		endforeach;
+	}
+	else{
+		echo '<p>Žádní klienti k zobrazení.</p>';
+	} ?>
 	</ul>	
 	
 <a name="down"></a>

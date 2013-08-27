@@ -16,7 +16,7 @@ $allowed = "";
 $initial = "";
 
 $list .= '<ul>';
-
+if(count($this->subsidiaries)){
 foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
 		$list .= '</ul>';		
@@ -41,6 +41,7 @@ foreach ($this->subsidiaries as $subsidiary) :
 			
 			$clientId = $subsidiary->getClientId();
 			
+			if($companyName != ''){
 			$list .= '<p class="bold concealer">';
 			
 			if($allowed){
@@ -51,19 +52,33 @@ foreach ($this->subsidiaries as $subsidiary) :
 				$list .= '</a>';
 			}
 			$list .= '</p><ul class="hidden">';
-			if ($allowed){
+			} else{
+				$list .= '<ul>';
+			}
+			if ($allowed && !$subsidiary->getHqOnly()){
 				$list .= '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 				$allowed = '';
 			}
 			if(!$subsidiary->getHq()){
-				$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a></li>';
+				$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+				if(!$subsidiary->getActive()){
+					$list .= ' (neaktivní)';
+				}
+				$list .= '</a></li>';
 			}
 		}
 		else{
-			$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a></li>';
+			$list .= '<li><a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+				if(!$subsidiary->getActive()){
+					$list .= ' (neaktivní)';
+				}
+				$list .= '</a></li>';
 		}
 	}
-endforeach;
+endforeach;}
+else{
+	$list .= '<p>Žádní klienti k zobrazení.</p>';
+}
 $list .= '</ul><a name="down"></a><a href="#up">&#x25B2; Nahoru &#x25B2;</a>';
 
 echo $alphabet;

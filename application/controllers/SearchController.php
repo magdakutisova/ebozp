@@ -48,6 +48,7 @@ class SearchController extends Zend_Controller_Action
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryStreet', $subsidiary->getSubsidiaryStreet(), 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::text ( 'subsidiaryTown', $subsidiary->getSubsidiaryTown(), 'utf-8' ) );
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed('clientId', $subsidiary->getClientId(), 'utf-8'));
+				$document->addField ( Zend_Search_Lucene_Field::unIndexed('active', $subsidiary->getActive(), 'utf-8'));
 				$document->addField ( Zend_Search_Lucene_Field::unIndexed ( 'type', 'subsidiary', 'utf-8' ) );
 				$message .= "Indexována pobočka: " . $subsidiary->getSubsidiaryName() . "<br />";
 				$index->addDocument ( $document );
@@ -84,6 +85,21 @@ class SearchController extends Zend_Controller_Action
     	$this->view->subtitle = 'Vyhledávání';
     	
         $form = new Application_Form_Search();
+        $elementDecorator = array(
+        		'ViewHelper',
+        		array('Errors'),
+        		array(array('data' => 'HtmlTag'), array('tag' => 'span', 'class' => 'element')),
+        		array(array('row' => 'HtmlTag'), array('tag' => 'div')),
+        );
+        $form->addElement('multiCheckbox', 'active', array(
+        		'multiOptions' => array(
+        				1 => 'Aktivní pobočky',
+        				0 => 'Neaktivní pobočky',
+        		),
+        		'value' => 1,
+        		'decorators' => $elementDecorator,
+        		'order' => 2,
+        ));
     	$this->view->form = $form;
     	
     	$post = false;
@@ -93,6 +109,7 @@ class SearchController extends Zend_Controller_Action
     		$post = true;
 			if ($form->isValid ( $formData )) {
 				$query = $form->getValue('query');
+				$active = $form->getValue('active');
 				$query = '*' . $query . '*';
 				Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 				$message = "";
@@ -138,12 +155,15 @@ class SearchController extends Zend_Controller_Action
 							if(!$acl->isAllowed($user, $subsidiariesDb->getSubsidiary($result->subsidiaryId))){
 								continue;
 							}
-							$subsidiaries[$countS]['subsidiaryId'] = $result->subsidiaryId;
-							$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
-							$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;
-							$subsidiaries[$countS]['subsidiaryTown'] = $result->subsidiaryTown;
-							$subsidiaries[$countS]['clientId'] = $result->clientId;
-							$countS++;
+							if(count($active) == 2 || (in_array("1", $active) && $result->active == 1) || (in_array("0", $active) && $result->active == 0)){
+								$subsidiaries[$countS]['subsidiaryId'] = $result->subsidiaryId;
+								$subsidiaries[$countS]['subsidiaryName'] = $result->subsidiaryName;
+								$subsidiaries[$countS]['subsidiaryStreet'] = $result->subsidiaryStreet;
+								$subsidiaries[$countS]['subsidiaryTown'] = $result->subsidiaryTown;
+								$subsidiaries[$countS]['clientId'] = $result->clientId;
+								$subsidiaries[$countS]['active'] = $result->active;
+								$countS++;
+							}
 						}
 					}
 													

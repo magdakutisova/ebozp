@@ -25,6 +25,11 @@
 	<h3>Pobočky</h3>
 	<?php foreach ($this->subsidiaries as $subsidiary):?>
 		<h4><a href="<?php echo $this->url(array('clientId' => $subsidiary['clientId'], 'subsidiary' => $subsidiary['subsidiaryId']), 'subsidiaryIndex') ?>"><?php echo $subsidiary['subsidiaryName'] ?></a></h4>
+		<?php if($subsidiary['active']){?>
+			<p class="no-margin"><span class="bold">Status: </span> aktivní</p>
+		<?php } else {?>
+			<p class="no-margin"><span class="bold">Status: </span> neaktivní</p>
+		<?php } ?>
 		<p class="no-margin"><span class="bold">Adresa pobočky: </span><?php echo $subsidiary['subsidiaryStreet'] . ', ' . $subsidiary['subsidiaryTown'] ?></p>	
 	<?php endforeach;?>
 	

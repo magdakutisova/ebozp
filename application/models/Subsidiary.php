@@ -14,6 +14,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	private $district;
 	private $allowed;
 	private $insuranceCompany;
+	private $active;
+	private $hqOnly;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -197,6 +199,22 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 	public function setAllowed($allowed) {
 		$this->allowed = $allowed;
 	}
+	
+	public function getActive(){
+		return $this->active;
+	}
+	
+	public function setActive($active){
+		$this->active = $active;
+	}
+	
+	public function getHqOnly(){
+		return $this->hqOnly;
+	}
+	
+	public function setHqOnly($hqOnly){
+		$this->hqOnly = $hqOnly;
+	}
 
 	public function populate(array $data){
 		$this->idSubsidiary = isset($data['id_subsidiary']) ? $data['id_subsidiary'] : null;
@@ -211,6 +229,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$this->difficulty = isset($data['difficulty']) ? $data['difficulty'] : null;
 		$this->district = isset($data['district']) ? $data['district'] : null;
 		$this->insuranceCompany = isset($data['insurance_company']) ? $data['insurance_company'] : null;
+		$this->active = isset($data['active']) ? $data['active'] : null;
+		$this->hqOnly = isset($data['hq_only']) ? $data['hq_only'] : null;
 				
 		return $this;
 	}
@@ -231,6 +251,8 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		$data['difficulty'] = $this->difficulty;
 		$data['district'] = $this->district;
 		$data['insurance_company'] = $this->insuranceCompany;
+		$data['active'] = $this->active;
+		$data['hq_only'] = $this->hqOnly;
 		
 		return $data;
 	}

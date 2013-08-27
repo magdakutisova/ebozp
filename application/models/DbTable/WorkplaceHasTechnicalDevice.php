@@ -45,4 +45,35 @@ class Application_Model_DbTable_WorkplaceHasTechnicalDevice extends Zend_Db_Tabl
 		));
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('workplace')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			try{
+				$data['id_workplace'] = $workplace->id_workplace;
+				$data['id_technical_device'] = $newId;
+				$this->update($data, "id_workplace = $workplace->id_workplace AND id_technical_device = $oldId");
+			}
+			catch(Exception $e){
+				$this->delete("id_workplace = $workplace->id_workplace AND id_technical_device = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $technicalDeviceId){
+		$select = $this->select()
+			->from('workplace')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$workplaces = $this->fetchAll($select);
+		foreach($workplaces as $workplace){
+			$this->delete("id_workplace = $workplace->id_workplace AND id_technical_device = $technicalDeviceId");
+		}
+	}
+	
 }

@@ -27,4 +27,23 @@ class Application_Model_DbTable_ClientHasChemical extends Zend_Db_Table_Abstract
 		}
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		try{
+			$data['id_client'] = $clientId;
+			$data['id_chemical'] = $newId;
+			$this->update($data, "id_chemical = $oldId");
+		}
+		catch(Exception $e){
+			//už to tam je ale musím vymazat aspoň starý záznam
+			$this->delete("id_client = $clientId AND id_chemical = $oldId");
+		}
+	}
+	
+	public function removeRelation($clientId, $chemicalId){
+		$this->delete(array(
+				'id_client = ?' => $clientId,
+				'id_chemical = ?' => $chemicalId,
+				));
+	}
+	
 }

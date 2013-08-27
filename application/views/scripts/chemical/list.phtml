@@ -1,0 +1,69 @@
+<?php echo $this->selectForm;
+if($this->subsidiaryId != null){ ?>
+	
+	<div class="box">
+	<?php if($this->filter == 'podle-pracovist'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovnich-pozic'), 'chemicalList');?>">Filtrovat podle pracovních pozic</a>
+	<?php } if($this->filter == 'podle-pracovnich-pozic'){?>
+		<a class="large" href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovist'), 'chemicalList');?>">Filtrovat podle pracovišť</a>
+	<?php }?>
+	</div>
+	
+	<?php if($this->filter == 'podle-pracovist'){?>
+		<?php if($this->chemicals != null){?>
+			<div class="box">
+			<?php foreach($this->chemicals as $workplace => $chemicals){?>
+				<p class="bold"><?php echo $workplace;?></p>
+				<?php if($chemicals != null){?>
+					<ul>
+					<?php foreach($chemicals as $id => $chemical){?>
+						<li><?php echo $chemical['chemical'];
+						if(isset($chemical['positions'])){
+							echo $chemical['positions'];
+						} if($this->canEditChemical){?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalEdit');?>">Upravit název</a>
+						 <?php } if($this->canDeleteChemical){?>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat všechny výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat chemickou látku ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
+						</li>
+					<?php }?>
+					</ul>
+				<?php } else {
+					echo 'Pracoviště nemá přiřazeny žádné chemické látky.';
+				}
+			}?>
+			</div>
+			
+		<?php } else { ?>
+			<p>K pracovištím nejsou přiřazeny žádné chemické látky.</p>
+		<?php }
+	}
+	if($this->filter == 'podle-pracovnich-pozic'){
+		if($this->chemicals != null){?>
+			<div class="box">
+			<?php foreach($this->chemicals as $position => $chemicals){?>
+				<p class="bold"><?php echo $position;?></p>
+				<?php if($this->chemicals != null){?>
+					<ul>
+					<?php foreach($chemicals as $id => $chemical){?>
+						<li><?php echo $chemical['chemical'];
+						if(isset($chemical['workplaces'])){
+							echo $chemical['workplaces'];
+						} if($this->canEditChemical){?>
+						 | <a href="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalEdit');?>">Upravit název</a>
+						 <?php }if($this->canDeleteChemical){?>
+						 | <form class="inline" action="<?php echo $this->url(array('clientId' => $this->clientId, 'subsidiaryId' => $this->subsidiaryId, 'chemicalId' => $id), 'chemicalDelete');?>" method="post"><input class="button-anchor" type="submit" value="Smazat výskyty u klienta" onclick="return confirm('Opravdu si přejete smazat chemickou látku ze všech pracovních pozic a pracovišť?')" /></form>
+						 <?php }?>
+						</li>
+					<?php }?>
+					</ul>
+				<?php } else {
+					echo '<p>Pracovní pozice nemá přiřazeny žádné chemické látky.';
+				}
+			}?>
+			</div>
+		<?php } else {?>
+			<p>K pracovním pozicím nejsou přiřazeny žádné chemické látky.</p>
+		<?php }
+	}
+}?>

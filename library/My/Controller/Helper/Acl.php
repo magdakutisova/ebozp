@@ -16,6 +16,9 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('print'));
 		$this->add(new Zend_Acl_Resource('utility'));
 		$this->add(new Zend_Acl_Resource('work'));
+		$this->add(new Zend_Acl_Resource('technical'));
+		$this->add(new Zend_Acl_Resource('chemical'));
+		$this->add(new Zend_Acl_Resource('employee'));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 
@@ -63,6 +66,9 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace', 'position', 'print'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, 'work');
+		$this->allow($client, 'technical');
+		$this->allow($client, 'chemical');
+		$this->allow($client, 'employee');
 		$this->allow($client, "audit:audit", array("list", "get"));
 		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
 		$this->allow($client, "audit:form", array("get"));
@@ -78,12 +84,20 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'workplace', array('new', 'edit', 'delete', 'newfolder', 'switchfolder', 'deletefolder'));
 		$this->deny($client, 'position', array('new', 'edit', 'delete'));
 		$this->deny($client, 'private');
+		$this->deny($client, 'work', array('edit', 'delete'));
+		$this->deny($client, 'technical', array('edit', 'delete'));
+		$this->deny($client, 'chemical', array('edit', 'delete'));
+		$this->deny($client, 'employee', array('edit', 'delete'));
 		
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
 		$this->allow($technician, 'search');
 		$this->allow($technician, 'workplace', array('new', 'edit', 'delete', 'newfolder', 'switchfolder', 'deletefolder'));
 		$this->allow($technician, 'position', array('new', 'edit', 'delete'));
+		$this->allow($technician, 'work', array('edit', 'delete'));
+		$this->allow($technician, 'technical', array('edit', 'delete'));
+		$this->allow($technician, 'chemical', array('edit', 'delete'));
+		$this->allow($technician, 'employee', array('edit', 'delete'));
 		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "submit"));
 		$this->allow($technician, "audit:mistake", array("attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save"));

@@ -108,5 +108,31 @@
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 			<filter2>filter2</filter2>
 		</work>
+		<technical>
+			<label>Databáze technických prostředků</label>
+			<route>technicalList</route>
+			<resource>technical</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter2>filter2</filter2>
+		</technical>
+		<chemical>
+			<label>Databáze chemických látek</label>
+			<route>chemicalList</route>
+			<resource>chemical</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+			<filter2>filter2</filter2>
+		</chemical>
+		<employee>
+			<label>Databáze zaměstnanců</label>
+			<route>employeeList</route>
+			<resource>employee</resource>
+			<privilege>list</privilege>
+			<clientId>clientId</clientId>
+			<subsidiaryId>subsidiaryId</subsidiaryId>
+		</employee>
 	</nav>
 </configdata>

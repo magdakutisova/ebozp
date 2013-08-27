@@ -97,6 +97,46 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		return $employees;
 	}
 	
+	public function getBySubsidiaryAndPositions($subsidiaryId){
+		$select = $this->select()
+			->from('employee')
+			->join('position', 'employee.position_id = position.id_position')
+			->where('position.subsidiary_id = ?', $subsidiaryId)
+			->order(array('position.position', 'employee.surname'));
+		$select->setIntegrityCheck(false);
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			$employees = array();
+			foreach($result as $employee){
+				if($employee->surname != ''){
+					$employees[$employee->position][$employee->id_employee] = $employee->first_name . ' ' . $employee->surname;
+				}
+				else{
+					$employees[$employee->position] = null;
+				}
+			}
+			return $employees;
+		}
+		else{
+			return null;
+		}
+	}
+	
+	public function getUnassignedEmployees($clientId){
+		$select = $this->select()
+			->from('employee')
+			->where('client_id = ?', $clientId)
+			->where('position_id IS NULL')
+			->order('employee.surname');
+		$result = $this->fetchAll($select);
+		if(count($result) > 0){
+			return $this->process($result);
+		}
+		else{
+			return null;
+		}
+	}
+	
 	public function assignToClient($clientId){
 		$select = $this->select()
 			->from('employee')

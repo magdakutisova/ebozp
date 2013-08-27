@@ -174,6 +174,15 @@ class ClientController extends Zend_Controller_Action
 		$this->_helper->layout()->setLayout('layout');
 
 		$mode = $this->_getParam ( 'mode' );
+		
+		$active = $this->_getParam('active', null);
+		$activeDb = null;		
+		if($active == 'active' || $active === null){
+			$activeDb = 1;
+		}
+		if($active == 'inactive'){
+			$activeDb = 0;
+		}
 			
 		switch($mode){
 			case "bt":
@@ -181,10 +190,10 @@ class ClientController extends Zend_Controller_Action
 				$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
 
 				if ($mode == "bt"){
-					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_TECHNICIAN);
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_TECHNICIAN, 0, $activeDb);
 				}
 				else{
-					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_COORDINATOR);
+					$subsidiaries = $userSubs->getByRole(My_Role::ROLE_COORDINATOR, 0, $activeDb);
 				}
 
 				//kontrola jestli user má přístup
@@ -199,7 +208,7 @@ class ClientController extends Zend_Controller_Action
 			case "obec":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
-				$subsidiaries = $subsidiariesDb->getByTown ();
+				$subsidiaries = $subsidiariesDb->getByTown (0, $activeDb);
 
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
@@ -212,7 +221,7 @@ class ClientController extends Zend_Controller_Action
 			case "okres":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
 
-				$subsidiaries = $subsidiariesDb->getByDistrict();
+				$subsidiaries = $subsidiariesDb->getByDistrict(0, $activeDb);
 
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
@@ -225,7 +234,7 @@ class ClientController extends Zend_Controller_Action
 			case "naposledy":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
-				$subsidiaries = $subsidiariesDb->getLastOpen ();
+				$subsidiaries = $subsidiariesDb->getLastOpen (0, $activeDb);
 
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
@@ -237,7 +246,7 @@ class ClientController extends Zend_Controller_Action
 				break;
 			case "abeceda":
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
-				$subsidiaries = $subsidiariesDb->getByClient();
+				$subsidiaries = $subsidiariesDb->getByClient(0, $activeDb);
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
 					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
@@ -248,7 +257,7 @@ class ClientController extends Zend_Controller_Action
 			default:
 				$subsidiariesDb = new Application_Model_DbTable_Subsidiary ();
 
-				$subsidiaries = $subsidiariesDb->getByClient ();
+				$subsidiaries = $subsidiariesDb->getByClient (0, $activeDb);
 
 				//kontrola jestli user má přístup
 				foreach($subsidiaries as $subsidiary){
@@ -295,6 +304,18 @@ class ClientController extends Zend_Controller_Action
 					$client->setInvoiceCode($client->getHeadquartersCode());
 					$client->setInvoiceTown($client->getHeadquartersTown());
 				}
+				$client->setArchived(0);
+				
+				if($form->getValue('hq_only')){
+					$subsidiary->setHqOnly(1);
+				}
+				else{
+					$subsidiary->setHqOnly(0);
+				}
+				
+				if($subsidiary->getSupervisionFrequency() == ''){
+					$subsidiary->setSupervisionFrequency(null);
+				}
 				
 				$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 				$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
@@ -326,6 +347,7 @@ class ClientController extends Zend_Controller_Action
 					$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 					$subsidiary->setClientId($clientId);
 					$subsidiary->setHq(true);
+					$subsidiary->setActive(true);
 						
 					//přidání pobočky
 					$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -477,6 +499,7 @@ class ClientController extends Zend_Controller_Action
 				$data['supervision_frequency'] = $subsidiary['subsidiary']->getSupervisionFrequency();
 				$data['district'] = $subsidiary['subsidiary']->getDistrict();
 				$data['difficulty'] = $subsidiary['subsidiary']->getDifficulty();
+				$data['hq_only'] = $subsidiary['subsidiary']->getHqOnly();
 				
 				switch ($subsidiary['subsidiary']->getInsuranceCompany()) {
 					case "Kooperativa":
@@ -551,6 +574,19 @@ class ClientController extends Zend_Controller_Action
 			$client->setInvoiceTown($client->getInvoiceTown());
 			$client->setInvoiceCode($client->getInvoiceCode());
 		}
+		
+		if($form->getValue('hq_only')){
+			$subsidiary->setHqOnly(1);
+		}
+		else{
+			$subsidiary->setHqOnly(0);
+		}
+		
+		if($subsidiary->getSupervisionFrequency() == ''){
+			$subsidiary->setSupervisionFrequency(null);
+		}
+		
+		$client->setArchived(0);
 		$insuranceCompanyOptions = $form->getElement('insurance_company')->getMultiOptions();
 		$subsidiary->setInsuranceCompany($insuranceCompanyOptions[$form->getValue('insurance_company')]);
 		 
@@ -579,6 +615,7 @@ class ClientController extends Zend_Controller_Action
 			$subsidiary->setSubsidiaryTown($client->getHeadquartersTown());
 			$subsidiary->setClientId($client->getIdClient());
 			$subsidiary->setHq(true);
+			$subsidiary->setActive(true);
 			 
 			//update pobočky
 			$subsidiaries = new Application_Model_DbTable_Subsidiary ();
@@ -692,6 +729,13 @@ class ClientController extends Zend_Controller_Action
 			$client->setArchived(1);
 			$clients->updateClient($client);
 			
+			$subs = $clients->getSubsidiaries($clientId);
+			foreach($subs as $sub){
+				$subObj = $subsidiaries->getSubsidiary($sub);
+				$subObj->setActive(0);
+				$subsidiaries->updateSubsidiary($subObj);
+			}
+			
 			$this->_helper->diaryRecord($this->_username, 'archivoval klienta', null, null, $companyName, $subsidiaryId);
 			$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl přesunut do archivu');
 			$this->_helper->redirector->gotoRoute(array(), 'clientList');
@@ -711,6 +755,13 @@ class ClientController extends Zend_Controller_Action
 		$subsidiaryId = $subsidiary->getIdSubsidiary();
 		$client->setArchived(0);
 		$clients->updateClient($client);
+		
+		$subs = $clients->getSubsidiaries($clientId);
+		foreach($subs as $sub){
+			$subObj = $subsidiaries->getSubsidiary($sub);
+			$subObj->setActive(1);
+			$subsidiaries->updateSubsidiary($subObj);
+		}
 		
 		$this->_helper->diaryRecord($this->_username, 'obnovil z archivu klienta', null, null, $companyName, $subsidiaryId);
 		$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl obnoven z archivu');
@@ -732,7 +783,7 @@ class ClientController extends Zend_Controller_Action
 		$this->_helper->layout()->setLayout('layout');
 		
 		$mode = $this->_getParam ( 'mode' );
-			
+		
 		switch($mode){
 			case "bt":
 			case "koo":
@@ -809,8 +860,10 @@ class ClientController extends Zend_Controller_Action
 				$subsidiaries = $subsidiariesDb->getByClient (1);
 		
 				//kontrola jestli user má přístup
-				foreach($subsidiaries as $subsidiary){
-					$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+				if(count($subsidiaries)){
+					foreach($subsidiaries as $subsidiary){
+						$subsidiary->setAllowed($this->_acl->isAllowed($this->_user, $subsidiary));
+					}
 				}
 		
 				$this->view->subsidiaries = $subsidiaries;

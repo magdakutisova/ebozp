@@ -129,7 +129,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 			'clientFilter',
-			new Zend_Controller_Router_Route('klienti/:mode',
+			new Zend_Controller_Router_Route('klienti/:mode/:active',
 											 array('controller' => 'client',
 											 	   'action' => 'list'))
 		);
@@ -192,7 +192,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$router->addRoute(
 				'clientArchivefilter',
-				new Zend_Controller_Router_Route('archiv/:mode',
+				new Zend_Controller_Router_Route('archiv/:mode/:active',
 						array('controller' => 'client',
 								'action' => 'archivelist'))
 				);
@@ -293,6 +293,83 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-pracovnich-cinnosti/:filter',
 						array('controller' => 'work',
 								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'workEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/pracovni-cinnost/:workId/editovat',
+						array('controller' => 'work',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'workDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/pracovni-cinnost/:workId/smazat',
+						array('controller' => 'work',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
+				'technicalList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-technickych-prostredku/:filter',
+						array('controller' => 'technical',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'technicalEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/technicky-prostredek/:technicalDeviceId/editovat',
+						array('controller' => 'technical',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'technicalDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/technicky-prostredek/:technicalDeviceId/smazat',
+						array('controller' => 'technical',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
+				'chemicalList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-chemickych-latek/:filter',
+						array('controller' => 'chemical',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'chemicalEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/chemicka-latka/:chemicalId/editovat',
+						array('controller' => 'chemical',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'chemicalDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/chemicka-latka/:chemicalId/smazat',
+						array('controller' => 'chemical',
+								'action' => 'delete'))
+				);
+		
+		$router->addRoute(
+				'employeeList',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/databaze-zamestnancu',
+						array('controller' => 'employee',
+								'action' => 'list'))
+				);
+		
+		$router->addRoute(
+				'employeeEdit',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/zamestnanec/:employeeId/editovat',
+						array('controller' => 'employee',
+								'action' => 'edit'))
+				);
+		
+		$router->addRoute(
+				'employeeDelete',
+				new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiaryId/zamestnanec/:employeeId/smazat',
+						array('controller' => 'employee',
+								'action' => 'delete'))
 				);
 		
 		$router->addRoute(

@@ -47,4 +47,35 @@ class Application_Model_DbTable_PositionHasTechnicalDevice extends Zend_Db_Table
 		}
 	}
 	
+	public function updateRelation($clientId, $oldId, $newId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			try{
+				$data['id_position'] = $position->id_position;
+				$data['id_technical_device'] = $newId;
+				$this->update($data, "id_position = $position->id_position AND id_technical_device = $oldId");
+			}
+			catch(Exception $e){
+				$this->delete("id_position = $position->id_position AND id_technical_device = $oldId");
+			}
+		}
+	}
+	
+	public function removeAllClientRelations($clientId, $technicalDeviceId){
+		$select = $this->select()
+			->from('position')
+			->where('client_id = ?', $clientId);
+		$select->setIntegrityCheck(false);
+		
+		$positions = $this->fetchAll($select);
+		foreach($positions as $position){
+			$this->delete("id_position = $position->id_position AND id_technical_device = $technicalDeviceId");
+		}
+	}
+	
 }

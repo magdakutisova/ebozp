@@ -27,6 +27,9 @@ class Application_Form_Employee extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$this->addElement('hidden', 'id_employee', array(
+				));
+		
 		$this->addElement('text', 'title_1', array(
 				'label' => 'Titul před jménem',
 				'filters' => array('StripTags', 'StringTrim'),
@@ -133,6 +136,9 @@ class Application_Form_Employee extends Zend_Form{
 		
 		$this->addElement('hidden', 'clientId', array(
 				));
+		
+		$this->addElement('hidden', 'position_id', array());
+		$this->addElement('hidden', 'client_id', array());
 		
 	}
 	

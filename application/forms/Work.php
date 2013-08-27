@@ -26,6 +26,9 @@ class Application_Form_Work extends Zend_Form{
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$this->addElement('hidden', 'id_work', array(
+				));
+		
 		$this->addElement('text', 'work', array(
 				'label' => 'Název pracovní činnosti',
 				'filters' => array('StripTags', 'StringTrim'),

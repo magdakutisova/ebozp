@@ -10,6 +10,13 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 		$subsidiary = $this->view->subsidiary;
 		$content = '';
 		
+		$content .= '<p class="no-margin"><span class="bold">Status: </span> ';
+		if($subsidiary['subsidiary']->getActive()){
+			$content .= 'aktivní</p>';
+		}
+		else{
+			$content .= 'neaktivní</p>';
+		}
 		$content .= '<p class="no-margin"><span class="bold">Adresa pobočky: </span>'
 			. $subsidiary['subsidiary']->getSubsidiaryStreet()
 			. ', ' . $subsidiary['subsidiary']->getSubsidiaryTown()
@@ -37,11 +44,14 @@ class Zend_View_Helper_Subsidiary extends Zend_View_Helper_Abstract{
 			foreach($subsidiary['doctors'] as $doctor){
 				$content .= '<p class="no-margin"><span class="bold">Poskytovatel pracovnělékařské péče: </span>'
 						. $doctor->getName();
-				if($doctor->getPhone() != ''){
-					$content .= ', telefon: '. $doctor->getPhone();
-				}
-				if($doctor->getEmail() != ''){
-					$content .= ', e-mail: ' . $doctor->getEmail();
+				if($doctor->getStreet() != '' || $doctor->getTown() != ''){
+					$content .= ', adresa:';
+					if($doctor->getStreet() != ''){
+						$content .= ' ' . $doctor->getStreet();
+					}
+					if($doctor->getTown() != ''){
+						$content .= ' ' . $doctor->getTown();
+					}
 				}
 				$content .= '</p>';
 			}
