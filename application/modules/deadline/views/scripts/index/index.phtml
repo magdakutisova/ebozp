@@ -1,7 +1,22 @@
 <?php
+$params = array("clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId"));
+?>
+<ul>
+	<li>
+		<a href="<?php echo $this->url($params, "deadline-employees")?>">Lhůty zaměstnanců</a>
+	</li>
+	<li>
+		<a href="<?php echo $this->url($params, "deadline-chemicals")?>">Lhůty chemikálií</a>
+	</li>
+	<li>
+		<a href="<?php echo $this->url($params, "deadline-devices")?>">Lhůty technických zařízení</a>
+	</li>
+</ul>
+<?php 
 $acl = new My_Controller_Helper_Acl();
-$user = Zend_Auth::getInstance()->getIdentity();
+$user = Zend_auth::getInstance()->getIdentity();
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "post")) {
 	echo $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
 }
+?>

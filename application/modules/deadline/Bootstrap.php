@@ -6,6 +6,17 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		$front = Zend_Controller_Front::getInstance();
 		$router = $front->getRouter();
 		
+		// rozcestnik lhut
+		$router->addRoute(
+				"deadline-index",
+				new Zend_Controller_Router_Route("/klient/:clientId/deadlines",
+						array(
+								"module" => "deadline",
+								"controller" => "index",
+								"action" => "index"
+						))
+		);
+		
 		// seznam lhut zamestnancu
 		$router->addRoute(
 				"deadline-create",
@@ -35,7 +46,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "deadline",
 								"controller" => "index",
-								"action" => "chemicals"
+								"action" => "chemical"
 						))
 		);
 		
@@ -46,7 +57,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "deadline",
 								"controller" => "index",
-								"action" => "devices"
+								"action" => "device"
 						))
 		);
 	}
