@@ -54,4 +54,14 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	protected $_rowClass = "Deadline_Model_Row_Deadline";
 	
 	protected $_rowsetClass = "Deadline_Model_Rowset_Deadlines";
+	
+	/**
+	 * vraci lhutu dle id
+	 * 
+	 * @param int $deadlineId id lhuty
+	 * @return Deadline_Model_Row_Deadline
+	 */
+	public function findById($deadlineId) {
+		return $this->find($deadlineId)->current();
+	}
 }

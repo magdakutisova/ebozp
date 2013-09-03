@@ -1,0 +1,7 @@
+<?php
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "post")) {
+	echo $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
+}

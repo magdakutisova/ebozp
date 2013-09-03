@@ -1,0 +1,97 @@
+<?php 
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
+	$button = "<button name='edit' type='button'>Upravit</button>";
+} else {
+	$button = "<button name='get' type='button'>Zobrazit</button>";
+}
+
+$clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
+echo $this->formHidden("CLIENT_ID", $clientId);
+?>
+<table class="multirow-table" id="deadlinetable">
+	<thead>
+		<tr>
+			<th rowspan="2">
+			Zaměstnanec
+			</th>
+			<th>
+			Druh
+			</th>
+			<th>
+			Specifikace
+			</th>
+			<th>
+			Forma
+			</th>
+			<th>
+			Perioda
+			</th>
+			<th rowspan="2">
+			Akce
+			</th>
+		</tr>
+		<tr>
+			<th>
+			Naposledy provedeno
+			</th>
+			<th>
+			Další provedení
+			</th>
+			<th>
+			Poznámka
+			</th>
+			<th>
+			Zodpovědná osoba
+			</th>
+		</tr>
+	</thead>
+		<?php 
+		foreach ($this->deadlines as $item) {
+			?>
+	<tbody class="<?php echo $item->is_valid ? "" : "mistake-marked"; ?>">
+		<tr>
+			<td rowspan="2">
+			<?php echo $item->name; ?>
+			</td>
+			<td>
+			<?php echo $item->kind; ?>
+			</td>
+			<td>
+			<?php echo $item->specific; ?>
+			</td>
+			<td>
+			<?php echo $item->type; ?>
+			</td>
+			<td>
+			<?php echo $item->period; ?>
+			</td>
+			<td rowspan="2">
+			<?php 
+			echo $button;
+			echo $this->formHidden("deadlineId", $item->id);
+			?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<?php echo $item->last_done; ?>
+			</td>
+			<td>
+			<?php echo $item->next_date; ?>
+			</td>
+			<td>
+			<?php echo $item->note; ?>
+			</td>
+			<td>
+			<?php echo $this->responsible_name . " "; ?>
+			</td>
+		</tr>
+	</tbody>
+			<?php 
+		}
+		?>
+</table>
+<script type="text/javascript" src="/js/deadline/deadline.js"></script>

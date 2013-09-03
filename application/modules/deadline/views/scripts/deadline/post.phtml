@@ -1,0 +1,19 @@
+<?php
+$row = $this->row;
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+// vyhodnoceni na kterou routu se bude smerovat
+$params = array("clientId" => $row->client_id);
+
+if (!is_null($row->employee_id)) {
+	// lhuta se tyka zamestance - prehled lhut zamestnancu
+	$url = $this->url($params, "deadline-employees");
+} elseif (!is_null($row->chemical_id)) {
+	// lhuta se tyka chemicke latky - prehled lhut chem. latek
+	$url = $this->url($params, "deadline-chemicals");
+} else {
+	// lhuta se tyka zarizeni - prehled lhut zarizeni
+	$url = $this->url($params, "deadline-devices");
+}
+
+$redirector->gotoUrlAndExit($url);
