@@ -61,8 +61,6 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 	}
 	
 	private function sendEmails($recipients, $username, $message){
-		//TODO přidat podklady@guard7.cz
-		
 		//adresy příjemců
 		$addresses = array();
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
@@ -71,6 +69,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 			$addresses = array_merge($addresses, $newAddresses);
 		}
 		$addresses = array_unique($addresses);
+		$addresses[] = 'podklady@guard7.cz';
 		
 		$settings = array(
 				'ssl' => 'ssl',
