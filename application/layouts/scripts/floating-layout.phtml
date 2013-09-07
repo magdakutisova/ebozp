@@ -14,12 +14,13 @@ echo $this->doctype ();
 <?php $this->headLink()->appendStylesheet($this->baseUrl('css/ie.css'), 'screen, projection', 'IE');?>
 <?php $this->headLink()->appendStylesheet($this->baseUrl('css/print.css'), 'print'); ?>
 <?php $this->headLink()->appendStylesheet($this->baseUrl('css/global.css'), 'screen, projection'); ?>
-<?php $this->headLink()->appendStylesheet($this->baseUrl('css/jquery-ui-1.8.21.custom.css'), 'screen, projection');?>
+<?php $this->headLink()->appendStylesheet($this->baseUrl('css/jquery-ui-1.10.1.custom.css'), 'screen, projection');?>
 <?php $this->headLink()->appendStylesheet($this->baseUrl("css/questionary.css"), 'screen'); ?>
 
-<?php $this->headScript()->appendFile($this->baseUrl('js/jquery-1.7.2.min.js'), 'text/javascript');?>
-<?php $this->headScript()->appendFile($this->baseUrl('js/jquery-ui-1.8.21.custom.min.js'), 'text/javascript');?>
-<?php $this->headScript()->appendFile($this->baseUrl('js/application.js'), 'text/javascript')
+<?php $this->headScript()->appendFile($this->baseUrl('/js/jquery-1.9.1.js'), 'text/javascript');?>
+<?php $this->headScript()->appendFile($this->baseUrl('/js/jquery.validate.pack.js'), 'text/javascript');?>
+<?php $this->headScript()->appendFile($this->baseUrl('/js/jquery-ui-1.10.1.custom.min.js'), 'text/javascript');?>
+<?php $this->headScript()->appendFile($this->baseUrl('/js/application.js'), 'text/javascript')
 							 ->prependScript('BASE_URL = "' . $this->baseUrl() . '";');?>
 <?php $this->headScript()->appendFile($this->baseUrl('js/jquery.jec-1.3.4.js'), 'text/javascript');?>
 

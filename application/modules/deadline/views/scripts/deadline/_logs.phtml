@@ -1,0 +1,32 @@
+<?php
+if ($this->logs->count() == 0) return;
+?>
+<h2>Historie plnění lhůty</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Datum
+			</th>
+			<th>
+			Uživatel
+			</th>
+			<th>
+			Poznámka
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+foreach ($this->logs as $log) {
+	?>
+		<tr>
+			<td>
+			<?php echo $log->done_at; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>
