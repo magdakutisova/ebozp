@@ -32,15 +32,16 @@
 	<p>neshody nebo lhůty, u kterých je zadáno jméno - přiděluje KOO popřípadě KL, Při auditu se vyplní pouze G7 nebo KL.</p>
 </div>
 
-<div class="box">
+<div>
 	<h3>Bezpečnostní deník</h3>
 	<p>dodělat okno pro psaní zpráv a odesílání souborů</p>
 	<?php echo $this->formFilter;?>
 	<?php echo $this->formSearch;?>
 	<div class="overflow"><?php echo $this->diary();?></div>
 	<hr/>
+	<h2>Poslat zprávu</h2>
 	<p class="bold">Zde můžete zaslat zprávu do bezpečnostního deníku této pobočky:</p>
-	<div id="zpravy"><?php echo $this->formMessages; ?></div>
+	<div id="zpravy" class="subsidiary-messages"><?php echo $this->formMessages; ?></div>
 </div>
 
 <div class="box deadlines">

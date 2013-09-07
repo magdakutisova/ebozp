@@ -13,6 +13,10 @@ label.required:after{
 	background: #b7ceec; padding: 10px
 }
 
+.subsidiary-messages form div span textarea#message{
+	float: left;
+}
+
 .letter{
 	color: black;
 	font-size: 150%;

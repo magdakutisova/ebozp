@@ -3,10 +3,12 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 	
 	private $request;
 	private $view;
+	private $controllerName;
 	
 	public function __construct(){
 		$this->request = Zend_Controller_Front::getInstance()->getRequest();
 		$this->view = Zend_Layout::getMvcInstance()->getView();
+		$this->controllerName = $this->request->getControllerName();
 	}
 	
 	public function direct(){
@@ -14,19 +16,24 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     	
     	$formMessages = new Application_Form_DiaryMessages();
     	
-    	$addressBook = new My_Controller_Helper_AddressBook();
-    	$multiOptions = $addressBook->direct();
-    	if($multiOptions != null){
-    		$formMessages->tree->setMultiOptions($multiOptions);
+    	if($this->controllerName != 'subsidiary'){
+	    	$addressBook = new My_Controller_Helper_AddressBook();
+	    	$multiOptions = $addressBook->direct();
+	    	if($multiOptions != null){
+	    		$formMessages->tree->setMultiOptions($multiOptions);
+	    	}
+	    	else{
+	    		$formMessages->removeElement('tree');
+	    		$formMessages->addElement('hidden', 'tree', array(
+	    				'label' => 'Nelze zasílat zprávy neaktivním pobočkám.',
+	    				'order' => 1,
+	    				));
+	    		$formMessages->getElement('message')->setAttrib('disabled', true);
+	    		$formMessages->getElement('send')->setAttrib('disabled', true);
+	    	}
     	}
     	else{
     		$formMessages->removeElement('tree');
-    		$formMessages->addElement('hidden', 'tree', array(
-    				'label' => 'Nelze zasílat zprávy neaktivním pobočkám.',
-    				'order' => 1,
-    				));
-    		$formMessages->getElement('message')->setAttrib('disabled', true);
-    		$formMessages->getElement('send')->setAttrib('disabled', true);
     	}
     	
     	$this->view->formMessages = $formMessages;
@@ -36,7 +43,13 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     		$username = Zend_Auth::getInstance()->getIdentity()->username;
     		$diary = new Application_Model_DbTable_Diary();
     		if ($formMessages->isValid($formData)){
-    			$recipients = $formData['tree'];
+    			$recipients = null;
+    			if($this->controllerName != 'subsidiary'){
+    				$recipients = $formData['tree'];
+    			}
+    			else{
+    				$recipients[] = $this->request->getParam('subsidiary');
+    			}
     			$message = $formData['message'];
     			foreach($recipients as $recipient){
     				if ($recipient != 0){
@@ -69,7 +82,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 			$addresses = array_merge($addresses, $newAddresses);
 		}
 		$addresses = array_unique($addresses);
-		$addresses[] = 'podklady@guard7.cz';
+		$addresses[] = 'guardian@guard7.cz';
 		
 		$settings = array(
 				'ssl' => 'ssl',
@@ -86,8 +99,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 			$mail->addTo($to);
 			$mail->setSubject('Guardian: Nová zpráva v bezpečnostním deníku');
 			$mail->setBodyHtml('Uživatel ' . $username . ' zaslal následující zprávu do bezpečnostního deníku:<br/><br/>'
-					. $message
-					. '<br/><br/>Na tuto zprávu, prosím, neodpovídejte.');
+					. $message);
 			$mail->send($transport);
 		}
 	}
