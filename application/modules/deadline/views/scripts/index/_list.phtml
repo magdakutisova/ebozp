@@ -77,7 +77,20 @@ echo $this->formHidden("CLIENT_ID", $clientId);
 			<?php echo $item->specific; ?>
 			</td>
 			<td>
-			<?php echo $item->type; ?>
+			<?php 
+			switch ($item->type) {
+				case Deadline_Form_Deadline::TYPE_ELEARNING:
+					echo "Elearning";
+					break;
+
+				case Deadline_Form_Deadline::TYPE_PRESENT:
+					echo "Prezenční";
+					break;
+					
+				default:
+					echo "Jiná";
+			}
+			?>
 			</td>
 			<td>
 			<?php echo $item->period; ?>
@@ -104,12 +117,14 @@ echo $this->formHidden("CLIENT_ID", $clientId);
 			// vyhodoceni zodpovedne osoby
 			if ($item->resp_emp) {
 				echo $item->resp_emp;
-			} else {
+			} elseif ($item->resp_guard) {
 				if ($userFromGuard) {
 					echo $item->resp_guard;
 				} else {
 					echo "G U A R D 7, v.o.s.";
 				}
+			} else {
+				echo $item->responsible_external_name;
 			}
 			?>
 			</td>

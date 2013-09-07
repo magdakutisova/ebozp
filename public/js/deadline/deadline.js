@@ -38,7 +38,7 @@ $(function () {
 	}
 	
 	$("#deadline-is_period").click(togglePeriodic);
-	$("#deadline-resp_from_guard").click(toggleGuard);
+	$("#deadline-resp_type").change(toggleGuard);
 	$("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
 	$("#deadlinetable tbody tr td button").filter("[name='edit']").click(openEdit).end().filter("[name='get']").click(openGet);
 });

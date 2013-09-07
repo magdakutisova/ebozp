@@ -64,4 +64,78 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	public function findById($deadlineId) {
 		return $this->find($deadlineId)->current();
 	}
+	
+	/**
+	 * vraci lhuty, ktere jsou propadle
+	 * 
+	 * @param int $clientId id klienta
+	 * @param int $subsidiaryId id pobocky
+	 * @return Deadline_Model_Rowset_Deadlines
+	 */
+	public function findInvalids($clientId, $subsidiaryId = null) {
+		// vytvoreni selektu
+		$select = $this->_prepareSelect();
+		$thisName = $this->_name;
+		$select->where("$thisName.client_id = ?", $clientId);
+		
+		if (!is_null($subsidiaryId)) {
+			$select->where("$thisName.subsidiary_id = ?", $subsidiaryId);
+		}
+		
+		$select->where("$thisName.next_date < CURRENT_DATE()");
+		$data = $select->query()->fetchAll();
+		
+		return new Deadline_Model_Rowset_Deadlines(array("data" => $data, "table" => $this, "rowClass" => $this->_rowClass));
+	}
+	
+	/**
+	 * pripravi selekt pro filtraci vcetne spojeni k ostatnim tabulkam
+	 * 
+	 * @return Zend_Db_Select
+	 */
+	protected function _prepareSelect() {
+		$select = new Zend_Db_Select($this->getAdapter());
+		$name = $this->_name;
+		
+		// spojeni poli pro jednotlive typy lhut
+		$tableDevices = new Application_Model_DbTable_TechnicalDevice();
+		$nameDevices = $tableDevices->info("name");
+		$tableEmployees = new Application_Model_DbTable_Employee();
+		$nameEmployees = $tableEmployees->info("name");
+		
+		$devName = "CONCAT($nameDevices.`sort`, ' (', $nameDevices.`type`, ')')";
+		$chemName = "chemical";
+		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
+		
+		// zakladni select
+		$select->from($name, array(
+				new Zend_Db_Expr("$name.*"),
+				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() < next_date"),
+				"responsible_name" => new Zend_Db_Expr("TRIM(CONCAT(IFNULL(respemp.first_name, ''), ' ', IFNULL(respemp.surname, ''), IFNULL(user.username, ''), IFNULL(responsible_external_name, '')))"),
+				"name" => new Zend_Db_Expr("CONCAT(IFNULL($empName, ''), IFNULL($chemName, ''), IFNULL($devName, ''))")
+				));
+		
+		// propojeni s osobou z rad zamestnancu
+		$select->joinLeft(array("respemp" => $nameEmployees), "responsible_id = respemp.id_employee", array());
+		
+		// propojeni s tabulkou uzivatelu
+		$tableUsers = new Application_Model_DbTable_User();
+		$nameUsers = $tableUsers->info("name");
+		
+		$select->joinLeft($nameUsers, "responsible_user_id = user.id_user", array());
+		
+		// pripojeni reference na zamestnance
+		$select->joinLeft($nameEmployees, "$nameEmployees.id_employee = employee_id", array("employee_name" => new Zend_Db_Expr("$nameEmployees.first_name, ' ', $nameEmployees.surname")));
+		
+		// pripojeni reference na chemickou latku
+		$tableChemicals = new Application_Model_DbTable_Chemical();
+		$nameChemicals = $tableChemicals->info("name");
+		
+		$select->joinLeft($nameChemicals, "id_chemical = chemical_id", array("chemical_name" => "chemical"));
+		
+		// pripojeni reference na technicke zarizeni
+		$select->joinLeft($nameDevices, "id_technical_device = technical_device_id", array("device_name" => new Zend_Db_Expr("CONCAT($nameDevices.sort, ' (', $nameDevices.`type`, ')')")));
+		
+		return $select;
+	}
 }

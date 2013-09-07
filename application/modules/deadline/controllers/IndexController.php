@@ -106,7 +106,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$tableEmployees = new Application_Model_DbTable_Employee();
 				$nameEmployees = $tableEmployees->info("name");
 				
-				$select->joinInner($nameEmployees, "employee_id = id_employee", array("name" => new Zend_Db_Expr("CONCAT(first_name, ' ', surname)")));
+				$select->joinInner($nameEmployees, "employee_id = $nameEmployees.id_employee", array("name" => new Zend_Db_Expr("CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)")));
 				break;
 				
 			default:

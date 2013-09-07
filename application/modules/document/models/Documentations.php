@@ -54,7 +54,8 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		$select = new Zend_Db_Select($this->getAdapter());
 		$select->from(array("doc" => $this->_name));
 		
-		$select->where("doc.client_id = ?", $clientId);
+		$select->where("doc.client_id = ?", $clientId)
+						->order("doc.name");
 		
 		if (!is_null($subsidiaryId)) {
 			// vyhodnoceni subid
@@ -81,7 +82,7 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		$nameFiles = $tableFiles->info("name");
 		
 		// propojeni s pobockou
-		$select->joinLeft(array("s" => $nameSubsidiaries), "doc.subsidiary_id = s.id_subsidiary", array("subsidiary_name"));
+		$select->joinLeft(array("s" => $nameSubsidiaries), "doc.subsidiary_id = s.id_subsidiary", array("subsidiary_name" => new Zend_Db_Expr("CONCAT(subsidiary_street, ' ', subsidiary_town)")));
 		
 		// propojeni asociaci na soubory
 		$select->joinLeft(array("file" => $nameFiles), "file.id = doc.file_id", array("filename" => "name", "fileid" => "id"));

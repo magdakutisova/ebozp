@@ -136,6 +136,15 @@ class SubsidiaryController extends Zend_Controller_Action {
 		
 		// kontrola ACL pro vytvoreni auditu
 		$this->view->createAuditAllowed = $this->_acl->isAllowed($this->_user->getRoleId(), "audit:audit", "create");
+		
+		/*
+		 * PETR JINDRA 6. 9. 2013
+		*/
+		
+		// nacteni propadlych lhut
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$invalidDeads = $tableDeadlines->findInvalids($clientId, $subsidiaryId);
+		$this->view->invalidDeadlines = $invalidDeads;
 	}
 	
 	public function newAction() {

@@ -79,7 +79,8 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$this->period = $data["period"];
 		$this->note = $data["note"];
 		$this->subsidiary_id = $data["subsidiary_id"] ? $data["subsidiary_id"] : null;
-		$this->next_date = $data["next_date"];
+		$this->last_done = $data["last_done"];
+		$this->next_date = new Zend_Db_Expr(sprintf("DATE_ADD('%s', INTERVAL %s MONTH)", $this->last_done, $this->period));
 		
 		return $this;
 	}
@@ -127,24 +128,21 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$data = array_merge($defaults, $data);
 		
 		// vyhodnoceni, jestli je zodpovedna osoba z G7 nebo od klienta
-		if ($data["resp_from_guard"]) {
-			// je z G7
-			$this->responsible_id = null;
-			$this->responsible_user_id = $data["responsible_id"];
+		$this->responsible_id = null;
+		$this->responsible_user_id = null;
+		$this->responsible_external_name = null;
+		
+		switch ($data["resp_type"]) {
+			case Deadline_Form_Deadline::RESP_CLIENT:
+				$this->responsible_id = $data["responsible_id"];
+				break;
 			
-			// nacteni uzivatele a zapis jeho jmena
-			$tableUsers = new Application_Model_DbTable_User();
-			$user = $tableUsers->find($data["responsible_id"])->current();
-			$this->responsible_name = $user->name ? $user->name : "?";
-		} else {
-			// je od klienta
-			$this->responsible_id = $data["responsible_id"];
-			$this->responsible_user_id = null;
-			
-			// nacteni zamestnance a update jmena
-			$tableEmployees = new Application_Model_DbTable_Employee();
-			$employee = $tableEmployees->find($data["responsible_id"])->current();
-			$this->responsible_name = sprintf("%s %s", $employee->first_name, $employee->surname);
+			case Deadline_Form_Deadline::RESP_GUARD:
+				$this->responsible_user_id = $data["responsible_id"];
+				break;
+				
+			default:
+				$this->responsible_external_name = $data["responsible_external_name"];
 		}
 	}
 	

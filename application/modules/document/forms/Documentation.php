@@ -40,7 +40,7 @@ class Document_Form_Documentation extends Zend_Form {
 		));
 		
 		$this->addElement("text", "comment", array(
-				"required" => true,
+				"required" => false,
 				"decorators" => $elementDecorator,
 				"label" => "Komentář"
 		));

@@ -194,41 +194,63 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$form->getElement("subsidiary_id")->setMultiOptions($subs);
 		
 		// vyhodnoceni, ktery typ zodpovedne osoby pouzit
-		if ($form->getValue("resp_from_guard")) {
-			// nacteni pracovniku G7
-			$tableUsers = new Application_Model_DbTable_User();
-			$users = $tableUsers->fetchAll(array("role in (?)" => array(
-					My_Role::ROLE_ADMIN, 
-					My_Role::ROLE_COORDINATOR, 
-					My_Role::ROLE_TECHNICIAN
-					)));
+		$respType = $form->getValue("resp_type");
+		
+		if ($respType == Deadline_Form_Deadline::RESP_EXTERNAL) {
+			// jedna se o externistu - odebere se vyber uzivatele
+			$form->removeElement("responsible_id");
+		} else {
+			if ($respType == Deadline_Form_Deadline::RESP_GUARD) {
+				// nacteni pracovniku G7
+				$tableUsers = new Application_Model_DbTable_User();
+				$users = $tableUsers->fetchAll(array("role in (?)" => array(
+						My_Role::ROLE_ADMIN, 
+						My_Role::ROLE_COORDINATOR, 
+						My_Role::ROLE_TECHNICIAN
+						)));
+				
+				
+			} else {
+				
+				
+				
+				
+				// nacteni zamestnancu
+				$tableEmployee = new Application_Model_DbTable_Employee();
+				$empSelect = $tableEmployee->select(false);
+				$empSelect->from($tableEmployee->info("name"), array("id_user" => "id_employee", "username" => new Zend_Db_Expr("CONCAT(first_name, ' ', surname)")));
+				$empSelect->where("client_id = ?", $clientId);
+				
+				// vyhodnoceni pobocky
+				if ($subsidiaryId) {
+					// pro nacteni zodpovednych osob klienta musi byt vybrana pobocka
+					$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+					
+					// filtrace zodpovednych osob dle pobocky
+					$tableResponsibles = new Application_Model_DbTable_Responsible();
+					$nameResponsibles = $tableResponsibles->info("name");
+					
+					$select->from($nameResponsibles, array("id_employee"))->where("id_subsidiary = ?", $subsidiaryId);
+					$empSelect->where("id_employee in (?)", new Zend_Db_Expr($select->assemble()));
+				}
+				
+				$users = $empSelect->query()->fetchAll(Zend_Db::FETCH_OBJ);
+				
+				// odebrani textoveho pole externisty
+				$form->removeElement("responsible_external_name");
+			}
 			
-		} elseif ($subsidiaryId) {
-			// pro nacteni zodpovednych osob klienta musi byt vybrana pobocka
-			$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+			// odebrani textoveho pole externisty
+			$form->removeElement("responsible_external_name");
+		
+			$userList = array();
 			
-			// filtrace zodpovednych osob dle pobocky
-			$tableResponsibles = new Application_Model_DbTable_Responsible();
-			$nameResponsibles = $tableResponsibles->info("name");
+			foreach ($users as $user) {
+				$userList[$user->id_user] = $user->username;
+			}
 			
-			$select->from($nameResponsibles, array("id_employee"))->where("id_subsidiary = ?", $subsidiaryId);
-			
-			// nacteni zamestnancu
-			$tableEmployee = new Application_Model_DbTable_Employee();
-			$empSelect = $tableEmployee->select(false);
-			$empSelect->from($tableEmployee->info("name"), array("id_user" => "id_employee", "username" => new Zend_Db_Expr("CONCAT(first_name, ' ', surname)")));
-			$empSelect->where("id_employee in (?)", new Zend_Db_Expr($select->assemble()));
-			
-			$users = $empSelect->query()->fetchAll(Zend_Db::FETCH_OBJ);
+			$form->getElement("responsible_id")->setMultiOptions($userList);
 		}
-		
-		$userList = array();
-		
-		foreach ($users as $user) {
-			$userList[$user->id_user] = $user->username;
-		}
-		
-		$form->getElement("responsible_id")->setMultiOptions($userList);
 		
 		// pokud je nastavena pobocka, nactou se pracoviste
 		if (!is_null($subsidiaryId)) {
@@ -353,22 +375,34 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$retVal = $row->toArray();
 		
 		if (!is_null($retVal["employee_id"])) {
+			
 			$retVal["object_id"] = $retVal["employee_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_EMPLOYEE;
+			
 		} elseif (!is_null($retVal["chemical_id"])) {
+			
 			$retVal["object_id"] = $retVal["chemical_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_CHEMICAL;
+			
 		} elseif (!is_null($retVal["technical_device_id"])) {
+			
 			$retVal["object_id"] = $retVal["technical_device_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_DEVICE;
+		
 		}
 		
 		// vyhodnoceni zodpovedne osoby
 		if ($retVal["responsible_user_id"]) {
+			
 			$retVal["responsible_id"] = $retVal["responsible_user_id"];
-			$retVal["resp_from_guard"] = 1;
+			$retVal["resp_type"] = Deadline_Form_Deadline::RESP_GUARD;
+			
+		} elseif (!is_null($retVal["responsible_external_name"])) {
+			
+			$retVal["resp_type"] = Deadline_Form_Deadline::RESP_EXTERNAL;
+			
 		} else {
-			$retVal["resp_from_guard"] = 0;
+			$retVal["resp_type"] = Deadline_Form_Deadline::RESP_CLIENT;
 		}
 		
 		return $retVal;

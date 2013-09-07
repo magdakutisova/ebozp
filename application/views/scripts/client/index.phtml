@@ -28,6 +28,8 @@
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "deadline-index"); ?>">Lhůty</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "audit-watch-index-client"); ?>">Dohlídky</a>
+	 |
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "document-documentation-index") . "?subId=" . $this->subsidiaryId; ?>">Dokumentace</a>
 </div>
 
 <div class="box tasks">
@@ -48,6 +50,7 @@
 
 <div class="box deadlines">
 	<h3>Termíny a lhůty</h3>
+	<?php echo $this->deadlineTable($this->invalidDeadlines); ?>
 	<p>NESHODY a LHŮTNÍKY nastavené je filtrování podle termínu. Celkový přehled o blížících se a propadlých termínech. Možnost hypertext se prokliknout na kartu KL, kterém neshoda nebo lhůta náleží.
 	</p>
 </div>
