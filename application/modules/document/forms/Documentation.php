@@ -19,6 +19,14 @@ class Document_Form_Documentation extends Zend_Form {
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
 		);
 		
+		$fileDecorator = array(
+				'File',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+				array('Label', array('tag' => 'td')),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+		);
+		
 		$submitDecorator = array(
 				'ViewHelper',
 				array('Errors'),
@@ -43,6 +51,18 @@ class Document_Form_Documentation extends Zend_Form {
 				"required" => false,
 				"decorators" => $elementDecorator,
 				"label" => "Komentář"
+		));
+		
+		$this->addElement("file", "internal_file", array(
+				"required" => false,
+				"decorators" => $fileDecorator,
+				"label" => "Interní verze"
+				));
+		
+		$this->addElement("file", "external_file", array(
+				"required" => false,
+				"decorators" => $fileDecorator,
+				"label" => "Veřejná verze"
 		));
 		
 		$this->addElement("submit", "submit", array(

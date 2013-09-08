@@ -31,7 +31,7 @@ class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 	public function createVersionFromFile($path, $mimeType = null) {
 		$tableVersions = new Document_Model_Versions();
 		
-		$mime = is_null($mimeType) ? $this->mime : $mimeType;
+		$mime = is_null($mimeType) ? "application/octet-stream" : $mimeType;
 		
 		return $tableVersions->createVersionFormFile($this, $path, $mime);
 	}

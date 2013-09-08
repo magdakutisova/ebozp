@@ -265,6 +265,13 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		unset($data["subsidiary_id"]);
 		
 		$doc->setFromArray($data);
+		
+		// vyhodnoceni, jestli doslo k odeslani alespon jednoho souboru
+		if ($form->getElement("internal_file")->getValue() || $form->getElement("external_file")) {
+			// nejake soubory byly odeslany - zapis do uloziste
+			self::_saveFiles($form, $doc);
+		}
+		
 		$doc->save();
 		
 		$this->view->doc = $doc;
@@ -350,5 +357,80 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 		
 		return -1;
+	}
+	
+	/**
+	 * zapise nove soubory s dokumentaci
+	 * 
+	 * @param Document_Form_Documentation $form vyplneny formular
+	 * @param Document_Model_Row_Documentation $row radek dokumentace
+	 */
+	private static function _saveFiles($form, $row) {
+		// nacteni domovskeho adresare klienta
+		$tableDirs = new Document_Model_Directories();
+		$root = $tableDirs->root($row->client_id);
+		
+		// pokud koren neexistuje, vytvori se
+		if (!$root) {
+			$root = $tableDirs->createRoot($row->client_id, $row->getClient()->company_name);
+		}
+		
+		// pokud je nastavena pobocka, nacteni adresare pobocky
+		if ($row->subsidiary_id) {
+			// nacteni pobocky, pokud existuje
+			$dir = $tableDirs->fetchRow(array(
+					"parent_id = ?" => $root->id,
+					"subsidiary_id = ?" => $row->subsidiary_id
+					));
+			
+			// pokud adresar pobocky neexistuje, pak se vytvori novy
+			if (!$dir) {
+				$subsidiary = $row->getSubsidiary();
+				$dirName = sprintf("%s, %s", $subsidiary->subsidiary_town, $subsidiary->subsidiary_street);
+				$dir = $root->createChildDir($dirName);
+				$dir->subsidiary_id = $row->subsidiary_id;
+				$dir->save();
+			}
+		} else {
+			$dir = $root;
+		}
+		
+		// zapis novych dokumentacnich souboru
+		if ($form->getElement("internal_file")->getValue()) {
+			// vytvoreni souboru
+			$file = self::_saveFile($form->getElement("internal_file"), $dir);
+			$row->internal_file_id = $file->id;
+			
+			// pripojeni souboru do adresare
+			$file->attach($dir);
+		}
+		
+		if ($form->getElement("external_file")->getValue()) {
+			// vytvoreni souboru
+			$file = self::_saveFile($form->getElement("external_file"), $dir);
+			$row->file_id = $file->id;
+			
+			// pripojeni souboru do adresare
+			$file->attach($dir);
+		}
+	}
+	
+	/**
+	 * zapise soubor do systemu a adresare a vraci instanci radku
+	 * 
+	 * @param Zend_Form_Element_File $fileElement
+	 * @param Document_Model_Row_Directory $target
+	 * @return Document_Model_Row_File
+	 */
+	private static function _saveFile(Zend_Form_Element_File $fileElement, Document_Model_Row_Directory $target) {
+		// vytvoreni noveho souboru
+		$user = Zend_Auth::getInstance()->getIdentity();
+		
+		$tableFiles = new Document_Model_Files();
+		$file = $tableFiles->createFile($fileElement->getFileName(null, false), $fileElement->getMimeType(), $user->id_user);
+		
+		$file->createVersionFromFile($fileElement->getFileName(), $fileElement->getMimeType());
+		
+		return $file;
 	}
 }

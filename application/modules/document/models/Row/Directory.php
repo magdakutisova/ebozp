@@ -9,10 +9,20 @@ class Document_Model_Row_Directory extends Zend_Db_Table_Row_Abstract {
 	public function path() {
 		$where = array(
 				"left_id < " . $this->_data["left_id"],
-				"right_id > " . $this->_data["right_id"]
+				"right_id > " . $this->_data["right_id"],
+				"client_id = ?" => $this->client_id
 		);
 		
 		return $this->getTable()->fetchAll($where, "left_id");
+	}
+	
+	/**
+	 * vraci radek klienta
+	 * 
+	 * @return Zend_Db_Table_Row_Abstract
+	 */
+	public function getClient() {
+		return $this->findParentRow("Application_Model_DbTable_Client", "client");
 	}
 	
 	/**
