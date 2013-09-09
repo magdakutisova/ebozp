@@ -122,6 +122,9 @@ class Document_DocumentController extends Zend_Controller_Action {
 		$tableDirectories = new Document_Model_Directories();
 		$roots = $tableDirectories->roots();
 		
+		// nacteni dokumentace
+		$documentations = $file->getDocumentations();
+		
 		$this->view->file = $file;
 		$this->view->versions = $versions;
 		$this->view->loaded = $loaded;
@@ -129,6 +132,7 @@ class Document_DocumentController extends Zend_Controller_Action {
 		$this->view->renameForm = $renameForm;
 		$this->view->directories = $directories;
 		$this->view->roots = $roots;
+		$this->view->documentations = $documentations;
 	}
 	
 	/**

@@ -75,6 +75,34 @@ class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
+	 * vraci dokumentaci, kde je soubor pouzit
+	 * 
+	 * @return Zend_Db_Table_Rowset
+	 */
+	public function getDocumentations($cliendId = null) {
+		// vygenerovani selectu
+		$tableDocumentations = new Document_Model_Documentations();
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		
+		$nameDocumentations = $tableDocumentations->info("name");
+		$nameSubsidiaries = $tableSubsidiaries->info("name");
+		
+		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$subSelect->where("file_id = ?", $this->_data["id"])
+					->orWhere("internal_file_id = ?", $this->_data["id"]);
+		
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$select->from($nameDocumentations)->where($subSelect->getPart(Zend_Db_Select::WHERE));
+		
+		if ($cliendId) $select->where("client_id = ?", $cliendId);
+		
+		$select->joinLeft($nameSubsidiaries, "subsidiary_id = id_subsidiary", 
+				array("subsidiary_name" => new Zend_Db_Expr("CONCAT(subsidiary_town, ', ', subsidiary_street)")));
+		
+		return new Zend_Db_Table_Rowset(array("data" => $select->query()->fetchAll()));
+	}
+	
+	/**
 	 * vraci seznam verzi souboru
 	 * 
 	 * @return Document_Model_Rowset_Versions

@@ -39,6 +39,31 @@ if ($editable) $editButton = $this->formButton("rename-file", "Přejmenovat");
 		<td>Jméno souboru</td>
 		<td><?php echo $this->file()->fileName($file); echo " " . $editButton; ?></td>
 	</tr>
+	<?php 
+	if ($this->documentations->count()) {
+		?>
+	<tr>
+		<td>
+		Dokumentace
+		</td>
+		<td>
+		<?php 
+		foreach ($this->documentations as $item) {
+			// zjisteni jmena pobocky a vygenerovani adresy na dokumentace
+			$subName = $item->subsidiary_name ? $item->subsidiary_name : "CENTRÁLNÍ";
+			$baseUrl = $this->url(array("clientId" => $item->client_id), "document-documentation-index");
+			$url = sprintf("%s?subId=%s", $baseUrl, $item->subsidiary_id);
+			
+			$name = sprintf("<a href='%s'>%s</a>", $url, $subName);
+			
+			printf("%s<br />", $name);
+		}
+		?>
+		</td>
+	</tr>
+		<?php 
+	}
+	?>
 </table>
 <p>
 	<strong><big><?php echo $this->version()->download($loaded); ?></big></strong>
