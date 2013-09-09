@@ -1,16 +1,12 @@
 <?php
 class Document_View_Helper_File extends Zend_View_Helper_Abstract {
 	
-	public function file($file = null) {
+	public function file($file = null, $route = "show") {
 		if (is_null($file)) return $this;
 		
-		if (!isset($file->route)) {
-			$file->route = "show";
-		}
+		$url = $this->url($file, $route);
 		
-		$url = $this->url($file);
-		
-		if ($file->route == "show") {
+		if ($route == "show") {
 			$name = $this->fileName($file);
 			$target = "_self";
 		} else {
@@ -23,9 +19,9 @@ class Document_View_Helper_File extends Zend_View_Helper_Abstract {
 		return $retVal;
 	}
 	
-	public function url($file) {
+	public function url($file, $route = "show") {
 		// vyhodnoceni, zda se bude stahovat
-		if (isset($file->route) && $file->route == "download") {
+		if ($route == "download") {
 			$route = "document-version-download";
 		} else {
 			$route = "document-get";

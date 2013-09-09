@@ -82,7 +82,7 @@ foreach ($this->documentations as $doc) {
 		echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
 		
 	} else {
-		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid, "route" => "download")) : "-") . "</td>";
+		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid), "download") : "-") . "</td>";
 	}
 	
 	echo "</tr>";
