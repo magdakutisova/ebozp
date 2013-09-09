@@ -5,6 +5,9 @@ var CLIENT_ID = <?php echo $this->client->id_client; ?>;
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
+// vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
+$editable = $acl->isAllowed($user->role, "document:documentation", "put");
+
 echo "<h1>" . $this->client->company_name;
 
 if ($this->subsidiary) echo " - " . $this->subsidiary->subsidiary_name;
@@ -12,6 +15,9 @@ if ($this->subsidiary) echo " - " . $this->subsidiary->subsidiary_name;
 echo "</h1>";
 ?>
 <h2>Dokumentace</h2>
+<?php 
+if ($editable) {
+?>
 <div class="box">
 	<form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "document-documentation-index"); ?>" method="get">
 		<?php 
@@ -29,11 +35,11 @@ echo "</h1>";
 if ($acl->isAllowed($user->role, "document:preset")) {
 	echo "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
 }
-
-// vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
-$editable = $acl->isAllowed($user->role, "document:documentation", "put");
 ?>
 </div>
+<?php 
+}
+?>
 <table id="docs-table">
 	<thead>
 		<tr>

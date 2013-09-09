@@ -53,6 +53,12 @@ class Document_Form_Documentation extends Zend_Form {
 				"label" => "Komentář"
 		));
 		
+		$this->addElement("textarea", "comment_internal", array(
+				"required" => false,
+				"decorators" => $elementDecorator,
+				"label" => "Interní komentář"
+		));
+		
 		$this->addElement("file", "internal_file", array(
 				"required" => false,
 				"decorators" => $fileDecorator,

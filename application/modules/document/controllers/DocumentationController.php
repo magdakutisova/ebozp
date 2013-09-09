@@ -241,7 +241,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 				$form->getValue("name"),
 				$this->_request->getParam("clientId"),
 				$subsidiaryId,
-				$form->getValue("comment"));
+				$form->getValue("comment"),
+				$form->getValue("comment_internal"));
 
 		// vyhodnoceni, jestli doslo k odeslani alespon jednoho souboru
 		if ($form->getElement("internal_file")->getValue() || $form->getElement("external_file")) {
