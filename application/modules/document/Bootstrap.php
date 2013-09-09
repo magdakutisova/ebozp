@@ -117,7 +117,8 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array(
 								"module" => "document",
 								"controller" => "document",
-								"action" => "download"
+								"action" => "download",
+								"versionId" => 0
 						))
 		);
 		

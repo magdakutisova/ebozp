@@ -268,7 +268,17 @@ class Document_DocumentController extends Zend_Controller_Action {
 	 */
 	public static function loadVersion(Document_Model_Row_File $file, $versionId) {
 		$tableVersions = new Document_Model_Versions();
-		$version = $tableVersions->find($versionId)->current();
+		
+		// pokud je zadano versionId, vyhleda se tato verze, pokud ne, vyhleda se aktualni
+		if ($versionId) {
+			$version = $tableVersions->find($versionId)->current();
+		} else {
+			// vyhledani aktualni verze
+			$select = $tableVersions->select(false);
+			$select->where("file_id = ?", $file->id)->limit(1, 0)->order("id desc");
+			
+			$version = $tableVersions->fetchRow($select);
+		}
 		
 		if (!$version) throw new Zend_Db_Table_Exception("Version #$versionId not found");
 		if ($version->file_id != $file->id) throw new Zend_Db_Table_Exception("Version #$versionId is not part of file #$file->id");
