@@ -240,7 +240,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$slot = $tableDocumentation->createSlot(
 				$form->getValue("name"),
 				$this->_request->getParam("clientId"),
-				$subsidiaryId);
+				$subsidiaryId,
+				$form->getValue("comment"));
 
 		// vyhodnoceni, jestli doslo k odeslani alespon jednoho souboru
 		if ($form->getElement("internal_file")->getValue() || $form->getElement("external_file")) {

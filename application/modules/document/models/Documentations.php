@@ -37,11 +37,12 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 	
 	protected $_rowsetClass = "Document_Model_Rowset_Documentations";
 	
-	public function createSlot($name, $clientId, $subsidiaryId) {
+	public function createSlot($name, $clientId, $subsidiaryId, $comment = null) {
 		$retVal = $this->createRow(array(
 				"client_id" => $clientId,
 				"name" => $name,
-				"subsidiary_id" => $subsidiaryId
+				"subsidiary_id" => $subsidiaryId,
+				"comment" => $comment
 		));
 		
 		$retVal->save();
