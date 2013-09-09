@@ -92,7 +92,7 @@ class Document_Model_Row_File extends Zend_Db_Table_Row_Abstract {
 					->orWhere("internal_file_id = ?", $this->_data["id"]);
 		
 		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
-		$select->from($nameDocumentations)->where($subSelect->getPart(Zend_Db_Select::WHERE));
+		$select->from($nameDocumentations)->where(implode("", $subSelect->getPart(Zend_Db_Select::WHERE)));
 		
 		if ($cliendId) $select->where("client_id = ?", $cliendId);
 		

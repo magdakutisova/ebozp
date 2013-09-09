@@ -51,7 +51,7 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		return $retVal;
 	}
 	
-	public function getDocumentation($clientId, $subsidiaryId = null) {
+	public function getDocumentation($clientId, $subsidiaryId = null, $withCentral = false) {
 		// sestaveni zakladniho dotazu
 		$select = new Zend_Db_Select($this->getAdapter());
 		$select->from(array("doc" => $this->_name));
@@ -63,14 +63,29 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 			// vyhodnoceni subid
 			switch ($subsidiaryId) {
 				case -1:
+					// vraci se vse
 					break;
 					
 				case 0:
+					// vraci se pouze centralni
 					$select->where("doc.subsidiary_id IS NULL ");
 					break;
 					
 				default:
-					$select->where("doc.subsidiary_id = ?", $subsidiaryId);
+					// vraci se pobockova
+					if ($withCentral) {
+						$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+						
+						// zapis podminky pobocky a centralni
+						$subSelect->where("doc.subsidiary_id = ?", $subsidiaryId)
+									->orWhere("doc.subsidiary_id IS NULL");
+						
+						// zapis do puvodniho selectu
+						$select->where(implode(" ", $subSelect->getPart(Zend_Db_Select::WHERE)));
+					} else {
+						$select->where("doc.subsidiary_id = ?", $subsidiaryId);
+					}
+					
 					break;
 					
 			}

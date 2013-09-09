@@ -199,8 +199,13 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 
 		$tableDocumentations = new Document_Model_Documentations();
-
-		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId);
+		
+		// pokud je dovoleno polozky dokumentace editovat, centralni dokumentace se nevypise
+		$role = Zend_Auth::getInstance()->getIdentity()->role;
+		$acl = new My_Controller_Helper_Acl();
+		$withCentral = !$acl->isAllowed($role, "document:documentation", "put");
+		
+		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId, $withCentral);
 
 		// formular pridani noveho supliku
 		$addForm = new Document_Form_Documentation();
