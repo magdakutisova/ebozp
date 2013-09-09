@@ -248,6 +248,7 @@ textarea[id*='schoolingDetail']					{width: 300px;}
 table.report { border-collapse: collapse; font-size: 12pt; }
 table.report td { border: 1px solid black; }
 td.report-percent { font-weight: bolder; color: red; text-align: center; width: 4em;}
+.error:nth-child(even) td { background-color: #ffc1c4; }
 
 span.directory, span.document { padding-left : 16px; background: url(/images/ui-icons_454545_256x240.png) no-repeat; }
 span.directory { background-position: 0 -96px; }

@@ -68,7 +68,7 @@ if ($acl->isAllowed($user->role, "document:preset")) {
 
 foreach ($this->documentations as $doc) {
 	// vyhodnoceni, zda se jedna o prazdny
-	$class = $doc->fileid ? "" : "error";
+	$class = ""; // $doc->fileid ? "" : "error";
 	
 	echo "<tr class='$class'>";
 	
