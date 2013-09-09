@@ -39,31 +39,18 @@ if ($editable) $editButton = $this->formButton("rename-file", "Přejmenovat");
 		<td>Jméno souboru</td>
 		<td><?php echo $this->file()->fileName($file); echo " " . $editButton; ?></td>
 	</tr>
-	<tr>
-		<td>Velikost</td>
-		<td><?php echo $size . " " . $unit; ?></td>
-	</tr>
-	<tr>
-		<td>Mime typ</td>
-		<td><?php echo $current->mime; ?></td>
-	</tr>
-	<tr>
-		<td>Datum vytvoření</td>
-		<td><?php echo $this->version()->date($file->created_at); ?></td>
-	</tr>
-		<td>Datum poslední změny</td>
-		<td><?php echo $this->version()->date($current->created_at); ?></td>
-	</tr>
 </table>
-<strong><big><?php echo $this->version()->download($loaded); ?></big></strong>
+<p>
+	<strong><big><?php echo $this->version()->download($loaded); ?></big></strong>
+</p>
 <?php 
 if ($editable) {
 ?>
-<h2>Nahrát aktualizci</h2>
+<h2>Nahrát aktualizaci</h2>
 <?php 
 	echo $this->uploadForm; 
 }
-?>
+?><br />
 <h2>Historie verzí</h2>
 <ol>
 <?php 
