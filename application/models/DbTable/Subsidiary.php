@@ -130,7 +130,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			->from ( 'subsidiary' )
 			->where('client_id = ?', $clientId)
 			->where ( 'deleted = 0' )
-			->order(array('hq DESC', "subsidiary_street", "subsidiary_town"));
+			->order(array('hq DESC', "subsidiary_town", "subsidiary_street"));
 		$result = $this->fetchAll ( $select );
 		return $this->process($result);
 	}

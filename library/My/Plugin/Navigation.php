@@ -35,7 +35,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 						$hqOnly = ' (pouze sídlo)';
 					}
 					$subs->addPage(array(
-						'label' => $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . $active . $hqOnly,
+						'label' => sprintf("%s, %s, %s", $subsidiary->getSubsidiaryName(), $subsidiary->getSubsidiaryTown(), $subsidiary->getSubsidiaryStreet()),
 						'route' => 'subsidiaryIndex',
 						'resource' => 'subsidiary',
 						'privilege' => 'index',
