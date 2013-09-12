@@ -56,7 +56,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		// vytvoreni improtovaciho formulare
 		$form = new Deadline_Form_Import();
-		self::prepareImportForm($this->_request->getParam("clientId"), $form);
+		self::prepareImportForm($this->_request->getParam("clientId"), $this->_request->getParam("subsidiaryId"), $form);
 		
 		$this->view->importForm = $form;
 		$this->view->subsidiary = $subsidiary;
@@ -109,7 +109,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$tableDevices = new Application_Model_DbTable_TechnicalDevice();
 				$nameDevices = $tableDevices->info("name");
 				
-				$select->joinInner($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(`sort`, ' (', $nameDevices.`type` , ')')")));
+				$select->joinInner($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
 				break;
 				
 			case Deadline_Form_Deadline::TARGET_EMPLOYEE:
@@ -140,7 +140,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		return $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
 	}
 	
-	public static function prepareImportForm($clientId, Deadline_Form_Import $form) {
+	public static function prepareImportForm($clientId, $subsidiaryId, Deadline_Form_Import $form) {
 		$form->setClientId($clientId);
 		
 		// nacteni pobocek a sestaveni jejich seznamu
@@ -148,6 +148,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$select = $tableSubsidiaries->select(false);
 		$select->where("client_id = ?", $clientId)
 						->where("active")->where("!deleted")->order("name");
+		
 		$select->from($tableSubsidiaries, array("id_subsidiary", "name" => new Zend_Db_Expr("CONCAT(subsidiary_town, ' ', subsidiary_street)")));
 		
 		$items = $tableSubsidiaries->fetchAll($select);
@@ -158,5 +159,6 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		}
 		
 		$form->getElement("subsidiary_id")->setMultiOptions($subIndex);
+		$form->getElement("subsidiary_id")->setValue($subsidiaryId);
 	}
 }

@@ -2,6 +2,6 @@
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId");
 $subsidiaryId = $this->form->getValue("subsidiary_id");
 
-$url = $this->url(array("clientId" => $clientId), "deadline-index");
+$url = $this->url(array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId), "deadline-index");
 $router = new Zend_Controller_Action_Helper_Redirector();
 $router->gotoUrl($url);
