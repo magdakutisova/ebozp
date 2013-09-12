@@ -9,7 +9,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// rozcestnik lhut
 		$router->addRoute(
 				"deadline-index",
-				new Zend_Controller_Router_Route("/klient/:clientId/deadlines",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines",
 						array(
 								"module" => "deadline",
 								"controller" => "index",
@@ -31,7 +31,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// seznam lhut zamestnancu
 		$router->addRoute(
 				"deadline-employees",
-				new Zend_Controller_Router_Route("/klient/:clientId/deadlines/employees",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines/employees",
 						array(
 								"module" => "deadline",
 								"controller" => "index",
@@ -42,7 +42,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// seznam lhut chemikalii
 		$router->addRoute(
 				"deadline-chemicals",
-				new Zend_Controller_Router_Route("/klient/:clientId/deadlines/chemicals",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines/chemicals",
 						array(
 								"module" => "deadline",
 								"controller" => "index",
@@ -53,7 +53,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// seznam lhut zarizeni
 		$router->addRoute(
 				"deadline-devices",
-				new Zend_Controller_Router_Route("/klient/:clientId/deadlines/devices",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines/devices",
 						array(
 								"module" => "deadline",
 								"controller" => "index",

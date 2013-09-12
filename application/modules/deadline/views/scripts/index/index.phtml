@@ -1,5 +1,8 @@
 <?php
-$params = array("clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId"));
+$params = array(
+		"clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId"),
+		"subsidiaryId" => $this->subsidiary->id_subsidiary
+		);
 ?>
 <ul>
 	<li>

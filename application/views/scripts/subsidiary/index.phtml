@@ -22,7 +22,7 @@
 	 | <a href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-create"); ?>">Provést audit</a>
 	 <?php } ?>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "deadline-index") . "?subsidiaryId=" . $this->subsidiary['subsidiary']->getIdSubsidiary(); ?>">Lhůty</a>
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
 	 |

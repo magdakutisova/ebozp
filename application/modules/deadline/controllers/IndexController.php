@@ -10,6 +10,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		// nacteni dat
 		$filter = $this->_request->getParam("filter", array());
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
+		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 	
 		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_DEVICE, $filter);
 	
@@ -24,6 +25,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		// nacteni dat
 		$filter = $this->_request->getParam("filter", array());
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
+		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 		
 		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_EMPLOYEE, $filter);
 		
@@ -35,6 +37,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		// nacteni dat
 		$filter = $this->_request->getParam("filter", array());
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
+		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 		
 		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_CHEMICAL, $filter);
 		
@@ -47,10 +50,16 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	 * podporuje filtrovani
 	 */
 	public function indexAction() {
+		// nacteni pobocky
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiary = $tableSubsidiaries->find($this->_request->getParam("subsidiaryId", 0))->current();
+		
+		// vytvoreni improtovaciho formulare
 		$form = new Deadline_Form_Import();
 		self::prepareImportForm($this->_request->getParam("clientId"), $form);
 		
 		$this->view->importForm = $form;
+		$this->view->subsidiary = $subsidiary;
 	}
 	
 	/**
@@ -119,12 +128,12 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		// nastaveni pobocky, pokud je potreba
 		if (isset($filterSet["subsidiaryId"])) {
 			// kontrola hodnoty subsidiary
-			if ($filterSet["subsidiary_id"] == 0) {
+			if ($filterSet["subsidiaryId"] == 0) {
 				// filtruji se pouze globalni terminy
 				$select->where("subsidiary_id IS NULL");
 			} else {
 				// filtruje se konkretni pobocka
-				$select->where("subsidiary_id = ?", $filterSet["subsidiary_id"]);
+				$select->where("subsidiary_id = ?", $filterSet["subsidiaryId"]);
 			}
 		}
 		

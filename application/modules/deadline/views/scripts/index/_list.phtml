@@ -1,6 +1,12 @@
 <?php 
 // navratovy odkaz
-$params = array("clientId" => Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId"));
+$request = Zend_Controller_Front::getInstance()->getRequest();
+
+$params = array(
+		"clientId" => $request->getParam("clientId"),
+		"subsidiaryId" => $request->getParam("subsidiaryId")
+		);
+
 $url = $this->url($params, "deadline-index");
 
 printf("<a href='%s'>Zpět na výběr kategorie lhůty</a>", $url);
