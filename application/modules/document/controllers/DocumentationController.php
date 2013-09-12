@@ -197,6 +197,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 		if ($subsidiaryId > 0) {
 			$subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+		} else {
+			$this->_request->setParam("subsidiaryId", null);
 		}
 
 		$tableDocumentations = new Document_Model_Documentations();
@@ -335,7 +337,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
 
 		// nacteni informaci o pobockach
-		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId), array("hq desc", "subsidiary_town", "subsidiary_street"));
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted"), array("hq desc", "subsidiary_town", "subsidiary_street"));
 		$subIndex = array();
 
 		foreach ($subsidiaries as $item) $subIndex[$item->id_subsidiary] = $item->subsidiary_name . " (" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";
