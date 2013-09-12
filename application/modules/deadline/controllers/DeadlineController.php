@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/IndexController.php";
+
 class Deadline_DeadlineController extends Zend_Controller_Action {
 	
 	public function init() {
@@ -68,6 +70,37 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	 */
 	public function getAction() {
 		
+	}
+	
+	/**
+	 * importuje lhuty do systemu
+	 */
+	public function importAction() {
+		// kontrola formulare
+		$form = new Deadline_Form_Import();
+		Deadline_IndexController::prepareImportForm($this->_request->getParam("clientId"), $form);
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("index", "index");
+			return;
+		}
+		
+		// nacteni souboru do pameti
+		$rows = array();
+		$fp = fopen($form->getElement("import_file")->getFileName(), "r");
+		
+		// preskoceni prvniho radku
+		fgets($fp, 4096);
+		
+		// nacteni zbytku dat
+		while (!feof($fp)) {
+			$rows[] = fgetcsv($fp, 8192);
+		}
+		
+		// vyhodnoceni typu lhut
+		self::_import($form, $rows);
+		
+		$this->view->form = $form;
 	}
 	
 	/**
@@ -182,16 +215,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			$subsidiaryId = $form->getValue("subsidiary_id");
 		
 		// nacteni pobocek
-		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId), "subsidiary_name");
-		
-		$subs = array("0" => "---VYBERTE---");
-		
-		foreach ($subsidiaries as $subsidiary) {
-			$subs[$subsidiary->id_subsidiary] = $subsidiary->subsidiary_name;
-		}
-		
-		$form->getElement("subsidiary_id")->setMultiOptions($subs);
+		self::setSubsidiaries($form, $clientId);
 		
 		// vyhodnoceni, ktery typ zodpovedne osoby pouzit
 		$respType = $form->getValue("resp_type");
@@ -406,5 +430,155 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		}
 		
 		return $retVal;
+	}
+	
+	protected function _import($form, array $data) {
+		// ziskani adapteru a start relace
+		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$adapter->beginTransaction();
+		
+		try {
+			// vytvoreni docasne tabulky pro ulozeni dat
+			$columns = array(
+					"`id` int not null primary key auto_increment",
+					"`kind` varchar(128) not null",
+					"`specific` varchar(128) null",
+					"`period` tinyint",
+					"`last_done` date",
+					"`responsible_name` varchar(128)",
+					"`name1` varchar(128)",
+					"`name2` varchar(128)",
+					"`birth_date` date",
+					"`note` text",
+					"`obj_id` int"
+					);
+			
+			$colSpecs = implode(",", $columns);
+			$sql = sprintf("create temporary table `tmp_emp_import` (%s) collate=utf8_czech_ci", $colSpecs);
+			
+			$adapter->query($sql);
+			
+			// naplneni dat
+			$rows = array();
+			
+			foreach ($data as $item) {
+				if (count($item) < 13) continue;
+				
+				// prevod datumu
+				$item[7] = self::_transferDate($item[7]);
+				$item[11] = self::_transferDate($item[11]);
+				
+				// vyhodnoceni jmena
+				if (strpos($item[10], " ")) {
+					// v prvku jsou minimalne dve slova
+					list($name, $surname) = explode(" ", $item[10], 2);
+				} else {
+					// v prvku neni zadne nebo jedno slovo
+					$name = $item[10];
+					$surname = "";
+				}
+				
+				// zapis do radku
+				$rows[] = sprintf("(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+						$adapter->quote($item[4]),
+						$adapter->quote($item[5]),
+						$adapter->quote($item[6]),
+						$adapter->quote($item[7]),
+						$adapter->quote($item[9]),
+						$adapter->quote(trim($name)),
+						$adapter->quote(trim($surname)),
+						$adapter->quote($item[11]),
+						$adapter->quote($item[13]));
+				
+			}
+			
+			// zapis do databaze
+			$sql = sprintf("insert into tmp_emp_import (`kind`, `specific`, `period`, `last_done`, `responsible_name`, `name1`, `name2`, `birth_date`, `note`) values %s", implode(",", $rows));
+			$adapter->query($sql);
+			
+			// dalsi postup je zavisly na typu objektu
+			switch ($form->getValue("import_type")) {
+				case Deadline_Form_Import::TYPE_EMPLOYEE:
+					$this->_importEmployees($adapter, $form->getValue("subsidiary_id"));
+					break;
+					
+				default:
+					throw new Zend_Exception("Invalid object type");
+			}
+		} catch (Zend_Exception $e) {
+			die($e->getMessage());
+			$adapter->rollBack();
+			return;
+		}
+		
+		$adapter->commit();
+	}
+	
+	protected function _importEmployees(Zend_Db_Adapter_Abstract $adapter, $subsidiaryId) {
+		// odstraneni vsech lhut tykajicich se zamestnancu dane pobocky
+		$tableDeads = new Deadline_Model_Deadlines();
+		$nameDeads = $tableDeads->info("name");
+		$clientId = $this->_request->getParam("clientId");
+		
+		$tableDeads->delete(array(
+				"subsidiary_id = ?" => $subsidiaryId,
+				"client_id = ?" => $clientId,
+				"employee_id is not null"));
+		
+		// v prvni fazi se najdou a oznaci ti pracovnici, kteri byli uz zaneseni do databaze
+		$tableEmployees = new Application_Model_DbTable_Employee();
+		$nameEmployees = $tableEmployees->info("name");
+		
+		// vytvoreni dotazu
+		$baseSql = "update tmp_emp_import, %s set obj_id = id_employee where client_id = %s and name1 like first_name and name2 like surname and obj_id is null";
+		$sqlUpdate = sprintf($baseSql, $nameEmployees, $this->_request->getParam("clientId"));
+		
+		$adapter->query($sqlUpdate);
+		
+		// ti zamestnanci, kteri nebyli nelezeni se vytvori
+		$sql = "insert into $nameEmployees (client_id, first_name, surname, year_of_birth) select $clientId, name1, name2, birth_date from tmp_emp_import where obj_id is null";
+		$adapter->query($sql);
+		
+		// novy update dat
+		$adapter->query($sqlUpdate);
+		
+		// vlozeni lhut do tabulky lhut
+		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, employee_id) ";
+		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id from tmp_emp_import";
+		
+		$adapter->query($sql);
+	}
+	
+	public static function setSubsidiaries(Zend_Form $form, $clientId) {
+		// nacteni seznamu pobocek
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted"), array("hq desc", "subsidiary_town", "subsidiary_street"));
+		
+		$subs = array("0" => "---VYBERTE---");
+		
+		foreach ($subsidiaries as $subsidiary) {
+			$subs[$subsidiary->id_subsidiary] = sprintf("%s, %s", $subsidiary->subsidiary_town, $subsidiary->subsidiary_street);
+		}
+		
+		$form->getElement("subsidiary_id")->setMultiOptions($subs);
+	}
+	
+	/**
+	 * prevede datum pri improtu do formatu SQL
+	 * 
+	 * @param string $date datum ze souboru
+	 * @return string
+	 */
+	private static function _transferDate($date) {
+		$date = trim($date);
+		
+		if (!$date) {
+			return "1900-01-01";
+		}
+		
+		// rozlozeni na segmenty
+		list($day, $month, $year) = explode(".", $date);
+		
+		return sprintf("%s-%s-%s", $year, $month, $day);
 	}
 }

@@ -47,7 +47,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	 * podporuje filtrovani
 	 */
 	public function indexAction() {
+		$form = new Deadline_Form_Import();
+		self::prepareImportForm($this->_request->getParam("clientId"), $form);
 		
+		$this->view->importForm = $form;
 	}
 	
 	/**
@@ -126,5 +129,25 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		}
 		
 		return $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
+	}
+	
+	public static function prepareImportForm($clientId, Deadline_Form_Import $form) {
+		$form->setClientId($clientId);
+		
+		// nacteni pobocek a sestaveni jejich seznamu
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$select = $tableSubsidiaries->select(false);
+		$select->where("client_id = ?", $clientId)
+						->where("active")->where("!deleted")->order("name");
+		$select->from($tableSubsidiaries, array("id_subsidiary", "name" => new Zend_Db_Expr("CONCAT(subsidiary_town, ' ', subsidiary_street)")));
+		
+		$items = $tableSubsidiaries->fetchAll($select);
+		$subIndex = array("0" => "---VYBERTE---");
+		
+		foreach ($items as $item) {
+			$subIndex[$item->id_subsidiary] = $item->name;
+		}
+		
+		$form->getElement("subsidiary_id")->setMultiOptions($subIndex);
 	}
 }

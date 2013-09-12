@@ -19,4 +19,10 @@ $user = Zend_auth::getInstance()->getIdentity();
 if ($acl->isAllowed($user->role, "deadline:deadline", "post")) {
 	echo $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
 }
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {
+	echo "<h2>Importovat lhůty</h2>";
+	
+	echo $this->importForm;
+}
 ?>
