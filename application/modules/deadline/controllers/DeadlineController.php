@@ -465,6 +465,11 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			foreach ($data as $item) {
 				if (count($item) < 13) continue;
 				
+				// konverze dat do UTF-8
+				foreach ($item as $key => $c) {
+					$item[$key] = iconv("CP1250", "UTF-8", $c);
+				}
+				
 				// prevod datumu
 				$item[7] = self::_transferDate($item[7]);
 				$item[11] = self::_transferDate($item[11]);
@@ -493,9 +498,11 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				
 			}
 			
-			// zapis do databaze
-			$sql = sprintf("insert into tmp_emp_import (`kind`, `specific`, `period`, `last_done`, `responsible_name`, `name1`, `name2`, `birth_date`, `note`) values %s", implode(",", $rows));
-			$adapter->query($sql);
+			// zapis do databaze, pokud je co zapisovat
+			if ($rows) {
+				$sql = sprintf("insert into tmp_emp_import (`kind`, `specific`, `period`, `last_done`, `responsible_name`, `name1`, `name2`, `birth_date`, `note`) values %s", implode(",", $rows));
+				$adapter->query($sql);
+			}
 			
 			// dalsi postup je zavisly na typu objektu
 			switch ($form->getValue("import_type")) {
@@ -541,7 +548,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$adapter->query($sqlUpdate);
 		
 		// ti zamestnanci, kteri nebyli nelezeni se vytvori
-		$sql = "insert into $nameEmployees (client_id, first_name, surname, year_of_birth) select $clientId, name1, name2, birth_date from tmp_emp_import where obj_id is null group by concat(first_name, ' ', surname)";
+		$sql = "insert into $nameEmployees (client_id, first_name, surname, year_of_birth) select $clientId, name1, name2, birth_date from tmp_emp_import where obj_id is null group by concat(name1, ' ', name2)";
 		$adapter->query($sql);
 		
 		// novy update dat
