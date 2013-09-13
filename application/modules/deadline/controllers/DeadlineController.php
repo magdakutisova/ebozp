@@ -579,7 +579,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$nameAssocs = $tableAssocs->info("name");
 		
 		// vytvoreni dotazu
-		$baseSql = "update tmp_emp_import, %s, %s set obj_id = $nameDevices.id_technical_device where $nameAssocs.id_client = %s and $nameAssocs.id_technical_device = $nameDevices.id_technical_device and tmp_emp_import.name1 like $nameDevices.sort and obj_id is null";
+		$baseSql = "update tmp_emp_import, %s, %s set obj_id = $nameDevices.id_technical_device where $nameAssocs.id_client = %s and $nameAssocs.id_technical_device = $nameDevices.id_technical_device and tmp_emp_import.`specific` like $nameDevices.sort and obj_id is null";
 		$sqlUpdate = sprintf($baseSql, $nameDevices, $nameAssocs, $this->_request->getParam("clientId"));
 		
 		$adapter->query($sqlUpdate);
@@ -589,7 +589,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$maxId = $adapter->query($sql)->fetchColumn();
 		
 		// ti zamestnanci, kteri nebyli nelezeni se vytvori
-		$sql = "insert into $nameDevices (`sort`) select name1 from tmp_emp_import where obj_id is null group by name1";
+		$sql = "insert into $nameDevices (`sort`) select `specific` from tmp_emp_import where obj_id is null group by `specific`";
 		$adapter->query($sql);
 		
 		// prirazeni novych zarizeni klientovi
