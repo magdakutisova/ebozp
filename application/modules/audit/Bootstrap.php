@@ -230,6 +230,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "index"))
 		);
 		
+		// zobrazeni vypisu neshod pouze jedne pobocky
+		$router->addRoute(
+				"audit-mistakes-index-subs",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/mistakes",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "index"))
+		);
+		
 		// zobrazit jednu neshodu
 		$router->addRoute(
 				"audit-mistake-get",

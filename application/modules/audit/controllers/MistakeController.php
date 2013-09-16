@@ -527,8 +527,25 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$formFilter = new Audit_Form_MistakeIndex();
 
 		// naplneni pobocek
-		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$subsidiaries = $tableSubsidiaries->fetchAll("client_id = " . $client->id_client);
+		$where = array("client_id = ?" => $client->id_client);
+		
+		// vyhodnoceni omezeni pristpu k pobockam
+		$user = Zend_Auth::getInstance()->getIdentity();
+		
+		if ($user->role == My_Role::ROLE_CLIENT || $user->role == My_Role::ROLE_TECHNICIAN) {
+			// omezeni na pridelene pobocky
+			$tableSubsAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+			$nameSubsAssocs = $tableSubsAssocs->info("name");
+			
+			$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+			$select->from($nameSubsAssocs, array("id_subsidiary"));
+			$select->where("id_user = ?", $user->id_user);
+			
+			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select->assemble());
+		}
+		
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary($where);
+		$subsidiaries = $tableSubsidiaries->fetchAll($where);
 
 		$formFilter->addSubsidiaries($subsidiaries);
 		$formFilter->populate($_REQUEST);
