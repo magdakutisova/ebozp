@@ -58,7 +58,7 @@ if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 		$items = $this->formFilter->getElement("subsidiary_id")->getMultiOptions();
 		$items[0] = "---Vyberte---";
 		echo $this->formLabel("subsidiaryId", "Pobočka: ");
-		echo $this->formSelect("subsidiaryId", null, null, $items);
+		echo $this->formSelect("subsidiaryId", Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId"), null, $items);
 		?>
 	</p>
 	<p>
