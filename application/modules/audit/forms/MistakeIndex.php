@@ -89,9 +89,13 @@ class Audit_Form_MistakeIndex extends Zend_Form {
 	 * @param Zend_Db_Table_Rowset_Abstract $subsidiaries
 	 * @return Audit_Form_MistakeIndex
 	 */
-	public function addSubsidiaries(Zend_Db_Table_Rowset_Abstract $subsidiaries) {
+	public function addSubsidiaries(Zend_Db_Table_Rowset_Abstract $subsidiaries, $displayAll = true) {
 		$element = $this->getElement("subsidiary_id");
-		$values = $element->getMultiOptions();
+		
+		if ($displayAll)
+			$values = $element->getMultiOptions();
+		else
+			$values = array();
 		
 		foreach ($subsidiaries as $item) {
 			$values[$item->id_subsidiary] = $item->subsidiary_name . "(" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";

@@ -510,6 +510,17 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function indexAction() {
 		// nacteni dat
 		$clientId = $this->getRequest()->getParam("clientId", 0);
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", null);
+		
+		// prasarna, ale nutna
+		if (!is_null($subsidiaryId) && !isset($_REQUEST["mistake"]["subsidiary_id"])) {
+			// nastaveni request
+			$_REQUEST["mistake"]["subsidiary_id"] = $subsidiaryId;
+		} elseif (isset($_REQUEST["mistake"]["subsidiary_id"])) {
+			// je nastavena filtracni podminka pobocky - tato podminka se nastavi i do subsidiaryId v requestu
+			$this->_request->setParam("subsidiaryId", $_REQUEST["mistake"]["subsidiary_id"]);
+			$subsidiaryId = $_REQUEST["mistake"]["subsidiary_id"];
+		}
 
 		// sestaveni klienta
 		$tableClients = new Application_Model_DbTable_Client();
@@ -531,6 +542,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// vyhodnoceni omezeni pristpu k pobockam
 		$user = Zend_Auth::getInstance()->getIdentity();
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$displayAll = true;
 		
 		if ($user->role == My_Role::ROLE_CLIENT || $user->role == My_Role::ROLE_TECHNICIAN) {
 			// omezeni na pridelene pobocky
@@ -541,13 +554,17 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$select->from($nameSubsAssocs, array("id_subsidiary"));
 			$select->where("id_user = ?", $user->id_user);
 			
-			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select->assemble());
+			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select);
+			$displayAll = false;
 		}
 		
-		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary($where);
+		
 		$subsidiaries = $tableSubsidiaries->fetchAll($where);
+		
+		// reset where
+		$where = array("client_id = ?" => $client->id_client);
 
-		$formFilter->addSubsidiaries($subsidiaries);
+		$formFilter->addSubsidiaries($subsidiaries, $displayAll);
 		$formFilter->populate($_REQUEST);
 
 		// nastaveni dodatecnych filtracnich parametru
