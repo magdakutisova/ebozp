@@ -337,7 +337,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
 
 		// nacteni informaci o pobockach
-		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted"), array("hq desc", "subsidiary_town", "subsidiary_street"));
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted", "!hq_only"), array("hq desc", "subsidiary_town", "subsidiary_street"));
 		$subIndex = array();
 
 		foreach ($subsidiaries as $item) $subIndex[$item->id_subsidiary] = $item->subsidiary_name . " (" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";

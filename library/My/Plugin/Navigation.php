@@ -25,6 +25,9 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			$acl = new My_Controller_Helper_Acl();
 			$subIds = array();
 			foreach($subsidiaries as $subsidiary){
+				// pokud je pobocka pouze sidlo, preskoci se
+				if ($subsidiary->getHqOnly()) continue;
+				
 				if($acl->isAllowed($user, $subsidiary)){
 					$active = '';
 					if(!$subsidiary->getActive()){

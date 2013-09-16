@@ -16,7 +16,10 @@
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientRecover')?>">Obnovit klienta z archivu</a>
 	<?php }?>
 </div>
-
+<?php 
+// pokud se jedna pouze o sidlo, nebude se dal ve vypisech pokracovat
+if ($this->subsidiary['subsidiary']->getHqOnly()) return;
+?>
 <div class="box clear">
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>

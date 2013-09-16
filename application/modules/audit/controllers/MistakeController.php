@@ -471,7 +471,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			if (count($item) < 5) continue;
 			
 			// vyhodnocení stavu
-			$state = ($item[11] == "odstraněno") ? 1 : 0;
+			$stateStr = strtolower($item[11]);
+			$state = (substr($stateStr, 0, 7) == "odstran") ? 1 : 0;
 			
 			$notifiedAt = self::_toSQLDate($item[10]);
 			$removedAt = self::_toSQLDate($item[13]);
@@ -538,7 +539,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$formFilter = new Audit_Form_MistakeIndex();
 
 		// naplneni pobocek
-		$where = array("client_id = ?" => $client->id_client);
+		$where = array("client_id = ?" => $client->id_client, "!hq_only", "active", "!deleted");
 		
 		// vyhodnoceni omezeni pristpu k pobockam
 		$user = Zend_Auth::getInstance()->getIdentity();
@@ -559,7 +560,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		
-		$subsidiaries = $tableSubsidiaries->fetchAll($where);
+		$subsidiaries = $tableSubsidiaries->fetchAll($where, array("subsidiary_town", "subsidiary_street"));
 		
 		// reset where
 		$where = array("client_id = ?" => $client->id_client);

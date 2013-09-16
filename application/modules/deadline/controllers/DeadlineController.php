@@ -609,7 +609,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	public static function setSubsidiaries(Zend_Form $form, $clientId) {
 		// nacteni seznamu pobocek
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted"), array("hq desc", "subsidiary_town", "subsidiary_street"));
+		$subsidiaries = $tableSubsidiaries->fetchAll(array("client_id = ?" => $clientId, "active", "!deleted", "!hq_only"), array("hq desc", "subsidiary_town", "subsidiary_street"));
 		
 		$subs = array("0" => "---VYBERTE---");
 		
