@@ -174,7 +174,11 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 			case Deadline_Form_Deadline::TARGET_DEVICE:
 				$this->technical_device_id = $data["object_id"];
 				break;
-				
+			
+			case Deadline_Form_Deadline::TARGET_UNDEFINED:
+				// lhuta se tyka neceho uplne jineho
+				break;
+			
 			default:
 				throw new Zend_Db_Table_Exception("Unknown object type");
 		}

@@ -4,6 +4,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 	const TARGET_EMPLOYEE = 1;
 	const TARGET_CHEMICAL = 2;
 	const TARGET_DEVICE = 3;
+	const TARGET_UNDEFINED = 4;
 	
 	const RESP_EXTERNAL = 4;
 	const RESP_GUARD = 5;
@@ -99,7 +100,10 @@ class Deadline_Form_Deadline extends Zend_Form {
 		$this->addElement("select", "resp_type", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
-				"multiOptions" => array(self::RESP_EXTERNAL => "Externista", self::RESP_GUARD => "G U A R D 7, v.o.s.", self::RESP_CLIENT => "Zaměstnanec klienta"),
+				"multiOptions" => array(
+						self::RESP_EXTERNAL => "Externista", 
+						self::RESP_GUARD => "G U A R D 7, v.o.s.", 
+						self::RESP_CLIENT => "Zaměstnanec klienta"),
 				"label" => "Zodpovídá",
 				"value" => self::RESP_EXTERNAL
 		));
@@ -126,7 +130,11 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"required" => true,
 				"label" => "Lhůta se týká",
-				"multiOptions" => array("" => "---VYBERTE---", self::TARGET_EMPLOYEE => "Zaměstnance", self::TARGET_CHEMICAL => "Chemické látky", self::TARGET_DEVICE => "Technického zařízení")
+				"multiOptions" => array(
+						self::TARGET_UNDEFINED => "Jiný typ", 
+						self::TARGET_EMPLOYEE => "Zaměstnance", 
+						self::TARGET_CHEMICAL => "Chemické látky", 
+						self::TARGET_DEVICE => "Technického zařízení")
 				));
 		
 		$this->addElement("select", "object_id", array(

@@ -64,6 +64,18 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->subsidiary = $subsidiary;
 	}
 	
+	public function otherAction() {
+		// nacteni dat
+		$filter = $this->_request->getParam("filter", array());
+		$filter["clientId"] = $this->_request->getParam("clientId", 0);
+		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
+		
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_UNDEFINED, $filter);
+		
+		$this->view->deadlines = $deadlines;
+		$this->view->filterSet = $this->_request->getParam("filter", array());
+	}
+	
 	/**
 	 * profiltruje lhuty dle zadanych parametru
 	 * 
@@ -148,6 +160,11 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$nameEmployees = $tableEmployees->info("name");
 		
 				$select->joinInner($nameEmployees, "employee_id = $nameEmployees.id_employee", array("name" => new Zend_Db_Expr("CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)")));
+				break;
+				
+			case Deadline_Form_Deadline::TARGET_UNDEFINED:
+				$select->where("employee_id IS NULL")->where("technical_device_id IS NULL")->where("chemical_id IS NULL");
+				$select->columns(array("name" => new Zend_Db_Expr("'-'")));
 				break;
 		
 			default:

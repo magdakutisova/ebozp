@@ -214,6 +214,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// prepsani id pobocky z formulare
 		if ($form->getValue("subsidiary_id"))
 			$subsidiaryId = $form->getValue("subsidiary_id");
+		else
+			$form->getElement("subsidiary_id")->setValue($subsidiaryId);
 		
 		// nacteni pobocek
 		self::setSubsidiaries($form, $clientId);
@@ -233,13 +235,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 						My_Role::ROLE_COORDINATOR, 
 						My_Role::ROLE_TECHNICIAN
 						)));
-				
-				
 			} else {
-				
-				
-				
-				
 				// nacteni zamestnancu
 				$tableEmployee = new Application_Model_DbTable_Employee();
 				$empSelect = $tableEmployee->select(false);
@@ -369,18 +365,25 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 					$select->joinLeft($nameAssocs, "$nameAssocs.id_position = $namePositions.id_position", array());
 					$select->joinLeft($nameDevs, "$nameAssocs.id_technical_device = $nameDevs.id_technical_device", array("id" => "id_technical_device", "name" => new Zend_Db_Expr("CONCAT(`sort`, ' ', `type`)")));
 					break;
+					
+				case Deadline_Form_Deadline::TARGET_UNDEFINED:
+					$form->getElement("object_id")->setRequired(false);
+					$select = null;
+					break;
 			}
 			
-			// nacteni a zapis dat
-			$objs = $select->query()->fetchAll();
-			$objList = array();
-			
-			foreach ($objs as $obj) {
-				$objList[$obj["id"]] = $obj["name"];
+			if ($select) {
+				// nacteni a zapis dat
+				$objs = $select->query()->fetchAll();
+				$objList = array();
+				
+				foreach ($objs as $obj) {
+					$objList[$obj["id"]] = $obj["name"];
+				}
+				
+				$form->getElement("object_id")->setMultiOptions($objList);
+				$form->getElement("object_id")->setAttrib("disabled", null);
 			}
-			
-			$form->getElement("object_id")->setMultiOptions($objList);
-			$form->getElement("object_id")->setAttrib("disabled", null);
 		}
 	}
 	
@@ -414,6 +417,11 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			$retVal["object_id"] = $retVal["technical_device_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_DEVICE;
 		
+		} else {
+			
+			// jedna se o obecnou lhutu
+			$retVal["object_id"] = null;
+			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_UNDEFINED;
 		}
 		
 		// vyhodnoceni zodpovedne osoby

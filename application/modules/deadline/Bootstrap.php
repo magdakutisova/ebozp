@@ -50,6 +50,17 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// seznam lhut chemikalii
+		$router->addRoute(
+				"deadline-others",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines/others",
+						array(
+								"module" => "deadline",
+								"controller" => "index",
+								"action" => "other"
+						))
+		);
+		
 		// seznam lhut zarizeni
 		$router->addRoute(
 				"deadline-devices",
