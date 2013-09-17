@@ -37,8 +37,49 @@ $(function () {
 		
 	}
 	
+	function toggleFilter() {
+		$("#deadlinefilter").toggle();
+	}
+	
+	function filter() {
+		// zobrazeni vsech zaznamu lhut
+		var table = $("#deadlinetable");
+		table.find("tbody").show();
+		
+		// nacteni filtracnich podminek
+		var filterConds = {};
+		
+		$(this).find("select").each(function () {
+			var context = $(this);
+			var val = context.find("option:checked").text();
+			
+			if (val == "---") return;
+			
+			filterConds[context.attr("name")] = val;
+		});
+		
+		// skryti tech lhut, ktere nevyhovuji podminkam
+		table.find("tbody").each(function () {
+			// nalezeni hodnot
+			var isOk = true;
+			var context = $(this);
+			
+			for (var item in filterConds) {
+				var val = context.find(":hidden[name='" + item + "']").val();
+				
+				if (val != filterConds[item]) isOk = false;
+			}
+			
+			if (!isOk) context.hide();
+		});
+		
+		return false;
+	}
+	
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
 	$("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
 	$("#deadlinetable tbody tr td button").filter("[name='edit']").click(openEdit).end().filter("[name='get']").click(openGet);
+	$("#deadline-filter-toggle").click(toggleFilter);
+	$("#deadlinefilter").submit(filter);
 });

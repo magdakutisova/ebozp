@@ -22,6 +22,9 @@ if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
 
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
 echo $this->formHidden("CLIENT_ID", $clientId);
+
+echo $this->filterForm;
+echo sprintf("<div>%s</div>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"));
 ?>
 <table class="multirow-table" id="deadlinetable">
 	<thead>
@@ -74,32 +77,47 @@ echo $this->formHidden("CLIENT_ID", $clientId);
 	<tbody class="<?php echo $item->is_valid ? "" : "mistake-marked"; ?>">
 		<tr>
 			<td rowspan="2">
-			<?php echo $item->name; ?>
+			<?php 
+			echo $item->name;
+			printf("<input type='hidden' name='name' value='%s'>", htmlspecialchars($item->name));
+			?>
 			</td>
 			<td>
-			<?php echo $item->kind; ?>
+			<?php 
+			echo $item->kind;
+			printf("<input type='hidden' name='kind' value='%s'>", htmlspecialchars($item->kind)); 
+			?>
 			</td>
 			<td>
-			<?php echo $item->specific; ?>
+			<?php 
+			echo $item->specific;
+			printf("<input type='hidden' name='specific' value='%s'>", htmlspecialchars($item->specific)); 
+			?>
 			</td>
 			<td>
 			<?php 
 			switch ($item->type) {
 				case Deadline_Form_Deadline::TYPE_ELEARNING:
-					echo "Elearning";
+					$title = "Elearning";
 					break;
 
 				case Deadline_Form_Deadline::TYPE_PRESENT:
-					echo "Prezenční";
+					$title = "Prezenční";
 					break;
 					
 				default:
-					echo "Jiná";
+					$title = "Jiná";
 			}
+			
+			echo $title;
+			printf("<input type='hidden' name='type' value='%s'>", htmlspecialchars($type));
 			?>
 			</td>
 			<td>
-			<?php echo $item->period; ?>
+			<?php 
+			echo $item->period; 
+			printf("<input type='hidden' name='period' value='%s'>", htmlspecialchars($item->period));
+			?>
 			</td>
 			<td rowspan="2">
 			<?php 

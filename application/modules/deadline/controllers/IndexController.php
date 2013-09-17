@@ -31,6 +31,8 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
+		
+		$this->_prepareFilterForm($deadlines);
 	}
 	
 	public function chemicalAction() {
@@ -187,5 +189,40 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$form->getElement("subsidiary_id")->setMultiOptions($subIndex);
 		$form->getElement("subsidiary_id")->setValue($subsidiaryId);
+	}
+	
+	/**
+	 * pripravi fitlracni formular pro 
+	 * 
+	 * @param Deadline_Model_Rowset_Deadlines $deadlines seznam lhut
+	 */
+	private function _prepareFilterForm($deadlines) {
+		// prochazani dat a priprava filtru
+		$periods = array("---");
+		$kinds = array("---");
+		$names = array("---");
+		$specifics = array("---");
+		
+		// iterace nad daty a zapis polozek
+		foreach ($deadlines as $item) {
+			$periods[] = $item->period;
+			$kinds[] = $item->kind;
+			$names[] = $item->name;
+			$specifics[] = $item->specific;
+		}
+		
+		// serazeni polozek
+		$periods = array_unique($periods);
+		$kinds = array_unique($kinds);
+		$names = array_unique($names);
+		$specifics = array_unique($specifics);
+		
+		$form = new Deadline_Form_Filter();
+		$form->getElement("period")->setMultiOptions($periods);
+		$form->getElement("kind")->setMultiOptions($kinds);
+		$form->getElement("name")->setMultiOptions($names);
+		$form->getElement("specific")->setMultiOptions($specifics);
+		
+		$this->view->filterForm = $form;
 	}
 }
