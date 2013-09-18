@@ -27,7 +27,9 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	 * odstrani lhutu
 	 */
 	public function deleteAction() {
-		
+		// nacteni lhuty
+		$deadline = self::loadDeadline($this->_request->getParam("deadlineId", 0));
+		$deadline->delete();
 	}
 	
 	/**
@@ -59,10 +61,16 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zaznamy o splneni
 		$logs = $deadline->findLogs();
 		
+		// formular smazani
+		$deleteForm = new Deadline_Form_Delete();
+		$url = $this->view->url(array("clientId" => $deadline->client_id, "deadlineId" => $deadline->id), "deadline-delete");
+		$deleteForm->setAction($url);
+		
 		$this->view->form = $form;
 		$this->view->deadline = $deadline;
 		$this->view->formSubmit = $formSubmit;
 		$this->view->logs = $logs;
+		$this->view->deleteForm = $deleteForm;
 	}
 	
 	/**

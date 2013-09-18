@@ -28,6 +28,17 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
 		
+		// smazani lhuty
+		$router->addRoute(
+				"deadline-delete",
+				new Zend_Controller_Router_Route("/klient/:clientId/deadline/:deadlineId/delete",
+						array(
+								"module" => "deadline",
+								"controller" => "deadline",
+								"action" => "delete"
+						))
+		);
+		
 		// seznam lhut zamestnancu
 		$router->addRoute(
 				"deadline-employees",
