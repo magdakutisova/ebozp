@@ -59,10 +59,12 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		}
 		
 		$button = implode("", $buttons) . $this->view->formHidden("mistakeId", $mistake->id) . $this->view->formHidden("submitStatus", $config["submitStatus"]);
+		$button .= sprintf("<input type='hidden' name='weight', value='%s'>", $mistake->weight);
+		$button .= sprintf("<input type='hidden' name='subsidiary_id' value='%s'>", $mistake->subsidiary_id);
 		
 		$columns = array(
-				$this->_wrapToTd($mistake->category),
-				$this->_wrapToTd($mistake->subcategory),
+				$this->_wrapToTd($mistake->category, "category"),
+				$this->_wrapToTd($mistake->subcategory, "subcategory"),
 				$this->_wrapToTd($mistake->concretisation),
 				$this->_wrapToTd($mistake->workplace_id ? (isset($this->workIndex[$mistake->workplace_id]) ? $this->workIndex[$mistake->workplace_id]->name : "?") : "-"),
 				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 2, "width" => "50px"))
@@ -72,8 +74,8 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		
 		// vygenerovani obsahu druheho radku
 		$columns = array(
-				$this->_wrapToTd($mistake->mistake, 2, true),
-				$this->_wrapToTd($mistake->suggestion, 2, true)
+				$this->_wrapToTd($mistake->mistake, null, 2, true),
+				$this->_wrapToTd($mistake->suggestion, null, 2, true)
 		);
 		
 		$row2 = $this->_wrapToTag(implode("", $columns), "tr", array());
@@ -84,7 +86,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		return $this->_wrapToTag($content, "tbody", array("class" => implode(" ", $config["classes"])));
 	}
 	
-	private function _wrapToTd($content, $colspan = 1, $pre = false) {
+	private function _wrapToTd($content, $inputName = null, $colspan = 1, $pre = false) {
 		// sestaveni parametru
 		$params = array();
 		
@@ -94,6 +96,10 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		
 		if ($pre) {
 			$params["style"] = "word-wrapping: pre";
+		}
+		
+		if (!is_null($inputName)) {
+			$content .= sprintf("<input type='hidden' name='%s' value='%s'>", $inputName, htmlspecialchars($content));
 		}
 		
 		return $this->_wrapToTag($content, "td", $params);

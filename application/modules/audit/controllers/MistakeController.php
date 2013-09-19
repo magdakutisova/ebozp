@@ -513,131 +513,64 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$clientId = $this->getRequest()->getParam("clientId", 0);
 		$subsidiaryId = $this->_request->getParam("subsidiaryId", null);
 		
-		// prasarna, ale nutna
-		if (!is_null($subsidiaryId) && !isset($_REQUEST["mistake"]["subsidiary_id"])) {
-			// nastaveni request
-			$_REQUEST["mistake"]["subsidiary_id"] = $subsidiaryId;
-		} elseif (isset($_REQUEST["mistake"]["subsidiary_id"])) {
-			// je nastavena filtracni podminka pobocky - tato podminka se nastavi i do subsidiaryId v requestu
-			$this->_request->setParam("subsidiaryId", $_REQUEST["mistake"]["subsidiary_id"]);
-			$subsidiaryId = $_REQUEST["mistake"]["subsidiary_id"];
-		}
-
-		// sestaveni klienta
+		// nacteni klienta
 		$tableClients = new Application_Model_DbTable_Client();
 		$client = $tableClients->find($clientId)->current();
-
-		if (!$client) throw new Zend_Exception("Client #$clientId has not been found");
-
-		// sestaveni vyhledavaciho dotazu pro seznam neshod
-		$where = array(
-				"client_id = " . $clientId,
-				"is_submited"
-		);
-
-		// nacteni filtracniho formulare
-		$formFilter = new Audit_Form_MistakeIndex();
-
-		// naplneni pobocek
-		$where = array("client_id = ?" => $client->id_client, "!hq_only", "active", "!deleted");
 		
-		// vyhodnoceni omezeni pristpu k pobockam
+		// nacteni pobocek, ke kterym ma uzivatel pristup
 		$user = Zend_Auth::getInstance()->getIdentity();
-		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-		$displayAll = true;
+		$where = array("client_id = ?" => $clientId);
 		
 		if ($user->role == My_Role::ROLE_CLIENT || $user->role == My_Role::ROLE_TECHNICIAN) {
-			// omezeni na pridelene pobocky
-			$tableSubsAssocs = new Application_Model_DbTable_UserHasSubsidiary();
-			$nameSubsAssocs = $tableSubsAssocs->info("name");
+			// uzivatel ma omezeny pristup k pobockam
+			$tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
 			
-			$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
-			$select->from($nameSubsAssocs, array("id_subsidiary"));
-			$select->where("id_user = ?", $user->id_user);
+			// vytvoreni fitlranicho selectu
+			$select = $tableAssocs->select(true);
+			$select->reset(Zend_Db_Table_Select::COLUMNS);
+			$select->columns("id_subsidiary")->where("id_user = ?", $user->id_user);
 			
-			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select);
-			$displayAll = false;
+			// vytvoreni podminky
+			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select->assemble());
 		}
 		
+		// nacteni pobocek
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$subsidiaries = $tableSubsidiaries->fetchAll($where, array("subsidiary_name", "subsidiary_town", "subsidiary_street"));
+
+		// priprava filtracniho formulare
+		$formFilter = new Audit_Form_MistakeIndex();
+		$formFilter->populate($this->_request->getParams());
 		
-		$subsidiaries = $tableSubsidiaries->fetchAll($where, array("subsidiary_town", "subsidiary_street"));
+		// naplneni dat pobocek
+		$formFilter->addSubsidiaries($subsidiaries);
 		
-		// reset where
-		$where = array("client_id = ?" => $client->id_client);
-
-		$formFilter->addSubsidiaries($subsidiaries, $displayAll);
-		$formFilter->populate($_REQUEST);
-
-		// nastaveni dodatecnych filtracnich parametru
-		$subsidiaryId = $formFilter->getValue("subsidiary_id");
-		$filter = $formFilter->getValue("filter");
-
-		// vyhodnoceni skryti pracoviste
-		if (!$subsidiaryId) {
-			// srkyti vyberu pracoviste
-			$formFilter->removeElement("workplace_id");
-		} else {
-			// nacteni a zapis pracovist
-			$tableWorkplaces = new Application_Model_DbTable_Workplace();
-			$workplaces = $tableWorkplaces->fetchAll("subsidiary_id = " . $subsidiaryId, "name");
-				
-			$formFilter->addWorkplaces($workplaces);
-		}
-		
-		// nacteni a nastaveni kategorii
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$formFilter->getElement("category")->setMultiOptions(
-				array_merge(array("0" => "---"), $tableMistakes->getCategories($clientId))
-		);
-		
-		$category = $formFilter->getValue("category");
-		
-		if (!$category) {
-			$formFilter->removeElement("subcategory");
-		} else {
-			// nacteni podkategorii
-			$subcategories = $tableMistakes->getSubcategories($category, $clientId);
-			
-			$formFilter->getElement("subcategory")->setMultiOptions(
-					array_merge(array("0" => "---"), $subcategories)
-			);
-			
-			$where["category like ?"] = $category;
-			
-			$subcategory = $formFilter->getValue("subcategory");
-			
-			if ($subcategory) $where["subcategory = ?"] = $subcategory;
-		}
-
-		$workplaceId = $formFilter->getValue("workplace_id");
-
-		// zapis filtraci do dotazu
-		if ($subsidiaryId) {
-			$where["subsidiary_id = ?"] = $subsidiaryId;
-		}
-
-		if ($workplaceId) {
-			$where["workplace_id = ?"] = $workplaceId;
-		}
-		
-		if ($weight = $formFilter->weight->getValue()) {
-			$where["weight = ?"] = $weight;
-		}
-
-		switch ($filter) {
-			case 1:
-				$where[] = "!is_removed";
-				break;
-
-			case 2:
-				$where[] = "is_removed";
-				break;
-		}
-
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistakes = $tableMistakes->fetchAll($where);
-
+		$mistakes = $tableMistakes->getBySubsidiaries($subsidiaries, $formFilter->getValue("filter"));
+		
+		// nastaveni hodnot pro vyber filtracniho formulare
+		$workplaces = array("---");
+		$categories = array("---");
+		$subcategories = array("---");
+		
+		foreach ($mistakes as $mistake) {
+			if ($mistake->workplace_name)
+				$workplaces[] = $mistake->workplace_name;
+			
+			$categories[] = $mistake->category;
+			
+			$subcategories[$mistake->category][$mistake->subcategory] = $mistake->subcategory;
+		}
+		
+		$workplaces = array_unique($workplaces);
+		$categories = array_unique($categories);
+		$subcategories = array_unique($subcategories);
+		
+		$formFilter->getElement("workplace_id")->setMultiOptions($workplaces);
+		$formFilter->getElement("category")->setMultiOptions($categories);
+		$formFilter->getElement("subcategory")->setMultiOptions($subcategories);
+		
 		$this->view->formFilter = $formFilter;
 		$this->view->mistakes = $mistakes;
 		$this->view->client = $client;

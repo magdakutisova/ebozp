@@ -1,5 +1,7 @@
 $(function () {
 	
+	var oldType = null;
+	
 	function openMistake() {
 		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
 		
@@ -63,8 +65,67 @@ $(function () {
 		}
 	}
 	
+	function filterMistakes() {
+		// zobrazeni vsech radku
+		var tbodies = $("#mistake-list tbody");
+		
+		tbodies.show();
+		
+		// zapis filtru
+		var filters = {};
+		
+		$("#mistake-category,#mistake-subcategory,#mistake-workplace,#mistake-weight").each(function () {
+			// zjisteni hodnoty
+			var val = $(this).find("option:checked").text();
+			
+			// pokud neni vybrana hodnota, pak se nic nedeje
+			if (val == "---") return;
+			
+			// zapis filtracni hodnoty
+			var name = $(this).attr("id").split("-")[1];
+			filters[name] = val;
+		});
+		
+		// zapis filtru pobocky
+		var subsidiaryId = Number($("#mistake-subsidiary_id").val());
+		
+		if (subsidiaryId) {
+			filters["subsidiary_id"] = subsidiaryId;
+		}
+		
+		// skryti polozek, ktere nevyhovuji filtracni podmince
+		tbodies.each(function () {
+			// vyhodnoceni zda radek vyhovuje podmince
+			var isOk = true;
+			
+			for (var n in filters) {
+				// kotrnola hodnoty
+				if ($(this).find(":hidden[name='" + n + "']").val() != filters[n]) {
+					isOk = false;
+				}
+			}
+			
+			if (!isOk) {
+				$(this).hide();
+			}
+		});
+		
+		// vyhodnoceni mnoziny neshod
+		if (oldType == $("#mistake-type").val()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	// nastaveni puvodniho typu filtrovani
+	oldType = $("#mistake-filter").val();
+	
 	$("#mistake-list button").click(openMistake);
 	$("#toggle-filter").click(toggleFilter);
 	$("#new-mistake").click(createMistake);
 	$("#mistake-subsidiary_id").change(loadWorkplaces);
+	$("#mistakefilter").submit(filterMistakes);
+	
+	filterMistakes();
 });

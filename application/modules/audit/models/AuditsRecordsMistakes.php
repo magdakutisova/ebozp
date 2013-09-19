@@ -112,7 +112,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	}
 	
 	public function getByClient(Zend_Db_Table_Row_Abstract $client) {
-		return $this->fetchAll("client_id = " . $client->id_client);
+		return $this->_findMistakes(array("client_id = ?", $client->id_client));
 	}
 	
 	/**
@@ -150,11 +150,34 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	}
 	
 	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $order, $actualsOnly = true) {
-		$where = "subsidiary_id = " . $subsidiary->id_subsidiary;
+		$where = array("subsidiary_id = ?" => $subsidiary->id_subsidiary);
 		
-		if ($actualsOnly) $where .= " !is_removed";
+		if ($actualsOnly) $where[] = " !is_removed";
 		
-		return $this->fetchAll($where, $order);
+		return $this->_findMistakes($where);
+	}
+	
+	public function getBySubsidiaries($subsidiaries, $type) {
+		$subIds = array(0);
+		
+		foreach ($subsidiaries as $item) {
+			$subIds[] = $item->id_subsidiary;
+		}
+		
+		$where = array("$this->_name.subsidiary_id in (?)" => $subIds);
+		
+		// vyhodnoceni pozadovaneho typu
+		switch ($type) {
+			case 1:
+				$where[] = "!is_removed";
+				break;
+				
+			case 2:
+				$where[] = "is_removed";
+				break;
+		}
+		
+		return $this->_findMistakes($where);
 	}
 	
 	/**
@@ -245,8 +268,22 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		
 		// vlozeni omezeni z parametru
 		foreach ($where as $cond => $val) {
-			$select->where($cond, $val);
+			if (is_numeric($cond)) {
+				$select->where($val);
+			} else {
+				$select->where($cond, $val);
+			}
 		}
+		
+		// spojeni s pracovisti
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$nameWorkplaces = $tableWorkplaces->info("name");
+		
+		$select->joinLeft(
+				$nameWorkplaces, sprintf("%s.workplace_id = %s.id_workplace", 
+						$this->_name, 
+						$nameWorkplaces), 
+				array("workplace_name" => "name"));
 		
 		// nastaveni seskupovani
 		$select->group("id");
