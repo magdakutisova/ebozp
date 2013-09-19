@@ -116,7 +116,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 		
 		$this->addElement("text", "responsible_external_name", array(
 				"decorators" => $elementDecorator,
-				"required" => true,
+				"required" => false,
 				"label" => "Jméno externisty"
 				));
 		
