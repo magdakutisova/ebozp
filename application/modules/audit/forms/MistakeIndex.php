@@ -49,8 +49,7 @@ class Audit_Form_MistakeIndex extends Zend_Form {
 		
 		$this->addElement("select", "subsidiary_id", array(
 				"decorators" => $elementDecorator,
-				"label" => "Pobočka",
-				"multioptions" => array(0 => "Vše")
+				"label" => "Pobočka"
 		));
 		
 		$this->addElement("select", "workplace_id", array(

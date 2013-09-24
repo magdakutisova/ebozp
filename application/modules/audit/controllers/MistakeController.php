@@ -513,13 +513,25 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$clientId = $this->getRequest()->getParam("clientId", 0);
 		$subsidiaryId = $this->_request->getParam("subsidiaryId", null);
 		
+		// kontrola, jestli byla odeslana pobocka pomoci filtrace
+		$filterArr = (array) $this->_request->getParam("mistake", array());
+		$filterArr = array_merge(array("subsidiary_id" => 0), $filterArr);
+		
+		if ($filterArr["subsidiary_id"]) {
+			$subsidiaryId = $filterArr["subsidiary_id"];
+			$this->_request->setParam("subsidiaryId", $subsidiaryId);
+		} else {
+			$filterArr["subsidiary_id"] = $subsidiaryId;
+			$this->_request->setParam("mistake", $filterArr);
+		}
+		
 		// nacteni klienta
 		$tableClients = new Application_Model_DbTable_Client();
 		$client = $tableClients->find($clientId)->current();
 		
 		// nacteni pobocek, ke kterym ma uzivatel pristup
 		$user = Zend_Auth::getInstance()->getIdentity();
-		$where = array("client_id = ?" => $clientId);
+		$where = array("client_id = ?" => $clientId, "active", "!deleted");
 		
 		if ($user->role == My_Role::ROLE_CLIENT || $user->role == My_Role::ROLE_TECHNICIAN) {
 			// uzivatel ma omezeny pristup k pobockam
@@ -528,7 +540,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// vytvoreni fitlranicho selectu
 			$select = $tableAssocs->select(true);
 			$select->reset(Zend_Db_Table_Select::COLUMNS);
-			$select->columns("id_subsidiary")->where("id_user = ?", $user->id_user);
+			$select->columns("id_subsidiary")->where("id_user = ?", $user->id_user)->where("id_client = ?", $clientId);
 			
 			// vytvoreni podminky
 			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select->assemble());
@@ -537,7 +549,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nacteni pobocek
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
 		$subsidiaries = $tableSubsidiaries->fetchAll($where, array("subsidiary_name", "subsidiary_town", "subsidiary_street"));
-
+		$subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+		
 		// priprava filtracniho formulare
 		$formFilter = new Audit_Form_MistakeIndex();
 		$formFilter->populate($this->_request->getParams());
@@ -547,7 +560,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistakes = $tableMistakes->getBySubsidiaries($subsidiaries, $formFilter->getValue("filter"));
+		$mistakes = $tableMistakes->getBySubsidiary($subsidiary, $formFilter->getValue("filter"));
 		
 		// nastaveni hodnot pro vyber filtracniho formulare
 		$workplaces = array("---");
@@ -565,7 +578,11 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		$workplaces = array_unique($workplaces);
 		$categories = array_unique($categories);
-		$subcategories = array_unique($subcategories);
+		
+		foreach ($subcategories as &$list) {
+			if (is_array($list))
+				$list = array_unique($list);
+		}
 		
 		$formFilter->getElement("workplace_id")->setMultiOptions($workplaces);
 		$formFilter->getElement("category")->setMultiOptions($categories);

@@ -149,10 +149,19 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				);
 	}
 	
-	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $order, $actualsOnly = true) {
-		$where = array("subsidiary_id = ?" => $subsidiary->id_subsidiary);
+	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $filter) {
+		$where = array("$this->_name.subsidiary_id = ?" => $subsidiary->id_subsidiary);
 		
-		if ($actualsOnly) $where[] = " !is_removed";
+		switch ($filter) {
+			case 1:
+				// pouze aktualni
+				$where[] = "!is_removed";
+				break;
+				
+			case 2:
+				$where[] = "is_removed";
+				break;
+		}
 		
 		return $this->_findMistakes($where);
 	}
