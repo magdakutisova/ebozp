@@ -171,7 +171,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				
 			case Deadline_Form_Deadline::TARGET_UNDEFINED:
 				$select->where("employee_id IS NULL")->where("technical_device_id IS NULL")->where("chemical_id IS NULL");
-				$select->columns(array("name" => new Zend_Db_Expr("'-'")));
+				$select->columns(array("name" => new Zend_Db_Expr("''")));
 				break;
 		
 			default:
