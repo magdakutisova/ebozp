@@ -264,6 +264,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				}
 				
 				$users = $empSelect->query()->fetchAll(Zend_Db::FETCH_OBJ);
+				$users = array_merge(array((object) array("id_user" => 0, "username" => "--NEZNÁMÝ--")), $users);
 				
 				// odebrani textoveho pole externisty
 				$form->removeElement("responsible_external_name");

@@ -59,7 +59,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				$this->wrap("td", $this->_sqlDate($deadline["last_done"])),
 				$this->wrap("td", $this->_sqlDate($deadline["next_date"])),
 				$this->wrap("td", $deadline["note"]),
-				$this->wrap("td", $deadline["responsible_name"]),
+				$this->wrap("td", $deadline["anonymous_employee"] ? "Neurčený zaměstnanec" : $deadline["responsible_name"]),
 		);
 		
 		$rowStr2 = $this->wrap("tr", implode("", $row));

@@ -131,10 +131,16 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$this->responsible_id = null;
 		$this->responsible_user_id = null;
 		$this->responsible_external_name = null;
+		$this->anonymous_employee;
 		
 		switch ($data["resp_type"]) {
 			case Deadline_Form_Deadline::RESP_CLIENT:
-				$this->responsible_id = $data["responsible_id"];
+				// kontrola, jestli je zadano id
+				if ($data["responsible_id"])
+					$this->responsible_id = $data["responsible_id"];
+				else
+					$this->anonymous_employee = 1;
+				
 				break;
 			
 			case Deadline_Form_Deadline::RESP_GUARD:
