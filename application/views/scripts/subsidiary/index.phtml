@@ -53,7 +53,20 @@ if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 
 <div class="box deadlines">
 	<h3>Termíny a lhůty</h3>
-	<?php echo $this->deadlineTable($this->invalidDeadlines); ?>
+	<?php 
+	$acl = new My_Controller_Helper_Acl();
+	$user = Zend_Auth::getInstance()->getIdentity();
+	
+	$config = array("name" => "Jméno/Zařízení");
+	
+	if ($acl->isAllowed($user->role, "deadline:deadline", "edit")) {
+		$config["buttons"] = array("edit" => array("caption" => "Upravit", "type" => "button"));
+	}
+	
+	echo $this->formHidden("CLIENT_ID", $this->client->getIdClient());
+	echo $this->deadlineTable($this->invalidDeadlines, $config);
+	echo "<script type='text/javascript' src='/js/deadline/deadline.js'></script>";
+	?>
 	<p>NESHODY a LHŮTNÍKY nastavené je filtrování podle termínu. Celkový přehled o blížících se a propadlých termínech. Možnost hypertext se prokliknout na kartu KL, kterém neshoda nebo lhůta náleží.
 	</p>
 </div>
