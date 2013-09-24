@@ -2,11 +2,17 @@
 	<div class="box">
 		<h2>Pobočky</h2>
 		<ul><?php foreach ($this->subsidiaries as $subsidiary){ 
-			if ($subsidiary['subsidiary']->getHq()){?>
-			<li><a href="<?php echo $this->url(array('clientId' => $subsidiary['subsidiary']->getClientId()), 'clientIndex') ?>"><?php echo $subsidiary['subsidiary']->getSubsidiaryName() . ', ' . $subsidiary['subsidiary']->getSubsidiaryTown() . ' (centrála)'?></a></li>
-			<?php } else {?>
-			<li><a href="<?php echo $this->url(array('clientId' => $subsidiary['subsidiary']->getClientId(), 'subsidiary' => $subsidiary['subsidiary']->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php echo $subsidiary['subsidiary']->getSubsidiaryName() . ', ' . $subsidiary['subsidiary']->getSubsidiaryTown()?></a></li>
-	<?php }}?></ul>
+			$item = $subsidiary["subsidiary"];
+			
+			if ($item->getHq()){
+			?>
+			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId()), 'clientIndex') ?>"><?php printf("%s, %s, %s (centrála)", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
+			<?php 
+			} else {
+			?>
+			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId(), 'subsidiary' => $item->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php printf("%s, %s %s (centrála)", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
+		<?php }
+		}?></ul>
 	</div>
 	<?php }?>
 	<div class="box tasks">
