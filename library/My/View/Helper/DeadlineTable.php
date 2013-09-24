@@ -56,8 +56,8 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		
 		// druhy radek
 		$row = array(
-				$this->wrap("td", $deadline["last_done"]),
-				$this->wrap("td", $deadline["next_date"]),
+				$this->wrap("td", $this->_sqlDate($deadline["last_done"])),
+				$this->wrap("td", $this->_sqlDate($deadline["next_date"])),
 				$this->wrap("td", $deadline["note"]),
 				$this->wrap("td", $deadline["responsible_name"]),
 		);
@@ -76,6 +76,14 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		}
 		
 		return $this->wrap("tbody", $content, $opts);
+	}
+	
+	private function _sqlDate($date) {
+		if ($date == "0000-00-00" || !$date) {
+			return "?";
+		}
+		
+		return sprintf("%s. %s. %s", substr($date, 8, 2), substr($date, 5, 2), substr($date, 0, 4));
 	}
 	
 	private function _generateButtons(array $config) {

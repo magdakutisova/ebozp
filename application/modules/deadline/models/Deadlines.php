@@ -82,7 +82,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 			$select->where("$thisName.subsidiary_id = ?", $subsidiaryId);
 		}
 		
-		$select->where("$thisName.next_date < CURRENT_DATE()");
+		$select->where("$thisName.next_date < ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)");
 		$data = $select->query()->fetchAll();
 		
 		return new Deadline_Model_Rowset_Deadlines(array("data" => $data, "table" => $this, "rowClass" => $this->_rowClass));
