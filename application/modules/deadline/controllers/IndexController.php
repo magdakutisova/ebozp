@@ -4,6 +4,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->layout()->setLayout("client-layout");
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
+		$this->view->addHelperPath(APPLICATION_PATH . "/../library/My/View/Helper", "My_View_Helper");
 	}
 	
 	public function deviceAction() {
@@ -113,24 +114,33 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 		$nameDead = $tableDeadlines->info("name");
+		
+		$tableDevices = new Application_Model_DbTable_TechnicalDevice();
+		$nameDevices = $tableDevices->info("name");
+		
+		$tableEmployees = new Application_Model_DbTable_Employee();
+		$nameEmployees = $tableEmployees->info("name");
+		
+		$devName = "CONCAT($nameDevices.`sort`, ' (', $nameDevices.`type`, ')')";
+		$chemName = "chemical";
+		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
+		
 		$select->from($nameDead, array(
 				new Zend_Db_Expr("$nameDead.*"),
 				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() < next_date"),
-				"resp_emp" => new Zend_Db_Expr("CONCAT(emp.first_name, ' ', emp.surname)"),
-				"resp_guard" => new Zend_Db_Expr("username")
+				"responsible_name" => new Zend_Db_Expr("TRIM(CONCAT(IFNULL(respemp.first_name, ''), ' ', IFNULL(respemp.surname, ''), IFNULL(user.name, ''), IFNULL(responsible_external_name, '')))"),
+				"invalid_close" => new Zend_Db_Expr("ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH) > next_date"),
 		));
 		
 		// zapis filtru dle klienta
 		$select->where("$nameDead.client_id = ?", $filterSet["clientId"]);
 		
 		// vyhledani zodpovedne osoby
-		$tableEmployees = new Application_Model_DbTable_Employee();
 		$tableUsers = new Application_Model_DbTable_User();
-		$nameEmployees = $tableEmployees->info("name");
 		$nameUsers = $tableUsers->info("name");
 		
 		// sjednoceni s tabulkami
-		$select->joinLeft(array("emp" => $nameEmployees), "$nameDead.responsible_id = emp.id_employee", array());
+		$select->joinLeft(array("respemp" => $nameEmployees), "$nameDead.responsible_id = respemp.id_employee", array());
 		$select->joinLeft($nameUsers, "id_user = responsible_user_id", array());
 		
 		// vyfiltrovani typu
@@ -146,9 +156,6 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 			case Deadline_Form_Deadline::TARGET_DEVICE:
 				$select->where("technical_device_id IS NOT NULL");
-		
-				$tableDevices = new Application_Model_DbTable_TechnicalDevice();
-				$nameDevices = $tableDevices->info("name");
 		
 				$select->joinInner($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
 				break;

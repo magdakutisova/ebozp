@@ -253,3 +253,4 @@ td.report-percent { font-weight: bolder; color: red; text-align: center; width: 
 span.directory, span.document { padding-left : 16px; background: url(/images/ui-icons_454545_256x240.png) no-repeat; }
 span.directory { background-position: 0 -96px; }
 span.document { background-position: -32px -96px; }
+tbody.deadline-yellow tr td { background-color: #f9e93b !important; }

@@ -14,10 +14,10 @@ printf("<a href='%s'>Zpět na výběr kategorie lhůty</a>", $url);
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
+$options = array("name" => $this->caption);
+
 if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
-	$button = "<button name='edit' type='button'>Upravit</button>";
-} else {
-	$button = "<button name='get' type='button'>Zobrazit</button>";
+	$options["buttons"] = array("edit" => array("type" => "button", "caption" => "Upravit"));
 }
 
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
@@ -25,137 +25,9 @@ echo $this->formHidden("CLIENT_ID", $clientId);
 
 echo $this->filterForm;
 echo sprintf("<div>%s</div>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"));
-?>
-<table class="multirow-table" id="deadlinetable">
-	<thead>
-		<tr>
-			<th rowspan="2">
-			<?php echo $this->caption; ?>
-			</th>
-			<th>
-			Druh
-			</th>
-			<th>
-			Specifikace
-			</th>
-			<th>
-			Forma
-			</th>
-			<th>
-			Perioda
-			</th>
-			<th rowspan="2">
-			Akce
-			</th>
-		</tr>
-		<tr>
-			<th>
-			Naposledy provedeno
-			</th>
-			<th>
-			Další provedení
-			</th>
-			<th>
-			Poznámka
-			</th>
-			<th>
-			Zodpovědná osoba
-			</th>
-		</tr>
-	</thead>
-		<?php 
-		$user = Zend_Auth::getInstance()->getIdentity();
-		
-		$userFromGuard = false;
-		
-		if (in_array($user->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN, My_Role::ROLE_SUPERADMIN))) {
-			$userFromGuard = true;
-		}
-		
-		foreach ($this->deadlines as $item) {
-			?>
-	<tbody class="<?php echo $item->is_valid ? "" : "mistake-marked"; ?>">
-		<tr>
-			<td rowspan="2">
-			<?php 
-			echo $item->name;
-			printf("<input type='hidden' name='name' value='%s'>", htmlspecialchars($item->name));
-			?>
-			</td>
-			<td>
-			<?php 
-			echo $item->kind;
-			printf("<input type='hidden' name='kind' value='%s'>", htmlspecialchars($item->kind)); 
-			?>
-			</td>
-			<td>
-			<?php 
-			echo $item->specific;
-			printf("<input type='hidden' name='specific' value='%s'>", htmlspecialchars($item->specific)); 
-			?>
-			</td>
-			<td>
-			<?php 
-			switch ($item->type) {
-				case Deadline_Form_Deadline::TYPE_ELEARNING:
-					$title = "Elearning";
-					break;
 
-				case Deadline_Form_Deadline::TYPE_PRESENT:
-					$title = "Prezenční";
-					break;
-					
-				default:
-					$title = "Jiná";
-			}
-			
-			echo $title;
-			printf("<input type='hidden' name='type' value='%s'>", htmlspecialchars($title));
-			?>
-			</td>
-			<td>
-			<?php 
-			echo $item->period; 
-			printf("<input type='hidden' name='period' value='%s'>", htmlspecialchars($item->period));
-			?>
-			</td>
-			<td rowspan="2">
-			<?php 
-			echo $button;
-			echo $this->formHidden("deadlineId", $item->id);
-			?>
-			</td>
-		</tr>
-		<tr>
-			<td>
-			<?php echo $item->last_done; ?>
-			</td>
-			<td>
-			<?php echo $item->next_date; ?>
-			</td>
-			<td>
-			<?php echo $item->note; ?>
-			</td>
-			<td>
-			<?php 
-			// vyhodoceni zodpovedne osoby
-			if ($item->resp_emp) {
-				echo $item->resp_emp;
-			} elseif ($item->resp_guard) {
-				if ($userFromGuard) {
-					echo $item->resp_guard;
-				} else {
-					echo "G U A R D 7, v.o.s.";
-				}
-			} else {
-				echo $item->responsible_external_name;
-			}
-			?>
-			</td>
-		</tr>
-	</tbody>
-			<?php 
-		}
-		?>
-</table>
+// nacteni ACL a vyhodnoceni akci
+
+echo $this->deadlineTable($this->deadlines, $options);
+?>
 <script type="text/javascript" src="/js/deadline/deadline.js"></script>

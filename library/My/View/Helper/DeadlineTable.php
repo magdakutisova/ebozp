@@ -12,11 +12,11 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		$header = $this->header($configs);
 		
 		// vygenerovani tela
-		$deadlines = $this->deadlines($deadlines);
+		$deadlines = $this->deadlines($deadlines, $configs);
 		
 		$content = $header . implode("", $deadlines);
 		
-		return $this->wrap($this->_wrapper, $content);
+		return $this->wrap($this->_wrapper, $content, array("class" => "multirow-table", "id" => "deadlinetable"));
 	}
 	
 	/**
@@ -41,13 +41,15 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		}
 		
 		// vygenerovani prvniho radku
+		$buttons = $this->_generateButtons($config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
+		
 		$row = array(
 				$this->wrap("td", $deadline["name"], array("rowspan" => 2)),
 				$this->wrap("td", $deadline["kind"]),
 				$this->wrap("td", $deadline["specific"]),
 				$this->wrap("td", $type),
 				$this->wrap("td", $deadline["period"]),
-				$this->wrap("td", "", array("rowspan" => 2))
+				$this->wrap("td", $buttons, array("rowspan" => 2))
 		);
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));
@@ -65,13 +67,26 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		$content = $rowStr1 . $rowStr2;
 		
 		// vyhodnoceni jestli je lhuta propadla
-		if ($deadline->is_valid) {
-			$opts = array();
-		} else {
+		if (!$deadline["is_valid"]) {
 			$opts = array("class" => "mistake-marked");
+		} elseif ($deadline["invalid_close"]) {
+			$opts = array("class" => "deadline-yellow");
+		} else {
+			$opts = array();
 		}
 		
 		return $this->wrap("tbody", $content, $opts);
+	}
+	
+	private function _generateButtons(array $config) {
+		$config = array_merge(array("buttons" => array()), $config);
+		$btnList = array();
+		
+		foreach ($config["buttons"] as $name => $c) {
+			$btnList[] = sprintf("<button type='%s' name='%s'>%s</button>", $c["type"], $name, $c["caption"]);
+		}
+		
+		return implode("", $btnList);
 	}
 	
 	/**
@@ -85,6 +100,13 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		$rows = array();
 		
 		foreach ($deadlines as $item) {
+			// kontrola typu lhuty
+			if ($item instanceof stdClass) {
+				$item = (array) $item;
+			} elseif ($item instanceof Zend_Db_Table_Row_Abstract) {
+				$item = $item->toArray();
+			}
+			
 			$rows[] = $this->deadline($item, $config);
 		}
 		
