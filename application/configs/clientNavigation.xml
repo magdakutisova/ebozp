@@ -37,13 +37,6 @@
 			<privilege>list</privilege>
 			<clientId>clientId</clientId>
 		</subsidiary>
-		<mistakelist>
-			<label>Neshody</label>
-			<resource>audit:mistake</resource>
-			<privilege>index</privilege>
-			<route>audit-mistakes-index</route>
-			<clientId>clientId</clientId>
-		</mistakelist>
 		<audits>
 			<label>Audity</label>
 			<resource>audit:audit</resource>
