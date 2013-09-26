@@ -4,7 +4,6 @@ require_once __DIR__ . "/IndexController.php";
 class Deadline_DeadlineController extends Zend_Controller_Action {
 	
 	public function init() {
-		
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 	}
 	
@@ -77,7 +76,21 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	 * zobrazi lhutu pro cteni
 	 */
 	public function getAction() {
+		// nacteni lhuty
+		$tableDeadlines = new Deadline_Model_Deadlines();
 		
+		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"));
+		
+		$formSubmit = new Deadline_Form_Done();
+		$formSubmit->setAction(sprintf("/deadline/deadline/submit?clientId=%s&deadlineId=%s", $this->_request->getParam("clientId"), $deadline->id));
+		
+		// nacteni historie
+		$tableHistory = new Deadline_Model_Logs();
+		$history = $tableHistory->findByDeadline($deadline->id);
+		
+		$this->view->deadline = $deadline;
+		$this->view->formSubmit = $formSubmit;
+		$this->view->logs = $history;
 	}
 	
 	/**
@@ -183,7 +196,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	
 	public function submitAction() {
 		// nacteni dat
-		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"));
+		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"), false);
 		
 		// vylidace dat
 		$form = new Deadline_Form_Done();
@@ -208,9 +221,9 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	 * @return Deadline_Model_Row_Deadline
 	 * @throws Zend_Db_Table_Exception
 	 */
-	public static function loadDeadline($deadlineId) {
+	public static function loadDeadline($deadlineId, $extended = true) {
 		$tableDeadlines = new Deadline_Model_Deadlines();
-		$deadline = $tableDeadlines->findById($deadlineId);
+		$deadline = $tableDeadlines->findById($deadlineId, $extended);
 		
 		if (!$deadline) throw new Zend_Db_Table_Exception("Deadline #$deadlineId not found");
 		

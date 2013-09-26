@@ -18,6 +18,8 @@ $options = array("name" => $this->caption);
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
 	$options["buttons"] = array("edit" => array("type" => "button", "caption" => "Upravit"));
+} else {
+	$options["buttons"] = array("get" => array("type" => "button", "caption" => "Zobrazit"));
 }
 
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);

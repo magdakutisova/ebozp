@@ -61,8 +61,15 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	 * @param int $deadlineId id lhuty
 	 * @return Deadline_Model_Row_Deadline
 	 */
-	public function findById($deadlineId) {
-		return $this->find($deadlineId)->current();
+	public function findById($deadlineId, $extended= true) {
+		if ($extended) {
+			$select = $this->_prepareSelect();
+			$select->where("$this->_name.id = ?", $deadlineId);
+			
+			return new $this->_rowClass(array("data" => $select->query()->fetch(), "table" => $this));
+		} else {
+			return $this->find($deadlineId)->current();
+		}
 	}
 	
 	/**

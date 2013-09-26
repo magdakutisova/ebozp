@@ -34,7 +34,12 @@ $(function () {
 	}
 	
 	function openGet() {
+		// nacteni id lhuty a sestaveni adresy
+		var deadId = $(this).parent().find(":hidden").val();
+		var url = "/deadline/deadline/get?clientId=" + clientId + "&deadlineId=" + deadId;
 		
+		// otevreni iframe dialogu s editaci lhuty
+		$.iframeDialog(url, 800, 400, "Úprava lhůty");
 	}
 	
 	function toggleFilter() {

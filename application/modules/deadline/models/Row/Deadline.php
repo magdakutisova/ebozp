@@ -22,8 +22,7 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 	 */
 	public function findLogs() {
 		$tableLogs = new Deadline_Model_Logs();
-		
-		return $tableLogs->fetchAll(array("deadline_id = ?" => $this->_data["id"]), "id desc");
+		return $tableLogs->findByDeadline($this->id);
 	}
 	
 	/**

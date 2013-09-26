@@ -220,6 +220,7 @@ textarea[id*='schoolingDetail']					{width: 300px;}
 /*
  * CSS - PETR JINDRA
  */
+ .strong { font-weight: bold; }
 .tree { list-style: none; }
 .tree-roller { border: dotted 1px black; font-family: monospace; cursor: hand; cursor: pointer;  padding: 2px 5px;}
 .tree-roller:hover { background-color: #e5eCf9; }
