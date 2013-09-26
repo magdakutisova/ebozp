@@ -56,7 +56,6 @@ class PositionController extends Zend_Controller_Action
     	$this->view->title = 'Pracovní pozice';
     	$this->view->headTitle($this->view->title);
     	$this->_helper->layout()->setLayout('clientLayout');
-    	$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
     	
     	//získání odkazu na centrálu - instance Application_Model_Subsidiary
     	$this->_acl = new My_Controller_Helper_Acl();

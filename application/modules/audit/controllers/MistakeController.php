@@ -26,7 +26,6 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function init() {
 		// zapsani helperu
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
-		$this->view->addHelperPath(APPLICATION_PATH . "/../library/My/View/Helper", "My_View_Helper");
 
 		// nacteni uzivatele
 		$username = Zend_Auth::getInstance()->getIdentity()->username;

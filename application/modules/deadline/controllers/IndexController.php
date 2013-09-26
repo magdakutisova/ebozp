@@ -4,7 +4,6 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->layout()->setLayout("client-layout");
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
-		$this->view->addHelperPath(APPLICATION_PATH . "/../library/My/View/Helper", "My_View_Helper");
 	}
 	
 	public function deviceAction() {

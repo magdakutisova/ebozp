@@ -16,7 +16,6 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 	
 	public function init() {
 		$this->_auditId = $this->getRequest()->getParam("auditId", 0);
-		$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
 		
 		// kontrola jestli neni poslan primo objekt auditu
 		if (is_object($this->_auditId)) {

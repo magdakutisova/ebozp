@@ -22,7 +22,6 @@ class ClientController extends Zend_Controller_Action
 		else{
 			$this->_helper->layout()->setLayout('clientLayout');
 		}
-		$this->view->addHelperPath('My/View/Helper', 'My_View_Helper');
 
 		//nastavení přístupových práv
 		$this->_acl = new My_Controller_Helper_Acl();
