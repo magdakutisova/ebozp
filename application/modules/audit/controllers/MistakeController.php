@@ -539,7 +539,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// vytvoreni fitlranicho selectu
 			$select = $tableAssocs->select(true);
 			$select->reset(Zend_Db_Table_Select::COLUMNS);
-			$select->columns("id_subsidiary")->where("id_user = ?", $user->id_user)->where("id_client = ?", $clientId);
+			$select->columns("id_subsidiary")->where("id_user = ?", $user->id_user);
 			
 			// vytvoreni podminky
 			$where["id_subsidiary in (?)"] = new Zend_Db_Expr($select->assemble());
