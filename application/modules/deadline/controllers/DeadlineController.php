@@ -160,7 +160,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// nacteni a kontrola dat
 		$form = new Deadline_Form_Deadline();
 		self::disableEditInputs($form, true);
-		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"));
+		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"), false);
 		
 		// nastaveni pobocky do requestu
 		$requestData = $this->_request->getParams();
@@ -188,6 +188,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deadline->updateCommons($data);
 		$deadline->updatePeriod($data);
 		$deadline->updateResponsible($data);
+
 		$deadline->save();
 		
 		$this->view->deadline = $deadline;

@@ -70,8 +70,6 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$data = array_merge($this->toArray(), $data);
 		
 		// nastaveni dat
-		$target = & $this->_data;
-		
 		$this->kind = $data["kind"];
 		$this->specific = $data["specific"];
 		$this->type = $data["type"];
