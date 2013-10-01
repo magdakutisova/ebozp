@@ -1,5 +1,7 @@
 $(function() {
 	
+	var clientId = $("#CLIENTID").val();
+	
 	var removeButtonSet = {
 			icons: {
 				primary : "ui-icon-close"
@@ -58,6 +60,15 @@ $(function() {
 		if (confirm("Skutečně odebrat položku?")) $(this).parents("li:first").remove();
 	}
 	
+	function openMistake() {
+		// nacteni id lhuty a sestaveni adresy
+		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
+		var url = "/audit/mistake/get.html?clientId=" + clientId + "&mistakeId=" + mistakeId;
+		
+		// otevreni iframe dialogu s editaci lhuty
+		$.iframeDialog(url, 800, 400, "Neshoda");
+	}
+	
 	$("#watch-tabs").tabs();
 	$("#discuss-list,#change-list,#order-list,#output-list").sortable();
 	$("#discuss-list button,#change-list button,#order-list button,#output-list button").click(removeDiscuss).button(removeButtonSet);
@@ -73,4 +84,5 @@ $(function() {
 	$("#close-watch").button();
 	
 	$("#watch-watched_at").datepicker();
+	$("#mistakes button[name='get']").click(openMistake);
 });
