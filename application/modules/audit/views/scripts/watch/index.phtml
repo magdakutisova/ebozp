@@ -30,10 +30,10 @@ echo "<a href='$url'>Nová dohlídka</a>";
 		?>
 		<tr>
 			<td>
-			<?php echo $watch->username; ?>
+			<?php echo $watch->name; ?>
 			</td>
 			<td>
-			<?php echo $watch->name; ?>
+			<?php echo $watch->contact_name; ?>
 			</td>
 			<td>
 			<?php echo $this->sqlDate($watch->watched_at); ?>

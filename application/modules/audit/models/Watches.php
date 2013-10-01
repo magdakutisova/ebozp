@@ -65,7 +65,7 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 		$select->from($this->_name);
 		
 		// asociace na technika a na kontaktni osobu
-		$select->joinLeft($nameContacts, "contactperson_id = id_contact_person", array("name", "email", "phone"))->joinLeft($nameUsers, "user_id = id_user");
+		$select->joinLeft($nameContacts, "contactperson_id = id_contact_person", array("contact_name" => "name", "contact_email" => "email", "contact_phone" => "phone"))->joinLeft($nameUsers, "user_id = id_user");
 		
 		// podminky
 		$select->where("$this->_name.client_id = ?", $clientId);
