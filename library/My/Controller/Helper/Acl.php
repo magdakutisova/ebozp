@@ -95,6 +95,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'technical', array('edit', 'delete'));
 		$this->deny($client, 'chemical', array('edit', 'delete'));
 		$this->deny($client, 'employee', array('edit', 'delete'));
+		$this->allow($client, "deadline:index");
+		$this->allow($client, "deadline:deadline", array("get", "submit"));
 		
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
@@ -114,8 +116,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "document:directory", array("editother", "showall", "index", "post", "delete"));
 		$this->allow($technician, "document:document", array("editother"));
 		$this->allow($technician, "audit:report",array("report.pdf", "create", "edit", "save"));
-		$this->allow($client, "deadline:index");
-		$this->allow($client, "deadline:deadline", array("get", "submit"));
+		$this->allow($technician, "audit:watch");
+		$this->allow($technician, "deadline:deadline");
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
