@@ -503,7 +503,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		$adapter->query($sql);
 		
-		$url = $this->view->url(array("clientId" => $clientId), "audit-mistakes-index");
+		$url = $this->view->url(array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId), "audit-mistakes-index-subs");
 		$this->_redirect($url);
 	}
 
