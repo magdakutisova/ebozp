@@ -210,7 +210,10 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zjisteni uzivatele
 		$user = Zend_Auth::getInstance()->getIdentity()->id_user;
 		
-		$deadline->submit($user, $form->getValue("note"));
+		$deadline->submit(
+				$user, 
+				$form->getValue("note"),
+				$form->getValue("done_at"));
 		$deadline->save();
 		
 		$this->view->deadline = $deadline;
