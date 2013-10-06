@@ -100,7 +100,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	 * 
 	 * @return Zend_Db_Select
 	 */
-	protected function _prepareSelect() {
+	public function _prepareSelect() {
 		$select = new Zend_Db_Select($this->getAdapter());
 		$name = $this->_name;
 		
