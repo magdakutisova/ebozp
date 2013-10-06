@@ -3,6 +3,7 @@
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#discuss">Projednáno</a></li>
 		<li><a href="#mistakes">Neshody</a></li>
+		<li><a href="#deadlines">Lhůty</a></li>
 		<li><a href="#changes">Změny</a></li>
 		<li><a href="#orders">Objednávky</a></li>
 		<li><a href="#outputs">Realizační výstup</a></li>
@@ -127,6 +128,19 @@
 			</p>
 		</form>
 	</div>
+	<div id="deadlines">
+		<?php 
+		$options = array(
+				"buttons" => array(
+						"show" => array(
+								"caption" => "Zobrazit",
+								"type" => "button"
+								)
+						)
+				);
+		echo $this->deadlineTable($this->deadlines, $options);
+		?>
+	</div>
 	<div id="orders">
 		<form action="/audit/watch/orders" method="post" id="form-orders">
 			<ol id="order-list">
@@ -171,4 +185,7 @@
 	</div>
 </div>
 <script type="text/javascript" src="/js/audit/watch.js"></script>
-<?php echo $this->formHidden("CLIENTID", Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")); ?>
+<?php 
+echo $this->formHidden("CLIENTID", Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")); 
+echo $this->formHidden("WATCHID", $this->watch->id);
+?>

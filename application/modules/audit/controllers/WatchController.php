@@ -1,4 +1,6 @@
 <?php
+require_once (APPLICATION_PATH . "/modules/deadline/controllers/DeadlineController.php");
+
 class Audit_WatchController extends Zend_Controller_Action {
 	
 	public function init() {
@@ -123,6 +125,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// neshody vazane k dohlidce
 		$mistakes = $watch->findMistakes();
 		
+		// nacteni lhut
+		$deadlines = $watch->findDeadlines();
+		
 		// nacteni pracovist pobocky
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		$workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $watch->subsidiary_id), "name");
@@ -136,6 +141,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->outputs = $outputs;
 		$this->view->mistakes = $mistakes;
 		$this->view->workplaces = $workplaces;
+		$this->view->deadlines = $deadlines;
 	}
 	
 	public function getAction() {
@@ -166,6 +172,32 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->orders = $orders;
 		$this->view->outputs = $outputs;
 		$this->view->person = $person;
+	}
+	
+	public function getdeadHtmlAction() {
+		// nacteni dohlidky
+		$watch = self::loadWatch($this->_request->getParam("watchId", 0));
+		
+		// nacteni asociace
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$deadlineId = $this->_request->getParam("deadlineId");
+		$assoc = $tableAssocs->findByWatchDeadline($watch->id, $deadlineId);
+		
+		if (!$assoc) throw new Zend_Db_Table_Exception("Combination of deadline and watch not found");
+		
+		// nacteni lhuty
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$deadline = $tableDeadlines->findById($deadlineId, true);
+		
+		// formular pro splneni lhuty
+		$formDone = new Audit_Form_Deadline();
+		
+		
+		$this->view->watch = $watch;
+		$this->view->deadline = $deadline;
+		$this->view->assoc = $assoc;
+		
+		$this->view->formDone = $formDone;
 	}
 	
 	public function changesAction() {
@@ -323,6 +355,10 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// vlozeni neshod, ktere jsou vazany k pobocce
 		$tableAssocs = new Audit_Model_WatchesMistakes();
 		$tableAssocs->insertByWatch($watch);
+		
+		// zapsani asociaci lhut
+		$tableDeadlines = new Audit_Model_WatchesDeadlines();
+		$tableDeadlines->createByWatch($watch);
 		
 		$this->view->watch = $watch;
 	}
