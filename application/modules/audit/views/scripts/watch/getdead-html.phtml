@@ -1,0 +1,46 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+?>
+<h1>Lhůta</h1>
+<table>
+	<tbody>
+		<?php
+		$deadline = $this->deadline;
+		$helper = $this->tableLayout();
+		
+		$params = array(
+				"first" => array(
+						"class" => "strong"
+				)
+		);
+
+		// vyhodnoceni typu
+		switch ($deadline->type) {
+			case Deadline_Form_Deadline::TYPE_ELEARNING:
+				$type = "E-learning";
+				break;
+
+			case Deadline_Form_Deadline::TYPE_PRESENT:
+				$type = "Prezenční";
+				break;
+
+			default:
+				$type = "Jiná";
+		}
+
+		echo $helper->row("Jméno / Zařízení", $deadline->name, $params);
+		echo $helper->row("Druh", $deadline->kind, $params);
+		echo $helper->row("Specifikace", $deadline->specific, $params);
+		echo $helper->row("Forma", $type, $params);
+		echo $helper->row("Perioda (měsíců)", $deadline->period, $params);
+		echo $helper->row("Naposledy provedeno", $deadline->last_done, $params);
+		echo $helper->row("Další provedení", $deadline->next_date, $params);
+		echo $helper->row("Poznámka", $deadline->note, $params);
+		echo $helper->row("Zodpovědná osoba", $deadline->responsible_name, $params);
+		?>
+	</tbody>
+</table>
+<h2>Splnění lhůty</h2>
+<?php 
+echo $this->formDone; 
+?>
