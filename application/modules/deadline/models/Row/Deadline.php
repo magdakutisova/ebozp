@@ -28,13 +28,14 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 	/**
 	 * pricte 
 	 */
-	public function submit($userId, $note) {
+	public function submit($userId, $note, $date) {
 		// zapis do logu
 		$tableLogs = new Deadline_Model_Logs();
 		$tableLogs->insert(array(
 				"deadline_id" => $this->_data["id"],
 				"user_id" => $userId,
-				"note" => $note
+				"note" => $note,
+				"done_at" => $date
 				));
 		
 		// vypocet dalsiho data

@@ -29,6 +29,14 @@ class Deadline_Form_Done extends Zend_Form {
 				array(array("row" => "HtmlTag"), array("tag" => "tr"))
 		);
 		
+		$this->addElement("text", "done_at", array(
+				"label" => "Datum splnění",
+				"required" => true,
+				"decorators" => $elementDecorator,
+				"value" => Zend_Date::now()->get("yyyy-MM-dd"),
+				"pattern" => "[0-9]{4}(-[0-9]{2}){2}"
+				));
+		
 		$this->addElement("textarea", "note", array(
 				"label" => "Poznámka",
 				"required" => false,
