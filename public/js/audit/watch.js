@@ -78,6 +78,18 @@ $(function() {
 		$.iframeDialog(url, 800, 400, "Lhůta");
 	}
 	
+	function refreshWnd() {
+		window.location.reload();
+	}
+	
+	function openDeadList() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/audit/watch/deadlist.html?deadlineId=" + deadlineId + "&watchId=" + watchId;
+		
+		$.iframeDialog(url, 800, 400, "Vyberte lhůty", refreshWnd);
+	}
+	
 	$("#watch-tabs").tabs();
 	$("#discuss-list,#change-list,#order-list,#output-list").sortable();
 	$("#discuss-list button,#change-list button,#order-list button,#output-list button").click(removeDiscuss).button(removeButtonSet);
@@ -95,4 +107,5 @@ $(function() {
 	$("#watch-watched_at").datepicker();
 	$("#mistakes button[name='get']").click(openMistake);
 	$("#deadlinetable button[name='show']").click(openDeadline);
+	$("#add-deadlines").click(openDeadList);
 });

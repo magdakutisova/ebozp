@@ -40,7 +40,11 @@ $this->layout()->setLayout("floating-layout");
 		?>
 	</tbody>
 </table>
+<?php 
+if ($this->formDone) {
+?>
 <h2>Splnění lhůty</h2>
 <?php 
-echo $this->formDone; 
+	echo $this->formDone; 
+}
 ?>

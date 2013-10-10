@@ -20,18 +20,7 @@ class Audit_Form_Deadline extends Deadline_Form_Done {
 				"order" => 0
 				));
 		
-		// deaktivace ostatnich poli
-		$this->setActivated(false);
-		
 		// prejmenovani tlacitka odeslani
 		$this->_elements["submit"]->setLabel("Uložit");
-	}
-	
-	public function setActivated($activated = true) {
-		foreach ($this->_elements as $name => $value) {
-			if ($name != "is_done" && $name != "submit") {
-				$value->setAttrib("disabled", $activated);
-			}
-		}
 	}
 }

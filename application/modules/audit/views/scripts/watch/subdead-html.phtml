@@ -1,0 +1,6 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$assoc = $this->assoc;
+
+$url = sprintf("/audit/watch/getdead.html?deadlineId=%s&watchId=%s", $assoc->deadline_id, $assoc->watch_id);
+$redirector->gotoUrlAndExit($url);

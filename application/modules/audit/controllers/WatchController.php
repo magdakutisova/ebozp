@@ -8,6 +8,34 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 	}
 	
+	public function adddeadHtmlAction() {
+		// nacteni dohlidky
+		$watch = self::loadWatch($this->_request->getParam("watchId"));
+		$this->_request->setParam("clientId", $watch->client_id);
+		// nacteni seznamu identifikatoru
+		$deadIds =  $this->_request->getParam("deadlineId", array());
+		
+		// vytvoreni filtracniho selectu
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$select->from($tableDeadlines->info("name"), array(
+				new Zend_Db_Expr($watch->id),
+				"id",
+				new Zend_Db_Expr("next_date < NOW()"),
+				"next_date"
+				));
+		
+		$select->where("subsidiary_id = ?", $watch->subsidiary_id)->where("id in (?)", array_merge(array("0"), $deadIds));
+		
+		// vlozeni dat do tabulky
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$sql = sprintf("insert ignore into %s (watch_id, deadline_id, is_over, done_at) %s", $tableAssocs->info("name"), $select->assemble());
+		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
+		
+		$this->view->watch = $watch;
+	}
+	
 	public function createAction() {
 		// vytvoreni formulare a nastaveni hodnot
 		$form = new Audit_Form_Watch();
@@ -88,6 +116,26 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->watch = $watch;
 	}
 	
+	public function deadlistHtmlAction() {
+		// nacteni dohlidky
+		$watch = self::loadWatch($this->_request->getParam("watchId"));
+		
+		// selekce lhut, ktere jeste nejsou v dohlidce
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$subSelect->from($tableAssocs->info("name"), "deadline_id")->where("watch_id = ?", $watch->id);
+		
+		// nacteni lhut
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$select = $tableDeadlines->_prepareSelect();
+		$select->where("subsidiary_id = ?", $watch->subsidiary_id)->where("id not in (?)", new Zend_Db_Expr($subSelect));
+		
+		$data = $select->query()->fetchAll();
+		
+		$this->view->deadlines = $data;
+		$this->view->watch = $watch;
+	}
+	
 	public function editAction() {
 		// nacteni dat
 		$watchId = $this->_request->getParam("watchId", 0);
@@ -164,6 +212,10 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$person = (object) array("name" => $watch->contact_name, "phone" => $watch->contact_phone, "email" => $watch->contact_email);
 		}
 		
+		// nacteni lhut
+		$tableDeadlines = new Audit_Model_WatchesDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByWatch($watch);
+		
 		$this->view->user = $user;
 		$this->view->watch = $watch;
 		$this->view->changes = $changes;
@@ -172,6 +224,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->orders = $orders;
 		$this->view->outputs = $outputs;
 		$this->view->person = $person;
+		$this->view->deadlines = $deadlines;
 	}
 	
 	public function getdeadHtmlAction() {
@@ -190,8 +243,14 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$deadline = $tableDeadlines->findById($deadlineId, true);
 		
 		// formular pro splneni lhuty
-		$formDone = new Audit_Form_Deadline();
-		
+		if ($watch->is_closed) {
+			$formDone = null;
+		} else {
+			$formDone = new Audit_Form_Deadline();
+			$url = sprintf("/audit/watch/subdead.html?deadlineId=%s&watchId=%s&clientId=%s", $deadline->id, $watch->id, $watch->client_id);
+			$formDone->populate($assoc->toArray());
+			$formDone->setAction($url);
+		}
 		
 		$this->view->watch = $watch;
 		$this->view->deadline = $deadline;
@@ -466,6 +525,32 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->watch = $watch;
 	}
 	
+	public function subdeadHtmlAction() {
+		// nacteni dat z formulare
+		$form = new Audit_Form_Deadline();
+		
+		$form->populate($this->_request->getParams());
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("getdead.html");
+			return;
+		}
+		
+		// nacteni dat z databaze
+		$watch = self::loadWatch($this->_request->getParam("watchId"));
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$assoc = $tableAssocs->findByWatchDeadline($watch->id, $this->_request->getParam("deadlineId"));
+		
+		if (!$assoc) throw new Zend_Db_Table_Exception("Association not found");
+		
+		// nastaveni dat
+		$assoc->setFromArray($form->getValues(true));
+		$assoc->save();
+		
+		$this->view->assoc = $assoc;
+		$this->view->watch = $watch;
+	}
+	
 	/**
 	 * uzavre dohlidku
 	 */
@@ -476,6 +561,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		// kontrola uzivatele
 		$user = Zend_Auth::getInstance()->getIdentity();
+		$this->_request->setParam("clientId", $watch->client_id);
+		$this->view->layout()->setLayout("floating-layout");
 		
 		if ($user->id_user != $watch->user_id && $user->role != My_Role::ROLE_ADMIN) {
 			// chyba opravneni
@@ -501,6 +588,28 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$select->where("set_removed")->where("watch_id = ?", $watch->id);
 		
 		$tableMistakes->update(array("is_removed" => 1), array("id in (?)" => new Zend_Db_Expr($select->assemble())));
+		
+		// oznaceni lhut, ktere byly vybrany jako splnenych
+		$tableDeadlinesAssocs = new Audit_Model_WatchesDeadlines();
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		
+		$nameDeadlinesAssocs = $tableDeadlinesAssocs->info("name");
+		$nameDeadlines = $tableDeadlines->info("name");
+		
+		// sestaveni updatovaciho dotazu
+		$sql = sprintf("update %s as deads, %s as assocs set deads.last_done = assocs.done_at, deads.next_date = ADDDATE(assocs.done_at, INTERVAL deads.period MONTH) WHERE deads.id = assocs.deadline_id and is_done and watch_id = %s", 
+				$nameDeadlines, $nameDeadlinesAssocs, $watch->id);
+		
+		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
+		
+		// zapis do logu
+		$tableLogs = new Deadline_Model_Logs();
+		$nameLogs = $tableLogs->info("name");
+		
+		$sql = sprintf("insert into %s (deadline_id, done_at, note) select deadline_id, done_at, note from %s where is_done and watch_id = %s", 
+				$nameLogs, $nameDeadlinesAssocs, $watch->id);
+		
+		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 		
 		$this->view->watch = $watch;
 	}
