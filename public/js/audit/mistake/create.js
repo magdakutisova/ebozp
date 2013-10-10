@@ -15,7 +15,7 @@ $(function () {
 	function loadCategories() {
 		var category = $(this).val();
 		
-		$.get("/audit/category/children.json", {"name" : category}, writeCategories, "json")
+		$.get("/audit/category/children.json", {"name" : category}, writeCategories, "json");
 	}
 	
 	$("#mistake-will_be_removed_at").datepicker({

@@ -30,6 +30,11 @@ $(function () {
 		$.get("/audit/mistake/create.html", data, function (response) {
 			response = $(response);
 			response.find("#mistake-subsidiary_id").change(loadWorkplaces);
+			response.find("#mistake-will_be_removed_at,#mistake-notified_at").datepicker({
+				"dateFormat" : "dd. mm. yy",
+				"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+				"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
+			});
 			
 			response.dialog({
 				modal : true,
