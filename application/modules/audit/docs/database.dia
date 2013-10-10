@@ -6923,19 +6923,19 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O42">
       <dia:attribute name="obj_pos">
-        <dia:point val="53.25,-48.85"/>
+        <dia:point val="53.25,-47.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="53.2,-48.9;65.03,-39.8"/>
+        <dia:rectangle val="53.2,-47.45;67.275,-37.55"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="53.25,-48.85"/>
+        <dia:point val="53.25,-47.4"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="11.73"/>
+        <dia:real val="13.975"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="9"/>
+        <dia:real val="9.8000000000000007"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_watches_deadlines#</dia:string>
@@ -7142,6 +7142,29 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
+            <dia:string>#is_done#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#bool#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null default 0#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#přepínač, zda byla lhůta splněna během dohlídky#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
             <dia:string>#done_date#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
@@ -7295,13 +7318,13 @@
         <dia:point val="44.0933,-17.0878"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="43.9815,-46.4809;53.3618,-16.7569"/>
+        <dia:rectangle val="43.9815,-45.0309;53.3618,-16.7569"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="44.0933,-17.0878"/>
         <dia:point val="48.6716,-17.0878"/>
-        <dia:point val="48.6716,-46.15"/>
-        <dia:point val="53.25,-46.15"/>
+        <dia:point val="48.6716,-44.7"/>
+        <dia:point val="53.25,-44.7"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
