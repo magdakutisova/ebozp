@@ -120,6 +120,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "deadline:deadline");
 		$this->deny($technician, "deadline:deadline", "import");
 		$this->allow($technician, "document:documentation");
+		$this->deny($technician, "document:documentation", array("import", "reset"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
