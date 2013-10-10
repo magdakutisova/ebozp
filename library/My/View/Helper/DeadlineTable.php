@@ -41,7 +41,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		}
 		
 		// vygenerovani prvniho radku
-		$buttons = $this->_generateButtons($config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
+		$buttons = $this->_generateButtons($deadline, $config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
 		
 		$row = array(
 				$this->wrap("td", $deadline["name"], array("rowspan" => 2)),
@@ -86,12 +86,19 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		return sprintf("%s. %s. %s", substr($date, 8, 2), substr($date, 5, 2), substr($date, 0, 4));
 	}
 	
-	private function _generateButtons(array $config) {
+	private function _generateButtons($deadline, array $config) {
 		$config = array_merge(array("buttons" => array()), $config);
 		$btnList = array();
 		
 		foreach ($config["buttons"] as $name => $c) {
-			$btnList[] = sprintf("<button type='%s' name='%s'>%s</button>", $c["type"], $name, $c["caption"]);
+			switch ($c["type"]) {
+				case "checkbox":
+					$btnList[] = sprintf("<label><input type='checkbox' name='%s' value='%s'>%s</label>", $name, $deadline["id"], $c["caption"]);
+					break;
+				
+				default:
+					$btnList[] = sprintf("<button type='%s' name='%s'>%s</button>", $c["type"], $name, $c["caption"]);
+			}
 		}
 		
 		return implode("", $btnList);
