@@ -62,13 +62,13 @@ class Document_Form_Documentation extends Zend_Form {
 		$this->addElement("file", "internal_file", array(
 				"required" => false,
 				"decorators" => $fileDecorator,
-				"label" => "Interní verze"
+				"label" => "Interní verze (Word)"
 				));
 		
 		$this->addElement("file", "external_file", array(
 				"required" => false,
 				"decorators" => $fileDecorator,
-				"label" => "Veřejná verze"
+				"label" => "Veřejná verze (PDF)"
 		));
 		
 		$this->addElement("submit", "submit", array(
