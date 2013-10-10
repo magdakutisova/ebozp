@@ -28,7 +28,7 @@ foreach ($this->mistakes as $mistake) {
 
 	if ($mistake->is_removed) {
 		$classes[] = "mistake-removed";
-	} elseif ($mistake->isMarked($today)) {
+	} elseif ($mistake->is_marked) {
 		$classes[] = "mistake-marked";
 	}
 	

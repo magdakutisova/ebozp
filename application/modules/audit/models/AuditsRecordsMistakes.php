@@ -269,7 +269,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		$select = new Zend_Db_Select($this->getAdapter());
 		$select->from($this->_name, array_merge(array(
 				new Zend_Db_Expr("$this->_name.*"),
-				new Zend_Db_Expr("(COUNT($nameAAudits.is_submited) + COUNT($nameAWatches.is_submited) - 1) AS is_marked")
+				new Zend_Db_Expr("(COUNT($nameAAudits.is_submited) + COUNT($nameAWatches.is_submited) - 1) > 0 AS is_marked")
 				), $columns));
 		
 		// spojeni s asociacemi
