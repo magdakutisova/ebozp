@@ -847,7 +847,7 @@ $(function(){
  * rozmery jsou v pixelech
  * vraci DIV ktery je obsahem dialogu
  */
-$.iframeDialog = function (src, width, height, title) {
+$.iframeDialog = function (src, width, height, title, onClose) {
 	var iframe = $("<iframe width='" + width + "px' height='" + height + "px'>").attr("src", src);
 	
 	var retVal = $("<div>").append(iframe);
@@ -855,6 +855,8 @@ $.iframeDialog = function (src, width, height, title) {
 	width += 20;
 	
 	if (title === undefined) title = "";
+	
+	if (onClose === undefined) onClose = jQuery.noop;
 	
 	retVal.dialog({
 		modal: true,
@@ -864,6 +866,7 @@ $.iframeDialog = function (src, width, height, title) {
 		title : title,
 		close: function () {
 			retVal.remove();
+			onClose();
 		}
 	});
 	
