@@ -159,7 +159,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$mistake = self::getMistake($mistakeId);
 		
 		// vyhodnoceni prislusnosti k auditu
-		if ($mistake->audit_id == $this->_audit->id) {
+		if (!$this->_audit || $mistake->audit_id == @$this->_audit->id) {
+			// nejsme v zadnem auditu nebo v auditu, kde byla neshoda definovana
 			$mistake->delete();
 		} else {
 			// odstraneni probehne pouze z asociacni tabulky
