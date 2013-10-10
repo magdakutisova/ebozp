@@ -118,6 +118,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "audit:report",array("report.pdf", "create", "edit", "save"));
 		$this->allow($technician, "audit:watch");
 		$this->allow($technician, "deadline:deadline");
+		$this->deny($technician, "deadline:deadline", "import");
 		$this->allow($technician, "document:documentation");
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
