@@ -93,7 +93,7 @@ foreach ($this->documentations as $doc) {
 <?php 
 // pokud je uzivatel opravnen, zobrazi se formular na pridani
 if ($acl->isAllowed($user->role, "document:documentation", "post")) {
-	echo "<h3>Nová dokumentace</h3>";
+	echo "<h3>Přidat novou dokumentaci</h3>";
 	echo $this->addForm; 
 }
 
