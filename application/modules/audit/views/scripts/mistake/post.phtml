@@ -1,4 +1,4 @@
 <?php
-$url = $this->url(array("clientId" => $this->clientId), "audit-mistakes-index");
+$url = $this->url(array("clientId" => $this->clientId, "subsidiaryId" => $this->mistake["subsidiary_id"]), "audit-mistakes-index-subs");
 $redirector = new Zend_Controller_Action_Helper_Redirector();
 $redirector->gotoUrlAndExit($url);

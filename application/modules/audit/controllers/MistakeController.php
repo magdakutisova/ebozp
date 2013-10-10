@@ -637,6 +637,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$tableMistakes->insert($data);
 		
 		$this->view->clientId = $clientId;
+		$this->view->mistake = $data;
 	}
 
 	public function postaloneAction() {
