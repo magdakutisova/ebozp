@@ -472,6 +472,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			
 			// vyhodnocení stavu
 			$stateStr = strtolower($item[11]);
+			
+			// pokud je stav NT, pak se radek uplne preskoci
+			if ($stateStr == "nt" || substr($stateStr, 0, 3) == "net") continue;
+			
 			$state = (substr($stateStr, 0, 7) == "odstran") ? 1 : 0;
 			
 			$notifiedAt = self::_toSQLDate($item[10]);
