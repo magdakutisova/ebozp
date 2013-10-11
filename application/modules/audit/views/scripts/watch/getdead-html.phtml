@@ -41,6 +41,16 @@ $this->layout()->setLayout("floating-layout");
 	</tbody>
 </table>
 <?php 
+// pokud je uzivatel opravnen, pak se vypise odkaz pro editaci lhuty
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "edit")) {
+	$url = sprintf("/deadline/deadline/edit?deadlineId=%s&clientId=%s", $deadline->id, $deadline->client_id);
+	
+	printf("<a href='%s'>Editovat</a>", $url);
+}
+
 if ($this->formDone) {
 ?>
 <h2>Splnění lhůty</h2>
