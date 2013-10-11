@@ -9,8 +9,12 @@ $user = Zend_Auth::getInstance()->getIdentity();
 $editable = $acl->isAllowed($user->role, "document:documentation", "put");
 
 echo "<h1>" . $this->client->company_name;
+$subsidiaryId = null;
 
-if ($this->subsidiary) echo " - " . $this->subsidiary->subsidiary_name;
+if ($this->subsidiary) {
+	echo " - " . $this->subsidiary->subsidiary_name;
+	$subsidiaryId = $this->subsidiary->id_subsidiary;
+}
 
 echo "</h1>";
 ?>
@@ -77,8 +81,8 @@ foreach ($this->documentations as $doc) {
 	echo "<td>" . $doc->comment . "</td>";
 	
 	if ($editable) {
-		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid)) : "-") . "</td>";
-		echo "<td>" . ($doc->i_fileid ? $this->file((object) array("name" => $doc->i_filename, "id" => $doc->i_fileid)) : "-") . "</td>";
+		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid), "show", $subsidiaryId) : "-") . "</td>";
+		echo "<td>" . ($doc->i_fileid ? $this->file((object) array("name" => $doc->i_filename, "id" => $doc->i_fileid), "show", $subsidiaryId) : "-") . "</td>";
 		echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
 		
 	} else {

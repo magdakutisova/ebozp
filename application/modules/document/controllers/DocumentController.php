@@ -6,6 +6,10 @@ class Document_DocumentController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 		$this->view->layout()->setLayout("client-layout");
+		
+		$retSubId = $this->_request->getParam("retsubId");
+		
+		if ($retSubId) $this->_request->setParam("subsidiaryId", $retSubId);
 	}
 	
 	/**
