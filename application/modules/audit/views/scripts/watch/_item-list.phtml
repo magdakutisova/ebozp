@@ -1,5 +1,7 @@
 <h2><?php echo $this->caption; ?></h2>
 <?php
+if ($this->note) echo "<div>" . $this->note . "</div>";
+
 if ($this->items->count()) {
 	?>
 <ol>

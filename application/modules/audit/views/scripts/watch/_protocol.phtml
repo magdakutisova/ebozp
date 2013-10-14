@@ -99,7 +99,7 @@
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Projednáno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podniku", "items" => $this->changes, "notFound" => "Nic nebylo změněno"));
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Realizační výstup", "items" => $this->outputs, "notFound" => "Žádné připomínky klienta"));
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno"));
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno", "note" => "Závazně objednávám:"));
 
 // rozrazeni neshod na nove, odstranene a neodstranene
 $new = array();
