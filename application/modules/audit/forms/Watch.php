@@ -64,7 +64,8 @@ class Audit_Form_Watch extends Zend_Form {
 										"pattern" => "/^[0-9]{2}(:[0-9]{2}){1,2}$/",
 										"messages" => "Špatný formát času"
 								)
-						))
+						)),
+				"pattern" => "^[0-9]{2}(:[0-9]{2}){1,2}$"
 		));
 		
 		// pole pro konec dohlidky
@@ -79,7 +80,8 @@ class Audit_Form_Watch extends Zend_Form {
 										"pattern" => "/^[0-9]{2}(:[0-9]{2}){1,2}$/",
 										"messages" => "Špatný formát času"
 								)
-						))
+						)),
+				"pattern" => "^[0-9]{2}(:[0-9]{2}){1,2}$"
 		));
 		
 		// pole pro jmeno dohlizitele
