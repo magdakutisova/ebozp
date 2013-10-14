@@ -50,8 +50,9 @@ if ($this->logs->count()) {
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
-if (!$deadline->responsible_user_id && $acl->isAllowed($user->role, "deadline:deadline", "submit")) {
+if ($acl->isAllowed($user->role, "deadline:deadline", "submit")) {
 	echo "<h2>Splnit lhůtu</h2>";
 	echo $this->formSubmit;
 }
 ?>
+<script type="text/javascript" src="/js/deadline/deadline.js"></script>
