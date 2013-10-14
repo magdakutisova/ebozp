@@ -31,7 +31,13 @@ echo $this->doctype ();
 <body>
 	<div class="container" style="width: 600px">
 			<div class="push-1 span-19 main-content" style="width: 590px">
-			<?php echo $this->layout()->content; ?>
+			<?php 
+			if (Zend_Controller_Front::getInstance()->getRequest()->getParam("__retLink")) {
+				printf("<p><a href='%s'>Zpět na původní stránku</a></p>", $_SERVER["HTTP_REFERER"]);
+			}
+			
+			echo $this->layout()->content; 
+			?>
 						</div>
 		</div>
 	</div>
