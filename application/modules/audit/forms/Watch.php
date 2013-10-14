@@ -43,7 +43,8 @@ class Audit_Form_Watch extends Zend_Form {
 										)
 								)
 				),
-				"required" => true
+				"required" => true,
+				"value" => Zend_Date::now()->get("dd. MM. y")
 		));
 		
 		$this->addElement("select", "contactperson_id", array(
