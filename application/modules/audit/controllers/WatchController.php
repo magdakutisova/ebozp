@@ -42,7 +42,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->prepareWatchForm($form);
 		
 		// prednastaveni technika
-		$form->getElement("guard_person")->setValue(Zend_Auth::getInstance()->getIdentity()->username);
+		$form->getElement("guard_person")->setValue(Zend_Auth::getInstance()->getIdentity()->name);
 		
 		// nacteni klienta a pobocky
 		$tableClients = new Application_Model_DbTable_Client();

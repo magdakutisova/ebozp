@@ -84,7 +84,7 @@ class Audit_Form_Watch extends Zend_Form {
 		
 		// pole pro jmeno dohlizitele
 		$this->addElement("textarea", "guard_person", array(
-				"label" => "Jméno a tituly našeho zástupce",
+				"label" => "Technik",
 				"decorators" => $elementDecorator
 		));
 		
