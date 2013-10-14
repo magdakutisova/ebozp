@@ -1,45 +1,47 @@
-<table border="1" cellpadding="2">
-	<thead>
-		<tr>
-<?php 
-// nacteni hlavicky
-$columnList = $this->columns;
-$columns = array_keys($columnList);
-
-foreach ($columnList as $name) {
-	echo "<th valign=\"middle\" align=\"center\"><small>$name</small></th>";
-}
-?>
-		</tr>
-	</thead>
-	<tbody>
+<div>
+	<table border="1" cellpadding="2">
+		<thead>
+			<tr>
 	<?php 
-	foreach ($this->mistakes as $mistake) {
-		echo "<tr>";
-		
-		foreach ($columns as $name) {
-			$value = $mistake[$name];
-			$align = "left";
-			
-			// vyhodnoceni datumu
-			switch ($name) {
-				case "will_be_removed_at":
-				case "notified_at":
-				case "removed_at":
-					if ($value && $value != "0000-00-00")
-						$value = $this->sqlDate($value);
-					else
-						$value = "?";
-				
-				case "weight":
-					$align = "center";
-			}
-			
-			echo "<td align=\"$align\"><small>" . $value . "</small></td>";
-		}
-		
-		echo "</tr>";
+	// nacteni hlavicky
+	$columnList = $this->columns;
+	$columns = array_keys($columnList);
+	
+	foreach ($columnList as $name) {
+		echo "<th valign=\"middle\" align=\"center\"><small>$name</small></th>";
 	}
 	?>
-	</tbody>
-</table>
+			</tr>
+		</thead>
+		<tbody>
+		<?php 
+		foreach ($this->mistakes as $mistake) {
+			echo "<tr>";
+			
+			foreach ($columns as $name) {
+				$value = $mistake[$name];
+				$align = "left";
+				
+				// vyhodnoceni datumu
+				switch ($name) {
+					case "will_be_removed_at":
+					case "notified_at":
+					case "removed_at":
+						if ($value && $value != "0000-00-00")
+							$value = $this->sqlDate($value);
+						else
+							$value = "?";
+					
+					case "weight":
+						$align = "center";
+				}
+				
+				echo "<td align=\"$align\"><small>" . $value . "</small></td>";
+			}
+			
+			echo "</tr>";
+		}
+		?>
+		</tbody>
+	</table>
+</div>
