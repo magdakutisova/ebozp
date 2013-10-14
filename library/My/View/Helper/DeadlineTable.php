@@ -95,13 +95,23 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				case "checkbox":
 					$btnList[] = sprintf("<label><input type='checkbox' name='%s' value='%s'>%s</label>", $name, $deadline["id"], $c["caption"]);
 					break;
+					
+				case "link":
+					// sestaveni url
+					$url = $c["url"];
+					$url = str_replace("%clientId", $deadline["client_id"], $url);
+					$url = str_replace("%deadlineId", $deadline["id"], $url);
+					
+					$btnList[] = sprintf("<a href='%s'>%s</a>", $url, $c["caption"]);
+					
+					break;
 				
 				default:
 					$btnList[] = sprintf("<button type='%s' name='%s'>%s</button>", $c["type"], $name, $c["caption"]);
 			}
 		}
 		
-		return implode("", $btnList);
+		return implode(" ", $btnList);
 	}
 	
 	/**
