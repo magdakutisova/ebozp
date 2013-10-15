@@ -152,7 +152,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				"last_done" => "Naposledy provedeno",
 				"next_date" => "Další provedení",
 				"note" => "Poznámka",
-				"responsible_name" => "Zodpovědná osoba"
+				"responsible_name" => "Provádí"
 				), $config);
 		
 		// vygenerovani prvniho radku

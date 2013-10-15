@@ -104,7 +104,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 						self::RESP_EXTERNAL => "Externista", 
 						self::RESP_GUARD => "G U A R D 7, v.o.s.", 
 						self::RESP_CLIENT => "Zaměstnanec klienta"),
-				"label" => "Zodpovídá",
+				"label" => "Provádí",
 				"value" => self::RESP_EXTERNAL
 		));
 		
