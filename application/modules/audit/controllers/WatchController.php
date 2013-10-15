@@ -141,6 +141,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
 		
+		// kontrola uzavreni
+		if ($watch->is_closed) throw new Zend_Db_Table_Row_Exception("Watch is closed");
+		
 		// prevedeni na pole a revedeni datumu
 		$data = $watch->toArray();
 		
