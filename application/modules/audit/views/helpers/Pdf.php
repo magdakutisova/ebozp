@@ -69,10 +69,10 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 			// logo
 			$pdf->setPage($i);
 			$pdf->SetAutoPageBreak(false);
-			$pdf->Image($logoPath, 20, 257, 30);
+			$pdf->Image($logoPath, 20, 270, 30);
 			
 			// text
-			$pdf->SetXY(55, 255);
+			$pdf->SetXY(55, 270);
 			$pdf->SetFontSize(8);
 			$pdf->MultiCell(150, 20, $text, 0, "L");
 		}

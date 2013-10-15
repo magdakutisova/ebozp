@@ -126,7 +126,8 @@ foreach ($this->mistakes as $mistake) {
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění"))); ?>
 <h2>Neodstraněné závady z minulých kontrol</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
-<table cellpadding="10">
+<div></div><div></div>
+<table cellpadding="40">
 	<tr>
 		<td>
 		Za G U A R D 7, v.o.s. předal
