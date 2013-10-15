@@ -92,7 +92,7 @@ class Audit_Form_Watch extends Zend_Form {
 		
 		// pole pro jmeno pobocky
 		$this->addElement("text", "client_description", array(
-				"label" => "Jméno a popis klienta",
+				"label" => "Text u podpisu klienta",
 				"decorators" => $elementDecorator
 		));
 		
