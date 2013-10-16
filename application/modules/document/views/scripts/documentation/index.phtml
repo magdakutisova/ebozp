@@ -36,9 +36,17 @@ if ($editable) {
 	</form>
 	
 <?php 
+$links = array();
+
 if ($acl->isAllowed($user->role, "document:preset")) {
-	echo "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
+	$links[] = "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
 }
+
+if ($acl->isAllowed($user->role, "document:name")) {
+	$links[] =  "<a href='/document/name/index'>Přednastavená jména dokumentace</a>";
+}
+
+echo  implode(" | ", $links);
 ?>
 </div>
 <?php 

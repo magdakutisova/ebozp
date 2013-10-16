@@ -43,6 +43,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("document:document"));
 		$this->add(new Zend_Acl_Resource("document:documentation"));
 		$this->add(new Zend_Acl_Resource("document:preset"));
+		$this->add(new Zend_Acl_Resource("document:name"));
 		
 		/*
 		 * ZDROJE MODULU DEADLINE

@@ -241,5 +241,15 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "attach"
 						))
 		);
+		
+		$router->addRoute(
+				"document-name-edit",
+				new Zend_Controller_Router_Route("/document/name/:nameId/edit",
+						array(
+								"module" => "document",
+								"controller" => "name",
+								"action" => "edit"
+						))
+		);
 	}
 }

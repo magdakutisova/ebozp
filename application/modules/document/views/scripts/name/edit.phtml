@@ -1,0 +1,13 @@
+<?php
+echo "<p><a href='/document/name/index'>Zpět na seznam</a></p>";
+echo "<h1>Úprava názvu</h1>";
+
+echo $this->form;
+
+$user = Zend_Auth::getInstance()->getIdentity();
+$acl = new My_Controller_Helper_Acl();
+
+if ($acl->isAllowed($user->role, "document:name", "delete")) {
+	echo "<h2>Smazat název</h2>";
+	printf("<a href='/document/name/delete?nameId=%s' onclick=\"return confirm('Skutečně smazat?')\">Smazat<a/>", $this->name->id);
+}

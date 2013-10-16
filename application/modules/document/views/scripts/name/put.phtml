@@ -1,0 +1,7 @@
+<?php
+$name = $this->name;
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+$url = sprintf("/document/name/edit?nameId=%s", $name->id);
+
+$redirector->gotoUrlAndExit($url);

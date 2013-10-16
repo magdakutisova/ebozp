@@ -1,0 +1,26 @@
+<h1>Přednastavení jmen souborů</h1>
+<?php
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+// vypis dat
+$rows = array();
+
+if ($acl->isAllowed($user->role, "document:name", "put")) {
+	foreach ($this->names as $name) {
+		$rows[] = sprintf("<tr><td><a href='%s'>%s</td></tr>",
+				$this->url(array("nameId" => $name->id), "document-name-edit"),
+				$name->name);
+	}
+} else {
+	foreach ($this->names as $name) {
+		$rows[] = sprintf("<tr><td>%s</td></tr>", $name->name);
+	}
+}
+
+printf("<table>%s</table>", implode("", $rows));
+
+if ($acl->isAllowed($user->role, "document:name", "post")) {
+	echo "<h2>Nová položka</h2>";
+	echo $this->form;
+}
