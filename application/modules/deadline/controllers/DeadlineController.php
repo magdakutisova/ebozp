@@ -164,6 +164,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		
 		// nastaveni pobocky do requestu
 		$requestData = $this->_request->getParams();
+		
 		$requestData["deadline"]["subsidiary_id"] = $deadline->subsidiary_id;
 		
 		$rowData = self::prepareDeadlineRowData($deadline);
@@ -190,6 +191,49 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deadline->updateResponsible($data);
 
 		$deadline->save();
+		
+		// kontrola datumu propadnuti
+		$validTo = new Zend_Date($deadline->next_date, "y-MM-dd");
+		$reserve = new Zend_Date($validTo);
+		
+		$reserve->addMonth(-1);
+		
+		$tableWatches = new Audit_Model_Watches();
+		$nameWatches = $tableWatches->info("name");
+		
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		
+		if ($reserve->isEarlier(Zend_Date::now())) {
+			// lhuta se zahrne do dohlidek
+			
+			// poddotaz nacte dohlidky spolecne s id lhuty
+			$select->from($nameWatches, array(
+					"id", 
+					new Zend_Db_Expr($deadline->id),
+					new Zend_Db_Expr($deadline->next_date),
+					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
+					));
+			
+			$select->where("!is_closed")->where("subsidiary_id = ?", $deadline->subsidiary_id);
+			
+			$tableAssocs = new Audit_Model_WatchesDeadlines();
+			
+			$sql = "insert into %s (watch_id, deadline_id, valid_to, is_over) %s";
+			Zend_Db_Table_Abstract::getDefaultAdapter()->query(sprintf($sql, $tableAssocs->info("name"), $select));
+			
+		} else {
+			// lhuta se odebere s dohlidek
+			
+			// poddotaz nacte vsechny dohlidky, ktere nejsou uzavreny
+			$select->from($nameWatches, array("id"))->where("!is_closed");
+			
+			// odebrani dat
+			$tableAssocs = new Audit_Model_WatchesDeadlines();
+			$tableAssocs->delete(array(
+					"deadline_id = ?" => $deadline->id,
+					"watch_id in (?)" => new Zend_Db_Expr($select)
+					));
+		}
 		
 		$this->view->deadline = $deadline;
 		$this->view->form = $form;
