@@ -219,6 +219,33 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$addForm->setAction($url);
 		$addForm->getElement("subsidiary_id")->setValue($subsidiaryId);
 		$addForm->isValidPartial($this->_request->getParams());
+		
+		// nacteni prednastavenych jmen dokumentace
+		$tableNames = new Document_Model_Names();
+		$names = $tableNames->fetchAll(null, "name");
+		$nameIndex = array();
+		
+		foreach ($names as $name) {
+			$nameIndex[$name->name] = $name->name;
+		}
+		
+		$nameIndex[""] = "--JINÉ--";
+		
+		// vyhodnoceni jmena
+		$currName = $addForm->getValue("name");
+		
+		if (empty($currName) || in_array($currName, $nameIndex)) {
+			// nastavene jmeno je prazdne nebo je v seznamu - textove pole se nahradi vyctem
+			$select = new Zend_Form_Element_Select(array(
+					"name" => "name",
+					"multiOptions" => $nameIndex,
+					"required" => true,
+					"label" => "Jméno",
+					"decorators" => $addForm->getElement("name")->getDecorators()
+					));
+			
+			$addForm->addElement($select);
+		}
 
 		$this->view->documentations = $documentations;
 		$this->view->subsidiary = $subsidiary;

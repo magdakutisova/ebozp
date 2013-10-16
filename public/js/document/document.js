@@ -195,6 +195,12 @@ $(function () {
 		});
 	}
 	
+	function replaceSelect() {
+		var src = $("select#documentation-name");
+		if (src.val() == "")
+			src.replaceWith($("<input type='text' id='documentation-name', name='documentation[name]' required='true' />"));
+	}
+	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
 	$("#edit-directory").click(openEditDirForm).button( { "icon-only" : true, icons : { primary : "ui-icon-pencil"}, "text" : false});
 	
@@ -205,4 +211,6 @@ $(function () {
 	$("#docs-table button").click(editDocSlot).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
 	
 	$(".dettach").click(generateConfirm("Skutečně odebrat z adresáře?")).button({ "icon-only" : true, icons : { primary : "ui-icon-close" }, "text" : false });
+	
+	$("select#documentation-name").change(replaceSelect);
 });
