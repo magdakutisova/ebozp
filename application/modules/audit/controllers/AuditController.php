@@ -562,7 +562,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableAssocs->getAdapter()->query($sql);
 		
 		$this->_redirect(
-				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id), "audit-edit")
+				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit")
 		);
 	}
 	
