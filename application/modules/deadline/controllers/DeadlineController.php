@@ -180,6 +180,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zapis dat z requestu a jejich validace
 		if (!$form->isValid($requestData)) {
 			// nejaka hodnota neni validni
+			var_dump($form->getMessages());
 			$this->_forward("edit");
 			return;
 		}
@@ -384,6 +385,10 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 					$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 					$select->from($nameEmployee, array("id" => "id_employee", "name" => new Zend_Db_Expr("CONCAT(first_name, ' ', surname)")));
 					
+					$select->where("client_id = ?", $clientId);
+					
+					break;
+					
 					// sestaveni pomocneho selectu pro provazani s pozicemi
 					$helperSelect1 = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 					$helperSelect1->from($namePositions, array("id_position"))
@@ -427,13 +432,16 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				case Deadline_Form_Deadline::TARGET_DEVICE:
 					// bylo vybráno technické zařízení
 					$tableDevs = new Application_Model_DbTable_TechnicalDevice();
-					$tableAssocs = new Application_Model_DbTable_PositionHasTechnicalDevice();
+					$tableAssocs = new Application_Model_DbTable_ClientHasTechnicalDevice();
 					$nameDevs = $tableDevs->info("name");
 					$nameAssocs = $tableAssocs->info("name");
 					
+					$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+					
 					// zapis do selectu
-					$select->joinLeft($nameAssocs, "$nameAssocs.id_position = $namePositions.id_position", array());
-					$select->joinLeft($nameDevs, "$nameAssocs.id_technical_device = $nameDevs.id_technical_device", array("id" => "id_technical_device", "name" => new Zend_Db_Expr("CONCAT(`sort`, ' ', `type`)")));
+					$select->from($nameAssocs, array())->where("id_client = ?", $clientId)->order("name")->group("$nameDevs.id_technical_device");
+					$select->joinInner($nameDevs, "$nameAssocs.id_technical_device = $nameDevs.id_technical_device", array("id" => "id_technical_device", "name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' ', IFNULL(`type`, ''))")));
+					
 					break;
 					
 				case Deadline_Form_Deadline::TARGET_UNDEFINED:

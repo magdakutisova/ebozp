@@ -139,9 +139,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 		
 		$this->addElement("select", "object_id", array(
 				"decorators" => $elementDecorator,
-				"required" => true,
-				"label" => "Vyberte objekt",
-				"disabled" => "disabled"
+				"label" => "Vyberte objekt"
 				));
 		
 		$this->addElement("submit", "submit", array(
