@@ -16,7 +16,17 @@ class Audit_Model_Row_AuditRecordMistake extends Zend_Db_Table_Row_Abstract {
 	 * @return Audit_Model_Rowset_Audits
 	 */
 	public function getAudits() {
-		return $this->findManyToManyRowset("Audit_Model_Audits", "Audit_Model_AuditsMistakes", "mistake", "audit");
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		
+		$select->from($tableAssocs->info("name"), array("audit_id"));
+		$select->where("mistake_id = ?", $this->id)->where("is_submited");
+		
+		$tableAudits = new Audit_Model_Audits();
+		
+		$where = array("id in (?)" => new Zend_Db_Expr($select->assemble()));
+		
+		return $tableAudits->fetchAll($where, "done_at desc");
 	}
 	
 	/**
