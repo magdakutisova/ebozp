@@ -41,7 +41,7 @@ class Document_Form_Documentation extends Zend_Form {
 				"label" => "Pobočka"
 		));
 		
-		$this->addElement("text", "name", array(
+		$this->addElement("select", "name", array(
 				"required" => true,
 				"decorators" => $elementDecorator,
 				"label" => "Jméno"

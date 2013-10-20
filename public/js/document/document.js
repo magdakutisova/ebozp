@@ -190,13 +190,15 @@ $(function () {
 			// aktivace adresaru
 			var rootId = response.find("#root-id").val();
 			loadDirectoryAndFiles(rootId);
+
+			response.find("select[name='documentation[name]']").change(replaceSelect);
 			
 			createDialog(response, 800, "Editace dokumentace");
 		});
 	}
 	
 	function replaceSelect() {
-		var src = $("select#documentation-name");
+		var src = $(this); //$("select#documentation-name");
 		if (src.val() == "")
 			src.replaceWith($("<input type='text' id='documentation-name', name='documentation[name]' required='true' />"));
 	}

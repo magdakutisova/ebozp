@@ -90,6 +90,9 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		// nacteni adresarove struktury pro vyber souboru
 		$tableDirectories = new Document_Model_Directories();
 		$root = $tableDirectories->root($clientId);
+		
+		// zapis jmen
+		self::prepareNames($form, $doc);
 
 		$this->view->documentation = $doc;
 		$this->view->form = $form;
@@ -220,32 +223,10 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$addForm->getElement("subsidiary_id")->setValue($subsidiaryId);
 		$addForm->isValidPartial($this->_request->getParams());
 		
-		// nacteni prednastavenych jmen dokumentace
-		$tableNames = new Document_Model_Names();
-		$names = $tableNames->fetchAll(null, "name");
-		$nameIndex = array();
-		
-		foreach ($names as $name) {
-			$nameIndex[$name->name] = $name->name;
-		}
-		
-		$nameIndex[""] = "--JINÉ--";
+		self::prepareNames($addForm);
 		
 		// vyhodnoceni jmena
 		$currName = $addForm->getValue("name");
-		
-		if (empty($currName) || in_array($currName, $nameIndex)) {
-			// nastavene jmeno je prazdne nebo je v seznamu - textove pole se nahradi vyctem
-			$select = new Zend_Form_Element_Select(array(
-					"name" => "name",
-					"multiOptions" => $nameIndex,
-					"required" => true,
-					"label" => "Jméno",
-					"decorators" => $addForm->getElement("name")->getDecorators()
-					));
-			
-			$addForm->addElement($select);
-		}
 
 		$this->view->documentations = $documentations;
 		$this->view->subsidiary = $subsidiary;
@@ -258,8 +239,10 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	public function postAction() {
 		// kontrola dat
 		$form = new Document_Form_Documentation();
+		
 		self::insertSubs($form, $this->_request->getParam("clientId"));
-
+		self::prepareNames($form, $_REQUEST["documentation"]["name"]);
+		
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("index");
 			return;
@@ -302,6 +285,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 		$form = new Document_Form_Documentation();
 		self::insertSubs($form, $clientId);
+		self::prepareNames($form, $_REQUEST["documentation"]["name"]);
 
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("edit");
@@ -460,6 +444,30 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			// pripojeni souboru do adresare
 			$file->attach($dir);
 		}
+	}
+	
+	public static function prepareNames($form, $row = null) {
+		$nameIndex = array();
+		
+		if ($row) {
+			if (is_object($row)) {
+				$nameIndex[$row->name] = $row->name;
+			} else {
+				$nameIndex[$row] = $row;
+			}
+		}
+		
+		// nacteni prednastavenych jmen dokumentace
+		$tableNames = new Document_Model_Names();
+		$names = $tableNames->fetchAll(null, "name");
+		
+		foreach ($names as $name) {
+			$nameIndex[$name->name] = $name->name;
+		}
+		
+		$nameIndex[""] = "--JINÉ--";
+		
+		$form->getElement("name")->setMultiOptions($nameIndex);
 	}
 
 	/**
