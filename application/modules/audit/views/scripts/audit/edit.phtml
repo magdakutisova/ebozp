@@ -108,9 +108,9 @@ echo $this->formHidden("client_id", $this->client->id_client);
 				$classes = array();
 				
 				// vyhodnoceni barvy
-				if ($mistake->status == 2) {
+				if ($mistake->is_removed) {
 					$classes = array("mistake-removed");
-				} elseif ($mistake->cnt > 1) {
+				} elseif ($mistake->is_marked) {
 					$classes = array("mistake-marked");
 				}
 				

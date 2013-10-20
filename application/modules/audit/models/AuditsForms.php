@@ -173,8 +173,8 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			$adapter->commit();
 		} catch (Zend_Exception $e) {
-			die($e->getMessage());
 			$adapter->rollBack();
+			die($e->__toString());
 		}
 		
 		$adapter->query("set foreign_key_checks = 1;");

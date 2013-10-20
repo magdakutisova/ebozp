@@ -258,7 +258,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		return $retVal;
 	}
 	
-	private function _findMistakes(array $where, array $columns = array()) {
+	public function _findMistakes(array $where, array $columns = array()) {
 		// nacteni asociacnich tabulek
 		$tableAWatches = new Audit_Model_WatchesMistakes();
 		$tableAAudits = new Audit_Model_AuditsMistakes();
@@ -269,11 +269,12 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		$select = new Zend_Db_Select($this->getAdapter());
 		$select->from($this->_name, array_merge(array(
 				new Zend_Db_Expr("$this->_name.*"),
-				new Zend_Db_Expr("(COUNT($nameAAudits.is_submited) + COUNT($nameAWatches.is_submited) - 1) > 0 AS is_marked")
+				new Zend_Db_Expr("(SUM($nameAAudits.is_submited) + SUM($nameAWatches.is_submited) - 1) > 0 AS is_marked")
 				), $columns));
 		
 		// spojeni s asociacemi
-		$select->joinLeft($nameAAudits, "$nameAAudits.mistake_id = id", array())->joinLeft($nameAWatches, "$nameAWatches.mistake_id = id", array());
+		$select->joinLeft($nameAAudits, "$nameAAudits.mistake_id = id and $nameAAudits.is_submited", array())
+				->joinLeft($nameAWatches, "$nameAWatches.mistake_id = id and $nameAWatches.is_submited", array());
 		
 		// vlozeni omezeni z parametru
 		foreach ($where as $cond => $val) {

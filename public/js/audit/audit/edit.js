@@ -80,7 +80,7 @@ $(function () {
 	}
 	
 	$("#table-mistakes button[name='edit-mistake'],#workplace-mistakes button[name='edit']").click(openMistake);
-	$("#table-mistakes2 button[name='show'],#workplace-mistakes button[name='show']").click(showMistake);
+	$("#table-mistakes button[name='get-mistake'],#workplace-mistakes button[name='show']").click(showMistake);
 	$("#tabs").tabs();
 	
 	var semaphores = $(".semaphore");
