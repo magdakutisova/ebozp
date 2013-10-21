@@ -134,4 +134,54 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	public function getById($id) {
 		return $this->find($id)->current();
 	}
+	
+	public function findAudits($clientId, $subsidiaryId = null) {
+		$select = $this->prepareSelect(array("$this->_name.client_id = ?" => $clientId));
+		$select->order("done_at desc");
+		
+		if (!is_null($subsidiaryId)) $where["subsidiary_id = ?"] = $subsidiaryId;
+		
+		$data = $select->query()->fetchAll();
+		
+		return new Zend_Db_Table_Rowset(array("data" => $data));
+	}
+	
+	/**
+	 * pripravi vyhledavaci dotaz pro nacteni informaci o auditech
+	 */
+	public function prepareSelect(array $where = array()) {
+		// priprava selectu
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$select->from($this->_name);
+		
+		// navazani na technika a koordinatora
+		$tableUsers = new Application_Model_DbTable_User();
+		$nameUser = $tableUsers->info("name");
+		
+		$select->joinLeft(array("auditors" => $nameUser), "auditors.id_user = auditor_id", array("auditor_name" => "auditors.name"));
+		$select->joinLeft(array("coordinators" => $nameUser), "coordinators.id_user = coordinator_id", array("coordinator_name" => "coordinators.name"));
+		
+		// propojeni s pobockami
+		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+		$nameSubsidiaries = $tableSubsidiaries->info("name");
+		
+		$select->joinInner($nameSubsidiaries, "id_subsidiary = subsidiary_id", array("subsidiary_name", "subsidiary_street", "subsidiary_town"));
+		
+		// propojeni s klienty
+		$tableClients = new Application_Model_DbTable_Client();
+		$nameClients = $tableClients->info("name");
+		
+		$select->joinInner($nameClients, "$this->_name.client_id = $nameClients.id_client", array("company_name"));
+		
+		// zapis podminek
+		foreach ($where as $cond => $val) {
+			if (is_numeric($cond)) {
+				$select->where($val);
+			} else {
+				$select->where($cond, $val);
+			}
+		}
+		
+		return $select;
+	}
 }

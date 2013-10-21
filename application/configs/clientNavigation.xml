@@ -37,13 +37,6 @@
 			<privilege>list</privilege>
 			<clientId>clientId</clientId>
 		</subsidiary>
-		<audits>
-			<label>Audity</label>
-			<resource>audit:audit</resource>
-			<privilege>list</privilege>
-			<route>audit-list</route>
-			<clientId>clientId</clientId>
-		</audits>
 		<documents>
 			<label>Dokumenty</label>
 			<route>document-index</route>

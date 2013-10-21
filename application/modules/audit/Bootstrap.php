@@ -9,7 +9,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// seznam auditu
 		$router->addRoute(
 				"audit-list",
-				new Zend_Controller_Router_Route("/klient/:clientId/audits",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audits",
 						array(
 								"module" => "audit",
 								"controller" => "audit",

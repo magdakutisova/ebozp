@@ -504,23 +504,12 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableClients = new Application_Model_DbTable_Client();
 		$client = $tableClients->find($clientId)->current();
 		
-		// nacteni pobocek
-		$subsidiaries = $client->findDependentRowset("Application_Model_DbTable_Subsidiary");
-		$subIndex = array();
-		
-		foreach ($subsidiaries as $item) {
-			$subIndex[$item->id_subsidiary] = $item;
-		}
-		
-		// nacteni auditu, ktere ma uzivatel k dispozici
-		$userId = $this->_user->getIdUser();
+		$subsidiaryId = $this->_request->getParam("subsidiaryId", null);
 		
 		$tableAudits = new Audit_Model_Audits();
-		$audits = $tableAudits->fetchAll("auditor_id = $userId or coordinator_id = $userId", "done_at");
+		$audits = $tableAudits->findAudits($clientId, $subsidiaryId);
 		
-		$this->view->client = $client;
 		$this->view->audits = $audits;
-		$this->view->subIndex = $subIndex;
 	}
 	
 	public function postAction() {

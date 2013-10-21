@@ -1,11 +1,16 @@
 <h1>Audity a prověrky</h1>
-<h2><?php echo $this->client->company_name; ?></h2>
+<div class="box">
+	<a href='<?php 
+	$request = Zend_Controller_Front::getInstance()->getRequest();
+	echo $this->url(array("clientId" => $request->getParam("clientId"), "subsidiaryId" => $request->getParam("subsidiaryId")), "audit-create"); 
+	?>'>Provést audit</a>
+</div>
 <em>PT - potvrzeno technikem; PK - potvrzeno koordinátorem</em>
 <table>
 	<thead>
 		<tr>
 			<th>
-			Pobočka
+			Technik
 			</th>
 			<th>
 			Datum provedení
@@ -59,7 +64,7 @@
 		$action = "<a href='$href'>$caption</a>";
 		?>
 		<tr>
-			<td><?php echo $subIndex[$audit->subsidiary_id]->subsidiary_name; ?></td>
+			<td><?php echo $audit->auditor_name; ?></td>
 			<td><?php echo $this->sqlDate($audit->done_at); ?></td>
 			<td><?php echo $audit->is_check ? "Prověrka" : "Audit"; ?></td>
 			<td><?php echo $audit->auditor_confirmed_at[0] == '0' ? "Ne" : "Ano"; ?></td>
