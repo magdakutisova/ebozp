@@ -560,6 +560,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				$item[7] = self::_transferDate($item[7]);
 				$item[11] = self::_transferDate($item[11]);
 				
+				if ((int) substr($item[7], 0, 4) < 1910) $item[7] = "0000-00-00";
+				
 				// vyhodnoceni jmena
 				if (strpos($item[10], " ") && $form->getValue("import_type") == Deadline_Form_Import::TYPE_EMPLOYEE) {
 					// v prvku jsou minimalne dve slova
