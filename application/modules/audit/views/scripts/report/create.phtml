@@ -2,7 +2,7 @@
 $client = $this->client;
 $audit = $this->audit;
 
-$url = $this->url(array("clientId" => $client->id_client, "auditId" => $audit->id), "audit-edit");
+$url = $this->url(array("clientId" => $client->id_client, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
 ?>
 <h1>Výstupní zpráva auditu</h1>
 <?php 
