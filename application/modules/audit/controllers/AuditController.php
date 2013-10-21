@@ -593,10 +593,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit->save();
 		
 		// presmerovani na fill nebo review, dle role
-		if ($this->_user->getRoleId() == My_Role::ROLE_TECHNICIAN) {
-			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-edit");
+		if ($this->_user->getIdUser() == $audit->auditor_id || $this->_user->getIdUser() == $audit->coordinator_id) {
+			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
 		} else {
-			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-review");
+			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
 		}
 		
 		$this->_redirect($url);
