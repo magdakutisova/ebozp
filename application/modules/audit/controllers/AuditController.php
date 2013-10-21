@@ -616,19 +616,33 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// kontrola opravneni pristupu
 		$userId = $this->_user->getIdUser();
 		$roleId = $this->_user->getRoleId();
+		$audit = $this->_audit;
+		
+		// kontrola pristupnosti vzhledem k rolim
+		if ($roleId != My_Role::ROLE_ADMIN && $roleId != My_Role::ROLE_SUPERADMIN) {
+			// uzivatel neni administrator - musime zkontrolovat pristup k akcim
+			
+			if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_TECHNICIAN || $audit->auditor_id != $userId)) {
+				throw new Zend_Exception("Invalid user or audit status - unsubmited by technic try submit non technic user");
+			} elseif ($audit->coordinator_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_COORDINATOR || $audit->coordinator_id != $userId)) {
+				throw new Zend_Exception("Invalid user or audit status - unsubmited by coordinator try submit non coordinator user");
+			} else {
+				throw new Zend_Exception("Unsupported action for audit user and role");
+			}
+		}
 		
 		// provedeni akci dle typu uzivatele, ktery odeslal audit
-		if ($roleId == My_Role::ROLE_TECHNICIAN && $this->_audit->auditor_id == $userId && $this->_audit->auditor_confirmed_at[0] == '0') {
+		if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00") {
 			// odeslal to technik - jen se to podepise jinak se nic nedeje
 			$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
 			$this->_audit->save();
 			
 			// presmerovani na get
-			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-get");
+			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
 			$this->_redirect($url);
 			
 			return;
-		} else if ($roleId == My_Role::ROLE_COORDINATOR && $this->_audit->coordinator_id == $userId && $this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->coordinator_confirmed_at[0] == '0') {
+		} else if ($this->_audit->coordinator_confirmed_at[0] == '0') {
 			// odstrani se neshody, ktere nakonec nebyly pouzity
 			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 			$tableAssocs = new Audit_Model_AuditsMistakes();
