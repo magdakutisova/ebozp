@@ -558,7 +558,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$nameAssocs = $tableAssocs->info("name");
 		$nameMistakes = $tableMistakes->info("name");
 		
-		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed";
+		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed and is_submited";
 		$tableAssocs->getAdapter()->query($sql);
 		
 		$this->_redirect(
