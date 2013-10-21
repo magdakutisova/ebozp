@@ -2,7 +2,7 @@
 <h2><?php echo $this->client->company_name . " - " . $this->subsidiary->subsidiary_name; ?></h2>
 <div class="box">
 <?php 
-$urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id);
+$urlParams = array("clientId" => $this->client->id_client, "auditId" => $this->audit->id, "subsidiaryId" => $this->audit->subsidiary_id);
 	
 $url = $this->url($urlParams, "audit-edit");
 echo "<a href='$url'>Zpět na audit</a>";
