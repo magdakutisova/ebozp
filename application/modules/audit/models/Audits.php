@@ -136,10 +136,12 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	}
 	
 	public function findAudits($clientId, $subsidiaryId = null) {
-		$select = $this->prepareSelect(array("$this->_name.client_id = ?" => $clientId));
-		$select->order("done_at desc");
+		$where = array("$this->_name.client_id = ?" => $clientId);
 		
 		if (!is_null($subsidiaryId)) $where["subsidiary_id = ?"] = $subsidiaryId;
+		
+		$select = $this->prepareSelect($where);
+		$select->order("done_at desc");
 		
 		$data = $select->query()->fetchAll();
 		
