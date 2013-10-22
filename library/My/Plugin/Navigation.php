@@ -26,7 +26,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			$subIds = array();
 			foreach($subsidiaries as $subsidiary){
 				// pokud je pobocka pouze sidlo, preskoci se
-				if ($subsidiary->getHqOnly()) continue;
+				// if ($subsidiary->getHqOnly()) continue; - uprva petr jindra - pokud bylo pouze sidlo, tak to padalo
 				
 				if($acl->isAllowed($user, $subsidiary)){
 					$active = '';
