@@ -107,6 +107,12 @@ if ($this->onlyClosed) {
 			}
 			
 			echo "<a href='$url'>$caption</a>";
+			
+			if ($watch->is_closed) {
+				$url = sprintf("/audit/watch/protocol.pdf?watchId=%s", $watch->id);
+				
+				printf(" | <a href='%s' target'_blank'>Protokol</a>", $url);
+			}
 			?>
 			</td>
 		</tr>

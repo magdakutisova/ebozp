@@ -62,10 +62,16 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 		
 		// sestaveni selectu
 		$select = new Zend_Db_Select($this->getAdapter());
-		$select->from($this->_name);
+		$select->from($this->_name, array(
+				"*",
+				"contact_name" => new Zend_Db_Expr("CONCAT(IFNULL(contact_name, ''), IFNULL($nameContacts.name, ''))"),
+				"contact_email" => new Zend_Db_Expr("CONCAT(IFNULL(contact_email, ''), IFNULL($nameContacts.email, ''))"),
+				"contact_phone" => new Zend_Db_Expr("CONCAT(IFNULL(contact_phone, ''), IFNULL($nameContacts.phone, ''))")
+				));
 		
 		// asociace na technika a na kontaktni osobu
-		$select->joinLeft($nameContacts, "contactperson_id = id_contact_person", array("contact_name" => "name", "contact_email" => "email", "contact_phone" => "phone"))->joinLeft($nameUsers, "user_id = id_user");
+		$select->joinLeft($nameContacts, "contactperson_id = id_contact_person", 
+				array())->joinLeft($nameUsers, "user_id = id_user");
 		
 		// podminky
 		$select->where("$this->_name.client_id = ?", $clientId);
