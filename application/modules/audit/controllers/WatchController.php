@@ -293,12 +293,17 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
 		
 		// vygenerovani vyhledavaciho dotazu
+		$acl = new My_Controller_Helper_Acl();
+		$user = Zend_Auth::getInstance()->getInstance()->getIdentity();
+		
 		$tableWatches = new Audit_Model_Watches();
-		$watches = $tableWatches->findWatches($clientId, $subsidiaryId);
+		$onlyClosed = !$acl->isAllowed($user->role, "audit:watch", "edit");
+		$watches = $tableWatches->findWatches($clientId, $subsidiaryId, $onlyClosed);
 		
 		$this->view->watches = $watches;
 		$this->view->clientId = $clientId;
 		$this->view->subsidiaryId = $subsidiaryId;
+		$this->view->onlyClosed = $onlyClosed;
 	}
 	
 	public function mistakesAction() {

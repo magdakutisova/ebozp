@@ -1,9 +1,63 @@
 <h2>Dohlídky</h2>
 <?php 
-$url = $this->url(array("clientId" => $this->clientId, "subsidiaryId" => $this->subsidiaryId), "audit-watch-create");
+$user = Zend_Auth::getInstance()->getIdentity();
+$acl = new My_Controller_Helper_Acl();
 
-echo "<a href='$url'>Nová dohlídka</a>";
-?>
+if ($acl->isAllowed($user->role, "audit:watch", "post")) {
+	$url = $this->url(array("clientId" => $this->clientId, "subsidiaryId" => $this->subsidiaryId), "audit-watch-create");
+	echo "<div class='box'><a href='$url'>Nová dohlídka</a></div>";
+}
+
+if ($this->onlyClosed) {
+	?>
+<table>
+	<thead>
+		<tr>
+			<th>
+			Datum dohldíky
+			</th>
+			<th>
+			Zobrazit
+			</th>
+			<th>
+			Stáhnout protokol
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php 
+	foreach ($this->watches as $watch) {
+		?>
+		<tr>
+			<td>
+			<?php echo $this->sqlDate($watch->watched_at); ?>
+			</td>
+			<td>
+			<?php 
+			// vyhodnoceni URL
+			$url = $this->url(array("watchId" => $watch->id, "clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id), "audit-watch-get");
+			$caption = "Zobrazit";
+
+			echo "<a href='$url'>$caption</a>";
+			?>
+			</td>
+			<td>
+			<?php 
+			$url = sprintf("/audit/watch/protocol.pdf?watchId=%s", $watch->id);
+			$caption = "Stáhnout protokol";
+			
+			echo "<a target='_blank' href='$url'>$caption</a>";
+			?>
+			</td>
+		</tr>
+		<?php 
+	}
+	?>
+	</tbody>
+</table>
+	<?php 
+} else {
+	?>
 <table>
 	<thead>
 		<tr>
@@ -60,5 +114,6 @@ echo "<a href='$url'>Nová dohlídka</a>";
 	}
 	?>
 	</tbody>
-</table>
-<?php
+</table>	
+	<?php 
+}

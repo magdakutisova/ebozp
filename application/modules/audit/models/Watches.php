@@ -54,7 +54,7 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 	 * @param int $subsidiaryId
 	 * @return Audit_Model_Rowset_Watches
 	 */
-	public function findWatches($clientId, $subsidiaryId = -1) {
+	public function findWatches($clientId, $subsidiaryId = -1, $closedOnly = false) {
 		$tableUsers = new Application_Model_DbTable_User();
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
 		$nameUsers = $tableUsers->info("name");
@@ -72,6 +72,10 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 		
 		if ($subsidiaryId != -1) {
 			$select->where("$this->_name.subsidiary_id = ?", $subsidiaryId);
+		}
+		
+		if ($closedOnly) {
+			$select->where("is_closed");
 		}
 		
 		// navrat dat
