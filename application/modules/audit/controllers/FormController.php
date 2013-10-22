@@ -5,6 +5,19 @@ class Audit_FormController extends Zend_Controller_Action {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers/", "Zend_View_Helper");
 	}
 	
+	/**
+	 * provede klonovani formulare predaneho z prohlizece
+	 */
+	public function cloneAction() {
+		// nacteni formulare
+		$form = self::loadForm($this->_request->getParam("formId"));
+		
+		$newForm = $form->cloneForm($form->name . " - kopie");
+		
+		$this->view->oldForm = $form;
+		$this->view->newForm = $newForm;
+	}
+	
 	public function createAction() {
 		// vytvoreni formulare
 		$form = new Audit_Form_Form();

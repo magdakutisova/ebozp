@@ -8,6 +8,19 @@ echo $this->editForm;
 echo "<h2>Smazat formulář</h2>";
 echo $this->formDelete;
 
+// kontrola opravnneni klonovat formular
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "audit:form", "clone")) {
+	?>
+<h2>Klonovat formulář</h2>
+<form action="<?php printf("/audit/form/clone?formId=%s", $this->form->id); ?>" onsubmit="return confirm('Skutečně chcete klonovat formulář?');" method="post">
+	<?php echo $this->formSubmit("clone-submit", "Klonovat formulář"); ?>
+</form>
+	<?php 
+}
+
 // vypis kategorii tak, jak jdou posobe a vytvoreni formulare pro ulozeni noveho razeni
 ?>
 <h2>Pořadí kategorií</h2>
