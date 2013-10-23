@@ -37,15 +37,17 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 	);
 }
 
+$address = sprintf("%s, %s, %s", $this->subsidiary->subsidiary_town, $this->subsidiary->subsidiary_street, $this->subsidiary->subsidiary_code);
+
 $opts = array(
 		"common" => array(
 				"name" => $name,
 				"org" => $client->company_name,
 				"org_hq" => $address,
 				"ico" => $client->tax_number,
-				"sub_hq" => $this->subsidiary->hq,
+				"sub_hq" => $address,
 				"done_at" => $audit->done_at,
-				"done_in" => $this->subsidiary->subsidiary_name,
+				"done_in" => $address,
 				"auditor_name" => $this->auditor->name,
 				"contact_name" => ($this->contact ? $this->contact->name : $audit->contact_name),
 				"progres_note_caption" => $progresNoteCaption,
