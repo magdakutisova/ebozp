@@ -109,6 +109,12 @@ class Audit_AuditController extends Zend_Controller_Action {
 			}
 		}
 		
+		// nacteni seznamu zodpovednych osob
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$contacts = $diary->findDependentRowset($tableContacts, "Subsidiary", $tableContacts->select(false)->order("name"));
+		
+		$form->setContacts($contacts);
+		
 		$this->view->form = $form;
 	}
 	
@@ -314,6 +320,12 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
 		$form->fillSelects();
+		
+		// nastaveni kontaktnich osob
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_audit->subsidiary_id), "name");
+		$form->setContacts($contacts);
+		
 		$form->populate(array("audit" => $this->_audit->toArray()));
 		
 		// uprava datumu
@@ -394,6 +406,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$this->_initWorkForms();
 		
+		// nastaveni formulare pro kontaktni osobou
+		$contactForm = new Audit_Form_ContactPerson();
+		$contactForm->populate($this->_audit->toArray());
+		$contactForm->setAction(sprintf("/audit/audit/newcontact?auditId=%s", $this->_audit->id));
+		
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
 		$this->view->form = $form;
@@ -408,6 +425,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->otherMistakes = $otherMistakes;
 		$this->view->commentForms = $commentForms;
 		$this->view->userId = $userId;
+		$this->view->contactForm = $contactForm;
 	}
 	
 	public function getAction() {
@@ -453,6 +471,12 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
 		$this->view->forms = $forms;
+		
+		if ($this->_audit->contactperson_id) {
+			$tableContacts = new Application_Model_DbTable_ContactPerson();
+			
+			$this->view->contact = $tableContacts->find($this->_audit->contactperson_id)->current();
+		}
 		
 		// zapis dat neshod
 		$this->view->workplaceIndex = $workplaceIndex;
@@ -512,6 +536,30 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->audits = $audits;
 	}
 	
+	public function newcontactAction() {
+		// kontrola dat
+		if (!$this->_audit) throw new Zend_Db_Exception("Audit not found");
+		
+		$this->_request->setParam("clientId", $this->_audit->client_id)->setParam("subsidiaryId", $this->_audit->subsidiary_id);
+		
+		$form = new Audit_Form_ContactPerson();
+		
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("edit");
+			return;
+		}
+		
+		// nastaveni dat a ulozeni
+		$audit = $this->_audit;
+		
+		$audit->contactperson_id = null;
+		
+		$audit->setFromArray($form->getValues(true));
+		$audit->save();
+		
+		$this->view->audit = $audit;
+	}
+	
 	public function postAction() {
 		// nacteni dat
 		$data = $this->getRequest()->getParam("audit", array());
@@ -538,7 +586,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$doneAt = new Zend_Date($form->getValue("done_at"), "MM. dd. y");
 		
 		// vytvoreni zaznamu
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("is_check"), $form->getValue("responsibile_name"));
+		$contactId = $form->getValue("contactperson_id");
+		
+		if (!$contactId) $contactId = null;
+		
+		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
 		
 		// prirazeni existujicich neshod
 		$tableAssocs = new Audit_Model_AuditsMistakes();
@@ -574,8 +626,19 @@ class Audit_AuditController extends Zend_Controller_Action {
 		list($day, $month, $year) = explode(". ", $form->getValue("done_at"));
 		$form->getElement("done_at")->setValue("$year-$month-$day");
 		
+		// pokud je id kontaktni osoby nulove, nahrani se hodnotou null
+		$data = $form->getValues(true);
+		
+		if ($data["contactperson_id"]) {
+			$data["contact_name"] = null;
+			$data["contact_email"] = null;
+			$data["contact_phone"] = null;
+		} else {
+			$data["contactperson_id"] = null;
+		}
+		
 		// zapis poznamek a shrnuti
-		$audit->setFromArray($form->getValues(true));
+		$audit->setFromArray($data);
 		
 		// nastaveni ostanich dat
 		

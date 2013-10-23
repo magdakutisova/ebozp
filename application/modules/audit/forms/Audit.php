@@ -68,10 +68,10 @@ class Audit_Form_Audit extends Zend_Form {
 		);
 		
 		// zodpovedne osoby
-		$this->addElement("text", "responsibile_name", array(
-				"required" => true,
+		$this->addElement("select", "contactperson_id", array(
+				"required" => false,
 				"decorators" => $elementDecorator,
-				"label" => "Zodpovědná osoba*"
+				"label" => "Zástupce klienta"
 		));
 		
 		// datum provedeni auditu
@@ -79,6 +79,7 @@ class Audit_Form_Audit extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"label" => "Datum provedení auditu",
 				"required" => true,
+				"value" => Zend_Date::now()->get("dd. MM. y"),
 				"validators" => array(
 						array(
 								"Regex",
@@ -113,5 +114,15 @@ class Audit_Form_Audit extends Zend_Form {
 				"decorators" => $lastDecoratorClose,
 				"label" => "Provést audit"
 		));
+	}
+	
+	public function setContacts($contacts) {
+		$items = array("" => "---Vyberte---");
+		
+		foreach ($contacts as $contact) {
+			$items[$contact->id_contact_person] = $contact->name;
+		}
+		
+		$this->_elements["contactperson_id"]->setMultiOptions($items);
 	}
 }

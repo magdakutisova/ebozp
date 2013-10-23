@@ -42,6 +42,9 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		
 		$isReport = $userId == $audit->auditor_id || $userId == $audit->coordinator_id && $audit->report_id;
 		
+		echo "<h2>Jiná kontaktní osoba</h2>";
+		echo $this->contactForm;
+		
 		if ($this->form->getElement("summary")->getValue() && $isReport) {
 			?>
 		<h3>Uzavření auditu</h3>

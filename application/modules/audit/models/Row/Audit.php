@@ -75,7 +75,8 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		$where = array(
 				"id not in (?)" => new Zend_Db_Expr($subSelect->assemble()),
 				"audit_audits_records_mistakes.subsidiary_id = ?" => $this->subsidiary_id,
-				"audit_audits_records_mistakes.is_submited"
+				"audit_audits_records_mistakes.is_submited",
+				"!audit_audits_records_mistakes.is_removed"
 				);
 		
 		return $tableMistakes->_findMistakes($where);

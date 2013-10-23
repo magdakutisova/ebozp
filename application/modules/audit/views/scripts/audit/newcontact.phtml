@@ -1,0 +1,10 @@
+<?php
+$audit = $this->audit;
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$url = $this->url(array(
+		"clientId" => $audit->client_id,
+		"subsidiaryId" => $audit->subsidiary_id,
+		"auditId" => $audit->id
+		), "audit-edit");
+
+$redirector->gotoUrlAndExit($url);

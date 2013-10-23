@@ -59,7 +59,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 			Zend_Db_Table_Row_Abstract $subsidiary,
 			Zend_Date $doneAt,
 			$isCheck,
-			$responsibiles) 
+			$contactPersonId) 
 	{
 		// vytvoreni zaznamu
 		$retVal = $this->createRow(array(
@@ -69,7 +69,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 				"auditor_name" => $auditor->username,
 				"coordinator_id" => $coordinator->id_user,
 				"coordinator_name" => $coordinator->username,
-				"responsibile_name" => $responsibiles,
+				"contactperson_id" => $contactPersonId,
 				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss"),
 				"is_check" => $isCheck
 		));
