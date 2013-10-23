@@ -695,7 +695,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				"checkId" => $checkId
 		);
 
-		$url = $this->view->url($params, "audit-edit") . "#workcomments";
+		$url = $this->view->url($params, "audit-edit");
 
 		$this->_redirect($url);
 	}
