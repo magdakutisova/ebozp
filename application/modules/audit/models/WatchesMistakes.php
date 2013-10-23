@@ -33,7 +33,7 @@ class Audit_Model_WatchesMistakes extends Zend_Db_Table_Abstract {
 		
 		// vyhledavaci podminky pro filtraci pobocky a neodstranenych neshod
 		$select->where("subsidiary_id = ?", $watch->subsidiary_id);
-		$select->where("!is_removed");
+		$select->where("!is_removed")->where("is_submited");
 		
 		// zapis dat
 		$sql = "insert into " . $this->_name . " (mistake_id, watch_id) " . $select->assemble();
