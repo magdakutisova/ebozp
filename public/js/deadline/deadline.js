@@ -88,7 +88,7 @@ $(function () {
 	$("#deadline-filter-toggle").click(toggleFilter);
 	$("#deadlinefilter").submit(filter);
 	
-	$("#deadline-done_at").datepicker({
+	$("#deadline-done_at,#deadline-last_done").datepicker({
 		"dateFormat" : "yy-mm-dd",
 		"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
