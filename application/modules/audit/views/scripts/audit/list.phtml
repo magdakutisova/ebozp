@@ -5,7 +5,7 @@
 	echo $this->url(array("clientId" => $request->getParam("clientId"), "subsidiaryId" => $request->getParam("subsidiaryId")), "audit-create"); 
 	?>'>Provést audit</a>
 </div>
-<em>PT - potvrzeno technikem; PK - potvrzeno koordinátorem</em>
+<em>PT - potvrzeno technikem</em>
 <table>
 	<thead>
 		<tr>
@@ -20,9 +20,6 @@
 			</th>
 			<th>
 			PT
-			</th>
-			<th>
-			PK
 			</th>
 			<th>
 			Akce
@@ -51,13 +48,6 @@
 					$caption = "Upravit";
 				}
 				break;
-				
-			case My_Role::ROLE_COORDINATOR:
-				if ($audit->auditor_confirmed_at[0] != '0' && $audit->coordinator_confirmed_at[0] == '0') {
-					$route = "audit-edit";
-					$caption = "Upravit";
-				}
-				break;
 		}
 		
 		$href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), $route);
@@ -68,7 +58,6 @@
 			<td><?php echo $this->sqlDate($audit->done_at); ?></td>
 			<td><?php echo $audit->is_check ? "Prověrka" : "Audit"; ?></td>
 			<td><?php echo $audit->auditor_confirmed_at[0] == '0' ? "Ne" : "Ano"; ?></td>
-			<td><?php echo $audit->coordinator_confirmed_at[0] == '0' ? "Ne" : "Ano"; ?></td>
 			<td><?php echo $action; ?></td>
 		</tr>
 		<?php 

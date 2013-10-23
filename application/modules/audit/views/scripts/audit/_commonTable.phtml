@@ -37,14 +37,6 @@ $audit = $this->audit;
 		</tr>
 		<tr>
 			<td>
-			Koordinátor
-			</td>
-			<td>
-			<?php echo $this->coordinator->username; ?>
-			</td>
-		</tr>
-		<tr>
-			<td>
 			Proveden dne
 			</td>
 			<td>
@@ -57,14 +49,6 @@ $audit = $this->audit;
 			</td>
 			<td>
 			<?php echo $this->sqlEmptyDateTime($audit->auditor_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->auditor_confirmed_at); ?>
-			</td>
-		</tr>
-		<tr>
-			<td>
-			Zpracován koordinátorem:
-			</td>
-			<td>
-			<?php echo $this->sqlEmptyDateTime($audit->coordinator_confirmed_at) ? "Ne" : $this->sqlDateTime($audit->coordinator_confirmed_at); ?>
 			</td>
 		</tr>
 		<tr>

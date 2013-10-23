@@ -15,7 +15,6 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni nacionalii
 		$client = $audit->getClient();
 		$subsidiary = $audit->getSubsidiary();
-		$coordinator = $audit->getCoordinator();
 		$auditor = $audit->getAuditor();
 		
 		// nacteni formularu
@@ -28,9 +27,15 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni neshod
 		$mistakes = self::getMistakes($audit);
 		
+		// nacteni zastupce klienta
+		if ($audit->contactperson_id) {
+			$tableContacts = new Application_Model_DbTable_ContactPerson();
+			$this->view->contact = $tableContacts->find($audit->contactperson_id)->current();
+		}
+		
+		
 		$this->view->audit = $audit;
 		$this->view->client = $client;
-		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
 		$this->view->subsidiary = $subsidiary;
 		
@@ -70,7 +75,6 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni nacionalii
 		$client = $audit->getClient();
 		$subsidiary = $audit->getSubsidiary();
-		$coordinator = $audit->getCoordinator();
 		$auditor = $audit->getAuditor();
 		
 		// nacteni itemu
@@ -91,7 +95,6 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		$this->view->audit = $audit;
 		$this->view->client = $client;
-		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->report = $report;
@@ -117,8 +120,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 				"done_at" => "",
 				"done_in" => "",
 				"auditor_name" => "",
-				"coordinator_name" => "",
-				"client_responsibles" => "",
+				"contact_name" => "",
 				"target_caption" => "",
 				"target" => "",
 				"progres_caption" => "",

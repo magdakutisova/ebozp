@@ -20,19 +20,6 @@ class Audit_Form_Audit extends Zend_Form {
 		return $this;
 	}
 	
-	public function fillSelects() {
-		// nactei koordinatoru
-		$tableUsers = new Application_Model_DbTable_User();
-		$coordinators = $tableUsers->fetchAll("role = " . My_Role::ROLE_COORDINATOR, "username");
-		
-		// zapis do formulare
-		foreach ($coordinators as $coord) {
-			$this->getElement("coordinator_id")->addMultiOption($coord->id_user, $coord->username);
-		}
-		
-		return $this;
-	}
-	
 	public function init() {
 		// nastaveni dat
 		$this->setName("audit-edit");
@@ -90,12 +77,6 @@ class Audit_Form_Audit extends Zend_Form {
 								)
 						)
 				)
-		));
-		
-		// koordinator
-		$this->addElement("select", "coordinator_id", array(
-				"decorators" => $elementDecorator,
-				"label" => "Koordinátor auditu"
 		));
 		
 		// audit nebo proverka

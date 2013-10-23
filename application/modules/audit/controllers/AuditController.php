@@ -71,7 +71,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// nastaveni formulare
 		$form = new Audit_Form_Audit();
-		$form->fillSelects();
 		
 		// castecna validace dat, pokud je potreba
 		$form->isValidPartial($data);
@@ -138,7 +137,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$auditData = array(
 				"done_at" => new Zend_Db_Expr("CURRENT_TIMESTAMP"),
 				"auditor_id" => $audit->auditor_id,
-				"coordinator_id" => $audit->coordinator_id,
 				"client_id" => $audit->client_id,
 				"subsidiary_id" => $audit->subsidiary_id,
 				"responsibile_name" => $audit->responsibile_name,
@@ -314,12 +312,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// kontrola pristupu
 		$userId = $this->_user->getIdUser();
 		if ($this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->auditor_id == $userId 
-				|| ($this->_audit->auditor_confirmed_at[0] == '0' || $this->_audit->coordinator_confirmed_at[0] != '0') && $this->_audit->coordinator_id == $userId
-				|| $this->_audit->coordinator_id != $userId && $this->_audit->auditor_id != $userId) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
+				|| $this->_audit->auditor_id != $userId) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
 		
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
-		$form->fillSelects();
 		
 		// nastaveni kontaktnich osob
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
@@ -400,10 +396,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$submitForm->setAction($this->view->url($params, "audit-submit"));
 		$submitForm->populate($_REQUEST);
 		
-		if ($this->_user->getRoleId() == My_Role::ROLE_COORDINATOR) {
-			$submitForm->getElement("confirm")->setLabel("Uzavřít audit");
-		}
-		
 		$this->_initWorkForms();
 		
 		// nastaveni formulare pro kontaktni osobou
@@ -438,7 +430,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nacteni doprovodnych informaci
 		$auditor = $audit->getAuditor();
 		$client = $audit->getClient();
-		$coordinator = $audit->getCoordinator();
 		$subsidiary = $audit->getSubsidiary();
 		
 		// nacteni formularu
@@ -468,7 +459,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->audit = $this->_audit;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->client = $client;
-		$this->view->coordinator = $coordinator;
 		$this->view->auditor = $auditor;
 		$this->view->forms = $forms;
 		
@@ -566,7 +556,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// nacteni a validace formulare
 		$form = new Audit_Form_Audit();
-		$form->fillSelects();
+		
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_request->getParam("subsidiaryId", null)), "name");
+		$form->setContacts($contacts);
 		
 		if (!$form->isValid($data)) {
 			$this->_forward("create");
@@ -579,7 +572,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableAudits = new Audit_Model_Audits();
 		
 		$subsidiary = $tableSubsidiaries->find($form->getValue("subsidiary_id"))->current();
-		$coordinator = $tableUser->find($form->getValue("coordinator_id"))->current();
 		$auditor = $tableUser->find($this->_user->getIdUser())->current();
 		
 		// datum provedeni
@@ -590,7 +582,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		if (!$contactId) $contactId = null;
 		
-		$audit = $tableAudits->createAudit($auditor, $coordinator, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
+		$audit = $tableAudits->createAudit($auditor, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
 		
 		// prirazeni existujicich neshod
 		$tableAssocs = new Audit_Model_AuditsMistakes();
@@ -613,6 +605,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$form = new Audit_Form_AuditFill();
 		$form->getElement("summary")->setRequired(false);
+		
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_request->getParam("subsidiaryId", null)), "name");
+		$form->setContacts($contacts);
 		
 		// kontrola validity
 		$form->populate($data);
@@ -645,7 +641,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit->save();
 		
 		// presmerovani na fill nebo review, dle role
-		if ($this->_user->getIdUser() == $audit->auditor_id || $this->_user->getIdUser() == $audit->coordinator_id) {
+		if ($this->_user->getIdUser() == $audit->auditor_id) {
 			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
 		} else {
 			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
@@ -657,6 +653,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 	public function submitAction() {
 		// kontrola dat
 		$form = new Audit_Form_AuditAuditorSubmit();
+		
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_audit->subsidiary_id), "name");
+		$form->setContacts($contacts);
 		
 		if (!$form->isValid($this->getRequest()->getParams())) {
 			// neni zaskrtnuto potvrzovaci policko
@@ -676,8 +676,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 			
 			if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_TECHNICIAN || $audit->auditor_id != $userId)) {
 				throw new Zend_Exception("Invalid user or audit status - unsubmited by technic try submit non technic user");
-			} elseif ($audit->coordinator_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_COORDINATOR || $audit->coordinator_id != $userId)) {
-				throw new Zend_Exception("Invalid user or audit status - unsubmited by coordinator try submit non coordinator user");
 			} else {
 				throw new Zend_Exception("Unsupported action for audit user and role");
 			}
@@ -687,49 +685,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00") {
 			// odeslal to technik - jen se to podepise jinak se nic nedeje
 			$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
+			$this->_audit->is_closed = 1;
 			$this->_audit->save();
 			
 			// presmerovani na get
 			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
 			$this->_redirect($url);
 			
-			return;
-		} else if ($this->_audit->coordinator_confirmed_at[0] == '0') {
-			// odstrani se neshody, ktere nakonec nebyly pouzity
-			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-			$tableAssocs = new Audit_Model_AuditsMistakes();
-			$nameMistakes = $tableMistakes->info("name");
-			$nameAssocs = $tableAssocs->info("name");
-			$auditId = $this->_audit->id;
-			
-			$where = array(
-					"audit_id = $auditId",
-					"id not in (select mistake_id from `$nameAssocs` where audit_id = $auditId)"
-			);
-			
-			$tableMistakes->delete($where);
-			
-			// aktualizace stavu neshod
-			$begin = "update `$nameAssocs`, `$nameMistakes` set ";
-			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 1 and id = mistake_id";
-			$tableMistakes->getAdapter()->query("$sql1");
-			
-			// odeslani neshod, ktere se maji odeslat
-			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
-			$tableMistakes->getAdapter()->query($sql);
-			
-			// nastaveni odeslani neshod v asociacni tabulce auditu
-			$tableAssocs->update(array("is_submited" => 1), array("audit_id = ?" => $auditId));
-			
-			// potvrdi se audit
-			$this->_audit->coordinator_confirmed_at = new Zend_Db_Expr("NOW()");
-			$this->_audit->is_closed = 1;
-			$this->_audit->save();
-			
-			// presmerovani na get
-			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id), "audit-get");
-			$this->_redirect($url);
-				
 			return;
 		}
 		

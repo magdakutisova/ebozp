@@ -31,7 +31,7 @@ class Audit_Form_AuditAuditorSubmit extends Zend_Form {
 		// potvrzeni
 		$this->addElement("checkbox", "confirm", array(
 				"required" => true,
-				"label" => "Uzavřít audit a odeslat koordinátorovi",
+				"label" => "Uzavřít audit",
 				"decorators" => $elementDecorator,
 				"validators" => array(new Zend_Validate_InArray(array(1)))
 		));

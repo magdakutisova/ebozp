@@ -20,12 +20,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 					"refColumns" => "id_client"
 			),
 			
-			"coordinator" => array(
-					"columns" => "coordinator_id",
-					"refTableClass" => "Application_Model_DbTable_User",
-					"refColumns" => "id_user"
-			),
-			
 			"questionary" => array(
 					"columns" => "form_id",
 					"refTableClass" => "Questionary_Model_Questionaries",
@@ -47,7 +41,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 * zalozi novy audit
 	 * 
 	 * @param Zend_Db_Table_Row_Abstract $auditor uzivatel auditora
-	 * @param Zend_Db_Table_Row_Abstract $coordinator uzivatel koordinatora
 	 * @param Zend_Db_Table_Row_Abstract $subsidiary pobocka
 	 * @param Zend_Date $date datum provedeni auditu
 	 * @param bool $isCheck prepinac audit - proverka 
@@ -55,7 +48,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 * @return Audit_Model_Row_Audit
 	 */
 	public function createAudit(Zend_Db_Table_Row_Abstract $auditor, 
-			Zend_Db_Table_Row_Abstract $coordinator,
 			Zend_Db_Table_Row_Abstract $subsidiary,
 			Zend_Date $doneAt,
 			$isCheck,
@@ -67,8 +59,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 				"subsidiary_id" => $subsidiary->id_subsidiary,
 				"auditor_id" => $auditor->id_user,
 				"auditor_name" => $auditor->username,
-				"coordinator_id" => $coordinator->id_user,
-				"coordinator_name" => $coordinator->username,
 				"contactperson_id" => $contactPersonId,
 				"done_at" => $doneAt->get("y-MM-dd HH-mm-ss"),
 				"is_check" => $isCheck
@@ -86,14 +76,12 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 	 * najde audity podle zadanych podminek
 	 * 
 	 * @param Zend_Db_Table_Row_Abstract $auditor auditor
-	 * @param Zend_Db_Table_Row_Abstract $coordinator koordinator
 	 * @param Zend_Db_Table_Row_Abstract $client klient
 	 * @param Zend_Db_Table_Row_Abstract $subsidiary pobocka
 	 * @param array $order razeni
 	 * @return Audit_Model_Rowset_Audits
 	 */
 	public function getAudit(Zend_Db_Table_Row_Abstract $auditor = null,
-			Zend_Db_Table_Row_Abstract $coordinator = null,
 			Zend_Db_Table_Row_Abstract $client = null,
 			Zend_Db_Table_Row_Abstract $subsidiary = null,
 			array $order = null) 
@@ -104,10 +92,6 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		
 		if (!is_null($auditor)) {
 			$where[] = "auditor_id = " . $adapter->quote($auditor->id_user);
-		}
-		
-		if (!is_null($coordinator)) {
-			$where[] = "coordinator_id = " . $adapter->quote($coordinator->id_user);
 		}
 		
 		if (!is_null($client)) {
@@ -156,12 +140,11 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 		$select->from($this->_name);
 		
-		// navazani na technika a koordinatora
+		// navazani na technika
 		$tableUsers = new Application_Model_DbTable_User();
 		$nameUser = $tableUsers->info("name");
 		
 		$select->joinLeft(array("auditors" => $nameUser), "auditors.id_user = auditor_id", array("auditor_name" => "auditors.name"));
-		$select->joinLeft(array("coordinators" => $nameUser), "coordinators.id_user = coordinator_id", array("coordinator_name" => "coordinators.name"));
 		
 		// propojeni s pobockami
 		$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();

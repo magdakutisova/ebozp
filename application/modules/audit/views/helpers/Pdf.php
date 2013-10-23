@@ -29,8 +29,7 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 		$lines[] = $this->createLine("Datum provedení", $report->done_at);
 		$lines[] = $this->createLine("Místo provedení", $report->done_in);
 		$lines[] = $this->createLine("Provedl", $report->auditor_name);
-		$lines[] = $this->createLine("Zpracoval", $report->coordinator_name);
-		$lines[] = $this->createLine("Účastníci za klienta", $report->client_responsibles);
+		$lines[] = $this->createLine("Účastníci za klienta", $report->contact_name);
 		
 		$html = "<table border=\"1\" cellpadding=\"5\" width=\"190mm\">" . implode("", $lines) . "</table>";
 		$pdf->writeHTML($html);
