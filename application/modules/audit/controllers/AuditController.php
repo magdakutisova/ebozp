@@ -656,7 +656,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
 		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_audit->subsidiary_id), "name");
-		$form->setContacts($contacts);
 		
 		if (!$form->isValid($this->getRequest()->getParams())) {
 			// neni zaskrtnuto potvrzovaci policko
