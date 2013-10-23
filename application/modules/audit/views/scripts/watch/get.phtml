@@ -16,7 +16,7 @@
 				Provedl
 				</td>
 				<td>
-				<?php echo $this->user->username; ?>
+				<?php echo $this->user->name; ?>
 				</td>
 			</tr>
 			<?php 
@@ -124,11 +124,11 @@ foreach ($this->mistakes as $mistake) {
 
 // nove neshody
 ?>
-<h2>Nově nalezené závady</h2>
+<h2>Nově nalezené neshody</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
-<h2>Odstraněné závady</h2>
+<h2>Odstraněné neshody</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění"))); ?>
-<h2>Neodstraněné závady z minulých kontrol</h2>
+<h2>Neodstraněné neshody z minulých kontrol</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
 	</div>
 	<div id="orders">

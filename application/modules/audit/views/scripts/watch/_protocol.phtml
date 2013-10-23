@@ -120,12 +120,31 @@ foreach ($this->mistakes as $mistake) {
 
 // nove neshody
 ?>
-<h2>Nově nalezené závady</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
-<h2>Odstraněné závady</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění"))); ?>
-<h2>Neodstraněné závady z minulých kontrol</h2>
-<?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
+<h2>Nově nalezené neshody</h2>
+<?php 
+
+if ($new) {
+	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+} else {
+	echo "<div>-</div>";
+}
+?>
+<h2>Odstraněné neshody</h2>
+<?php 
+if ($removed) {
+	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění")));
+} else {
+	echo "<div>-</div>";
+}
+?>
+<h2>Neodstraněné neshody z minulých kontrol</h2>
+<?php 
+if ($marked) {
+	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+} else {
+	echo "<div>-</div>";
+}
+?>
 <div></div><div></div>
 <table cellpadding="40">
 	<tr>
