@@ -3,11 +3,6 @@ $this->layout()->setLayout("floating-layout");
 
 $options = array(
 		"buttons" => array(
-				"deadlineId[]" => array(
-						"type" => "checkbox",
-						"caption" => "Přidat"
-						),
-				
 				"edit" => array(
 						"type" => "link",
 						"caption" => "Editovat",
@@ -15,10 +10,6 @@ $options = array(
 						)
 				)
 		);
-?>
-<form action="<?php printf("/audit/watch/adddead.html?watchId=%s", $this->watch->id); ?>" method="post">
-<?php 
+
 echo $this->deadlineTable($this->deadlines, $options);
-echo $this->formSubmit("submit", "Vybrat");
 ?>
-</form>
