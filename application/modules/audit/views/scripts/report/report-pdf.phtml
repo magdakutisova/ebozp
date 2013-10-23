@@ -12,7 +12,9 @@ $pdf->SetFont("dejavusans", 'b', 24);
 $pdf->SetXY(50, 20);
 $pdf->SetMargins(50, 20);
 $pdf->SetAutoPageBreak(true, 35);
-$pdf->Write(10, "Závěrečná zpráva o provedení auditu bezpečnosti práce a požární ochrany");
+
+$header = sprintf("Závěrečná zpráva o provedení %s bezpečnosti práce a požární ochrany", $audit->is_check ? "prověrky" : "auditu");
+$pdf->Write(10, $header);
 
 // obdelnicky
 $pdf->SetDrawColor(173, 39, 38);
@@ -36,10 +38,9 @@ $this->pdf()->clientTable($pdf, $audit, $report);
 $pdf->SetLeftMargin(20);
 $pdf->SetRightMargin(10);
 
-$pdf->AddPage("P", "A4");
-$this->pdf()->header($pdf, $report->target_caption);
+$this->pdf()->header($pdf, $report->progres_note_caption);
 $pdf->SetFont("dejavusans", 12, "");
-$pdf->MultiCell(180, 0, $report->target, 0, "L");
+$pdf->MultiCell(180, 0, $report->progres_note, 0, "L");
 
 $pdf->Ln(10);
 
@@ -48,19 +49,20 @@ $this->pdf()->header($pdf, $report->progres_caption);
 $i = 1;
 
 foreach ($this->items as $item) {
-	$pdf->Write(1, $i++ . ". " . $item->content);
+	$x = $pdf->GetX();
+	$pdf->SetX($x - 8);
+	$pdf->Write(1, $i++ . ".");
+	$pdf->SetX($x);
+	
+	$pdf->Write(1, $item->content);
 	$pdf->Ln(7);
 }
 
 // popis auditu
 $name = $audit->is_check ? "prověrky" : "auditu";
 
-$pdf->AddPage("P", "A4");
-$this->pdf()->header($pdf, "Popis $name");
-$pdf->MultiCell(180, 0, $report->progres_note, 0, "L");
-
+$pdf->SetY($pdf->GetY() + 5);
 // popis auditu
-$pdf->AddPage("P", "A4");
 $this->pdf()->header($pdf, "Zjištení z $name");
 
 $pdf->MultiCell(180, 0, $report->summary, 0, "L");
@@ -86,31 +88,33 @@ foreach ($this->forms as $form) {
 }
 
 // vyhodnoceni a kontrola pracovist
-$pdf->AddPage("P", "A4");
-$this->pdf()->header($pdf, "VYHODNOCENÍ - KONTROLA PRACOVIŠŤ");
-
-foreach ($this->workplaces["workplaces"] as $workplace) {
-	$pdf->SetFont("dejavusans", "b", 15);
-	$pdf->Write(1, $workplace["name"]);
-	$pdf->SetFont("dejavusans", "", 12);
-	$pdf->Ln(10);
+if ($this->workplaces["workplaces"]) {
+	$pdf->AddPage("P", "A4");
+	$this->pdf()->header($pdf, "VYHODNOCENÍ - KONTROLA PRACOVIŠŤ");
 	
-	// zapis komentare
-	$id = $workplace["id_workplace"];
-	
-	if (isset($this->workplaces["comments"][$id])) {
-		// zapis komentare
-		$pdf->MultiCell(180, 0, $this->workplaces["comments"][$id]["comment"], 0, "L");
-	} else {
-		$pdf->SetFont("dejavusans", "i", 12);
-		$pdf->Write(1, "Žádný komentář nebyl nastaven");
+	foreach ($this->workplaces["workplaces"] as $workplace) {
+		$pdf->SetFont("dejavusans", "b", 15);
+		$pdf->Write(1, $workplace["name"]);
 		$pdf->SetFont("dejavusans", "", 12);
-	}
-	
-	$pdf->Ln(10);
-	
-	if (isset($this->workplaces["mistakes"][$id])) {
-		$this->pdf()->mistakes($pdf, $this->workplaces["mistakes"][$id]);
+		$pdf->Ln(10);
+		
+		// zapis komentare
+		$id = $workplace["id_workplace"];
+		
+		if (isset($this->workplaces["comments"][$id])) {
+			// zapis komentare
+			$pdf->MultiCell(180, 0, $this->workplaces["comments"][$id]["comment"], 0, "L");
+		} else {
+			$pdf->SetFont("dejavusans", "i", 12);
+			$pdf->Write(1, "Žádný komentář nebyl nastaven");
+			$pdf->SetFont("dejavusans", "", 12);
+		}
+		
+		$pdf->Ln(10);
+		
+		if (isset($this->workplaces["mistakes"][$id])) {
+			$this->pdf()->mistakes($pdf, $this->workplaces["mistakes"][$id]);
+		}
 	}
 }
 

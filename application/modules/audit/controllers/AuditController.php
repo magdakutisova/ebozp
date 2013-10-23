@@ -311,8 +311,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// kontrola pristupu
 		$userId = $this->_user->getIdUser();
-		if ($this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->auditor_id == $userId 
-				|| $this->_audit->auditor_id != $userId) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
+		if (($this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->auditor_id == $userId 
+				|| $this->_audit->auditor_id != $userId) && $user->role != My_Role::ROLE_ADMIN) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
 		
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
