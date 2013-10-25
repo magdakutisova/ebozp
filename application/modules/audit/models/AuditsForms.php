@@ -136,7 +136,6 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 							$adapter->quote($item["mistake"]),							//neshoda
 							$adapter->quote($item["suggestion"]),						//navrh
 							"''",														// komentar
-							"CURRENT_DATE",												// bude odstraneno
 							"''"														// zodpovedna osoba
 					);
 					
@@ -161,7 +160,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 			
 			// zapis neshod
 			if ($mistakes) {
-				$sqlBase = "insert into `$nameMistakes` (id, audit_id, client_id, subsidiary_id, record_id, item_id, weight, question,category,subcategory,concretisation,mistake, suggestion, comment, will_be_removed_at, responsibile_name) values ";
+				$sqlBase = "insert into `$nameMistakes` (id, audit_id, client_id, subsidiary_id, record_id, item_id, weight, question,category,subcategory,concretisation,mistake, suggestion, comment, responsibile_name) values ";
 				
 				$chunks = array_chunk($mistakes, 1000);
 				
