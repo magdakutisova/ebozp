@@ -4,6 +4,8 @@ class Audit_ReportController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 		$this->view->headLink()->appendStylesheet("/css/jquery.jqplot.css");
+		
+		$this->view->layout()->setLayout("client-layout");
 	}
 	
 	/**
@@ -11,6 +13,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 	 */
 	public function createAction() {
 		$audit = $this->loadAudit();
+		$this->_request->setParam("subsidiaryId", $audit->subsidiary_id);
 		
 		// nacteni nacionalii
 		$client = $audit->getClient();
@@ -47,6 +50,10 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->mistakes = $mistakes;
 	}
 	
+	public function getAction() {
+		$this->editAction();
+	}
+	
 	public function reportPdfAction() {
 		$audit = $this->loadAudit();
 		$report = $this->loadReport($audit);
@@ -71,6 +78,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 	public function editAction() {
 		$audit = $this->loadAudit();
 		$report = $this->loadReport($audit);
+		$this->_request->setParam("subsidiaryId", $audit->subsidiary_id);
 		
 		// nacteni nacionalii
 		$client = $audit->getClient();
@@ -185,21 +193,31 @@ class Audit_ReportController extends Zend_Controller_Action {
 					->joinInner($nameRecords, "question_id = $nameQuestions.id", array())
 					->where("audit_form_id = ?", $form->id);
 			
-			$groups = $tableCategories->fetchAll(array("id in (?)" => new Zend_Db_Expr($select->assemble())), "name");
+			$groups = $tableCategories->fetchAll(array("id in (?)" => new Zend_Db_Expr($select->assemble())), "position");
 			$records = $form->getRecords(null, "group_id");
 			
 			// indexace zaznamu
 			$lastGroupId = 0;
 			$groupInfo = array();
+			$allNt = false;
 			
 			foreach ($records as $record) {
 				if ($record->group_id != $lastGroupId) {
+					if ($allNt) {
+						unset($groupInfo[$lastGroupId]);
+					}
+					
 					$lastGroupId = $record->group_id;
 					$groupInfo[$lastGroupId] = array(
 							"max" => 0,
 							"gained" => 0
 					);
+					
+					$allNt = true;
 				}
+				
+				if ($record->score == Audit_Model_AuditsRecords::SCORE_NT) continue;
+				$allNt = false;
 				
 				$groupInfo[$lastGroupId]["max"] += $record->weight;
 				$groupInfo[$lastGroupId]["gained"] += ($record->score == Audit_Model_AuditsRecords::SCORE_N) ? $record->weight : 0;

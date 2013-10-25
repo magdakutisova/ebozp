@@ -40,7 +40,7 @@ echo $this->formHidden("client_id", $this->client->id_client);
 			echo "<p><big><strong>Zpráva ještě není vytvořena</strong> <a href='$url'>Vytvořit zprávu</a></big></p>";
 		}
 		
-		$isReport = $userId == $audit->auditor_id || $userId == $audit->coordinator_id && $audit->report_id;
+		$isReport = $userId == $audit->auditor_id && $audit->report_id;
 		
 		echo "<h2>Jiná kontaktní osoba</h2>";
 		echo $this->contactForm;

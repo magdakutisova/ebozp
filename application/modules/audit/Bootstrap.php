@@ -92,6 +92,16 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		);
 		
 		$router->addRoute(
+				"audit-report-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/get",
+						array(
+								"module" => "audit",
+								"controller" => "report",
+								"action" => "get"
+						))
+		);
+		
+		$router->addRoute(
 				"audit-report-download",
 				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/download",
 						array(

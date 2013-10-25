@@ -26,7 +26,7 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 		$lines[] = $this->createLine("Sídlem", $report->org_hq);
 		$lines[] = $this->createLine("IČO", $report->ico);
 		$lines[] = $this->createLine("Provozovna sídlem", $report->sub_hq);
-		$lines[] = $this->createLine("Datum provedení", $report->done_at);
+		$lines[] = $this->createLine("Datum provedení", $this->view->sqlDate($report->done_at));
 		$lines[] = $this->createLine("Místo provedení", $report->done_in);
 		$lines[] = $this->createLine("Provedl", $report->auditor_name);
 		$lines[] = $this->createLine("Účastníci za klienta", $report->contact_name);
@@ -45,15 +45,21 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 		
 		foreach ($groups["groups"] as $group) {
 			$name = $group["name"];
+			$index = $group["position"];
+			
+			if (!isset($groups["groupsInfo"][$group["id"]])) continue;
+			
 			$info = $groups["groupsInfo"][$group["id"]];
 			
 			$max = $info["max"];
 			$gained = $info["gained"];
 			
+			if (!$max) continue;
+			
 			$percent = (1 - $gained / $max) * 100;
 			$percent = round($percent);
 			
-			$rows[] = "<tr><td width=\"15mm\">$index</td><td width=\"150mm\">$name</td><td width=\"15mm\" style=\"color:red;font-weight:bolder\">$percent%</td></tr>";
+			$rows[] = "<tr><td width=\"15mm\">$index</td><td width=\"145mm\">$name</td><td width=\"20mm\" style=\"color:red;font-weight:bolder\">$percent %</td></tr>";
 		}
 		
 		$table = "<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">" . implode("", $rows) . "</table>";

@@ -108,11 +108,11 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	}
 	
 	public function getByAudit(Audit_Model_Row_Audit $audit) {
-		return $this->fetchAll("audit_id = " . $audit->id);
+		return $this->fetchAll(array("audit_id = " . $audit->id, "is_submited"));
 	}
 	
 	public function getByClient(Zend_Db_Table_Row_Abstract $client) {
-		return $this->_findMistakes(array("client_id = ?", $client->id_client));
+		return $this->_findMistakes(array("$this->_name.is_submited", "client_id = ?", $client->id_client));
 	}
 	
 	/**
@@ -129,7 +129,8 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		// vygenerovani podminky
 		$where = array(
 				"questionary_item_id = " . $itemId,
-				"client_id = " . $client->id_client
+				"client_id = " . $client->id_client,
+				"is_submited"
 		);
 		
 		if ($subsidiary) {
@@ -150,7 +151,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	}
 	
 	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $filter) {
-		$where = array("$this->_name.subsidiary_id = ?" => $subsidiary->id_subsidiary);
+		$where = array("$this->_name.subsidiary_id = ?" => $subsidiary->id_subsidiary, "$this->_name.is_submited");
 		
 		switch ($filter) {
 			case 1:
@@ -173,7 +174,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 			$subIds[] = $item->id_subsidiary;
 		}
 		
-		$where = array("$this->_name.subsidiary_id in (?)" => $subIds);
+		$where = array("$this->_name.subsidiary_id in (?)" => $subIds, "$this->_name.is_submited");
 		
 		// vyhodnoceni pozadovaneho typu
 		switch ($type) {

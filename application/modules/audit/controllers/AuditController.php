@@ -312,7 +312,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// kontrola pristupu
 		$userId = $this->_user->getIdUser();
 		if (($this->_audit->auditor_confirmed_at[0] != '0' && $this->_audit->auditor_id == $userId 
-				|| $this->_audit->auditor_id != $userId) && $user->role != My_Role::ROLE_ADMIN) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
+				|| $this->_audit->auditor_id != $userId) && $this->_user->getRole() != My_Role::ROLE_ADMIN) throw new Zend_Exception("Audit #" . $this->_audit->id . " was closed for this action");
 		
 		// vytvoreni formulare
 		$form = new Audit_Form_AuditFill();
@@ -673,10 +673,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if ($roleId != My_Role::ROLE_ADMIN && $roleId != My_Role::ROLE_SUPERADMIN) {
 			// uzivatel neni administrator - musime zkontrolovat pristup k akcim
 			
-			if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_TECHNICIAN || $audit->auditor_id != $userId)) {
+			if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00" && ($roleId != My_Role::ROLE_TECHNICIAN && $audit->auditor_id != $userId)) {
 				throw new Zend_Exception("Invalid user or audit status - unsubmited by technic try submit non technic user");
-			} else {
-				throw new Zend_Exception("Unsupported action for audit user and role");
 			}
 		}
 		
@@ -684,6 +682,34 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00") {
 			// odeslal to technik - jen se to podepise jinak se nic nedeje
 			$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
+			
+			// odstrani se neshody, ktere nakonec nebyly pouzity
+			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+			$tableAssocs = new Audit_Model_AuditsMistakes();
+			$nameMistakes = $tableMistakes->info("name");
+			$nameAssocs = $tableAssocs->info("name");
+			$auditId = $this->_audit->id;
+				
+			$where = array(
+					"audit_id = $auditId",
+					"id not in (select mistake_id from `$nameAssocs` where audit_id = $auditId)"
+			);
+				
+			$tableMistakes->delete($where);
+				
+			// aktualizace stavu neshod
+			$begin = "update `$nameAssocs`, `$nameMistakes` set ";
+			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 1 and id = mistake_id";
+			$tableMistakes->getAdapter()->query("$sql1");
+				
+			// odeslani neshod, ktere se maji odeslat
+			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
+			$tableMistakes->getAdapter()->query($sql);
+				
+			// nastaveni odeslani neshod v asociacni tabulce auditu
+			$tableAssocs->update(array("is_submited" => 1), array("audit_id = ?" => $auditId));
+				
+			// potvrdi se audit
 			$this->_audit->is_closed = 1;
 			$this->_audit->save();
 			

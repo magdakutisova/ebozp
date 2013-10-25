@@ -44,8 +44,8 @@ $(function () {
 		var table = $(this);
 		var index = table.attr("id").split("-")[1];
 		
-		var vals = new Array();
-		var ticks = new Array("0");
+		var vals = new Array([]);
+		var ticks = new Array();
 		var tick = 0;
 		
 		// zpracovani hodnocnei
@@ -53,30 +53,35 @@ $(function () {
 			var text = $(this).text();
 			var percent = Number(text.substr(0, text.length - 1));
 			
-			vals.push([percent]);
-			ticks.push(String(tick++));
+			vals[0].push(percent);
+			ticks.push($(this).parent().children(":first").text());
 		});
 		
-		ticks.push(String(tick++));
+		var opts = {
+				seriesDefaults:{
+		            renderer:$.jqplot.BarRenderer,
+		            rendererOptions: {
+		            	fillToZero: true, 
+		            	barPadding : 1,
+		            	barMargin : 15,
+		            	barDirection : "vertical"
+		            },
+		            color : "#ff0000"
+		        },
+		        
+		        axes : {
+	            	xaxis : {
+	            		showTicks : false
+					},
+					
+					yaxis : {
+						max : 100,
+						min : 0,
+						padMax: 5
+					}
+	            }
+			};
 		
-		$.jqplot("chart-" + index, vals, {
-			seriesDefaults:{
-	            renderer:$.jqplot.BarRenderer,
-	            rendererOptions: {fillToZero: true},
-	            color : "#ff0000"
-	        },
-			
-			axes : {
-				xaxis : {
-					renderer : $.jqplot.CategoryAxisRenderer,
-					ticks : ticks
-				},
-				
-				yaxis : {
-					max : 100,
-					min : 0
-				}
-			}
-		});
+		$.jqplot("chart-" + index, vals, opts);
 	});
 });
