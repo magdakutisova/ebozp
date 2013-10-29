@@ -410,7 +410,6 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$userIds = array(0);
 
 		foreach ($found as $item) {
-			$userIds[] = $item["coordinator_id"];
 			$userIds[] = $item["auditor_id"];
 		}
 

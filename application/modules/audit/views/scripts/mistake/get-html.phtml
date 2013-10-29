@@ -134,9 +134,6 @@ if ($acl->isAllowed($user->role, "audit:mistake", "edit.html")) {
 			Technik
 			</th>
 			<th>
-			Koordinátor
-			</th>
-			<th>
 			Zodpovědná osoba
 			</th>
 		</tr>
@@ -150,7 +147,7 @@ foreach ($this->found as $item) {
 		$technic = $this->userIndex[$item["checker_id"]]->username;
 	} else {
 		$type = "Audit";
-		$responsibiles = $item["responsibile_name"];
+		$responsibiles = $item["contact_name"];
 		$technic = $this->userIndex[$item["auditor_id"]]->username;
 	}
 	
@@ -164,9 +161,6 @@ foreach ($this->found as $item) {
 			</td>
 			<td>
 			<?php echo $technic; ?>
-			</td>
-			<td>
-			<?php echo $this->userIndex[$item["coordinator_id"]]->username; ?>
 			</td>
 			<td>
 			<?php echo $responsibiles; ?>
