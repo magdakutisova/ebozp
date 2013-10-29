@@ -67,5 +67,11 @@
 			<resource>audit:form</resource>
 			<priviledge>post</priviledge>
 		</forms>
+		<mistakecategories>
+			<label>Kategorie neshod</label>
+			<uri>/audit/category/index</uri>
+			<resource>audit:category</resource>
+			<priviledge>post</priviledge>
+		</mistakecategories>
 	</nav>
 </configdata>
