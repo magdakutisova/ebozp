@@ -90,11 +90,11 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 		$pdf->SetFont("dejavusans", "", 10);
 		
 		foreach ($mistakes as $mistake) {
-			$rows[] = "<tr><td width=\"25mm\">" . $mistake["weight"] . "</td><td width=\"50mm\">" . $mistake["mistake"] . "</td><td width=\"50mm\">" . $mistake["suggestion"] . "</td><td width=\"50mm\">" . $mistake["comment"] . "</td></tr>";
+			$rows[] = "<tr><td width=\"25mm\">" . $mistake["weight"] . "</td><td width=\"70mm\">" . $mistake["mistake"] . "</td><td width=\"75mm\">" . $mistake["suggestion"] . "</td></tr><tr><td colspan=\"3\">" . $mistake["comment"] . "</td></tr>";
 		}
 		
 		// sestveni vysledku
-		$html = "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\"><thead><tr bgcolor=\"#c6c6c6\"><th width=\"25mm\">Závažnost</th><th width=\"50mm\">Neshoda</th><th width=\"50mm\">Navrhované opatření</th><th width=\"50mm\">Komentář</th></tr></thead><tbody>"
+		$html = "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\"><thead><tr bgcolor=\"#c6c6c6\"><th width=\"25mm\">Závažnost</th><th width=\"70mm\">Neshoda</th><th width=\"75mm\">Navrhované opatření</th></tr><tr bgcolor=\"#c6c6c6\"><th colspan=\"3\">Komentář</th></tr></thead><tbody>"
 					. implode("", $rows) . "</tbody></table>";
 		
 		$pdf->writeHTML($html);
