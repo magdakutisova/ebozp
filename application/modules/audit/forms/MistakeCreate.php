@@ -41,7 +41,7 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		);
 
 		// kategorie
-		$this->addElement("text", "category", array(
+		$this->addElement("select", "category", array(
 				"label" => "Kategorie",
 				"required" => true,
 				"decorators" => $elementDecorator,
@@ -50,7 +50,7 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		));
 		
 		// podkategorie
-		$this->addElement("text", "subcategory", array(
+		$this->addElement("select", "subcategory", array(
 				"label" => "Podkategorie",
 				"required" => true,
 				"decorators" => $elementDecorator,
@@ -137,5 +137,68 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 				"label" => "Vytvořit",
 				"decorators" => $lastDecoratorClose
 		));
+		
+		$this->initCategories();
+	}
+	
+	public function initCategories() {
+		// vytvoreni instance a nacteni vsech kategorii
+		$tableCategories = new Audit_Model_Categories();
+		$select = $tableCategories->select(true);
+		
+		$select->order("parent_id")->order("name");
+		
+		// nacteni dat a rozrazeni do skupin
+		$data = $select->query()->fetchAll();
+		
+		$categories = array();
+		$categoryIndex = array();
+		$subCategories = array();
+		
+		foreach ($data as $item) {
+			$name = $item["name"];
+			
+			if ($item["parent_id"]) {
+				$parentName = $categoryIndex[$item["parent_id"]];
+				
+				if (!isset($subCategories[$parentName])) {
+					$subCategories[$parentName] = array();
+				}
+				
+				$subCategories[$parentName][$name] = $name;
+			} else {
+				$categories[$name] = $name;
+				
+				$categoryIndex[$item["id"]] = $name;
+			}
+		}
+		
+		$categories[""] = "Jiná";
+		$subCategories[""] = "Jiná";
+		
+		$this->_elements["category"]->setMultiOptions($categories);
+		$this->_elements["subcategory"]->setMultiOptions($subCategories);
+	}
+	
+	public function setFilledCategory($category, $subCategory) {
+		// nacteni multioptions
+		$categories = $this->_elements["category"]->getMultiOptions();
+		$subCategories = $this->_elements["subcategory"]->getMultiOptions();
+		
+		// vyhodnoceni, jestli kategorie existuje
+		if (isset($categories[$category])) {
+			// kontrola, jestli podkategorie existuje
+			if (!isset($subCategories[$category][$subCategory])) {
+				$subCategories[$category][$subCategory] = $subCategory;
+			}
+		} else {
+			// zapis nove polozky do seznamu kategorii i podkategorii
+			$categories[$category] = $category;
+			$subCategories[$subCategory] = $subCategory;
+		}
+		
+		// nastaveni novych hodnot
+		$this->_elements["category"]->setMultiOptions($categories);
+		$this->_elements["subcategory"]->setMultiOptions($subCategories);
 	}
 }

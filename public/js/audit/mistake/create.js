@@ -12,10 +12,30 @@ $(function () {
 	}
 	
 	// metoda dynamickeho nacitani kategorii
-	function loadCategories() {
-		var category = $(this).val();
+	function checkCategory() {
+		var context = $(this);
+		var subContext = $("select#mistake-subcategory");
 		
-		$.get("/audit/category/children.json", {"name" : category}, writeCategories, "json");
+		// kontrola "jineho"
+		if (context.val() == "") {
+			context.replaceWith($("<input type='text' />").attr("id", context.attr("id")).attr("name", context.attr("name")));
+			
+			subContext.replaceWith($("<input type='text' />").attr("id", subContext.attr("id")).attr("name", subContext.attr("name")));
+		} else {
+			// skryti vsech skupin
+			subContext.children("optgroup").hide();
+			
+			// zobrazeni skupiny odpovidajici kategorii
+			subContext.children("optgroup[label='" + context.val() + "']").show();
+		}
+	}
+	
+	function checkSubcategory() {
+		var context = $(this);
+		
+		if (context.val() == "") {
+			context.replaceWith($("<input type='text' />").attr("id", context.attr("id")).attr("name", context.attr("name")));
+		}
 	}
 	
 	$("#mistake-will_be_removed_at").datepicker({
@@ -24,5 +44,6 @@ $(function () {
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
 	});
 	
-	$("#mistake-category").change(loadCategories);
+	$("#mistake-category").change(checkCategory).change();
+	$("#mistake-subcategory").change(checkSubcategory);
 });

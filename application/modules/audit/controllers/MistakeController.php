@@ -89,6 +89,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nastaveni akce
 		$form->setAction($url);
 
+		$form->setFilledCategory($_REQUEST["mistake"]["category"], $_REQUEST["mistake"]["subcategory"]);
 		$form->isValidPartial($_REQUEST);
 		$this->_loadCategories();
 
@@ -139,6 +140,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$form->setAction("/audit/mistake/post?clientId=" . $this->_request->getParam("clientId", 0));
 		
 		$this->_preprareCreateForm($form);
+		$form->setFilledCategory($_REQUEST["mistake"]["category"], $_REQUEST["mistake"]["subcategory"]);
 		
 		$form->isValidPartial($this->_request->getParams());
 		
@@ -295,6 +297,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$form = new Audit_Form_MistakeCreateAlone();
 		}
 
+		$form->setFilledCategory($mistake->category, $mistake->subcategory);
 		$form->populate(array("mistake" => $data));
 		$form->getElement("submit")->setLabel("Uložit");
 		
