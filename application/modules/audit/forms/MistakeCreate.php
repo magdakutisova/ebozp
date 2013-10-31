@@ -173,9 +173,6 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 			}
 		}
 		
-		$categories[""] = "Jiná";
-		$subCategories[""] = "Jiná";
-		
 		$this->_elements["category"]->setMultiOptions($categories);
 		$this->_elements["subcategory"]->setMultiOptions($subCategories);
 	}

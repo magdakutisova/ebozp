@@ -39,12 +39,18 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 
 $address = sprintf("%s, %s, %s", $this->subsidiary->subsidiary_town, $this->subsidiary->subsidiary_street, $this->subsidiary->subsidiary_code);
 
+if ($this->hq->id_subsidiary == $this->subsidiary->id_subsidiary) {
+	$hqAddress = $address;
+} else {
+	$hqAddress = sprintf("%s, %s, %s", $this->hq->subsidiary_town, $this->hq->subsidiary_street, $this->hq->subsidiary_code);
+}
+
 $opts = array(
 		"common" => array(
 				"name" => $name,
 				"org" => $client->company_name,
-				"org_hq" => $address,
-				"ico" => $client->tax_number,
+				"org_hq" => $hqAddress,
+				"ico" => $client->company_number,
 				"sub_hq" => $address,
 				"done_at" => $audit->done_at,
 				"done_in" => $address,
@@ -52,7 +58,7 @@ $opts = array(
 				"contact_name" => ($this->contact ? $this->contact->name : $audit->contact_name),
 				"progres_note_caption" => $progresNoteCaption,
 				"progres_caption" => $progresCaption,
-				"progres_note" => $audit->progress_note,
+				"progres_note" => $target,
 				"summary" => $audit->summary
 		),
 		

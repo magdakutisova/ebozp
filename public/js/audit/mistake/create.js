@@ -44,6 +44,6 @@ $(function () {
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
 	});
 	
-	$("#mistake-category").change(checkCategory).change();
-	$("#mistake-subcategory").change(checkSubcategory);
+	//$("#mistake-category").change(checkCategory).change();
+	//$("#mistake-subcategory").change(checkSubcategory);
 });

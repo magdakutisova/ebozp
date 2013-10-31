@@ -42,8 +42,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$role = $user->role;
 		
 		if ($role != My_Role::ROLE_ADMIN && 
-				(($role == My_Role::ROLE_TECHNICIAN && $audit->auditor_id != $user->id_user) ||
-				($role == My_Role::ROLE_COORDINATOR && $audit->coordinator_id != $user->id_user))) throw new Zend_Acl_Exception("User is not allowed to do this action");
+				(($role == My_Role::ROLE_TECHNICIAN && $audit->auditor_id != $user->id_user))) throw new Zend_Acl_Exception("User is not allowed to do this action");
 		
 		// nacteni dat
 		$form = new Audit_Form_WorkplaceComment();

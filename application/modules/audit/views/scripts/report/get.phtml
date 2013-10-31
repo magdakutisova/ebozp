@@ -58,11 +58,17 @@ echo "<div class='box' align='center'><form action='$url' method='post' target='
 					<td><?php echo $common["ico"]; ?>
 					</td>
 				</tr>
+				<?php 
+if ($common["sub_hq" != $common["org_hq"]]) {
+				?>
 				<tr>
 					<td>Provozovna se sídlem</td>
 					<td><?php echo $common["sub_hq"]; ?>
 					</td>
 				</tr>
+				<?php 
+}
+				?>
 				<tr>
 					<td>Datum provedení</td>
 					<td><?php echo $common["done_at"]; ?>

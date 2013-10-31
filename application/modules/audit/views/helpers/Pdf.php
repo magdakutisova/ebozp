@@ -25,7 +25,10 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 		$lines[] = $this->createLine("Organizace", $report->org);
 		$lines[] = $this->createLine("Sídlem", $report->org_hq);
 		$lines[] = $this->createLine("IČO", $report->ico);
-		$lines[] = $this->createLine("Provozovna sídlem", $report->sub_hq);
+		
+		if ($report->sub_hq != $report->org_hq)
+			$lines[] = $this->createLine("Provozovna sídlem", $report->sub_hq);
+		
 		$lines[] = $this->createLine("Datum provedení", $this->view->sqlDate($report->done_at));
 		$lines[] = $this->createLine("Místo provedení", $report->done_in);
 		$lines[] = $this->createLine("Provedl", $report->auditor_name);
@@ -62,9 +65,11 @@ class Audit_View_Helper_Pdf extends Zend_View_Helper_Abstract {
 			$rows[] = "<tr><td width=\"15mm\">$index</td><td width=\"145mm\">$name</td><td width=\"20mm\" style=\"color:red;font-weight:bolder\">$percent %</td></tr>";
 		}
 		
-		$table = "<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">" . implode("", $rows) . "</table>";
+		if ($rows) {
+			$table = "<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">" . implode("", $rows) . "</table>";
 		
-		$pdf->writeHTML($table);
+			$pdf->writeHTML($table);
+		}
 	}
 	
 	public function footer(My_Tcpdf_Tcpdf $pdf, $logoPath, $text) {

@@ -36,11 +36,23 @@ class Audit_ReportController extends Zend_Controller_Action {
 			$this->view->contact = $tableContacts->find($audit->contactperson_id)->current();
 		}
 		
+		// pokud neni pobocka centrala, nacte se centrala
+		if ($subsidiary->hq) {
+			$hq = $subsidiary;
+		} else {
+			$tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+			
+			$hq = $tableSubsidiaries->fetchRow(array(
+					"client_id = ?" => $subsidiary->client_id,
+					"hq"
+					));
+		}
 		
 		$this->view->audit = $audit;
 		$this->view->client = $client;
 		$this->view->auditor = $auditor;
 		$this->view->subsidiary = $subsidiary;
+		$this->view->hq = $hq;
 		
 		$this->view->forms = $forms->toArray();
 		$this->view->formsGroups = $formsGroups;

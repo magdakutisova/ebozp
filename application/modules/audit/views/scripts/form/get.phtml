@@ -17,11 +17,7 @@ $params = array(
 		"auditId" => $this->audit->id
 );
 
-if ($user->id_user == $this->audit->coordinator_id && $this->audit->coordinator_confirmed_at == "0000-00-00 00:00:00") {
-	$route = "audit-review";
-} else {
-	$route = "audit-get";
-}
+$route = "audit-get";
 
 $url = $this->url($params, $route);
 ?>

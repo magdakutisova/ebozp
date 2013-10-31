@@ -1056,9 +1056,6 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// kontrola prislusnosti k auditu
 		if (!$assoc) throw new Zend_Exception("Invalid combination of audit and mistake");
 
-		// kontrola pristupnosti k akci
-		if ($this->_audit->coordinator_id != $this->_user->getIdUser()) throw new Zend_Exception("Invalid user");
-
 		// vygenerovani navratove hodnoty
 		$retVal = (object) array("mistake" => $mistake, "assoc" => $assoc);
 
@@ -1090,7 +1087,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// kontrola auditu
 		if (!$this->_audit) throw new Zend_Exception("Audit not found");
 		$userId = $this->_user->getIdUser();
-		if ($this->_audit->coordinator_id != $userId && $this->_audit->auditor_id != $userId && $this->_user->getRoleId() != My_Role::ROLE_ADMIN) throw new Zend_Exception("This action is not allowed to yout");
+		if ($this->_audit->auditor_id != $userId && $this->_user->getRoleId() != My_Role::ROLE_ADMIN) throw new Zend_Exception("This action is not allowed to yout");
 		
 		// nacteni dat a jejich zpracovani
 		$data = (array) $this->getRequest()->getParam("mistake", array());

@@ -66,7 +66,7 @@ $saveUrl = $this->url($params, "audit-form-save");
 			?>
 		<tbody>
 			<tr>
-				<td style="white-space: pre; width: 300px"><?php echo $record->question; ?></td>
+				<td style="white-space: pre-wrap; width: 400px"><?php echo $record->question; ?></td>
 				<td>
 				<?php echo $this->formRadio($name . "[score]", $record->score, null, $values, "</td><td>"); ?>
 				</td>
