@@ -207,11 +207,13 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		if ($reserve->isEarlier(Zend_Date::now())) {
 			// lhuta se zahrne do dohlidek
 			
+			$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+			
 			// poddotaz nacte dohlidky spolecne s id lhuty
 			$select->from($nameWatches, array(
 					"id", 
 					new Zend_Db_Expr($deadline->id),
-					new Zend_Db_Expr($deadline->next_date),
+					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
 					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
 					));
 			
@@ -219,8 +221,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			
 			$tableAssocs = new Audit_Model_WatchesDeadlines();
 			
-			$sql = "insert into %s (watch_id, deadline_id, valid_to, is_over) %s";
-			Zend_Db_Table_Abstract::getDefaultAdapter()->query(sprintf($sql, $tableAssocs->info("name"), $select));
+			$sql = "insert ignore into %s (watch_id, deadline_id, valid_to, is_over) %s";
+			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
 			
 		} else {
 			// lhuta se odebere s dohlidek
