@@ -33,7 +33,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	
 	public function addWorkplace(Application_Model_Workplace $workplace){
 		//když neexistuje pracoviště s daným názvem u klienta, vložit a vrátit ID
-		$existingWorkplace = $this->existsWorkplace($workplace->getName(), $workplace->getClientId());
+		$existingWorkplace = $this->existsWorkplaceSub($workplace->getName(), $workplace->getSubsidiaryId());
 		if(!$existingWorkplace){
 			$data = $workplace->toArray();
 			$workplaceId = $this->insert($data);
@@ -45,7 +45,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 	public function updateWorkplace(Application_Model_Workplace $workplace, $differentName = false){
 		$data = $workplace->toArray();
 		if($differentName){
-			$existingWorkplace = $this->existsWorkplace($workplace->getName(), $workplace->getClientId());
+			$existingWorkplace = $this->existsWorkplaceSub($workplace->getName(), $workplace->getSubsidiaryId());
 		}
 		else{
 			$existingWorkplace = false;
@@ -346,6 +346,17 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 									->from('workplace')
 									->where('name = ?', $workplaceName)
 									->where('client_id = ?', $clientId));
+		if (count($workplace) != 0){
+			return $workplace->current()->id_workplace;
+		}
+		return false;
+	}
+	
+	public function existsWorkplaceSub($workplaceName, $subsidiaryId){
+		$workplace = $this->fetchAll($this->select()
+				->from('workplace')
+				->where('name = ?', $workplaceName)
+				->where('client_id = ?', $subsidiaryId));
 		if (count($workplace) != 0){
 			return $workplace->current()->id_workplace;
 		}
