@@ -90,6 +90,14 @@ $(function() {
 		$.iframeDialog(url, 800, 400, "Vyberte lhůty", refreshWnd);
 	}
 	
+	function checkContact() {
+		if ($(this).val() == "0") {
+			$("#other-contact-person").show();
+		} else {
+			$("#other-contact-person").hide();
+		}
+	}
+	
 	$("#watch-tabs").tabs();
 	$("#discuss-list,#change-list,#order-list,#output-list").sortable();
 	$("#discuss-list button,#change-list button,#order-list button,#output-list button").click(removeDiscuss).button(removeButtonSet);
@@ -115,4 +123,6 @@ $(function() {
 	$("#mistakes button[name='get']").click(openMistake);
 	$("#deadlinetable button[name='show']").click(openDeadline);
 	$("#add-deadlines").click(openDeadList);
+	
+	$("#watch-contactperson_id").change(checkContact).change();
 });

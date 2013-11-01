@@ -17,9 +17,7 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		<h3>Přehled</h3>
 		<?php
 		echo $this->form;
-		?>
-		<em>*)Shrnutí musí být vyplněno než bude audit/prověrka uzavřena</em>
-		<?php 
+		
 		// vyhodnoceni zobrazeni uzavreni auditu
 		$audit = $this->audit;
 		$userId = $this->userId;
@@ -42,10 +40,12 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		
 		$isReport = $userId == $audit->auditor_id && $audit->report_id;
 		
+		echo "<div id='other-contact-person'>";
 		echo "<h2>Jiná kontaktní osoba</h2>";
 		echo $this->contactForm;
+		echo "</div>";
 		
-		if ($this->form->getElement("summary")->getValue() && $isReport) {
+		if ($isReport) {
 			?>
 		<h3>Uzavření auditu</h3>
 			<?php 

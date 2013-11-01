@@ -79,6 +79,14 @@ $(function () {
 		$("#new-workplace-form").toggle();
 	}
 	
+	function checkContact() {
+		if ($(this).val() == "") {
+			$("#other-contact-person").show();
+		} else {
+			$("#other-contact-person").hide();
+		}
+	}
+	
 	$("#table-mistakes button[name='edit-mistake'],#workplace-mistakes button[name='edit']").click(openMistake);
 	$("#table-mistakes button[name='get-mistake'],#workplace-mistakes button[name='show']").click(showMistake);
 	$("#tabs").tabs();
@@ -94,4 +102,5 @@ $(function () {
 	$("#save-mistakes").click(sendMistakes);
 	$("#paginator-workplace").change(workplaceSelect);
 	$("#new-workplace").click(toggleWorkplace);
+	$("#audit-contactperson_id").change(checkContact).change();
 });

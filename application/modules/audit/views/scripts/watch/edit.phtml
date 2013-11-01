@@ -24,10 +24,12 @@
 		
 		echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>"
 		?>
+		<div id="other-contact-person">
 		<h2>Jiný zástupce klienta</h2>
 		<?php 
 		echo $this->contactForm;
 		?>
+		</div>
 	</div>
 	<div id="discuss">
 		<form action="/audit/watch/discuss" method="post" id="form-discuss">
