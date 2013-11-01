@@ -125,29 +125,13 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		</table>
 		<p>
 			<?php 
+			/*
 			echo $this->formSubmit("submit-solve", "Označit jako odstraněné");
 			echo $this->formSubmit("submit-unsolve", "Označit jako NEodstraněné");
 			echo $this->formSubmit("submit-detach", "Odebrat označené neshody z auditu");
+			*/
 			?>
 		</p>
-		</form>
-		<h3>Neshody vyřazené z auditu</h3>
-		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-attach"); ?>" method="post">
-			<table id="table-mistakes2" class="multirow-table">
-				<?php 
-				$this->mistakeTable()->workIndex = $this->workIndex;
-				
-				echo $this->mistakeTable()->header();
-				
-				foreach ($this->otherMistakes as $mistake) {
-					// vyhodnoceni semaforu
-					echo $this->mistakeTable()->mistake($mistake, array("actions" => array("show" => "Zobrazit"), "selector" => true));
-				}
-				?>
-			</table>
-			<p>
-			<?php echo $this->formSubmit("attach-submit", "Připojit označené neshody k auditu"); ?>
-			</p>
 		</form>
 	</div>
 	<div id="newmistake">

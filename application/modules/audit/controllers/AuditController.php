@@ -584,16 +584,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$audit = $tableAudits->createAudit($auditor, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
 		
-		// prirazeni existujicich neshod
-		$tableAssocs = new Audit_Model_AuditsMistakes();
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		
-		$nameAssocs = $tableAssocs->info("name");
-		$nameMistakes = $tableMistakes->info("name");
-		
-		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed and is_submited";
-		$tableAssocs->getAdapter()->query($sql);
-		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit")
 		);
