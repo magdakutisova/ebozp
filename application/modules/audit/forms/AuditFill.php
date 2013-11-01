@@ -49,8 +49,7 @@ class Audit_Form_AuditFill extends Audit_Form_Audit {
 		$this->addElement("textarea", "summary", array(
 				"label" => "Zjištění z auditu*",
 				"decorators" => $elementDecorator,
-				"validators" => array("NotEmpty"),
-				"required" => true
+				"validators" => array("NotEmpty")
 		));
 		
 		$this->getElement("close");
