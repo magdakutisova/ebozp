@@ -104,13 +104,14 @@
 				</tr>
 			</table>
 		</form>
+		<em>Nové neshody přidávat pouze pokud se neprovádí prověrka/audit.</em>
 		<h2>Neshody</h2>
 		<form action="/audit/watch/mistakes?watchId=<?php echo $this->watch->id; ?>" method="post">
 			<em>Vyberte neshody, které budou označeny jako odstraněné</em>
 			<table class="multirow-table" id="mistakes">
 			<?php 
 			echo $this->mistakeTable()->header();
-			$params = array("selector" => true, "actions" => array("get" => "Zobrazit"));
+			$params = array("selector" => true, "actions" => array("get" => "Zobrazit", "edit" => "Upravit"));
 			
 			foreach ($this->mistakes as $mistake) {
 				// vyhodnoceni, zda je neshoda kriticka

@@ -64,7 +64,7 @@ $(function() {
 	function openMistake() {
 		// nacteni id lhuty a sestaveni adresy
 		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
-		var url = "/audit/mistake/get.html?clientId=" + clientId + "&mistakeId=" + mistakeId;
+		var url = "/audit/mistake/" + $(this).attr("name") + ".html?clientId=" + clientId + "&mistakeId=" + mistakeId;
 		
 		// otevreni iframe dialogu s editaci lhuty
 		$.iframeDialog(url, 800, 400, "Neshoda");
@@ -120,7 +120,7 @@ $(function() {
 	$("#close-watch").button();
 	
 	$("#watch-watched_at").datepicker();
-	$("#mistakes button[name='get']").click(openMistake);
+	$("#mistakes button[name='get'],#mistakes button[name='edit']").click(openMistake);
 	$("#deadlinetable button[name='show']").click(openDeadline);
 	$("#add-deadlines").click(openDeadList);
 	
