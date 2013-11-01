@@ -24,12 +24,12 @@ $audit = $this->audit;
 			Technik
 			</td>
 			<td>
-			<?php echo $this->auditor->username; ?>
+			<?php echo $this->auditor->name; ?>
 			</td>
 		</tr>
 		<tr>
 			<td>
-			Zodpovědná osoba klienta
+			Za klienta se zúčastnil
 			</td>
 			<td>
 			<?php echo ($this->contact) ? $this->contact->name : $audit->contact_name; ?>
