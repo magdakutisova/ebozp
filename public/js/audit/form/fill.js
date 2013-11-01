@@ -81,8 +81,33 @@ $(function () {
 		}
 	}
 	
+	function saveChange() {
+		// ziskani id zaznamu a kontextu radku
+		var context = $(this);
+		var someName = context.attr("id");
+		
+		var nameArr = someName.split("-");
+		
+		// priprava dat k odeslani
+		var data = {
+				recordId : nameArr[1]
+		};
+		
+		// vyhodnoceni typu zmeneneho policka
+		if (nameArr[2] == "score") {
+			data["score"] = Number(context.val());
+		} else {
+			data["note"] = context.val();
+		}
+		
+		// odeslani dat na server
+		$.post("/audit/form/saveone.json", data, $.noop);
+	}
+	
 	$("#form-fill-group").find(":radio").click(setVisibility);
 	$("#navigation-page").change(changePage);
 	$("#form-fill-group button[name$='[mistake]']").click(openMistake);
 	$("#form-fill-group textarea").focus(toggleComment).blur(toggleComment);
+	$("#form-fill-group textarea").change(saveChange);
+	$("#form-fill-group :radio").click(saveChange);
 });

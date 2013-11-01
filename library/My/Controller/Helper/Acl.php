@@ -112,7 +112,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'employee', array('edit', 'delete'));
 		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "submit", "newcontact"));
 		$this->allow($technician, "audit:mistake", array("attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
-		$this->allow($technician, "audit:form", array("instance", "fill", "save"));
+		$this->allow($technician, "audit:form", array("instance", "fill", "save", "saveone.json"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
 		$this->allow($technician, "audit:workplace", array("comment", "setplace", "post"));

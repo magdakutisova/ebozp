@@ -400,6 +400,55 @@ class Audit_FormController extends Zend_Controller_Action {
 		$this->_redirect($url);
 	}
 	
+	public function saveoneJsonAction() {
+		// nacteni dat
+		$recordId = $this->_request->getParam("recordId", 0);
+		
+		$tableRecords = new Audit_Model_AuditsRecords();
+		$record = $tableRecords->find($recordId)->current();
+		
+		if (!$record) throw new Zend_Db_Exception(sprintf("Record #%s not found", $recordId));
+		
+		// update dat
+		$comment = $this->_request->getParam("comment", null);
+		
+		if (!is_null($comment)) {
+			$record->note = $comment;
+		}
+		
+		$score = $this->_request->getParam("score", null);
+		
+		if (!is_null($score)) {
+			$record->score = $score;
+			
+			// nacteni dat
+			$tableAssocs = new Audit_Model_AuditsMistakes();
+			$where = array(
+					"audit_id = ?" => $record->audit_id,
+					"mistake_id = ?" => $record->mistake_id,
+					"record_id = ?" => $record->id
+			);
+			
+			// vyhodnoceni skore
+			if ($score == Audit_Model_AuditsRecords::SCORE_N) {
+				// vytvoreni asociace, pokud neexistuje
+				if (!$tableAssocs->fetchRow($where)) {
+					$tableAssocs->insert(array(
+							"audit_id" => $record->audit_id,
+							"mistake_id" => $record->mistake_id,
+							"record_id" => $record->id
+							));
+				}
+				
+			} else {
+				// smazani dat z asociace
+				$tableAssocs->delete($where);
+			}
+		}
+		
+		$record->save();
+	}
+	
 	public function sortAction() {
 		// nacteni dat
 		$formId = $this->_request->getParam("formId", 0);
