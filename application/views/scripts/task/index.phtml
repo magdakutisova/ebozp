@@ -1,0 +1,23 @@
+<?php
+// vyhodnoceni jestli je uzivatel opravnen vytvaret nove ukoly
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+echo $this->formButton("all-tasks", "Zobrazit všechny úkoly", array("subid" => $this->subsidiaryId));
+
+if ($acl->isAllowed($user->role, "task", "post")) {
+	
+	echo $this->formButton("create-task", "Nový úkol", array("subid" => $this->subsidiaryId));
+}
+
+$completable = $acl->isAllowed($user->role, "task", "complete");
+
+if ($completable) {
+	$format = sprintf("<form action='/task/complete'>%%s<div>%s</div></form>", $this->formSubmit("task-complete-submit", "Splnit označené úkoly"));
+} else {
+	$format = "%s";
+}
+
+$config = array("editable" => $acl->isAllowed($user->role, "task", "put"), "completable" => $completable);
+
+printf($format, $this->tasks($this->tasks, $config));

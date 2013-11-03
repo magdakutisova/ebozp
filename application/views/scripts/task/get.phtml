@@ -1,0 +1,22 @@
+<h2>Úkol</h2>
+<?php
+printf("<div style='margin: 3px; padding: 2px;'><strong>%s</strong></div>", $this->task->task);
+printf("<div style='white-space: pre-wrap'>%s</div>", $this->task->description);
+?>
+<h2>Komentáře</h2>
+<?php 
+foreach ($this->comments as $comment) {
+	$names = sprintf("<em>%s %s</em>", $comment->name, str_replace("-", ". ", $comment->created_at));
+	$content = sprintf("<div style='margin-top: 5px; white-space: pre-wrap'>%s</div>", $comment->comment);
+	
+	printf("<div style='border-bottom: solid 1px black;'>%s%s</div>", $names, $content);
+}
+
+$user = Zend_Auth::getInstance()->getIdentity();
+$acl = new My_Controller_Helper_Acl();
+
+if ($acl->isAllowed($user->role, "task", "comment")) {
+	echo "<h3>Nový komentář</h3>";
+	echo $this->formComment;
+}
+?>

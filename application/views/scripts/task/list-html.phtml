@@ -1,0 +1,14 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+echo $this->partial("task/list.phtml", $this);
+?>
+<script type="text/javascript">
+$(function () {
+
+	$("#technic-tasks button").unbind("click").click(function () {
+		var taskId = $(this).parent().find(":hidden").val();
+
+		location.href = "/task/" + $(this).attr("name") + ".html?__retLink=1&taskId=" + taskId;
+	});
+})
+</script>

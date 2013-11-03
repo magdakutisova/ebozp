@@ -1,0 +1,12 @@
+<?php 
+if ($this->task) {
+	// ukol uz byl vytvoren, presmerujeme na editaci
+	$redirector = new Zend_Controller_Action_Helper_Redirector();
+	$url = sprintf("/task/put?taskId=%s", $this->task->id);
+	
+	$redirector->gotoUrlAndExit($url);
+}
+?>
+<h2>Nový úkol</h2>
+<?php
+echo $this->form;

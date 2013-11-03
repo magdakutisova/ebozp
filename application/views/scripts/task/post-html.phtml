@@ -1,0 +1,12 @@
+<?php
+if ($this->task) {
+	// ukol uz byl vytvoren, presmerujeme na editaci
+	$redirector = new Zend_Controller_Action_Helper_Redirector();
+	$url = sprintf("/task/put.html?taskId=%s", $this->task->id);
+
+	$redirector->gotoUrlAndExit($url);
+}
+
+$this->layout()->setLayout("floating-layout");
+
+echo $this->partial("task/post.phtml", $this);

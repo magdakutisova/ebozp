@@ -840,6 +840,21 @@ $(function(){
 		$("ul.navigation li ul li a:contains('pouze sídlo')").addClass('hqOnly');
 	});
 	
+	// vytvoreni noveho ukolu
+	$("#create-task").click(function() {
+		$.iframeDialog("/task/post.html?subsidiaryId=" + $(this).attr("subid"), 700, 500);
+	});
+	
+	$("#all-tasks").click(function () {
+		$.iframeDialog("/task/list.html?subsidiaryId=" + $(this).attr("subid"), 700, 500);
+	});
+
+	$("#technic-tasks button").click(function () {
+		var method = $(this).attr("name");
+		var url = "/task/" + method + ".html?taskId=" + $(this).parent().find(":hidden:first").val();
+		
+		$.iframeDialog(url, 700, 500);
+	});
 });
 
 /**
@@ -957,4 +972,5 @@ $.iframeDialog = function (src, width, height, title, onClose) {
 			return methods["status"].apply(this, []);
 		}
 	};
+	
 })(jQuery);

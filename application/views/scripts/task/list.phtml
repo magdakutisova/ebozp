@@ -1,0 +1,8 @@
+<h2>Celkový seznam úkolů</h2>
+<?php
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+$config = array("editable" => $acl->isAllowed($user->role, "task", "put"), "completable" => false);
+
+echo $this->tasks($this->tasks, $config);

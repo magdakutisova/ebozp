@@ -19,6 +19,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('technical'));
 		$this->add(new Zend_Acl_Resource('chemical'));
 		$this->add(new Zend_Acl_Resource('employee'));
+		$this->add(new Zend_Acl_Resource("task"));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 
@@ -124,6 +125,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($technician, "deadline:deadline", "import");
 		$this->allow($technician, "document:documentation");
 		$this->deny($technician, "document:documentation", array("import", "reset"));
+		$this->allow($technician, "task", array("comment", "comment.html", "complete", "complete.html", "list", "list.html", "comment", "get", "get.html", "index"));
 		
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
@@ -131,6 +133,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));
 		$this->allow($coordinator, "document:preset");
 		$this->allow($coordinator, "audit:form");
+		$this->allow($coordinator, "task", array("post", "post.html", "put", "put.html", "delete", "delete.html"));
 		
 		$this->allow($superadmin);
 		$this->deny($admin, 'utility');
