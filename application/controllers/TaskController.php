@@ -70,6 +70,7 @@ class TaskController extends Zend_Controller_Action {
 		$tasks = $tableTasks->findTasks($subsidiary->id_subsidiary, $subsidiary->client_id, true);
 		
 		$this->view->tasks = $tasks;
+		$this->view->subsidiaryId = $subsidiary->id_subsidiary;
 	}
 	
 	public function listAction() {
