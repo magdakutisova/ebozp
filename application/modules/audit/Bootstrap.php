@@ -380,7 +380,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// vytvoreni pracoviste z auditu
 		$router->addRoute(
 				"audit-workplace-post",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/workplace/post",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/workplace/post",
 						array(
 								"module" => "audit",
 								"controller" => "workplace",

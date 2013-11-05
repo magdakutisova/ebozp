@@ -420,7 +420,6 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->selectWorkplace = $selectWorkplace;
 		$this->view->workSelect = $workSelect;
 		$this->view->auditMistakes = $auditMistakes;
-		$this->view->otherMistakes = $otherMistakes;
 		$this->view->commentForms = $commentForms;
 		$this->view->userId = $userId;
 		$this->view->contactForm = $contactForm;
@@ -815,7 +814,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 	protected function _initWorkForms() {
 		$placeForm = new Application_Form_Workplace();
 		$this->view->placeForm = $placeForm;
-		$placeForm->setAction($this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id), "audit-workplace-post"));
+		$placeForm->setAction($this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $this->_audit->subsidiary_id), "audit-workplace-post"));
 		
 		// nacteni seznamu pobocek
 		$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
