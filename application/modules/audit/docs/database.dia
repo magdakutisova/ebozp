@@ -5285,7 +5285,7 @@
         <dia:point val="27.4233,-18.9878"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="27.3733,-19.0378;44.1433,-3.3378"/>
+        <dia:rectangle val="27.3733,-19.0378;44.1433,-2.5378"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="27.4233,-18.9878"/>
@@ -5294,7 +5294,7 @@
         <dia:real val="16.669999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="15.600000000000005"/>
+        <dia:real val="16.400000000000002"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_watches#</dia:string>
@@ -5718,6 +5718,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#přepínač uzavření dohldíky#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#also_audit#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#bool#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null default 0#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#přepínač, zda zároveň probíhá audit nebo prověrka#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>

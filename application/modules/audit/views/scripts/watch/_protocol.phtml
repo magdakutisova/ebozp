@@ -101,48 +101,51 @@ echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podni
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Realizační výstup", "items" => $this->outputs, "notFound" => "Žádné připomínky klienta"));
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno", "note" => "Závazně objednávám:"));
 
-// rozrazeni neshod na nove, odstranene a neodstranene
-$new = array();
-$removed = array();
-$marked = array();
-$watch = $this->watch;
-
-foreach ($this->mistakes as $mistake) {
-	// vyhodnoceni neshody
-	if ($mistake->set_removed) {
-		$removed[] = $mistake;
-	} elseif ($mistake->watch_id == $watch->id) {
-		$new[] = $mistake;
-	} else {
-		$marked[] = $mistake;
+// pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty
+if (!$this->watch->also_audit) {
+	// rozrazeni neshod na nove, odstranene a neodstranene
+	$new = array();
+	$removed = array();
+	$marked = array();
+	$watch = $this->watch;
+	
+	foreach ($this->mistakes as $mistake) {
+		// vyhodnoceni neshody
+		if ($mistake->set_removed) {
+			$removed[] = $mistake;
+		} elseif ($mistake->watch_id == $watch->id) {
+			$new[] = $mistake;
+		} else {
+			$marked[] = $mistake;
+		}
 	}
-}
-
-// nove neshody
-?>
-<h2>Nově nalezené neshody</h2>
-<?php 
-
-if ($new) {
-	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
-} else {
-	echo "<div>-</div>";
-}
-?>
-<h2>Odstraněné neshody</h2>
-<?php 
-if ($removed) {
-	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění")));
-} else {
-	echo "<div>-</div>";
-}
-?>
-<h2>Neodstraněné neshody z minulých kontrol</h2>
-<?php 
-if ($marked) {
-	echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
-} else {
-	echo "<div>-</div>";
+	
+	// nove neshody
+	?>
+	<h2>Nově nalezené neshody</h2>
+	<?php 
+	
+	if ($new) {
+		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+	} else {
+		echo "<div>-</div>";
+	}
+	?>
+	<h2>Odstraněné neshody</h2>
+	<?php 
+	if ($removed) {
+		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění")));
+	} else {
+		echo "<div>-</div>";
+	}
+	?>
+	<h2>Neodstraněné neshody z minulých kontrol</h2>
+	<?php 
+	if ($marked) {
+		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+	} else {
+		echo "<div>-</div>";
+	}
 }
 ?>
 <div></div><div></div>

@@ -2,8 +2,14 @@
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#discuss">Projednáno</a></li>
+		<?php 
+		if (!$this->watch->also_audit) {
+		?>
 		<li><a href="#mistakes">Neshody</a></li>
 		<li><a href="#deadlines">Lhůty</a></li>
+		<?php 
+		}
+		?>
 		<li><a href="#changes">Změny</a></li>
 		<li><a href="#orders">Objednávky</a></li>
 		<li><a href="#outputs">Realizační výstup</a></li>
@@ -73,6 +79,9 @@
 			</div>
 		</form>
 	</div>
+<?php 
+if (!$this->watch->also_audit) {
+?>
 	<div id="mistakes">
 		<h2>Nová neshoda</h2>
 		<?php 
@@ -145,6 +154,9 @@
 		echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
 		?>
 	</div>
+<?php 
+}
+?>
 	<div id="orders">
 		<form action="/audit/watch/orders" method="post" id="form-orders">
 			<ol id="order-list">

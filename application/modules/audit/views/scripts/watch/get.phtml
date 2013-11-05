@@ -2,8 +2,14 @@
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
 		<li><a href="#discuss">Projednáno</a></li>
+		<?php 
+		if (!$this->watch->also_audit) {
+		?>
 		<li><a href="#mistakes">Neshody</a></li>
 		<li><a href="#deadlines">Lhůty</a></li>
+		<?php 
+		}
+		?>
 		<li><a href="#changes">Změny</a></li>
 		<li><a href="#orders">Objednávky</a></li>
 		<li><a href="#outputs">Realizační výstup</a></li>
@@ -103,6 +109,9 @@
 			?>
 		</ol>
 	</div>
+<?php 
+if (!$this->watch->also_audit) {
+?>
 	<div id="mistakes">
 <?php 
 // rozrazeni neshod na nove, odstranene a neodstranene
@@ -131,6 +140,12 @@ foreach ($this->mistakes as $mistake) {
 <h2>Neodstraněné neshody z minulých kontrol</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
 	</div>
+	<div id="deadlines">
+		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => array("show" => array("type" => "button", "caption" => "Zobrazit")))); ?>
+	</div>
+	<?php 
+}
+	?>
 	<div id="orders">
 		<ol>
 			<?php 
@@ -139,9 +154,6 @@ foreach ($this->mistakes as $mistake) {
 			}
 			?>
 		</ol>
-	</div>
-	<div id="deadlines">
-		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => array("show" => array("type" => "button", "caption" => "Zobrazit")))); ?>
 	</div>
 	<div id="outputs">
 		<ol>

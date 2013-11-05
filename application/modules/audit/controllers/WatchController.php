@@ -38,7 +38,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 	
 	public function createAction() {
 		// vytvoreni formulare a nastaveni hodnot
-		$form = new Audit_Form_Watch();
+		$form = new Audit_Form_WatchCreate();
 		$this->prepareWatchForm($form);
 		
 		// prednastaveni technika
@@ -173,11 +173,17 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// realizacni vystup
 		$outputs = $watch->findOutputs();
 		
-		// neshody vazane k dohlidce
-		$mistakes = $watch->findMistakes();
-		
-		// nacteni lhut
-		$deadlines = $watch->findDeadlines();
+		// pokud nebyl zaroven provaden audit/proverka, pak se nactou lhuty a neshody
+		if (!$watch->also_audit) {
+			// neshody vazane k dohlidce
+			$mistakes = $watch->findMistakes();
+			
+			// nacteni lhut
+			$deadlines = $watch->findDeadlines();
+			
+			$this->view->deadlines = $deadlines;
+			$this->view->mistakes = $mistakes;
+		}
 		
 		// nacteni pracovist pobocky
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -190,9 +196,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->changes = $changes;
 		$this->view->orders = $orders;
 		$this->view->outputs = $outputs;
-		$this->view->mistakes = $mistakes;
 		$this->view->workplaces = $workplaces;
-		$this->view->deadlines = $deadlines;
 	}
 	
 	public function getAction() {
@@ -204,7 +208,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$user = $watch->findParentRow("Application_Model_DbTable_User", "user");
 		$changes = $watch->findChanges();
 		$discussed = $watch->findDiscussed();
-		$mistakes = $watch->findMistakes();
 		$orders = $watch->findOrders();
 		$outputs = $watch->findOutputs();
 		
@@ -215,19 +218,24 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$person = (object) array("name" => $watch->contact_name, "phone" => $watch->contact_phone, "email" => $watch->contact_email);
 		}
 		
-		// nacteni lhut
-		$tableDeadlines = new Audit_Model_WatchesDeadlines();
-		$deadlines = $tableDeadlines->findExtendedByWatch($watch);
+		// pokud nebyl zaroven provaden audit/proverka pak se nactou neshody a lhuty
+		if (!$watch->also_audit) {
+			// nacteni lhut
+			$tableDeadlines = new Audit_Model_WatchesDeadlines();
+			$deadlines = $tableDeadlines->findExtendedByWatch($watch);
+			$mistakes = $watch->findMistakes();
+			
+			$this->view->deadlines = $deadlines;
+			$this->view->mistakes = $mistakes;
+		}
 		
 		$this->view->user = $user;
 		$this->view->watch = $watch;
 		$this->view->changes = $changes;
 		$this->view->discussed = $discussed;
-		$this->view->mistakes = $mistakes;
 		$this->view->orders = $orders;
 		$this->view->outputs = $outputs;
 		$this->view->person = $person;
-		$this->view->deadlines = $deadlines;
 	}
 	
 	public function getdeadHtmlAction() {
@@ -401,7 +409,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 	
 	public function postAction() {
 		// nacteni a kontrola dat
-		$form = new Audit_Form_Watch();
+		$form = new Audit_Form_WatchCreate();
 		$this->prepareWatchForm($form);
 		
 		if (!$form->isValid($this->_request->getParams())) {
@@ -419,13 +427,16 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = $tableWatches->createRow($data);
 		$watch->save();
 		
-		// vlozeni neshod, ktere jsou vazany k pobocce
-		$tableAssocs = new Audit_Model_WatchesMistakes();
-		$tableAssocs->insertByWatch($watch);
-		
-		// zapsani asociaci lhut
-		$tableDeadlines = new Audit_Model_WatchesDeadlines();
-		$tableDeadlines->createByWatch($watch);
+		// vyhodnoceni, zda se jedna o dohlidku spolecne s proverkou/auditem
+		if (!$watch->also_audit) {
+			// vlozeni neshod, ktere jsou vazany k pobocce
+			$tableAssocs = new Audit_Model_WatchesMistakes();
+			$tableAssocs->insertByWatch($watch);
+			
+			// zapsani asociaci lhut
+			$tableDeadlines = new Audit_Model_WatchesDeadlines();
+			$tableDeadlines->createByWatch($watch);
+		}
 		
 		$this->view->watch = $watch;
 	}
