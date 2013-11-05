@@ -24,9 +24,7 @@ if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
-	 <?php if ($this->createAuditAllowed) { ?>
 	 | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiaryId), "audit-list"); ?>">Audity</a>
-	 <?php } ?>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiaryId), "deadline-index"); ?>">Lhůty</a>
 	 |
