@@ -101,11 +101,12 @@ echo $this->formHidden("client_id", $this->client->id_client);
 			foreach ($this->auditMistakes as $mistake) {
 				// vyhodnoceni semaforu
 				$selector = $mistake->audit_id != $this->audit->id;
+				$assoc = $this->mistakeAssocIndex[$mistake->id];
 				
 				$classes = array();
 				
 				// vyhodnoceni barvy
-				if ($mistake->is_removed) {
+				if ($assoc->status == 2) {
 					$classes = array("mistake-removed");
 				} elseif ($mistake->is_marked) {
 					$classes = array("mistake-marked");
@@ -125,11 +126,8 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		</table>
 		<p>
 			<?php 
-			/*
 			echo $this->formSubmit("submit-solve", "Označit jako odstraněné");
 			echo $this->formSubmit("submit-unsolve", "Označit jako NEodstraněné");
-			echo $this->formSubmit("submit-detach", "Odebrat označené neshody z auditu");
-			*/
 			?>
 		</p>
 		</form>

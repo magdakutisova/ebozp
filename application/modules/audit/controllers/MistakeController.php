@@ -230,7 +230,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		// presmerovani
-		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id), "audit-edit") . "#mistakes";
+		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id, "subsidiaryId" => $this->_audit->subsidiary_id), "audit-edit") . "#mistakes";
 		$this->_redirect($url);
 	}
 	

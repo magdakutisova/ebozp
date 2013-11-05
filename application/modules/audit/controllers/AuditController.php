@@ -358,7 +358,13 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// nacteni neshod tykajicich se auditu
 		$auditMistakes = $this->_audit->getMistakes();
-		$otherMistakes = $this->_audit->getSupplementMistakes();
+		$mistakeAssocs = $this->_audit->getMistakeAssocs();
+		
+		$mistakeAssocsIndex = array();
+		
+		foreach ($mistakeAssocs as $assoc) {
+			$mistakeAssocsIndex[$assoc->mistake_id] = $assoc;
+		}
 		
 		// nacteni seznamu pracovist na pobocce
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
@@ -418,6 +424,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->commentForms = $commentForms;
 		$this->view->userId = $userId;
 		$this->view->contactForm = $contactForm;
+		$this->view->mistakeAssocIndex = $mistakeAssocsIndex;
 	}
 	
 	public function getAction() {
@@ -584,6 +591,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$audit = $tableAudits->createAudit($auditor, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
 		
+		// prirazeni existujicich neshod
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		
+		$nameAssocs = $tableAssocs->info("name");
+		$nameMistakes = $tableMistakes->info("name");
+		
+		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed and is_submited";
+		$tableAssocs->getAdapter()->query($sql);
+		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit")
 		);
@@ -689,12 +706,18 @@ class Audit_AuditController extends Zend_Controller_Action {
 				
 			// aktualizace stavu neshod
 			$begin = "update `$nameAssocs`, `$nameMistakes` set ";
-			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 1 and id = mistake_id";
+			$sql1 = "$begin is_removed = 1 where `$nameAssocs`.`status` = 2 and id = mistake_id";
 			$tableMistakes->getAdapter()->query("$sql1");
 				
 			// odeslani neshod, ktere se maji odeslat
 			$sql = "update `$nameMistakes` set is_submited = 1 where id in (select mistake_id from `$nameAssocs` where audit_id = $auditId)";
 			$tableMistakes->getAdapter()->query($sql);
+			
+			// smazani neshod z formularu, ktere se nakonec nepouzily
+			$tableMistakes->delete(array(
+					"audit_id = ?" => $audit->id,
+					"id not in (?)" => new Zend_Db_Expr("select mistake_id from $nameAssocs where audit_id = " . $audit->id)
+					));
 				
 			// nastaveni odeslani neshod v asociacni tabulce auditu
 			$tableAssocs->update(array("is_submited" => 1), array("audit_id = ?" => $auditId));

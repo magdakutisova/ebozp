@@ -59,6 +59,10 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		return $tableMistakes->_findMistakes($where);
 	}
 	
+	public function getMistakeAssocs() {
+		return $this->findDependentRowset(new Audit_Model_AuditsMistakes(), "audit");
+	}
+	
 	/**
 	 * vraci neshody, ktere nejsou v auditu zahrnuty
 	 */
