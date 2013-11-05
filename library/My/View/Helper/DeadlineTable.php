@@ -26,6 +26,8 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 	 * @param array $config
 	 */
 	public function deadline($deadline, array $config = array()) {
+		$config = array_merge(array("noAction" => false), $config);
+		
 		// vyhodnoceni typu
 		switch ($deadline["type"]) {
 			case Deadline_Form_Deadline::TYPE_ELEARNING:
@@ -48,9 +50,12 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				$this->wrap("td", $deadline["kind"]),
 				$this->wrap("td", $deadline["specific"]),
 				$this->wrap("td", $type),
-				$this->wrap("td", $deadline["period"]),
-				$this->wrap("td", $buttons, array("rowspan" => 2))
+				$this->wrap("td", $deadline["period"])
 		);
+		
+		if (!$config["noAction"]) {
+			$row[] = $this->wrap("td", $buttons, array("rowspan" => 2));
+		}
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));
 		
@@ -152,34 +157,39 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				"last_done" => "Naposledy provedeno",
 				"next_date" => "Další provedení",
 				"note" => "Poznámka",
-				"responsible_name" => "Provádí"
+				"responsible_name" => "Provádí",
+				"noAction" => false,
+				"headBg" => ""
 				), $config);
 		
 		// vygenerovani prvniho radku
 		$row = array(
-				$this->wrap("th", $config["name"], array("rowspan" => 2)),
-				$this->wrap("th", $config["kind"]),
-				$this->wrap("th", $config["specific"]),
-				$this->wrap("th", $config["type"]),
-				$this->wrap("th", $config["period"]),
-				$this->wrap("th", $config["actions"], array("rowspan" => 2))
+				$this->wrap("th", $config["name"], array("rowspan" => 2, "align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["kind"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["specific"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["type"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["period"], array("align" => "center", "valign" => "middle"))
 				);
+		
+		if (!$config["noAction"]) {
+			$row[] = $this->wrap("th", $config["actions"], array("rowspan" => 2, "align" => "center", "valign" => "middle"));
+		}
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));
 		
 		// druhy radek
 		$row = array(
-				$this->wrap("th", $config["last_done"]),
-				$this->wrap("th", $config["next_date"]),
-				$this->wrap("th", $config["note"]),
-				$this->wrap("th", $config["responsible_name"]),
+				$this->wrap("th", $config["last_done"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["next_date"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["note"], array("align" => "center", "valign" => "middle")),
+				$this->wrap("th", $config["responsible_name"], array("align" => "center", "valign" => "middle")),
 		);
 		
 		$rowStr2 = $this->wrap("tr", implode("", $row));
 		
 		$header = $rowStr1 . $rowStr2;
 		
-		return $this->wrap("thead", $header);
+		return $this->wrap("thead", $header, array("bgcolor" => $config["headBg"]));
 	}
 	
 	/**

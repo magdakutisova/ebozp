@@ -17,10 +17,10 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 		return $this->findParentRow("Application_Model_DbTable_User", "user");
 	}
 	
-	public function findDeadlines() {
+	public function findDeadlines($undoneOnly = false) {
 		$tableDeadlines = new Audit_Model_WatchesDeadlines();
 		
-		return $tableDeadlines->findExtendedByWatch($this);
+		return $tableDeadlines->findExtendedByWatch($this, $undoneOnly);
 	}
 	
 	public function findDiscussed() {

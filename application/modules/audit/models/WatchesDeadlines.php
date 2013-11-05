@@ -69,7 +69,7 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 	 * @param Audit_Model_Row_Watch $watch
 	 * @return Zend_Db_Table_Rowset_Abstract
 	 */
-	public function findExtendedByWatch(Audit_Model_Row_Watch $watch) {
+	public function findExtendedByWatch(Audit_Model_Row_Watch $watch, $undoneOnly = false) {
 		// sestaveni dotazu
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
@@ -77,6 +77,10 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 		// vlozeni omezeni na asociovane lhuty
 		$subSelect = new Zend_Db_Select($this->getAdapter());
 		$subSelect->from($this->_name, array("deadline_id"))->where("watch_id = ?", $watch->id);
+		
+		if ($undoneOnly) {
+			$subSelect->where("!is_done");
+		}
 		
 		$select->where("id in ?", $subSelect);
 		

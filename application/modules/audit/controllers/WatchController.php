@@ -513,6 +513,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 					"email" => $watch->contact_email);
 		}
 		
+		// nacteni lhut
+		$deadlines = $watch->findDeadlines(true);
+		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
 		$this->view->outputs = $outputs;
@@ -523,6 +526,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->subsidiary = $subsidiary;
 		$this->view->user = $user;
 		$this->view->person = $person;
+		$this->view->deadlines = $deadlines;
 		$this->view->logo = __DIR__ . "/../resources/logo.png";
 	}
 	

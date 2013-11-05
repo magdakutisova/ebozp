@@ -146,6 +146,16 @@ if (!$this->watch->also_audit) {
 	} else {
 		echo "<div>-</div>";
 	}
+	?>
+	<h1>Propadlé lhůty</h1>
+	<table border="1" cellpadding="2">
+		<?php 
+		$config = array("noAction" => true, "headBg" => "#000000");
+		echo $this->deadlineTable()->header($config);
+		echo implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
+		?>
+	</table>
+	<?php
 }
 ?>
 <div></div><div></div>
