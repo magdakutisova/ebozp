@@ -175,7 +175,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 			$row[] = $this->wrap("th", $config["actions"], array("rowspan" => 2, "align" => "center", "valign" => "middle"));
 		}
 		
-		$rowStr1 = $this->wrap("tr", implode("", $row));
+		$rowStr1 = $this->wrap("tr", implode("", $row), array("bgcolor" => $config["headBg"]));
 		
 		// druhy radek
 		$row = array(
@@ -185,11 +185,11 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 				$this->wrap("th", $config["responsible_name"], array("align" => "center", "valign" => "middle")),
 		);
 		
-		$rowStr2 = $this->wrap("tr", implode("", $row));
+		$rowStr2 = $this->wrap("tr", implode("", $row), array("bgcolor" => $config["headBg"]));
 		
 		$header = $rowStr1 . $rowStr2;
 		
-		return $this->wrap("thead", $header, array("bgcolor" => $config["headBg"]));
+		return $this->wrap("thead", $header);
 	}
 	
 	/**

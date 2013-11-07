@@ -48,6 +48,11 @@ class Audit_ReportController extends Zend_Controller_Action {
 					));
 		}
 		
+		// nacteni lhut
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+		
+		$this->view->deadlines = $deadlines;
 		$this->view->audit = $audit;
 		$this->view->client = $client;
 		$this->view->auditor = $auditor;
@@ -71,6 +76,12 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$report = $this->loadReport($audit);
 		
 		$charts = (array) $this->getRequest()->getParam("chart", array());
+		
+		// nacteni lhut
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+		
+		$this->view->deadlines = $deadlines;
 		
 		$this->view->report = $report;
 		$this->view->audit = $audit;
@@ -112,6 +123,12 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		// nacteni neshod
 		$mistakes = self::getMistakes($audit);
+		
+		// nacteni lhut
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+		
+		$this->view->deadlines = $deadlines;
 		
 		$this->view->audit = $audit;
 		$this->view->client = $client;

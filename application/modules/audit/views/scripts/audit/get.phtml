@@ -2,6 +2,7 @@
 <?php 
 echo "var CLIENT_ID=" . $this->client->id_client . ";";
 echo "var SUBSIDIARY_ID=" . $this->subsidiary->id_subsidiary . ";";
+echo "var AUDIT_ID=" . $this->audit->id;
 
 $today = (int) Zend_Date::now()->get("yMMdd");
 ?>
@@ -13,6 +14,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 		<li><a href="#overview">Přehled auditu</a></li>
 		<li><a href="#forms">Formuláře</a></li>
 		<li><a href="#mistakes">Neshody</a>
+		<li><a href="#deadlines">Lhůty</a></li>
 	</ul>
 	<div id="overview">
 	<?php 
@@ -121,6 +123,20 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 				?>
 			</table>
 		</div>
+	</div>
+	<div id="deadlines">
+	<?php 
+	$options = array(
+			"buttons" => array(
+					"show" => array(
+							"caption" => "Zobrazit",
+							"type" => "button"
+					)
+			)
+	);
+	
+	echo $this->deadlineTable($this->deadlines, $options); 
+	?>
 	</div>
 </div>
 <script type="text/javascript" src="/js/audit/audit/get.js"></script>

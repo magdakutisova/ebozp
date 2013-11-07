@@ -200,7 +200,10 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$reserve->addMonth(-1);
 		
 		$tableWatches = new Audit_Model_Watches();
+		$tableAudits = new Audit_Model_Audits();
+		
 		$nameWatches = $tableWatches->info("name");
+		$nameAudits = $tableAudits->info("name");
 		
 		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 		
@@ -219,13 +222,32 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			
 			$select->where("!is_closed")->where("subsidiary_id = ?", $deadline->subsidiary_id);
 			
+			// prepis dat dohlidek
 			$tableAssocs = new Audit_Model_WatchesDeadlines();
-			
 			$sql = "insert ignore into %s (watch_id, deadline_id, valid_to, is_over) %s";
+			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
+			
+			// prepis dat auditu
+			// poddotaz nacte dohlidky spolecne s id lhuty
+			$select->reset(Zend_Db_Select::FROM);
+			$select->reset(Zend_Db_Select::COLUMNS);
+			
+			$select->from($nameAudits, array(
+					"id",
+					new Zend_Db_Expr($deadline->id),
+					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
+					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
+			));
+			
+			$tableAssocs = new Audit_Model_AuditsDeadlines();
+			$sql = "insert ignore into %s (audit_id, deadline_id, valid_to, is_over) %s";
+			
 			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
 			
 		} else {
 			// lhuta se odebere s dohlidek
+			
+			// prepis dohlidek
 			
 			// poddotaz nacte vsechny dohlidky, ktere nejsou uzavreny
 			$select->from($nameWatches, array("id"))->where("!is_closed");
@@ -236,6 +258,17 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 					"deadline_id = ?" => $deadline->id,
 					"watch_id in (?)" => new Zend_Db_Expr($select)
 					));
+			
+			//prepis auditu
+			$select->reset(Zend_Db_Select::FROM);
+			$select->from($nameAudits, array("id"))->where("!is_closed");
+				
+			// odebrani dat
+			$tableAssocs = new Audit_Model_AuditsDeadlines();
+			$tableAssocs->delete(array(
+					"deadline_id = ?" => $deadline->id,
+					"audit_id in (?)" => new Zend_Db_Expr($select)
+			));
 		}
 		
 		$this->view->deadline = $deadline;

@@ -8,6 +8,7 @@ $common = $this->common;
 	<li><a href="#forms">Systematická část</a></li>
 	<li><a href="#workplaces">Vyhodnocení pracovišť</a></li>
 	<li><a href="#mistakes">Registr neshod</a></li>
+	<li><a href="#deadlines">Lhůty</a></li>
 	<li><a href="#save">Uložit</a></li>
 </menu>
 <form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-report-save"); ?>" method="post">
@@ -322,6 +323,12 @@ $common = $this->common;
 		</table>
 		<?php
 		}
+		?>
+	</fieldset>
+	<fieldset>
+		<legend id="deadlines">Lhůty</legend>
+		<?php 
+		echo $this->deadlineTable($this->deadlines, array("noAction" => true));
 		?>
 	</fieldset>
 	<fieldset>

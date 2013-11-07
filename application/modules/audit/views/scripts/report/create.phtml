@@ -46,6 +46,7 @@ if ($this->hq->id_subsidiary == $this->subsidiary->id_subsidiary) {
 }
 
 $opts = array(
+		"deadlines" => $this->deadlines,
 		"common" => array(
 				"name" => $name,
 				"org" => $client->company_name,

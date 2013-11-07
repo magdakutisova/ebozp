@@ -528,6 +528,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->person = $person;
 		$this->view->deadlines = $deadlines;
 		$this->view->logo = __DIR__ . "/../resources/logo.png";
+		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
 	}
 	
 	public function putAction() {
@@ -545,6 +546,41 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$data = self::prepareForSave($form);
 		
 		$watch->setFromArray($data)->save();
+		$this->view->watch = $watch;
+	}
+	
+	public function sendAction() {
+		// kontrolni nacteni 
+		$watch = self::loadWatch($this->_request->getParam("watchId"));
+		
+		if (!$watch->is_closed) throw new Zend_Exception("Watch #$watch->id must be closed for send protocol");
+		
+		// vygenerovani protokolu
+		$pdfProt = $this->view->action("protocol.pdf", "watch", "audit", array("watchId" => $watch->id, "disableHeaders" => 1));
+		
+		// odeslani emailu
+		$mailer = new Zend_Mail("UTF-8");
+		
+		$mailer->setSubject("Protokol");
+		$mailer->setFrom("system@eskoleni.eu");
+		$mailer->setBodyText("Dobrý den, v přloze se nachází protokol o provedené dohlídce. Tato zpráva je generována automaticky. Prosím neodpovídejte na ni");
+		$mailer->createAttachment($pdfProt, "application/pdf", null, null, "protokol.pdf");
+		
+		// vyhodnoceni kontaktni osoby
+		if ($watch->contactperson_id) {
+			$tableContacts = new Application_Model_DbTable_ContactPerson();
+			$contact = $tableContacts->find($watch->contactperson_id);
+			
+			$email = $contact->email;
+			$name = $contact->name;
+		} else {
+			$email = $watch->contact_email;
+			$name = $watch->contact_name;
+		}
+		
+		$mailer->addTo($email, $name);
+		$mailer->send();
+		
 		$this->view->watch = $watch;
 	}
 	

@@ -13,7 +13,7 @@
 		<strong>Provozovna</strong>
 		</td>
 		<td>
-		<?php echo $this->subsidiary->subsidiary_name; ?>
+		<?php echo sprintf("%s, %s", $this->subsidiary->subsidiary_street, $this->subsidiary->subsidiary_town); ?>
 		</td>
 	</tr>
 	<tr>
@@ -150,7 +150,7 @@ if (!$this->watch->also_audit) {
 	<h1>Propadlé lhůty</h1>
 	<table border="1" cellpadding="2">
 		<?php 
-		$config = array("noAction" => true, "headBg" => "#000000");
+		$config = array("noAction" => true, "headBg" => "#c6c6c6");
 		echo $this->deadlineTable()->header($config);
 		echo implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
 		?>

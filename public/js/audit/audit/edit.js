@@ -99,8 +99,31 @@ $(function () {
 		$(this).semaphore("set", input.val());
 	});
 	
+	function openDeadList() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/audit/audit/deadlist.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
+		
+		$.iframeDialog(url, 800, 400, "Vyberte lhůty", refreshWnd);
+	}
+	
+	function openDeadline() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/audit/audit/getdead.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
+		
+		$.iframeDialog(url, 800, 400, "Lhůta");
+	}
+	
+	function refreshWnd() {
+		window.location.reload();
+	}
+	
 	$("#save-mistakes").click(sendMistakes);
 	$("#paginator-workplace").change(workplaceSelect);
 	$("#new-workplace").click(toggleWorkplace);
 	$("#audit-contactperson_id").change(checkContact).change();
+	
+	$("#deadlinetable button[name='show']").click(openDeadline);
+	$("#add-deadlines").click(openDeadList);
 });

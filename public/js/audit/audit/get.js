@@ -33,7 +33,16 @@ $(function () {
 		$.iframeDialog(url, 800, 400);
 	}
 	
+	function openDeadline() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/audit/audit/getdead.html?deadlineId=" + deadlineId + "&auditId=" + AUDIT_ID;
+		
+		$.iframeDialog(url, 800, 400, "Lhůta");
+	}
+	
 	$("#tabs").tabs();
 	$("#display-mistakes").change(switchContent);
 	$("#tab-others button,#tab-forms button").click(showDetails);
+	$("#deadlinetable button[name='show']").click(openDeadline);
 });

@@ -87,8 +87,11 @@
 			?>
 		</table>
 		<?php
-		echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>" . 
-			$this->formHidden("watchId", $this->watch->id) . $this->formSubmit("protocol", "Stáhnout protokol") . "</form>";
+		echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>";
+		echo $this->formHidden("watchId", $this->watch->id);
+		echo $this->formSubmit("protocol", "Stáhnout protokol");
+		echo $this->formSubmit("send", "Odeslat protokol emailem", array("onclick" => "if (confirm('Skutečně odeslat protokol?')) $(this).parent().attr('action', '/audit/watch/send').attr('target', '_self'); else return false;"));
+		echo "</form>";
 		?>
 	</div>
 	<div id="discuss">

@@ -151,6 +151,19 @@ if (!empty($this->mistkaes["others"])) {
 	$this->pdf()->mistakes($pdf, $this->mistakes["others"]);
 }
 
+// lhuty
+$pdf->AddPage("P", "A4");
+$this->pdf()->header($pdf, "Propadlé lhůty");
+
+$config = array("noAction" > true, "headBg" => "#c6c6c6");
+
+$deadHead = $this->deadlineTable()->header($config);
+$deadBody = $this->deadlineTable()->deadlines($this->deadlines, $config);
+
+$deadAll = sprintf("<table cellpadding=\"2\" border=\"2\">%s%s</table>", $deadHead, implode("", $deadBody));
+
+$pdf->writeHTML($deadAll);
+
 $this->pdf()->footer($pdf, $this->logo, "Zpracoval:
 G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622
 Zapsána u Rejstříkového soudu vedeného Krajským soudem v Hradci Králové, oddíl A, vložka 3503

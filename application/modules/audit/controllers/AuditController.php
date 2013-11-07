@@ -300,6 +300,26 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->audit = $newAudit;
 	}
 	
+	public function deadlistHtmlAction() {
+		// nacteni dohlidky
+		$audit = $this->_audit;
+	
+		// selekce lhut, ktere jeste nejsou v dohlidce
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$subSelect->from($tableAssocs->info("name"), "deadline_id")->where("audit_id = ?", $audit->id);
+	
+		// nacteni lhut
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$select = $tableDeadlines->_prepareSelect();
+		$select->where("subsidiary_id = ?", $audit->subsidiary_id)->where("id not in (?)", new Zend_Db_Expr($subSelect));
+	
+		$data = $select->query()->fetchAll();
+	
+		$this->view->deadlines = $data;
+		$this->view->audit = $audit;
+	}
+	
 	public function editAction() {
 		$this->view->layout()->setLayout("client-layout");
 		
@@ -409,6 +429,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$contactForm->populate($this->_audit->toArray());
 		$contactForm->setAction(sprintf("/audit/audit/newcontact?auditId=%s", $this->_audit->id));
 		
+		// nacteni dat o lhutach z databaze
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByAudit($this->_audit);
+		
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
 		$this->view->form = $form;
@@ -424,6 +448,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->userId = $userId;
 		$this->view->contactForm = $contactForm;
 		$this->view->mistakeAssocIndex = $mistakeAssocsIndex;
+		$this->view->deadlines = $deadlines;
 	}
 	
 	public function getAction() {
@@ -462,11 +487,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$workplaceIndex[$item->id_workplace] = $item;
 		}
 		
+		// nacteni lhut
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit);
+		
 		$this->view->audit = $this->_audit;
 		$this->view->subsidiary = $subsidiary;
 		$this->view->client = $client;
 		$this->view->auditor = $auditor;
 		$this->view->forms = $forms;
+		$this->view->deadlines = $deadlines;
 		
 		if ($this->_audit->contactperson_id) {
 			$tableContacts = new Application_Model_DbTable_ContactPerson();
@@ -477,6 +507,38 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// zapis dat neshod
 		$this->view->workplaceIndex = $workplaceIndex;
 		$this->view->mistakes = $mistakes;
+	}
+	
+	public function getdeadHtmlAction() {
+		// nacteni dohlidky
+		$audit = $this->_audit;
+	
+		// nacteni asociace
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$deadlineId = $this->_request->getParam("deadlineId");
+		$assoc = $tableAssocs->findByAuditDeadline($audit->id, $deadlineId);
+	
+		if (!$assoc) throw new Zend_Db_Table_Exception("Combination of deadline and audit not found");
+	
+		// nacteni lhuty
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$deadline = $tableDeadlines->findById($deadlineId, true);
+	
+		// formular pro splneni lhuty
+		if ($audit->is_closed) {
+			$formDone = null;
+		} else {
+			$formDone = new Audit_Form_Deadline();
+			$url = sprintf("/audit/audit/subdead.html?deadlineId=%s&auditId=%s&clientId=%s", $deadline->id, $audit->id, $audit->client_id);
+			$formDone->populate($assoc->toArray());
+			$formDone->setAction($url);
+		}
+	
+		$this->view->audit = $audit;
+		$this->view->deadline = $deadline;
+		$this->view->assoc = $assoc;
+	
+		$this->view->formDone = $formDone;
 	}
 	
 	public function indexAction() {
@@ -581,7 +643,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$auditor = $tableUser->find($this->_user->getIdUser())->current();
 		
 		// datum provedeni
-		$doneAt = new Zend_Date($form->getValue("done_at"), "MM. dd. y");
+		$doneAt = new Zend_Date($form->getValue("done_at"), "dd. MM. y");
 		
 		// vytvoreni zaznamu
 		$contactId = $form->getValue("contactperson_id");
@@ -599,6 +661,10 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$sql = "insert into $nameAssocs (audit_id, mistake_id, record_id, is_submited, status) select $audit->id, id, null, 0, 0 from $nameMistakes where subsidiary_id = $audit->subsidiary_id and !is_removed and is_submited";
 		$tableAssocs->getAdapter()->query($sql);
+		
+		// navazeni propadlych lhut k auditu
+		$tableDeadlines = new Audit_Model_AuditsDeadlines();
+		$tableDeadlines->createByAudit($audit);
 		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit")
@@ -654,6 +720,32 @@ class Audit_AuditController extends Zend_Controller_Action {
 		}
 		
 		$this->_redirect($url);
+	}
+	
+	public function subdeadHtmlAction() {
+		// nacteni dat z formulare
+		$form = new Audit_Form_Deadline();
+	
+		$form->populate($this->_request->getParams());
+	
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("getdead.html");
+			return;
+		}
+	
+		// nacteni dat z databaze
+		$audit = $this->_audit;
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$assoc = $tableAssocs->findByAuditDeadline($audit->id, $this->_request->getParam("deadlineId"));
+	
+		if (!$assoc) throw new Zend_Db_Table_Exception("Association not found");
+	
+		// nastaveni dat
+		$assoc->setFromArray($form->getValues(true));
+		$assoc->save();
+	
+		$this->view->assoc = $assoc;
+		$this->view->audit = $audit;
 	}
 	
 	public function submitAction() {
@@ -724,6 +816,28 @@ class Audit_AuditController extends Zend_Controller_Action {
 			// potvrdi se audit
 			$this->_audit->is_closed = 1;
 			$this->_audit->save();
+			
+			// oznaceni lhut, ktere byly vybrany jako splnenych
+			$tableDeadlinesAssocs = new Audit_Model_AuditsDeadlines();
+			$tableDeadlines = new Deadline_Model_Deadlines();
+			
+			$nameDeadlinesAssocs = $tableDeadlinesAssocs->info("name");
+			$nameDeadlines = $tableDeadlines->info("name");
+			
+			// sestaveni updatovaciho dotazu
+			$sql = sprintf("update %s as deads, %s as assocs set deads.last_done = assocs.done_at, deads.next_date = ADDDATE(assocs.done_at, INTERVAL deads.period MONTH) WHERE deads.id = assocs.deadline_id and is_done and audit_id = %s",
+					$nameDeadlines, $nameDeadlinesAssocs, $audit->id);
+			
+			Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
+			
+			// zapis do logu
+			$tableLogs = new Deadline_Model_Logs();
+			$nameLogs = $tableLogs->info("name");
+			
+			$sql = sprintf("insert into %s (deadline_id, done_at, note) select deadline_id, done_at, note from %s where is_done and audit_id = %s",
+					$nameLogs, $nameDeadlinesAssocs, $audit->id);
+			
+			Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 			
 			// presmerovani na get
 			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");

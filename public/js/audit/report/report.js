@@ -63,8 +63,9 @@ $(function () {
 		            rendererOptions: {
 		            	fillToZero: true, 
 		            	barPadding : 1,
-		            	barMargin : 15,
-		            	barDirection : "vertical"
+		            	barMargin : 5,
+		            	barDirection : "vertical",
+		            	barWidth: 15
 		            },
 		            color : "#ff0000"
 		        },

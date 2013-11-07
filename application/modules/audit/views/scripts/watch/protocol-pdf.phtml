@@ -17,4 +17,9 @@ G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, D
 Zapsána u Rejstříkového soudu vedeného Krajským soudem v Hradci Králové, oddíl A, vložka 3503
 Telefon: 466535700, E-mail: guard7@guard7.cz, www. guard7.cz");
 
-$pdf->Output("zprava.pdf", "D");
+if ($this->disableHeaders) {
+	//header("Content-Type: application/pdf");
+	//header("Content-Disposition: attachment");
+}
+
+echo $pdf->Output("zprava.pdf", "S");
