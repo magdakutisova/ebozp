@@ -477,6 +477,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 				$data["weight"], 
 				$watch);
 		
+		$mistake->responsibile_name = $form->getValue("responsibile_name");
+		$mistake->save();
+		
 		// zapis asociace
 		$tableAssocs = new Audit_Model_WatchesMistakes();
 		$tableAssocs->insert(array(
@@ -558,18 +561,10 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// vygenerovani protokolu
 		$pdfProt = $this->view->action("protocol.pdf", "watch", "audit", array("watchId" => $watch->id, "disableHeaders" => 1));
 		
-		// odeslani emailu
-		$mailer = new Zend_Mail("UTF-8");
-		
-		$mailer->setSubject("Protokol");
-		$mailer->setFrom("system@eskoleni.eu");
-		$mailer->setBodyText("Dobrý den, v přloze se nachází protokol o provedené dohlídce. Tato zpráva je generována automaticky. Prosím neodpovídejte na ni");
-		$mailer->createAttachment($pdfProt, "application/pdf", null, null, "protokol.pdf");
-		
 		// vyhodnoceni kontaktni osoby
 		if ($watch->contactperson_id) {
 			$tableContacts = new Application_Model_DbTable_ContactPerson();
-			$contact = $tableContacts->find($watch->contactperson_id);
+			$contact = $tableContacts->find($watch->contactperson_id)->current();
 			
 			$email = $contact->email;
 			$name = $contact->name;
@@ -578,8 +573,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$name = $watch->contact_name;
 		}
 		
-		$mailer->addTo($email, $name);
-		$mailer->send();
+		$msg = self::generateMail("Dobry den, v priloze se nachazi protokol o provedeni dohlidky. Tato zprava je generovana automaticky, prosim neodpovidejte na ni.", $pdfProt, "guardian@guard7.cz", $email);
+		
+		mail('', 'protokol', $msg["message"], $msg["headers"]);
 		
 		$this->view->watch = $watch;
 	}
@@ -742,5 +738,33 @@ class Audit_WatchController extends Zend_Controller_Action {
 					"content" => $item
 			));
 		}
+	}
+	
+	private static function generateMail($messageContent, $pdf, $from, $to) {
+		// vygenerovani hranice
+		$boundary = uniqid('np');
+		$boundary2 = $boundary . "2";
+		
+		// hlavicky
+		$headers = "MIME-Version: 1.0\r\n";
+		$headers .= "From: $from \r\n";
+		$headers .= "To: $to \r\n";
+		$headers .= "Content-Type: multipart/mixed;boundary=" . $boundary . "\r\n";
+		
+		$message .= "\r\n\r\n--" . $boundary . "\r\n";
+		$message .= "Content-Type: text/plain; charset=utf-8\r\n";
+		$message .= "Content-Disposition: inline\r\n";
+		$message .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+		$message .= $messageContent;
+
+		$message .= "\r\n\r\n--$boundary\r\n";
+		$message .= "Content-Transfer-Encoding: base64\r\n";
+		$message .= "Content-Disposition: attachment; filename=protokol.pdf\r\n";
+		$message .= "Content-type: application/pdf; name=protokol.pdf\r\n\r\n";
+		
+		$message .= base64_encode($pdf);
+		$message .= "\r\n\r\n--" . $boundary . "--";
+		
+		return array("message" => $message, "headers" => $headers);
 	}
 }
