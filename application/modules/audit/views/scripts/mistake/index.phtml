@@ -61,6 +61,11 @@ echo $this->formFilter;
 echo $this->mistakeTable()->header();
 
 $actions = array("show-mistake" => "Zobrazit");
+
+if ($acl->isAllowed($user->role, "audit:mistake", "edit")) {
+	$actions["edit-mistake"] = "Editovat";
+}
+
 $today = (int) Zend_Date::now()->get("yMMdd");
 
 foreach ($this->mistakes as $mistake) {
