@@ -111,8 +111,24 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		return $this->fetchAll(array("audit_id = " . $audit->id, "is_submited"));
 	}
 	
-	public function getByClient(Zend_Db_Table_Row_Abstract $client) {
-		return $this->_findMistakes(array("$this->_name.is_submited", "client_id = ?", $client->id_client));
+	public function getByClient(Zend_Db_Table_Row_Abstract $client, $filter) {
+		$where = array(
+				"$this->_name.is_submited", 
+				"$this->_name.client_id = ?" => $client->id_client
+				);
+		
+		switch ($filter) {
+			case 1:
+				// pouze aktualni
+				$where[] = "!is_removed";
+				break;
+		
+			case 2:
+				$where[] = "is_removed";
+				break;
+		}
+		
+		return $this->_findMistakes($where);
 	}
 	
 	/**
@@ -263,6 +279,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		// nacteni asociacnich tabulek
 		$tableAWatches = new Audit_Model_WatchesMistakes();
 		$tableAAudits = new Audit_Model_AuditsMistakes();
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		$nameAWatches = $tableAWatches->info("name");
 		$nameAAudits = $tableAAudits->info("name");
 		

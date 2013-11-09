@@ -521,12 +521,12 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// kontrola, jestli byla odeslana pobocka pomoci filtrace
 		$filterArr = (array) $this->_request->getParam("mistake", array());
-		$filterArr = array_merge(array("subsidiary_id" => 0), $filterArr);
+		$filterArr = array_merge(array("subsidiary_id" => null), $filterArr);
 		
-		if ($filterArr["subsidiary_id"]) {
+		if (!is_null($filterArr["subsidiary_id"])) {
 			$subsidiaryId = $filterArr["subsidiary_id"];
-			$this->_request->setParam("subsidiaryId", $subsidiaryId);
-		} else {
+			$this->_request->setParam("subsidiaryId", $subsidiaryId ? $subsidiaryId : null);
+		} elseif (is_null($filterArr["subsidiary_id"])) {
 			$filterArr["subsidiary_id"] = $subsidiaryId;
 			$this->_request->setParam("mistake", $filterArr);
 		}
@@ -566,7 +566,12 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$mistakes = $tableMistakes->getBySubsidiary($subsidiary, $formFilter->getValue("filter"));
+		
+		if ($subsidiary) {
+			$mistakes = $tableMistakes->getBySubsidiary($subsidiary, $formFilter->getValue("filter"));
+		} else {
+			$mistakes = $tableMistakes->getByClient($client, $formFilter->getValue("filter"));
+		}
 		
 		// nastaveni hodnot pro vyber filtracniho formulare
 		$workplaces = array("---");
