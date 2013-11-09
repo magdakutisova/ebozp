@@ -42,7 +42,7 @@ class Application_Model_DbTable_Task extends Zend_Db_Table_Abstract {
 	 * @param unknown_type $clientId
 	 * @return Zend_Db_Table_Rowset_Abstract
 	 */
-	public function findTasks($subsidiaryId, $clientId, $activeOnly) {
+	public function findTasks($subsidiaryId, $clientId, $filter) {
 		// sestaveni dotazu
 		$adapter = $this->getAdapter();
 		$select = new Zend_Db_Select($adapter);
@@ -60,8 +60,14 @@ class Application_Model_DbTable_Task extends Zend_Db_Table_Abstract {
 		$select->where($where);
 		
 		// doplneni podminky aktivity, pokud je treba
-		if ($activeOnly) {
-			$select->where("completed_by IS NULL");
+		switch ($filter) {
+			case 1:
+				$select->where("completed_by IS NULL");
+				break;
+				
+			case 2:
+				$select->where("completed_by IS NOT NULL");
+				break;
 		}
 		
 		return new Zend_Db_Table_Rowset(array("data" => $select->query()->fetchAll()));

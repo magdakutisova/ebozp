@@ -21,20 +21,17 @@ class Zend_View_Helper_Tasks extends Zend_View_Helper_Abstract {
 				"<th>Zadáno</th>",
 				"<th>Splnil</th>",
 				"<th>Splněno</th>",
-				"<th rowspan='3'>Akce</th>"
+				"<th>Akce</th>"
 				);
 		
 		$rows = array(
-				sprintf("<tr>%s</tr>", implode("", $cols)),
-				"<tr><th colspan='4' style='text-align: center'>Úkol</th></tr>",
-				"<tr><th colspan='4' style='text-align: center'>Komentář</th></tr>"
+				sprintf("<tr>%s</tr>", implode("", $cols))
 				);
 		
 		return sprintf("<thead>%s</thead>", implode("", $rows));
 	}
 	
 	public function task($task, array $config = array()) {
-		
 		
 		$items = array(
 				sprintf("<td>%s</td>", $task->creator_name),
@@ -46,7 +43,7 @@ class Zend_View_Helper_Tasks extends Zend_View_Helper_Abstract {
 		// sestaveni tlacitek
 		$buttons = array(
 				sprintf("<input type='hidden' name='taskId' value='%s'>", $task->id) .
-				$this->generateButton("get", "Zobrazit")
+				$this->generateButton("get", "Komentáře")
 				);
 		
 		if ($config["editable"]) {
@@ -66,7 +63,7 @@ class Zend_View_Helper_Tasks extends Zend_View_Helper_Abstract {
 				sprintf("<tr><td colspan='4' style='white-space: pre-wrap; font-style: italic; '>%s</td></tr>", $task->description)
 				);
 		
-		return sprintf("<tbody style='border: solid black 1px;'>%s</tbody>", implode("", $rows));
+		return sprintf("<tbody class='%s' style='border: solid black 1px;'>%s</tbody>", $task->completed_by ? "mistake-removed" : "", implode("", $rows));
 	}
 	
 	public function generateButton($name, $text) {

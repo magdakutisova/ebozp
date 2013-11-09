@@ -1,4 +1,13 @@
 <h2>Celkový seznam úkolů</h2>
+<form>
+	<?php 
+	$currFilter = Zend_Controller_Front::getInstance()->getRequest()->getParam("filter", 0);
+	echo $this->formLabel("filter", "Zobrazovat: ");
+	echo $this->formSelect("filter", $currFilter, null, array("Vše", "Aktuální", "Odstraněné"));
+	echo $this->formSubmit("submit", "Filtrovat");
+	echo $this->formHidden("subsidiaryId", $this->subsidiaryId);
+	?>
+</form>
 <?php
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();

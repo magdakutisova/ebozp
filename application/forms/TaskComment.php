@@ -27,7 +27,7 @@ class Application_Form_TaskComment extends Zend_Form {
 				));
 		
 		$this->addElement("submit", "submit", array(
-				"label" => "Uložit",
+				"label" => "Přidat",
 				"decorators" => array(
 						'ViewHelper',
 						array('Errors'),

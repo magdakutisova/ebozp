@@ -19,5 +19,15 @@ if ($completable) {
 }
 
 $config = array("editable" => $acl->isAllowed($user->role, "task", "put"), "completable" => $completable);
-
+?>
+<form>
+	<?php 
+	$currFilter = Zend_Controller_Front::getInstance()->getRequest()->getParam("filter", 1);
+	echo $this->formLabel("filter", "Zobrazovat: ");
+	echo $this->formSelect("filter", $currFilter, null, array("Vše", "Aktuální", "Odstraněné"));
+	echo $this->formSubmit("submit", "Filtrovat");
+	echo $this->formHidden("subsidiaryId", $this->subsidiaryId);
+	?>
+</form>
+<?php 
 printf($format, $this->tasks($this->tasks, $config));

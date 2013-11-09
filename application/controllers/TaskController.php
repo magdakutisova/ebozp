@@ -67,10 +67,11 @@ class TaskController extends Zend_Controller_Action {
 		$subsidiary = $tableSubsidiaries->find($this->_request->getParam("subsidiaryId"))->current();
 		
 		$tableTasks = new Application_Model_DbTable_Task();
-		$tasks = $tableTasks->findTasks($subsidiary->id_subsidiary, $subsidiary->client_id, true);
+		$tasks = $tableTasks->findTasks($subsidiary->id_subsidiary, $subsidiary->client_id, $this->_request->getParam("filter", 1));
 		
 		$this->view->tasks = $tasks;
 		$this->view->subsidiaryId = $subsidiary->id_subsidiary;
+		$this->view->subsidiary = $subsidiary;
 	}
 	
 	public function listAction() {
@@ -79,9 +80,10 @@ class TaskController extends Zend_Controller_Action {
 		
 		// nacteni ukolu
 		$tableTasks = new Application_Model_DbTable_Task();
-		$tasks = $tableTasks->findTasks($subsidiaryId, null, false);
+		$tasks = $tableTasks->findTasks($subsidiaryId, null, $this->_request->getParam("filter", 0));
 		
 		$this->view->tasks = $tasks;
+		$this->view->subsidiaryId = $subsidiaryId;
 	}
 	
 	public function listHtmlAction() {
@@ -99,6 +101,7 @@ class TaskController extends Zend_Controller_Action {
 				$task = $tableTasks->createRow($form->getValues(true));
 				
 				$task->created_by = Zend_Auth::getInstance()->getIdentity()->id_user;
+				$task->created_at = new Zend_Db_Expr("CURRENT_DATE");
 				
 				// nacteni pobocky
 				$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
