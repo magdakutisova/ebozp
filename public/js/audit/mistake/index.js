@@ -20,7 +20,12 @@ $(function() {
 				.val();
 
 		// sestaveni routy
-		var url = "/klient/" + CLIENTID + "/mistake/" + mistakeId + "/html";
+		var url = "";
+		
+		if ($(this).attr("name") == "show-mistake")
+			url = "/klient/" + CLIENTID + "/mistake/" + mistakeId + "/html";
+		else
+			url = "/klient/" + CLIENTID + "/mistake/" + mistakeId + "/edit-alone/html";
 
 		$.iframeDialog(url, 745, 500, "Neshoda");
 	}
