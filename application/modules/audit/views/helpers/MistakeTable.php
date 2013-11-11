@@ -75,11 +75,22 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		$button .= sprintf("<input type='hidden' name='weight', value='%s'>", $mistake->weight);
 		$button .= sprintf("<input type='hidden' name='subsidiary_id' value='%s'>", $mistake->subsidiary_id);
 		
+		// vyhodnoceni jmena pracoviste, pokud existuje
+		if ($mistake->workplace_id) {
+			if (isset($mistake->workplace_name)) {
+				$workplaceName = $mistake->workplace_name;
+			} else {
+				$workplaceName = isset($this->workIndex[$mistake->workplace_id]) ? $this->workIndex[$mistake->workplace_id]->name : "?";
+			}
+		} else {
+			$workplaceName = "-";
+		}
+		
 		$columns = array(
 				$this->_wrapToTd($mistake->category, "category"),
 				$this->_wrapToTd($mistake->subcategory, "subcategory"),
 				$this->_wrapToTd($mistake->concretisation),
-				$this->_wrapToTd($mistake->workplace_id ? (isset($this->workIndex[$mistake->workplace_id]) ? $this->workIndex[$mistake->workplace_id]->name : "?") : "-"),
+				$this->_wrapToTd($workplaceName),
 				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 2, "width" => "50px"))
 		);
 		

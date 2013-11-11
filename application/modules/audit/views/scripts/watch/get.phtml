@@ -159,13 +159,9 @@ foreach ($this->mistakes as $mistake) {
 		</ol>
 	</div>
 	<div id="outputs">
-		<ol>
-			<?php 
-			foreach ($this->outputs as $item) {
-				echo "<li>$item->content</li>";
-			}
-			?>
-		</ol>
+		<div>
+		<?php echo nl2br($this->watch->outputs); ?>
+		</div>
 	</div>
 </div>
 <?php 

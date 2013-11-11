@@ -78,6 +78,14 @@ $(function() {
 		$.iframeDialog(url, 800, 400, "Lhůta");
 	}
 	
+	function editDeadline() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/deadline/deadline/edit?deadlineId=" + deadlineId + "&clientId=" + clientId;
+		
+		$.iframeDialog(url, 800, 400, "Lhůta");
+	}
+	
 	function refreshWnd() {
 		window.location.reload();
 	}
@@ -122,6 +130,7 @@ $(function() {
 	$("#watch-watched_at").datepicker();
 	$("#mistakes button[name='get'],#mistakes button[name='edit']").click(openMistake);
 	$("#deadlinetable button[name='show']").click(openDeadline);
+	$("#deadlinetable button[name='edit']").click(editDeadline);
 	$("#add-deadlines").click(openDeadList);
 	
 	$("#watch-contactperson_id").change(checkContact).change();

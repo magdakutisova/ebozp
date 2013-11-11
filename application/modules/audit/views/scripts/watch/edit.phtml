@@ -1,7 +1,7 @@
 <div id="watch-tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
-		<li><a href="#discuss">Projednáno</a></li>
+		<li><a href="#discuss">Provedeno</a></li>
 		<?php 
 		if (!$this->watch->also_audit) {
 		?>
@@ -102,7 +102,7 @@ if (!$this->watch->also_audit) {
 						$workplaces[$item->id_workplace] = $item->name;
 					}
 					
-					echo $this->formSelect("mistake[workplace_id]", null, array(), $workplaces);
+					echo $this->formSelect("workplaceId", null, array(), $workplaces);
 					?>
 					</td>
 				</tr>
@@ -147,6 +147,10 @@ if (!$this->watch->also_audit) {
 						"show" => array(
 								"caption" => "Zobrazit",
 								"type" => "button"
+								),
+						"edit" => array(
+								"caption" => "Editovat",
+								"type" => "button"
 								)
 						)
 				);
@@ -180,21 +184,11 @@ if (!$this->watch->also_audit) {
 	</div>
 	<div id="outputs">
 		<form action="/audit/watch/outputs" method="post" id="form-output">
-			<ol id="output-list">
-			<?php 
-			foreach ($this->outputs as $item) {
-				echo "<li>";
-				echo $this->formTextarea("output[content][]", $item->content, array("rows" => 4, "cols" => 50));
-				echo $this->formButton("output-$item->id-delete", "Smazat");
-				echo "</li>";
-			}
-			?>
-			</ol>
+			<?php echo $this->formTextarea("outputs", $watch->outputs, array("style" => "height: 10em; width: 80%; ")); ?>
 			<div>
 			<?php 
 			echo $this->formHidden("watchId", $this->watch->id);
 			echo $this->formSubmit("output-submit", "Uložit");
-			echo $this->formButton("add-output", "Přidat položku");
 			?>
 			</div>
 		</form>

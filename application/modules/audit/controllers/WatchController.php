@@ -170,9 +170,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni objednavek
 		$orders = $watch->findOrders();
 		
-		// realizacni vystup
-		$outputs = $watch->findOutputs();
-		
 		// pokud nebyl zaroven provaden audit/proverka, pak se nactou lhuty a neshody
 		if (!$watch->also_audit) {
 			// neshody vazane k dohlidce
@@ -195,7 +192,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->discussed = $discussed;
 		$this->view->changes = $changes;
 		$this->view->orders = $orders;
-		$this->view->outputs = $outputs;
 		$this->view->workplaces = $workplaces;
 	}
 	
@@ -209,7 +205,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$changes = $watch->findChanges();
 		$discussed = $watch->findDiscussed();
 		$orders = $watch->findOrders();
-		$outputs = $watch->findOutputs();
 		
 		// nacteni kontaktni osoby
 		if ($watch->contactperson_id) {
@@ -234,7 +229,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->changes = $changes;
 		$this->view->discussed = $discussed;
 		$this->view->orders = $orders;
-		$this->view->outputs = $outputs;
 		$this->view->person = $person;
 	}
 	
@@ -398,11 +392,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = self::loadWatch($watchId);
 	
 		// nacteni dat a rpiprava tabulky
-		$tableOutputs = new Audit_Model_WatchesOutputs();
-		$contents = (array) $this->_request->getParam("output", array());
-		$contents = array_merge(array("content" => array()), $contents);
-	
-		self::_writeListItems($tableOutputs, $watch, $contents["content"]);
+		$watch->outputs = $this->_request->getParam("outputs");
+		$watch->save();
 	
 		$this->view->watch = $watch;
 	}
@@ -478,6 +469,11 @@ class Audit_WatchController extends Zend_Controller_Action {
 				$watch);
 		
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
+		
+		// nastaveni pracoviste
+		$workplaceId = $form->getValue("workplace_id");
+		if ($workplaceId) $mistake->workplace_id = $workplaceId;
+		
 		$mistake->save();
 		
 		// zapis asociace
@@ -497,7 +493,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = self::loadWatch($watchId);
 		
 		$mistakes = $watch->findMistakes();
-		$outputs = $watch->findOutputs();
 		$orders = $watch->findOrders();
 		$discussed = $watch->findDiscussed();
 		$changes = $watch->findChanges();
@@ -521,7 +516,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
-		$this->view->outputs = $outputs;
 		$this->view->orders = $orders;
 		$this->view->discussed = $discussed;
 		$this->view->changes = $changes;

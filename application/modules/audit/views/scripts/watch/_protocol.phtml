@@ -96,9 +96,12 @@
 	?>
 </table>
 <?php 
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Projednáno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
+echo $this->partial("watch/_item-list.phtml", array("caption" => "Provedeno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podniku", "items" => $this->changes, "notFound" => "Nic nebylo změněno"));
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Realizační výstup", "items" => $this->outputs, "notFound" => "Žádné připomínky klienta"));
+
+echo "<h2>Realizační výstup</h2>";
+echo nl2br($this->watch->outputs);
+
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno", "note" => "Závazně objednávám:"));
 
 // pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty
@@ -165,7 +168,11 @@ if (!$this->watch->also_audit) {
 		Za G U A R D 7, v.o.s. předal
 		</td>
 		<td align="right">
-		<?php echo $this->watch->guard_person; ?>
+		<?php 
+		echo $this->watch->guard_person; 
+		echo "<br />";
+		echo nl2br($this->user->cert_nums);
+		?>
 		</td>
 	</tr>
 	<tr>
