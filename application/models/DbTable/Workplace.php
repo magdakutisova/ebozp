@@ -356,7 +356,7 @@ class Application_Model_DbTable_Workplace extends Zend_Db_Table_Abstract {
 		$workplace = $this->fetchAll($this->select()
 				->from('workplace')
 				->where('name = ?', $workplaceName)
-				->where('client_id = ?', $subsidiaryId));
+				->where('subsidiary_id = ?', $subsidiaryId));
 		if (count($workplace) != 0){
 			return $workplace->current()->id_workplace;
 		}

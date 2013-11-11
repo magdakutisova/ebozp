@@ -257,7 +257,7 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->_helper->viewRenderer->setNoRender(true);
     	$this->_helper->layout->disableLayout();
     	$workplaces = new Application_Model_DbTable_Workplace();
-    	if($workplaces->existsWorkplace($this->getRequest()->getParam('name'), $this->getRequest()->getParam('clientId'))){
+    	if($workplaces->existsWorkplaceSub($this->getRequest()->getParam('name'), $this->getRequest()->getParam('subsidiaryId'))){
     		if($this->getRequest()->getParam('workplaceId')){
     			$workplace = $workplaces->getWorkplace($this->getRequest()->getParam('workplaceId'));
     			if($workplace->getName() == $this->getRequest()->getParam('name')){

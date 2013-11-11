@@ -304,6 +304,9 @@ $(function(){
 						clientId: function(){
 							return $('#client_id').val();
 						},
+						subsidiaryId: function() {
+							return $("#subsidiary_id").val();
+						},
 						workplaceId: function(){
 							return $('#id_workplace').val();
 						}
