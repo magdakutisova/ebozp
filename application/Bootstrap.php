@@ -86,6 +86,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
 		
 		$router->addRoute(
+				'userList',
+				new Zend_Controller_Router_Route('seznam-uzivatelu',
+						array('controller' => 'user',
+								'action' => 'index'))
+		);
+		
+		$router->addRoute(
+				'userEdit',
+				new Zend_Controller_Router_Route('uzivatel/:userId/upravit',
+						array('controller' => 'user',
+								'action' => 'put'))
+		);
+		
+		$router->addRoute(
 			'userRights',
 			new Zend_Controller_Router_Route('administrace-uzivatelu/pridat-prava',
 											array('controller' => 'user',

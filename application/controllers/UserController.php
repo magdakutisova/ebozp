@@ -11,7 +11,34 @@ class UserController extends Zend_Controller_Action
 
     public function indexAction()
     {
-		// action body
+		// nacteni seznamu uzivatelu
+		$tableUsers = new Application_Model_DbTable_User();
+		$users = $tableUsers->fetchAll(null, "name");
+		
+		$this->view->users = $users;
+    }
+    
+    public function putAction() {
+    	// vytvoreni formulare a nacteni dat z databaze
+    	$form = new Application_Form_User();
+    	$tableUsers = new Application_Model_DbTable_User();
+    	$user = $tableUsers->find($this->_request->getParam("userId", 0))->current();
+    	
+    	if (!$user) throw new Zend_Db_Table_Exception("User not found");
+    	
+    	if (strtolower($this->_request->getMethod()) == "post") {
+    		// kontrola validity
+    		if ($form->isValid($this->_request->getParams())) {
+    			// zapis dat
+    			$user->setFromArray($form->getValues(true));
+    			$user->save();
+    		}
+    	} else {
+    		$form->populate($user->toArray());
+    	}
+    	
+    	$this->view->form = $form;
+    	$this->view->user = $user;
     }
 
     public function registerAction()

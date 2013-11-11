@@ -1,4 +1,71 @@
+<?php echo $this->userAdmin(); ?>
 <br /><br />
-<div id="view-content">
-	<p>View script for controller <b>User</b> and script/action name <b>index</b></p>
+<div class="box" id="user-content">
+	<table>
+		<thead>
+			<tr>
+				<th>
+				Jméno
+				</th>
+				<th>
+				Uživatelské jméno
+				</th>
+				<th>
+				Oprávnění
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php 
+foreach ($this->users as $user) {
+	echo "<tr>";
+	
+	// vygenerovani jmena s odkazem
+	$userName = sprintf("<a href='%s'>%s</a>", $this->url(array("userId" => $user->id_user), "userEdit"), $user->name);
+	
+	printf("<td>%s</td>", $userName);
+	printf("<td>%s</td>", $user->username);
+	
+	$roleName = "?";
+	
+	switch ($user->role) {
+		case My_Role::ROLE_ADMIN:
+			$roleName = "Admin";
+			break;
+			
+		case My_Role::ROLE_CLIENT:
+			$roleName = "Klient";
+			break;
+			
+		case My_Role::ROLE_COORDINATOR:
+			$roleName = "Koordinátor";
+			break;
+			
+		case My_Role::ROLE_GUEST:
+			$roleName = "Návštěvník";
+			break;
+			
+		case My_Role::ROLE_PREVENTIST:
+			$roleName = "Preventista";
+			break;
+			
+		case My_Role::ROLE_SUPERADMIN:
+			$roleName = "Superadmin";
+			break;
+			
+		case My_Role::ROLE_TECHNICIAN:
+			$roleName = "Technik";
+			break;
+			
+		default:
+			$roleName = "?";
+	}
+	
+	printf("<td>%s</td>", $roleName);
+	
+	echo "</tr>";
+}
+		?>
+		</tbody>
+	</table>
 </div>
