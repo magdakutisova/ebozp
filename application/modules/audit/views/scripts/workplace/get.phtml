@@ -45,7 +45,7 @@ echo $this->commentForm;
 <form method="post" action="<?php echo $this->url(array("clientId" => $this->workplace->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone2"); ?>">
 	<p>
 	<?php 
-	echo $this->formHidden("workplace_id", $this->workplace->id_workplace);
+	echo $this->formHidden("mistake[workplace_id]", $this->workplace->id_workplace);
 	echo $this->formSubmit("submit", "Přidat neshodu");
 	?>
 	</p>

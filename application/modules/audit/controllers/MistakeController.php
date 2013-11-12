@@ -89,14 +89,14 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nastaveni akce
 		$form->setAction($url);
 
-		$form->setFilledCategory($_REQUEST["mistake"]["category"], $_REQUEST["mistake"]["subcategory"]);
+		$form->setFilledCategory(@$_REQUEST["mistake"]["category"], @$_REQUEST["mistake"]["subcategory"]);
 		$form->isValidPartial($_REQUEST);
 		$this->_loadCategories();
 
 		// vyhodnoceni jestli je pracoviste validni
 		$element = $form->getElement("workplace_id");
 		$workplaceId = $element->getValue();
-
+		
 		if (!$element->isValid($workplaceId)) {
 			// zpatky na vyber pracoviste
 			$this->_forward("createalone1");

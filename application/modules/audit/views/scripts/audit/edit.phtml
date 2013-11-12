@@ -12,7 +12,6 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		<li><a href="#deadlines">Lhůty</a></li>
 		<li><a href="#workcomments">Kontrola pracovišť</a></li>
 		<li><a href="#newworkplace">Nové pracoviště</a></li>
-		<li><a href="#newmistake">Jiná neshoda</a></li>
 	</ul>
 	<div id="overview" class="tab">
 		<h3>Přehled</h3>
@@ -91,6 +90,13 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		<?php echo $this->instanceForm; ?>
 	</div>
 	<div id="mistakes" class="tab">
+		<h3>Nová neshoda</h3>
+		<?php 
+			printf("<form action='%s' method='post'>", $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone2"));
+			echo $this->formHidden("mistake[workplace_id]", 0);
+			echo $this->formSubmit("submit", "Vytvořit novou samostatnou neshodu");
+			echo "</form>";
+		?>
 		<h3>Neshody zahrnuté v <?php echo $this->audit->is_check ? "prověrce" : "auditu"; ?></h3>
 		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-detach"); ?>" method="post">
 		<table id="table-mistakes" class="multirow-table">
@@ -146,11 +152,6 @@ echo $this->formHidden("client_id", $this->client->id_client);
 	
 	echo $this->deadlineTable($this->deadlines, $options);
 	echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
-	?>
-	</div>
-	<div id="newmistake">
-	<?php 
-	echo $this->selectWorkplace;
 	?>
 	</div>
 	<div id="newworkplace">

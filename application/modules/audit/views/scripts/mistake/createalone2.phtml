@@ -11,7 +11,7 @@ echo $this->dataList("categories", $this->categories);
 echo $this->dataList("subcategories", array());
 ?>
 </div>
-<h3><?php echo $this->eorplace ? $this->workplace->name : "Samostatná neshoda"; ?></h3>
+<h3><?php echo $this->workplace ? $this->workplace->name : "Samostatná neshoda"; ?></h3>
 <?php
 echo $this->form;
 

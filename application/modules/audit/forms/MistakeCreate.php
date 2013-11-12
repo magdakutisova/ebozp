@@ -178,6 +178,8 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 	}
 	
 	public function setFilledCategory($category, $subCategory) {
+		if ($category == null && $subCategory == null) return;
+		
 		// nacteni multioptions
 		$categories = $this->_elements["category"]->getMultiOptions();
 		$subCategories = $this->_elements["subcategory"]->getMultiOptions();
