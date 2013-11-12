@@ -15,8 +15,12 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 	/**
 	 * vraci hlavicku tabulky
 	 */
-	public function header() {
-		return "<thead><tr style=\"border: 1px solid black;\"><th>Kategorie</th><th>Podkategorie</th><th>Upřesnění</th><th>Pracoviště</th><th rowspan=\"2\">Akce</th></tr><tr><td colspan=\"2\">Neshoda</td><td colspan=\"2\">Návrh</td></tr></thead>";
+	public function header(array $config = array()) {
+		$config = array_merge(array("bgColor" => "#ffffff"), $config);
+		
+		$bgColor = $config["bgColor"];
+		
+		return "<thead><tr style=\"border: 1px solid black;\" bgcolor=\"$bgColor\"><th>Kategorie</th><th>Podkategorie</th><th>Upřesnění</th><th>Pracoviště</th><th rowspan=\"2\">Akce</th></tr><tr><td colspan=\"2\">Neshoda</td><td colspan=\"2\">Návrh</td></tr></thead>";
 	}
 	
 	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = array()) {
@@ -48,6 +52,8 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 			
 			if ($mistake->workplace_id)
 				$config["classes"][] = $config["hashTable"]["workplaces"][$mistake->workplace_name];
+			else
+				$config["classes"][] = "work-nowork";
 		}
 		
 		// vygenerovani semaforu

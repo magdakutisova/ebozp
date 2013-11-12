@@ -3,7 +3,10 @@
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
-echo $this->formButton("all-tasks", "Zobrazit všechny úkoly", array("subid" => $this->subsidiaryId));
+/**
+ * echo $this->formButton("all-tasks", "Zobrazit všechny úkoly", array("subid" => $this->subsidiaryId));
+ * zakomentovano, protoze byla zadost k odstraneni - pozdeji az bude jiste ze to nikdo nebude chtit vratit zpet, tak se to smazne
+ */
 
 if ($acl->isAllowed($user->role, "task", "post")) {
 	

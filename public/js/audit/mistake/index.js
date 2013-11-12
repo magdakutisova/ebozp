@@ -215,7 +215,7 @@ $(function() {
 				if (work == workplace) {
 					changeVis(styles[HASH_TABLE.workplaces[work]], true);
 				} else {
-					changeVis(styles[HASH_TABLE.workplaces[work]], true);
+					changeVis(styles[HASH_TABLE.workplaces[work]], false);
 				}
 			}
 		}

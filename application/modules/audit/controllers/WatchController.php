@@ -567,7 +567,13 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$name = $watch->contact_name;
 		}
 		
-		$msg = self::generateMail("Dobry den, v priloze se nachazi protokol o provedeni dohlidky. Tato zprava je generovana automaticky, prosim neodpovidejte na ni.", $pdfProt, "guardian@guard7.cz", $email);
+		$msg = self::generateMail("Dobrý den,
+
+v příloze zasíláme protokol z provedené dohlídky BOZP a PO na Vašem pracovišti.
+
+S pozdravem
+
+GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		
 		mail('', 'protokol', $msg["message"], $msg["headers"]);
 		

@@ -21,7 +21,29 @@ class Application_Model_Subsidiary implements Zend_Acl_Resource_Interface, Appli
 		if (!empty($options)){
 			$this->populate($options);
 		}
-	}	
+	}
+	
+	/**
+	 * priradi pobocku vsem koordinatorum
+	 * 
+	 * @return int
+	 */
+	public function appendCoordinators() {
+		// vytvoreni asociacni tabulky
+		$tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+		$tableUsers = new Application_Model_DbTable_User();
+		
+		$nameAssocs = $tableAssocs->info("name");
+		$nameUsers = $tableUsers->info("name");
+		
+		// vygenerovani SQL dotazu
+		$adapter = $tableAssocs->getAdapter();
+		
+		$sqlF = "insert ignore into %s (id_user, id_subsidiary) select id_user, %s from %s where role = %s";
+		$sql = sprintf($sqlF, $adapter->quoteIdentifier($nameAssocs), $adapter->quote($this->idSubsidiary), $adapter->quoteIdentifier($nameUsers), $adapter->quote(My_Role::ROLE_COORDINATOR));
+	
+		return $adapter->query($sql)->rowCount();
+	}
 	
 	/**
 	 * @return the $idSubsidiary

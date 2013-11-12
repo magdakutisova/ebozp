@@ -38,6 +38,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			$index->commit ();
 			$index->optimize ();
 		}
+		
+		// pripojeni koordinatoru
+		$subsidiary->appendCoordinators();
+		
 		return $subsidiaryId;
 	}
 	

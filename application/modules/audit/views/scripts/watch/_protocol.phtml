@@ -137,7 +137,7 @@ if (!$this->watch->also_audit) {
 	<h2>Odstraněné neshody</h2>
 	<?php 
 	if ($removed) {
-		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "removed_at" => "Termín odstranění")));
+		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "weight" => "Závažnost")));
 	} else {
 		echo "<div>-</div>";
 	}

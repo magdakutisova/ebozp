@@ -6,11 +6,11 @@ $acl = new My_Controller_Helper_Acl();
 $filter = $this->formFilter;
 $categories = $filter->getElement("category")->getMultiOptions();
 $subcategories = $filter->getElement("subcategory")->getMultiOptions();
-$workplaces = $filter->getElement("workplace_id");
+$workplaces = $filter->getElement("workplace_id")->getMultiOptions();
 
 $catIndex = array();
 $subCatList = array();
-$workList = array();
+$workList = array("work-nowork");
 
 // zpracovani kategorii
 foreach ($categories as $category) {
@@ -29,9 +29,9 @@ foreach ($subcategories as $catName => $subcats) {
 }
 
 // zpracovani pracovist
-foreach ($workList as $item) {
+foreach ($workplaces as $item) {
 	if ($item != "---") {
-		$workList[$item] = crc32($item);
+		$workList[$item] = "work-" . crc32($item);
 	}
 }
 
