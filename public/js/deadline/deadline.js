@@ -63,6 +63,18 @@ $(function () {
 			filterConds[context.attr("name")] = val;
 		});
 		
+		// nacteni filtracnich trid
+		var classes = {};
+		
+		$(this).find(":checkbox").each(function () {
+			var context = $(this);
+			var clsName = context.val();
+			var checked = context.filter(":checked").length;
+			
+			classes[clsName] = checked;
+			
+		});
+		
 		// skryti tech lhut, ktere nevyhovuji podminkam
 		table.find("tbody").each(function () {
 			// nalezeni hodnot
@@ -73,6 +85,16 @@ $(function () {
 				var val = context.find(":hidden[name='" + item + "']").val();
 				
 				if (val != filterConds[item]) isOk = false;
+			}
+			
+			// vyhodnoceni trid
+			for (var cls in classes) {
+				if (context.hasClass(cls)) {
+					if (!classes[cls])
+						isOk = false;
+					
+					break;
+				}
 			}
 			
 			if (!isOk) context.hide();

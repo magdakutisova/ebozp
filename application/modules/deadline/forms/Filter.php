@@ -57,6 +57,27 @@ class Deadline_Form_Filter extends Zend_Form {
 				"decorators" => $elementDecorator
 		));
 		
+		$this->addElement("checkbox", "clsok", array(
+				"label" => "Splněné lhůty",
+				"checkedValue" => "deadline-ok",
+				"checked" => true,
+				"decorators" => $elementDecorator
+				));
+		
+		$this->addElement("checkbox", "clsclose", array(
+				"label" => "Blízko propadnutí",
+				"checkedValue" => "deadline-yellow",
+				"checked" => true,
+				"decorators" => $elementDecorator
+				));
+		
+		$this->addElement("checkbox", "clsinvalid", array(
+				"label" => "Propadlé lhůty",
+				"checkedValue" => "mistake-marked",
+				"checked" => true,
+				"decorators" => $elementDecorator
+				));
+		
 		$this->addElement("submit", "submit", array(
 				"label" => "Filtrovat",
 				"decorators" => $submitDecorator

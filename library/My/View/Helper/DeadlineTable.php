@@ -44,13 +44,14 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		
 		// vygenerovani prvniho radku
 		$buttons = $this->_generateButtons($deadline, $config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
+		$w = $this->view;
 		
 		$row = array(
-				$this->wrap("td", $deadline["name"], array("rowspan" => 2)),
-				$this->wrap("td", $deadline["kind"]),
-				$this->wrap("td", $deadline["specific"]),
-				$this->wrap("td", $type),
-				$this->wrap("td", $deadline["period"])
+				$this->wrap("td", $deadline["name"] . $this->_hidden("name", $deadline["name"]), array("rowspan" => 2)),
+				$this->wrap("td", $deadline["kind"]. $this->_hidden("kind", $deadline["kind"])),
+				$this->wrap("td", $deadline["specific"] . $this->_hidden("specific", $deadline["specific"])),
+				$this->wrap("td", $type . $this->_hidden("type", $type)),
+				$this->wrap("td", $deadline["period"] . $this->_hidden("period", $deadline["period"]))
 		);
 		
 		if (!$config["noAction"]) {
@@ -77,7 +78,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		} elseif ($deadline["invalid_close"]) {
 			$opts = array("class" => "deadline-yellow");
 		} else {
-			$opts = array();
+			$opts = array("class" => "deadline-ok");
 		}
 		
 		return $this->wrap("tbody", $content, $opts);
@@ -226,5 +227,16 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		}
 		
 		return $retVal;
+	}
+	
+	/**
+	 * vygeneruje skryte pole
+	 * 
+	 * @param string $name jmeno
+	 * @param string $value hodnota
+	 * @return string
+	 */
+	private function _hidden($name, $value) {
+		return sprintf("<input type='hidden' name='%s' value='%s' />", $name, $value);
 	}
 }
