@@ -120,9 +120,10 @@ $(function() {
 	});
 	
 	$("#deadline-done_at").datepicker({
-		"dateFormat" : "yy-mm-dd",
-		"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
-		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
+		"dateFormat" : "dd. mm. yy",
+		"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
+		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
+		"firstDay" : 1
 	});
 	
 	$("#close-watch").button();
