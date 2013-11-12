@@ -16,7 +16,7 @@ if ($this->notFound) {
 			
 			if ($this->pagination->prev) {
 				$caption = "Předchozí";
-				$href = "/audit/workplace/setplace?clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->prev;
+				$href = "/audit/workplace/setplace?subsidiaryId=$subsidiaryId&clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->prev;
 				
 				echo "<a href='$href'>$caption</a>";
 			}
@@ -31,7 +31,7 @@ if ($this->notFound) {
 			<?php 
 			if ($this->pagination->next) {
 				$caption = "Další";
-				$href = "/audit/workplace/setplace?clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->next;
+				$href = "/audit/workplace/setplace?subsidiaryId=$subsidiaryId&clientId=$clientId&auditId=$auditId&workplaceId=" . $this->pagination->next;
 				
 				echo "<a href='$href'>$caption</a>";
 			}

@@ -70,7 +70,7 @@ $(function () {
 	
 	function workplaceSelect() {
 		var workplaceId = $(this).val();
-		var url = "/audit/workplace/setplace?workplaceId=" + workplaceId + "&clientId=" + clientId + "&auditId=" + auditId;
+		var url = "/audit/workplace/setplace?workplaceId=" + workplaceId + "&clientId=" + clientId + "&auditId=" + auditId + "&subsidiaryId=" + subsidiaryId;
 		
 		location.href = url;
 	}
