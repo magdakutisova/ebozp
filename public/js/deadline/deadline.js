@@ -111,7 +111,7 @@ $(function () {
 	$("#deadlinefilter").submit(filter);
 	
 	$("#deadline-done_at,#deadline-last_done").datepicker({
-		"dateFormat" : "dd. mm. yy",
+		"dateFormat" : "yy-mm-dd",
 		"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
 		"firstDay" : 1
