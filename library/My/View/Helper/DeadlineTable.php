@@ -16,7 +16,15 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		
 		$content = $header . implode("", $deadlines);
 		
-		return $this->wrap($this->_wrapper, $content, array("class" => "multirow-table", "id" => "deadlinetable"));
+		$retVal = $this->wrap($this->_wrapper, $content, array("class" => "multirow-table", "id" => "deadlinetable"));
+		
+		$configs = array_merge(array("form" => array()), $configs);
+		
+		if ($configs["form"]) {
+			$retVal = $this->deadlineForm($retVal, $configs["form"]);
+		}
+		
+		return $retVal;
 	}
 	
 	/**
@@ -73,7 +81,9 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		$content = $rowStr1 . $rowStr2;
 		
 		// vyhodnoceni jestli je lhuta propadla
-		if (!$deadline["is_valid"]) {
+		if (@$deadline["is_done"]) {
+			$opts = array("class" => "mistake-removed");
+		} elseif (!$deadline["is_valid"]) {
 			$opts = array("class" => "mistake-marked");
 		} elseif ($deadline["invalid_close"]) {
 			$opts = array("class" => "deadline-yellow");
@@ -82,6 +92,21 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		}
 		
 		return $this->wrap("tbody", $content, $opts);
+	}
+	
+	public function deadlineForm($content, array $config = array()) {
+		$config = array_merge(array("action" => ""), $config);
+		
+		$rows = array(
+				sprintf("<tr><td>%s</td><td>%s hromadné zadání u vybraných lhůt</td></tr>", $this->view->formLabel("deadline[done_at]", "Naposledy provedeno"), $this->view->formText("deadline[done_at]")),
+				sprintf("<tr><td colspan='2' style='display:none'>%s</td></tr>", $this->view->formLabel("deadline[comment]", "Komentář")),
+				sprintf("<tr><td colspan='2' style='display:none'>%s</td></tr>", $this->view->formTextarea("deadline[comment]")),
+				sprintf("<tr><td colspan='2'>%s</td></tr>", $this->view->formSubmit("deadline[submit]", "Uložit"))
+				);
+		
+		$form = sprintf("<table>%s</table>", implode("", $rows));
+		
+		return sprintf("<form action='%s' method='post'>%s%s</form>", $config["action"], $content, $form);
 	}
 	
 	private function _sqlDate($date) {
@@ -99,7 +124,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		foreach ($config["buttons"] as $name => $c) {
 			switch ($c["type"]) {
 				case "checkbox":
-					$btnList[] = sprintf("<label><input type='checkbox' name='%s' value='%s'>%s</label>", $name, $deadline["id"], $c["caption"]);
+					$btnList[] = sprintf("<label><input type='checkbox' name='%s' value='%s' />%s</label>", $name, $deadline["id"], $c["caption"]);
 					break;
 					
 				case "link":
@@ -117,7 +142,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 			}
 		}
 		
-		return implode(" ", $btnList);
+		return implode("<br />", $btnList);
 	}
 	
 	/**

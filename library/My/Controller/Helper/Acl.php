@@ -99,7 +99,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'chemical', array('edit', 'delete'));
 		$this->deny($client, 'employee', array('edit', 'delete'));
 		$this->allow($client, "deadline:index");
-		$this->allow($client, "deadline:deadline", array("get", "submit"));
+		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put"));
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
 		
 		$this->allow($technician, 'private');
@@ -111,7 +111,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'technical', array('edit', 'delete'));
 		$this->allow($technician, 'chemical', array('edit', 'delete'));
 		$this->allow($technician, 'employee', array('edit', 'delete'));
-		$this->allow($technician, "audit:audit", array("index", "create", "clone", "post", "edit", "put", "get", "submit", "newcontact", "getdead.html", "subdead.html", "deadlist.html"));
+		$this->allow($technician, "audit:audit", array("subdead", "index", "create", "clone", "post", "edit", "put", "get", "submit", "newcontact", "getdead.html", "subdead.html", "deadlist.html"));
 		$this->allow($technician, "audit:mistake", array("attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save", "saveone.json"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
@@ -119,7 +119,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "audit:workplace", array("comment", "setplace", "post"));
 		$this->allow($technician, "document:directory", array("editother", "showall", "index", "post", "delete"));
 		$this->allow($technician, "document:document", array("editother"));
-		$this->allow($technician, "audit:report",array("report.pdf", "create", "edit", "save"));
+		$this->allow($technician, "audit:report",array("report.pdf", "create", "edit", "save", "send"));
 		$this->allow($technician, "audit:watch");
 		$this->allow($technician, "deadline:deadline");
 		$this->deny($technician, "deadline:deadline", array("import"));

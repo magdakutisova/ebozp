@@ -16,6 +16,8 @@ class Audit_FormController extends Zend_Controller_Action {
 		
 		$this->view->oldForm = $form;
 		$this->view->newForm = $newForm;
+		
+		$this->_helper->FlashMessenger("Formulář byl zkopírován");
 	}
 	
 	public function createAction() {
@@ -45,6 +47,8 @@ class Audit_FormController extends Zend_Controller_Action {
 		// oznaceni formulare jako smazaneho
 		$form->is_deleted = 1;
 		$form->save();
+		
+		$this->_helper->FlashMessenger("formulář smazán");
 		
 		// presmerovani na index
 		$this->_redirect("/audit/form/index");
@@ -228,7 +232,7 @@ class Audit_FormController extends Zend_Controller_Action {
 		$auditForm = $tableAuditForms->createForm($audit, $form);
 		
 		$params["formId"] = $auditForm->id;
-			
+		
 		$url = $this->view->url($params, "audit-form-fill");
 		$this->_redirect($url);
 	}
@@ -261,6 +265,8 @@ class Audit_FormController extends Zend_Controller_Action {
 		$tableForms = new Audit_Model_Forms();
 		$form = $tableForms->createForm($form->getValue("name"));
 		
+		$this->_helper->FlashMessenger("Formulář vytvořen");
+		
 		// presmerovani na editaci
 		$this->_redirect("/audit/form/edit?formId=" . $form->id);
 	}
@@ -288,6 +294,8 @@ class Audit_FormController extends Zend_Controller_Action {
 		// nastaveni jmena
 		$formRow->setFromArray($form->getValues(true));
 		$formRow->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->view->form = $formRow;
 	}
@@ -397,6 +405,8 @@ class Audit_FormController extends Zend_Controller_Action {
 				"page" => $page + 1
 		), "audit-form-fill");
 		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		$this->_redirect($url);
 	}
 	
@@ -471,6 +481,8 @@ class Audit_FormController extends Zend_Controller_Action {
 			
 			$tableCategories->update($data, $where);
 		}
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->view->form = $form;
 	}

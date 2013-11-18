@@ -34,6 +34,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 		
 		$this->view->watch = $watch;
+		
+		$this->_helper->FlashMessenger("Lhůty přidány");
 	}
 	
 	public function createAction() {
@@ -112,6 +114,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$contents = array_merge(array("content" => array()), $contents);
 		
 		self::_writeListItems($tableDiscuss, $watch, $contents["content"]);
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->view->watch = $watch;
 	}
@@ -276,6 +280,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		self::_writeListItems($tableChanges, $watch, $contents["content"]);
 		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		$this->view->watch = $watch;
 	}
 	
@@ -341,6 +347,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$tableAssocs->update(array("set_removed" => 0), $where);
 		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		$this->view->watch = $watch;
 	}
 	
@@ -368,6 +376,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch->contactperson_id = null;
 		$watch->save();
 		
+		$this->_helper->FlashMessenger("Kontaktní osoba byla vytvořena");
+		
 		$this->view->watch = $watch;
 	}
 	
@@ -382,6 +392,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$contents = array_merge(array("content" => array()), $contents);
 	
 		self::_writeListItems($tableOrders, $watch, $contents["content"]);
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	
 		$this->view->watch = $watch;
 	}
@@ -394,6 +406,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni dat a rpiprava tabulky
 		$watch->outputs = $this->_request->getParam("outputs");
 		$watch->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	
 		$this->view->watch = $watch;
 	}
@@ -428,6 +442,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$tableDeadlines = new Audit_Model_WatchesDeadlines();
 			$tableDeadlines->createByWatch($watch);
 		}
+		
+		$this->_helper->FlashMessenger("Dohldíka vytvořena");
 		
 		$this->view->watch = $watch;
 	}
@@ -485,6 +501,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$this->view->watch = $watch;
 		$this->view->mistake = $mistake;
+		
+		$this->_helper->FlashMessenger("Neshoda byla vytvořena");
 	}
 	
 	public function protocolPdfAction() {
@@ -512,7 +530,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
 		
 		// nacteni lhut
-		$deadlines = $watch->findDeadlines(true);
+		$deadlines = $watch->findDeadlines(true, true);
 		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
@@ -543,6 +561,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$data = self::prepareForSave($form);
 		
 		$watch->setFromArray($data)->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		$this->view->watch = $watch;
 	}
 	
@@ -550,7 +571,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// kontrolni nacteni 
 		$watch = self::loadWatch($this->_request->getParam("watchId"));
 		
-		if (!$watch->is_closed) throw new Zend_Exception("Watch #$watch->id must be closed for send protocol");
+		$preview = (!$watch->is_closed) ? " návrh" : "";
 		
 		// vygenerovani protokolu
 		$pdfProt = $this->view->action("protocol.pdf", "watch", "audit", array("watchId" => $watch->id, "disableHeaders" => 1));
@@ -569,7 +590,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$msg = self::generateMail("Dobrý den,
 
-v příloze zasíláme protokol z provedené dohlídky BOZP a PO na Vašem pracovišti.
+v příloze zasíláme$preview protokol z provedené dohlídky BOZP a PO na Vašem pracovišti.
 
 S pozdravem
 
@@ -578,6 +599,41 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		mail('', 'protokol', $msg["message"], $msg["headers"]);
 		
 		$this->view->watch = $watch;
+		
+		$this->_helper->FlashMessenger("Protokol odeslán");
+	}
+	
+	public function subdeadAction() {
+		// nacteni dat
+		$watchId = $this->_request->getParam("watchId", 0);
+		$watch = self::loadWatch($watchId);
+		
+		$this->_request->setParam("clientId", $watch->client_id);
+		
+		// nacteni zaskrtnutych policek
+		$selected = (array) $this->_request->getParam("selected", array());
+		$selectedIds = array_merge(array(0), $selected);
+		
+		// nacteni dat o splneni
+		$data = $this->_request->getParam("deadline", array());
+		$data = array_merge(array("done_at" => "", "comment" => ""), $data);
+		
+		// vytvoreni updatovacich a filtracnich poli
+		$where = array(
+				"deadline_id in (?)" => $selectedIds,
+				"watch_id = ?" => $watch->id
+				);
+		
+		$updateData = array(
+				"note" => $data["comment"],
+				"done_at" => $data["done_at"],
+				"is_done" => 1
+				);
+		
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$tableAssocs->update($updateData, $where);
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	}
 	
 	public function subdeadHtmlAction() {
@@ -604,6 +660,8 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		
 		$this->view->assoc = $assoc;
 		$this->view->watch = $watch;
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	}
 	
 	/**
@@ -667,6 +725,8 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 		
 		$this->view->watch = $watch;
+		
+		$this->_helper->FlashMessenger("Dohlídka uzavřena");
 	}
 	
 	public function prepareWatchForm($form) {

@@ -16,6 +16,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
+		$this->_prepareFilterForm($deadlines);
 	}
 	
 	/**
@@ -45,6 +46,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
+		$this->_prepareFilterForm($deadlines);
 	}
 	
 	/**
@@ -74,6 +76,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
+		$this->_prepareFilterForm($deadlines);
 	}
 	
 	/**

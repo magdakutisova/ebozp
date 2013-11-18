@@ -23,6 +23,8 @@ class Audit_SectionController extends Zend_Controller_Action {
 		$category->is_deleted = 1;
 		$category->save();
 		
+		$this->_helper->FlashMessenger("Položka byla smazána");
+		
 		$this->view->form = $form;
 	}
 	
@@ -82,6 +84,8 @@ class Audit_SectionController extends Zend_Controller_Action {
 		// zapis do view
 		$this->view->category = $category;
 		$this->view->form = $form;
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	}
 	
 	public function putAction() {
@@ -100,6 +104,8 @@ class Audit_SectionController extends Zend_Controller_Action {
 		// zapis dat
 		$category->setFromArray($form->getValues(true));
 		$category->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->view->category = $category;
 	}

@@ -17,6 +17,9 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		
 		// smazani adresare a presmerovani na rodice
 		$directory->delete();
+		
+		$this->_helper->FlashMessenger("Adresář smazán");
+		
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId", 0), "directoryId" => $parentId), "document-directory-get");
 		$this->_redirect($url);
 	}
@@ -33,6 +36,8 @@ class Document_DirectoryController extends Zend_Controller_Action {
 				"file_id = " . $file->id,
 				"directory_id = " . $directory->id
 		));
+		
+		$this->_helper->FlashMessenger("Soubor byl odebrán z adresáře");
 		
 		// presmerovani na vypis adresare
 		$url = $this->view->url(array("clientId" => $request->getParam("clientId", 0), "directoryId" => $directory->id), "document-directory-get");
@@ -170,6 +175,8 @@ class Document_DirectoryController extends Zend_Controller_Action {
 			self::_writeFile($subtree, $arrPath, $zip, $i);
 		}
 		
+		$this->_helper->FlashMessenger("Soubory byly nahrány");
+		
 		// presmerovani na vypis adresare
 		$url = $this->view->url(array("clientId" => $directory->client_id, "directoryId" => $directory->id), "document-directory-get");
 		$this->_redirect($url);
@@ -188,6 +195,8 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		
 		// vytvoreni potomka
 		$child = $parent->createChildDir($form->getValue("name"));
+		
+		$this->_helper->FlashMessenger("Adresář vytvořen");
 		
 		// vygenerovani url
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId"), "directoryId" => $child->id), "document-directory-get");
@@ -227,6 +236,8 @@ class Document_DirectoryController extends Zend_Controller_Action {
 		}
 		
 		$directory->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		// presmerovani na novou url
 		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId"), "directoryId" => $this->_request->getParam("directoryId")), "document-directory-get");

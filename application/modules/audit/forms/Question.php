@@ -29,6 +29,7 @@ class Audit_Form_Question extends Zend_Form {
 		);
 		
 		$this->addElement("textarea", "question", array("label" => "Otázka", "decorators" => $elementDecorator, "required" => true));
+		$this->addElement("textarea", "farplan_text", array("label" => "Text pro farplan", "decorators" => $elementDecorator, "required" => true));
 		$this->addElement("select", "weight", array("label" => "Závažnost", "multiOptions" => array(1 => 1, 2 => 2, 3 => 3), "decorators" => $elementDecorator));
 		$this->addElement("text", "category", array("label" => "Kategorie", "required" => true, "decorators" => $elementDecorator));
 		$this->addElement("text", "subcategory", array("label" => "Podkategorie", "required" => true, "decorators" => $elementDecorator));

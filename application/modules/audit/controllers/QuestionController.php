@@ -22,6 +22,8 @@ class Audit_QuestionController extends Zend_Controller_Action {
 		$category = $question->getCategory();
 		$question->delete();
 		
+		$this->_helper->FlashMessenger("Otázka byla smazána");
+		
 		$this->view->category = $category;
 	}
 	
@@ -71,6 +73,8 @@ class Audit_QuestionController extends Zend_Controller_Action {
 		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
 		$question = $tableQuestions->createQuestion($category, $qForm->getValues(true));
 		
+		$this->_helper->FlashMessenger("Otázka byla vytvořena");
+		
 		// presmerovani zpet na editaci skupiny
 		$url = "/audit/section/edit?formId=$form->id&categoryId=$category->id";
 		$this->_redirect($url);
@@ -103,6 +107,8 @@ class Audit_QuestionController extends Zend_Controller_Action {
 		$question->save();
 		
 		$section = $question->getCategory();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->view->question = $newQuestion;
 		$this->view->section = $section;

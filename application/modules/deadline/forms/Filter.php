@@ -65,7 +65,7 @@ class Deadline_Form_Filter extends Zend_Form {
 				));
 		
 		$this->addElement("checkbox", "clsclose", array(
-				"label" => "Blízko propadnutí",
+				"label" => "Zbývá měsíc",
 				"checkedValue" => "deadline-yellow",
 				"checked" => true,
 				"decorators" => $elementDecorator

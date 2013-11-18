@@ -11,21 +11,20 @@ $(function () {
 		"firstDay" : 1
 	});
 	
+	$("#deadline-done_at").datepicker({
+		"dateFormat" : "yy-mm-dd",
+		"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
+		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
+		"firstDay" : 1
+	});
+	
 	function openMistake() {
 		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
 		
 		// sestaveni routy
 		var url = "/klient/" + clientId + "/audit/" + auditId + "/mistake/" + mistakeId + "/html";
 		
-		// sestaveni dialogu
-		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
-		
-		$("<div>").append(iframe).dialog({
-			modal: true,
-			width: "730px",
-			draggable: false,
-			title : "Neshoda"
-		});
+		$.iframeDialog(url, 730, 400, "Neshoda", "refresh");
 	}
 	
 	function showMistake() {
@@ -34,15 +33,7 @@ $(function () {
 		// sestaveni routy
 		var url = "/klient/" + clientId + "/mistake/" + mistakeId + "/html";
 		
-		// sestaveni dialogu
-		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
-		
-		$("<div>").append(iframe).dialog({
-			modal: true,
-			width: "730px",
-			draggable: false,
-			title : "Neshoda"
-		});
+		$.iframeDialog(url, 730, 400, "Neshoda", "refresh");
 	}
 	
 	function sendMistakes() {
@@ -90,7 +81,16 @@ $(function () {
 	
 	$("#table-mistakes button[name='edit-mistake'],#workplace-mistakes button[name='edit']").click(openMistake);
 	$("#table-mistakes button[name='get-mistake'],#workplace-mistakes button[name='show']").click(showMistake);
-	$("#tabs").tabs();
+	$("#tabs").tabs({
+		activate : function (e, ui) {
+			var href = ui.newTab.find("a").attr("href");
+			var y = window.pageYOffset;
+			
+			location.replace(href);
+			
+			window.scrollTo(window.pageXOffset, y);
+		}
+	});
 	
 	var semaphores = $(".semaphore");
 	semaphores.semaphore();
@@ -105,7 +105,7 @@ $(function () {
 		
 		var url = "/audit/audit/deadlist.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
 		
-		$.iframeDialog(url, 800, 400, "Vyberte lhůty", refreshWnd);
+		$.iframeDialog(url, 800, 400, "Vyberte lhůty", "refresh");
 	}
 	
 	function openDeadline() {
@@ -113,11 +113,15 @@ $(function () {
 		
 		var url = "/audit/audit/getdead.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
 		
-		$.iframeDialog(url, 800, 400, "Lhůta");
+		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
 	}
 	
-	function refreshWnd() {
-		window.location.reload();
+	function editDeadline() {
+		var deadlineId = $(this).parent().find(":hidden").val();
+		
+		var url = "/deadline/deadline/edit?deadlineId=" + deadlineId + "&clientId=" + clientId;
+		
+		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
 	}
 	
 	$("#save-mistakes").click(sendMistakes);
@@ -126,5 +130,6 @@ $(function () {
 	$("#audit-contactperson_id").change(checkContact).change();
 	
 	$("#deadlinetable button[name='show']").click(openDeadline);
+	$("#deadlinetable button[name='edit']").click(editDeadline);
 	$("#add-deadlines").click(openDeadList);
 });

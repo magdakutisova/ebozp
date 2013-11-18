@@ -58,8 +58,10 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		$sql = "insert into `$nameComments` (audit_id, workplace_id, `comment`) values ($audit->id, $workplaceId, $comment) on duplicate key update comment = values(comment)";
 		$adapter->query($sql);
 		
+		$this->_helper->FlashMessenger("Komentář přidán");
+		
 		// presmerovani zpet na audit
-		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-edit") . "#workcomments";
+		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit") . "#workcomments";
 		$this->_redirect($url);
 	}
 	
@@ -104,6 +106,8 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 			 * @todo ODSTRANIT TENHLE HOVNOKOD
 			 */
 		}
+		
+		$this->_helper->FlashMessenger("Pracoviště vytvořeno");
 		
 		// presmerovani zpet na editaci auditu
 		$url = $this->view->url($this->getRequest()->getParams(), "audit-edit") . "#newmistake";

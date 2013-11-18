@@ -4,4 +4,4 @@ $watch = $this->watch;
 
 $url = $this->url(array("watchId" => $watch->id, "clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id), "audit-watch-get");
 
-$redirector->gotoUrlAndExit($url);
+$redirector->gotoUrlAndExit($_SERVER["HTTP_REFERER"]);

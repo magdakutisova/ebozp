@@ -36,18 +36,10 @@
 		$route = "audit-get";
 		$caption = "Zobrazit";
 		
-		switch ($user->role) {
-			case My_Role::ROLE_ADMIN:
-				$route = "audit-edit";
-				$caption = "Upravit";
-				break;
-				
-			case My_Role::ROLE_TECHNICIAN:
-				if ($audit->auditor_confirmed_at[0] == '0') {
-					$route = "audit-edit";
-					$caption = "Upravit";
-				}
-				break;
+		// vyhodnoceni moznosti editace
+		if ($user->role == My_Role::ROLE_ADMIN || ($audit->auditor_id == $user->id_user && !$audit->is_closed)) {
+			$route = "audit-edit";
+			$caption = "Upravit";
 		}
 		
 		$href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), $route);

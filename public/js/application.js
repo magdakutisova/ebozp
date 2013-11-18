@@ -873,6 +873,17 @@ $.iframeDialog = function (src, width, height, title, onClose) {
 	
 	if (onClose === undefined) onClose = jQuery.noop;
 	
+	if (onClose.constructor == String) {
+		switch (onClose) {
+		case "refresh":
+			onClose = function () {
+				location.reload();
+			};
+			
+			break;
+		}
+	}
+	
 	retVal.dialog({
 		modal: true,
 		width: width,

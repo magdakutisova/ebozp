@@ -69,7 +69,7 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 	 * @param Audit_Model_Row_Watch $watch
 	 * @return Zend_Db_Table_Rowset_Abstract
 	 */
-	public function findExtendedByWatch(Audit_Model_Row_Watch $watch, $undoneOnly = false) {
+	public function findExtendedByWatch(Audit_Model_Row_Watch $watch, $undoneOnly = false, $invalidOnly = false) {
 		// sestaveni dotazu
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
@@ -82,7 +82,14 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 			$subSelect->where("!is_done");
 		}
 		
-		$select->where("id in ?", $subSelect);
+		if ($invalidOnly) {
+			$subSelect->where("valid_to < NOW()");
+		}
+		
+		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.watch_id = " . $watch->id, array("is_done"));
+		
+		$select->where("deadline_deadlines.id in ?", $subSelect);
+		$select->order("name");
 		
 		$data = $select->query()->fetchAll();
 		

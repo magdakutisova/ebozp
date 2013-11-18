@@ -8,6 +8,8 @@ class Document_NameController extends Zend_Controller_Action {
 	public function deleteAction() {
 		$name = self::loadById($this->_request->getParam("nameId"));
 		$name->delete();
+		
+		$this->_helper->FlashMessenger("Jméno bylo smazáno");
 	}
 	
 	public function editAction() {
@@ -49,6 +51,9 @@ class Document_NameController extends Zend_Controller_Action {
 		$row->save();
 		
 		$this->view->name = $row;
+		
+		
+		$this->_helper->FlashMessenger("Jméno bylo uloženo");
 	}
 	
 	public function putAction() {
@@ -66,6 +71,9 @@ class Document_NameController extends Zend_Controller_Action {
 		
 		$this->view->name = $row;
 		$this->view->form = $form;
+		
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 	}
 	
 	/**

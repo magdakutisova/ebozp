@@ -20,7 +20,7 @@ $(function () {
 	
 	function appendImages() {
 		// vygenerovani grafu
-		var form = $("#download-form");
+		var form = $(this);
 		
 		$(".report").each(function () {
 			var table = $(this);
@@ -37,7 +37,7 @@ $(function () {
 	$("#progres-items").sortable({ axis : "y" });
 	$("#add-progres-item").click(addProgres);
 	$("#progres-items button").click(removeItem);
-	$("#download-form").submit(appendImages);
+	$("#download-form,#send-form").submit(appendImages);
 	
 	// vygenerovani grafu
 	$(".report").each(function () {

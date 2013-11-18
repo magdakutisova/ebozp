@@ -38,7 +38,9 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		if ($config["selector"]) {
 			$checked = $config["selected"] ? array("checked" => "checked") : array();
 			
-			$buttons[] = $this->view->formLabel("mistake[$mistake->id][select]", "Vybrat") . $this->view->formCheckbox("mistake[$mistake->id][select]", 1, $checked);
+			$chBox = sprintf("<label style='white-space:pre' for='%s'>Odstraněno %s</label>", sprintf("mistake-%s-select", $mistake->id), $this->view->formCheckbox("mistake[$mistake->id][select]", 1, $checked));
+			
+			$buttons[] = $chBox;
 		}
 		
 		// zapis tridy pracoviste

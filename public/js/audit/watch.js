@@ -67,7 +67,7 @@ $(function() {
 		var url = "/audit/mistake/" + $(this).attr("name") + ".html?clientId=" + clientId + "&mistakeId=" + mistakeId;
 		
 		// otevreni iframe dialogu s editaci lhuty
-		$.iframeDialog(url, 800, 400, "Neshoda");
+		$.iframeDialog(url, 800, 400, "Neshoda", "refresh");
 	}
 	
 	function openDeadline() {
@@ -75,7 +75,11 @@ $(function() {
 		
 		var url = "/audit/watch/getdead.html?deadlineId=" + deadlineId + "&watchId=" + watchId;
 		
-		$.iframeDialog(url, 800, 400, "Lhůta");
+		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
+	}
+	
+	function newDeadline() {
+		$("#deadlineform-container").toggle();
 	}
 	
 	function editDeadline() {
@@ -83,11 +87,7 @@ $(function() {
 		
 		var url = "/deadline/deadline/edit?deadlineId=" + deadlineId + "&clientId=" + clientId;
 		
-		$.iframeDialog(url, 800, 400, "Lhůta");
-	}
-	
-	function refreshWnd() {
-		window.location.reload();
+		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
 	}
 	
 	function openDeadList() {
@@ -95,7 +95,7 @@ $(function() {
 		
 		var url = "/audit/watch/deadlist.html?deadlineId=" + deadlineId + "&watchId=" + watchId;
 		
-		$.iframeDialog(url, 800, 400, "Vyberte lhůty", refreshWnd);
+		$.iframeDialog(url, 800, 400, "Vyberte lhůty", "refresh");
 	}
 	
 	function checkContact() {
@@ -106,7 +106,17 @@ $(function() {
 		}
 	}
 	
-	$("#watch-tabs").tabs();
+	$("#watch-tabs").tabs({
+		activate : function (e, ui) {
+			var href = ui.newTab.find("a").attr("href");
+			var y = window.pageYOffset;
+			
+			location.replace(href);
+			
+			window.scrollTo(window.pageXOffset, y);
+		}
+	});
+	
 	$("#discuss-list,#change-list,#order-list,#output-list").sortable();
 	$("#discuss-list button,#change-list button,#order-list button,#output-list button").click(removeDiscuss).button(removeButtonSet);
 	$("#add-discuss").click(addDiscuss);
@@ -120,7 +130,7 @@ $(function() {
 	});
 	
 	$("#deadline-done_at").datepicker({
-		"dateFormat" : "dd. mm. yy",
+		"dateFormat" : "yy-mm-dd",
 		"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
 		"firstDay" : 1
@@ -131,8 +141,9 @@ $(function() {
 	$("#watch-watched_at").datepicker();
 	$("#mistakes button[name='get'],#mistakes button[name='edit']").click(openMistake);
 	$("#deadlinetable button[name='show']").click(openDeadline);
-	$("#deadlinetable button[name='edit']").click(editDeadline);
+	$("#deadlinetable button[name='edit']").unbind("click").click(editDeadline);
 	$("#add-deadlines").click(openDeadList);
 	
 	$("#watch-contactperson_id").change(checkContact).change();
+	$("#new-deadline").click(newDeadline);
 });

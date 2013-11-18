@@ -66,6 +66,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$adapter->query($sql);
 		}
 		
+		$this->_helper->FlashMessenger("Neshoda přiřazena");
+		
 		// premserovani na audit
 		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id), "audit-edit") . "#mistakes";
 		$this->_redirect($url);
@@ -184,6 +186,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		} else {
 				
 		}
+		
+		$this->_helper->FlashMessenger("Neshoda smazána");
 
 		if ($redirect) $this->_redirect($this->view->url($params, $route));
 	}
@@ -228,6 +232,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// odeslani dotazu
 			$adapter->query($sql);
 		}
+		
+		$this->_helper->FlashMessenger("Neshoda odebrána");
 		
 		// presmerovani
 		$url = $this->view->url(array("clientId" => $this->_audit->client_id, "auditId" => $this->_audit->id, "subsidiaryId" => $this->_audit->subsidiary_id), "audit-edit") . "#mistakes";
@@ -510,6 +516,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		$adapter->query($sql);
 		
+		$this->_helper->FlashMessenger("Neshody importovány");
+		
 		$url = $this->view->url(array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId), "audit-mistakes-index-subs");
 		$this->_redirect($url);
 	}
@@ -648,6 +656,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableMistakes->insert($data);
 		
+		$this->_helper->FlashMessenger("Neshoda vytvořena");
+		
 		$this->view->clientId = $clientId;
 		$this->view->mistake = $data;
 	}
@@ -702,6 +712,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				"checkId" => $checkId
 		);
 
+		$this->_helper->FlashMessenger("Neshoda vytvořena");
+		
 		$url = $this->view->url($params, "audit-edit");
 
 		$this->_redirect($url);
@@ -742,6 +754,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// presmerovani zpet na vypis
 		$params = array("clientId" => $mistake->client_id, "auditId" => $mistake->audit_id, "mistakeId" => $mistake->id);
 
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		if ($redirect) $this->_redirect($this->view->url($params, "audit-mistake-edit"));
 
 		return $params;

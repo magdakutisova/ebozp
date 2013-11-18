@@ -615,6 +615,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit->setFromArray($form->getValues(true));
 		$audit->save();
 		
+		$this->_helper->FlashMessenger("Kontaktní osoba byla vytvořena");
+		
 		$this->view->audit = $audit;
 	}
 	
@@ -665,6 +667,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// navazeni propadlych lhut k auditu
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$tableDeadlines->createByAudit($audit);
+		
+		$this->_helper->FlashMessenger("Audit vytvořen");
 		
 		$this->_redirect(
 				$this->view->url(array("clientId" => $subsidiary->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit")
@@ -719,7 +723,45 @@ class Audit_AuditController extends Zend_Controller_Action {
 			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
 		}
 		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
+		
 		$this->_redirect($url);
+	}
+	
+	public function subdeadAction() {
+		// nacteni dat
+		$watchId = $this->_request->getParam("auditId", 0);
+		$tableAudits = new Audit_Model_Audits();
+		$audit = $tableAudits->find($watchId)->current();
+		
+		if (!$audit) throw new Zend_Db_Table_Exception("audit not found");
+	
+		$this->_request->setParam("clientId", $audit->client_id);
+	
+		// nacteni zaskrtnutych policek
+		$selected = (array) $this->_request->getParam("selected", array());
+		$selectedIds = array_merge(array(0), $selected);
+	
+		// nacteni dat o splneni
+		$data = $this->_request->getParam("deadline", array());
+		$data = array_merge(array("done_at" => "", "comment" => ""), $data);
+	
+		// vytvoreni updatovacich a filtracnich poli
+		$where = array(
+				"deadline_id in (?)" => $selectedIds,
+				"audit_id = ?" => $audit->id
+		);
+		
+		$updateData = array(
+				"note" => $data["comment"],
+				"done_at" => $data["done_at"],
+				"is_done" => 1
+		);
+		
+		$this->_helper->FlashMessenger("Lhůty splněny");
+	
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$tableAssocs->update($updateData, $where);
 	}
 	
 	public function subdeadHtmlAction() {
@@ -743,6 +785,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nastaveni dat
 		$assoc->setFromArray($form->getValues(true));
 		$assoc->save();
+		
+		$this->_helper->FlashMessenger("Lhůta splněna");
 	
 		$this->view->assoc = $assoc;
 		$this->view->audit = $audit;
@@ -838,6 +882,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 					$nameLogs, $nameDeadlinesAssocs, $audit->id);
 			
 			Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
+			
+			$this->_helper->FlashMessenger("Audit uzavřen");
 			
 			// presmerovani na get
 			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");

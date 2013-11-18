@@ -17,15 +17,7 @@ $(function () {
 		// sestaveni routy
 		var url = "/klient/" + clientId + "/audit/" + auditId + "/mistake/" + mistakeId + "/html";
 		
-		// sestaveni dialogu
-		var iframe = $("<iframe width='700px' height='400px'>").attr("src", url);
-		
-		$("<div>").append(iframe).dialog({
-			modal: true,
-			width: "730px",
-			draggable: false,
-			title : "Neshoda"
-		});
+		$.iframeDialog(url, 800, 400, "Neshoda", "refresh");
 	}
 	
 	function toggleMistakeResponse(response) {
@@ -109,7 +101,16 @@ $(function () {
 	$("#mistakes-forms,#mistakes-others").find("button[name='edit-mistake']").click(openMistake);
 	$("#mistakes-forms,#mistakes-others").find("button[name='mistake-submiter']").click(toggleMistakeSubmit);
 	$("#auditcoordsubmit").submit(checkSubmit);
-	$("#tabs").tabs();
+	$("#tabs").tabs({
+		activate : function (e, ui) {
+			var href = ui.newTab.find("a").attr("href");
+			var y = window.pageYOffset;
+			
+			location.replace(href);
+			
+			window.scrollTo(window.pageXOffset, y);
+		}
+	});
 	
 	var semaphores = $(".semaphore");
 	semaphores.semaphore();

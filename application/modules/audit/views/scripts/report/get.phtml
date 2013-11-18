@@ -25,7 +25,8 @@ $opts = array(
 printf("<h2>%s</h2>", $common["name"]);
 
 $url = $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-report-download");
-echo "<div class='box' align='center'><form action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Stáhnout ve formátu PDF'></form></div>";
+$url2 = sprintf("/audit/report/send?auditId=%s", $audit->id);
+echo "<div class='box' align='center'><form style='float: left;' action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Stáhnout ve formátu PDF'></form><form action='$url2' method='post' id='send-form' style='float: right;'><input type='submit' value='Odeslat kontaktní osobě emailem'></form><br style='clear: both;' /></div>";
 ?>
 <menu id="up-menu">
 	<li><a href="#common">Obecné informace</a></li>

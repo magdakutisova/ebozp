@@ -22,6 +22,14 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 	
+	public function createHtmlAction() {
+		$this->createAction();
+		
+		$clientId = $this->_request->getParam("clientId");
+		
+		$this->view->form->setAction("/deadline/deadline/post.html?clientId=$clientId");
+	}
+	
 	/**
 	 * odstrani lhutu
 	 */
@@ -29,6 +37,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// nacteni lhuty
 		$deadline = self::loadDeadline($this->_request->getParam("deadlineId", 0));
 		$deadline->delete();
+		
+		$this->_helper->FlashMessenger("Lhůta byla smazána");
 	}
 	
 	/**
@@ -150,7 +160,14 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$row->updateAll($data);
 		$row->save();
 		
+		self::checkDeadlineDate($row);
+		
 		$this->view->row = $row;
+		$this->_helper->FlashMessenger("Lhůta byla vytvořena");
+	}
+	
+	public function postHtmlAction() {
+		$this->postAction();
 	}
 	
 	/**
@@ -193,84 +210,9 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 
 		$deadline->save();
 		
-		// kontrola datumu propadnuti
-		$validTo = new Zend_Date($deadline->next_date, "y-MM-dd");
-		$reserve = new Zend_Date($validTo);
+		self::checkDeadlineDate($deadline);
 		
-		$reserve->addMonth(-1);
-		
-		$tableWatches = new Audit_Model_Watches();
-		$tableAudits = new Audit_Model_Audits();
-		
-		$nameWatches = $tableWatches->info("name");
-		$nameAudits = $tableAudits->info("name");
-		
-		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
-		
-		if ($reserve->isEarlier(Zend_Date::now())) {
-			// lhuta se zahrne do dohlidek
-			
-			$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-			
-			// poddotaz nacte dohlidky spolecne s id lhuty
-			$select->from($nameWatches, array(
-					"id", 
-					new Zend_Db_Expr($deadline->id),
-					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
-					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
-					));
-			
-			$select->where("!is_closed")->where("subsidiary_id = ?", $deadline->subsidiary_id);
-			
-			// prepis dat dohlidek
-			$tableAssocs = new Audit_Model_WatchesDeadlines();
-			$sql = "insert ignore into %s (watch_id, deadline_id, valid_to, is_over) %s";
-			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
-			
-			// prepis dat auditu
-			// poddotaz nacte dohlidky spolecne s id lhuty
-			$select->reset(Zend_Db_Select::FROM);
-			$select->reset(Zend_Db_Select::COLUMNS);
-			
-			$select->from($nameAudits, array(
-					"id",
-					new Zend_Db_Expr($deadline->id),
-					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
-					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
-			));
-			
-			$tableAssocs = new Audit_Model_AuditsDeadlines();
-			$sql = "insert ignore into %s (audit_id, deadline_id, valid_to, is_over) %s";
-			
-			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
-			
-		} else {
-			// lhuta se odebere s dohlidek
-			
-			// prepis dohlidek
-			
-			// poddotaz nacte vsechny dohlidky, ktere nejsou uzavreny
-			$select->from($nameWatches, array("id"))->where("!is_closed");
-			
-			// odebrani dat
-			$tableAssocs = new Audit_Model_WatchesDeadlines();
-			$tableAssocs->delete(array(
-					"deadline_id = ?" => $deadline->id,
-					"watch_id in (?)" => new Zend_Db_Expr($select)
-					));
-			
-			//prepis auditu
-			$select->reset(Zend_Db_Select::FROM);
-			$select->from($nameAudits, array("id"))->where("!is_closed");
-				
-			// odebrani dat
-			$tableAssocs = new Audit_Model_AuditsDeadlines();
-			$tableAssocs->delete(array(
-					"deadline_id = ?" => $deadline->id,
-					"audit_id in (?)" => new Zend_Db_Expr($select)
-			));
-		}
-		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		$this->view->deadline = $deadline;
 		$this->view->form = $form;
 	}
@@ -297,6 +239,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deadline->save();
 		
 		$this->view->deadline = $deadline;
+		$this->_helper->FlashMessenger("Lhůta byla označena jako splněná");
 	}
 	
 	/**
@@ -741,6 +684,82 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		}
 		
 		$form->getElement("subsidiary_id")->setMultiOptions($subs);
+	}
+	
+	public static function checkDeadlineDate($deadline) {
+		// kontrola datumu propadnuti
+		$validTo = new Zend_Date($deadline->next_date, "y-MM-dd");
+		$reserve = new Zend_Date($validTo);
+		
+		$reserve->addMonth(-1);
+		
+		$tableWatches = new Audit_Model_Watches();
+		$tableAudits = new Audit_Model_Audits();
+		
+		$nameWatches = $tableWatches->info("name");
+		$nameAudits = $tableAudits->info("name");
+		
+		$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		
+		// kazdopadne se smazou stara data
+		$select->from($nameWatches, array("id"))->where("!is_closed");
+			
+		// odebrani dat
+		$tableAssocs = new Audit_Model_WatchesDeadlines();
+		$tableAssocs->delete(array(
+				"deadline_id = ?" => $deadline->id,
+				"watch_id in (?)" => new Zend_Db_Expr($select)
+		));
+			
+		//prepis auditu
+		$select->reset(Zend_Db_Select::FROM)->reset(Zend_Db_Select::COLUMNS);
+		$select->from($nameAudits, array("id"))->where("!is_closed");
+		
+		// odebrani dat
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$tableAssocs->delete(array(
+				"deadline_id = ?" => $deadline->id,
+				"audit_id in (?)" => new Zend_Db_Expr($select)
+		));
+		
+		if ($reserve->isEarlier(Zend_Date::now())) {
+			// lhuta se zahrne do dohlidek s novymi informacemi
+			$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$select = new Zend_Db_Select($adapter);
+				
+			// poddotaz nacte dohlidky spolecne s id lhuty
+			$select->from($nameWatches, array(
+					"id",
+					new Zend_Db_Expr($deadline->id),
+					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
+					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
+			));
+				
+			$select->where("!is_closed")->where("subsidiary_id = ?", $deadline->subsidiary_id);
+				
+			// prepis dat dohlidek
+			$tableAssocs = new Audit_Model_WatchesDeadlines();
+			$sql = "insert ignore into %s (watch_id, deadline_id, valid_to, is_over) %s";
+			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
+				
+			// prepis dat auditu
+			// poddotaz nacte dohlidky spolecne s id lhuty
+			$select->reset(Zend_Db_Select::FROM);
+			$select->reset(Zend_Db_Select::COLUMNS);
+				
+			$select->from($nameAudits, array(
+					"id",
+					new Zend_Db_Expr($deadline->id),
+					new Zend_Db_Expr($adapter->quote($deadline->next_date)),
+					new Zend_Db_Expr($validTo->isEarlier(Zend_Date::now()) ? 1 : 0)
+			));
+				
+			$tableAssocs = new Audit_Model_AuditsDeadlines();
+			$sql = "insert ignore into %s (audit_id, deadline_id, valid_to, is_over) %s";
+				
+			$adapter->query(sprintf($sql, $tableAssocs->info("name"), $select));
+				
+		}
 	}
 	
 	/**

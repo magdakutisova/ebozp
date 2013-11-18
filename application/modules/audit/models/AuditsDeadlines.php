@@ -82,7 +82,9 @@ class Audit_Model_AuditsDeadlines extends Zend_Db_Table_Abstract {
 			$subSelect->where("!is_done");
 		}
 		
-		$select->where("id in ?", $subSelect);
+		$select->where("deadline_deadlines.id in ?", $subSelect);
+		
+		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.audit_id = " . $audit->id, array("is_done"));
 		
 		$data = $select->query()->fetchAll();
 		

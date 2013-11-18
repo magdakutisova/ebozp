@@ -88,6 +88,8 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->items = $report->getItems();
 		$this->view->charts = $charts;
 		
+		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
+		
 		$forms = $audit->getForms();
 		$this->view->forms = $forms->toArray();
 		$this->view->formsGroups = self::getFormsGroups($forms);
@@ -189,9 +191,47 @@ class Audit_ReportController extends Zend_Controller_Action {
 			));
 		}
 		
+		$this->_helper->FlashMessenger("Zpráva byla uložena");
+		
 		// presmerovani na editaci zpravy
 		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-report-edit");
 		$this->_redirect($url);
+	}
+	
+	public function sendAction() {
+		// kontrolni nacteni
+		$audit = self::loadAudit($this->_request->getParam("auditId"));
+	
+		if (!$audit->is_closed) throw new Zend_Exception("Audit #$audit->id must be closed for send protocol");
+	
+		// vygenerovani protokolu
+		$pdfProt = $this->view->action("report.pdf", "report", "audit", array_merge($this->_request->getParams(), array("disableHeaders" => 1)));
+	
+		// vyhodnoceni kontaktni osoby
+		if ($audit->contactperson_id) {
+			$tableContacts = new Application_Model_DbTable_ContactPerson();
+			$contact = $tableContacts->find($audit->contactperson_id)->current();
+				
+			$email = $contact->email;
+			$name = $contact->name;
+		} else {
+			$email = $audit->contact_email;
+			$name = $audit->contact_name;
+		}
+	
+		$msg = self::generateMail("Dobrý den,
+	
+				v příloze zasíláme protokol z provedené " . ($audit->is_check ? "prověrky" : "auditu") . " BOZP a PO na Vašem pracovišti.
+	
+				S pozdravem
+	
+				GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
+	
+		mail('', 'protokol', $msg["message"], $msg["headers"]);
+	
+		$this->view->audit = $audit;
+		
+		$this->_helper->FlashMessenger("Protokol byl odeslán");
 	}
 	
 	public function loadAudit() {
@@ -374,5 +414,33 @@ class Audit_ReportController extends Zend_Controller_Action {
 		}
 		
 		return $retVal;
+	}
+	
+	private static function generateMail($messageContent, $pdf, $from, $to) {
+		// vygenerovani hranice
+		$boundary = uniqid('np');
+		$boundary2 = $boundary . "2";
+	
+		// hlavicky
+		$headers = "MIME-Version: 1.0\r\n";
+		$headers .= "From: $from \r\n";
+		$headers .= "To: $to \r\n";
+		$headers .= "Content-Type: multipart/mixed;boundary=" . $boundary . "\r\n";
+	
+		$message .= "\r\n\r\n--" . $boundary . "\r\n";
+		$message .= "Content-Type: text/plain; charset=utf-8\r\n";
+		$message .= "Content-Disposition: inline\r\n";
+		$message .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+		$message .= $messageContent;
+	
+		$message .= "\r\n\r\n--$boundary\r\n";
+		$message .= "Content-Transfer-Encoding: base64\r\n";
+		$message .= "Content-Disposition: attachment; filename=protokol.pdf\r\n";
+		$message .= "Content-type: application/pdf; name=protokol.pdf\r\n\r\n";
+	
+		$message .= base64_encode($pdf);
+		$message .= "\r\n\r\n--" . $boundary . "--";
+	
+		return array("message" => $message, "headers" => $headers);
 	}
 }

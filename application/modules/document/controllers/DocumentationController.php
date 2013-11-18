@@ -26,6 +26,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 
 		$documentation->save();
+		
+		$this->_helper->FlashMessenger("Dokument byl připojen");
 
 		$this->view->documentation = $documentation;
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
@@ -67,7 +69,9 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 		$tableDocumentations = new Document_Model_Documentations();
 		$tableDocumentations->delete(array("id = ?" => $docId));
-
+		
+		$this->_helper->FlashMessenger("Dokumentace byla smazána");
+		
 		$this->view->clientId = $clientId;
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
 	}
@@ -180,6 +184,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 				throw $e;
 			}
 		}
+		
+		$this->_helper->FlashMessenger("Dokumentace byla importována");
 
 		$this->view->dotNet = $dotNet;
 		$this->view->client = $client;
@@ -269,6 +275,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			$slot->save();
 		}
 
+		$this->_helper->FlashMessenger("Nová dokumentace byla vytvořena");
+		
 		// presmerovani na seznam
 		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId")), "document-documentation-index");
 		$url = sprintf("%s?subId=%s", $url, $subsidiaryId);
@@ -304,6 +312,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 
 		$doc->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 
 		$this->view->doc = $doc;
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);

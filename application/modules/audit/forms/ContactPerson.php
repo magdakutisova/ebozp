@@ -43,7 +43,8 @@ class Audit_Form_ContactPerson extends Zend_Form {
 		$this->addElement("text", "contact_email", array(
 				"decorators" => $elementDecorator,
 				"label" => "E-mail",
-				"validators" => array(new Zend_Validate_EmailAddress())
+				"validators" => array(new Zend_Validate_EmailAddress()),
+				"required" => true
 				));
 		
 		$this->addElement("submit", "submit", array(

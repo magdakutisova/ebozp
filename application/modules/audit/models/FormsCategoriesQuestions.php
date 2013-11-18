@@ -37,6 +37,7 @@ class Audit_Model_FormsCategoriesQuestions extends Zend_Db_Table_Abstract {
 				"group_id" => $questionCategory->id,
 				"weight" => $data["weight"],
 				"question" => $data["question"],
+				"farplan_text" => $data["farplan_text"],
 				"category" => $data["category"],
 				"subcategory" => $data["subcategory"],
 				"concretisation" => $data["concretisation"],

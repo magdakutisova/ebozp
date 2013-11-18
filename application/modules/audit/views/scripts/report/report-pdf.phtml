@@ -167,7 +167,12 @@ $pdf->writeHTML($deadAll);
 $this->pdf()->footer($pdf, $this->logo, "Zpracoval:
 G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622
 Zapsána u Rejstříkového soudu vedeného Krajským soudem v Hradci Králové, oddíl A, vložka 3503
-Telefon: 466535700, E-mail: guard7@guard7.cz, www. guard7.cz");
+Telefon: 466535700, E-mail: guard7@guard7.cz, www.guard7.cz");
 
+if (!$this->disableHeaders) {
+	header("Content-Type: application/pdf");
+	header("Content-Disposition: attachment");
+}
 
-$pdf->Output("zprava.pdf", "D");
+echo $pdf->Output("zprava.pdf", "S");
+die;

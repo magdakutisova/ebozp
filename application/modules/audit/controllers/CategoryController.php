@@ -76,6 +76,8 @@ class Audit_CategoryController extends Zend_Controller_Action {
 			$redirect = "/audit/category/index";
 		}
 		
+		$this->_helper->FlashMessenger("Ktegorie smazána");
+		
 		$this->_redirect($redirect);
 	}
 	
@@ -200,6 +202,8 @@ class Audit_CategoryController extends Zend_Controller_Action {
 		
 		$category = $tableCategories->createCategory($data["name"], $parent);
 		
+		$this->_helper->FlashMessenger("Kategorie byla uložena");
+		
 		// presmerovani na get
 		$this->_redirect("/audit/category/get?category[id]=" . $category->id);
 	}
@@ -236,6 +240,8 @@ class Audit_CategoryController extends Zend_Controller_Action {
 		// nastaveni hodnot
 		$category->name = $filtered["name"];
 		$category->save();
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		// zobrazeni get
 		$this->_forward("get");

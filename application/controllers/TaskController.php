@@ -16,6 +16,8 @@ class TaskController extends Zend_Controller_Action {
 		// zapis komentare
 		$comment = $task->createComment($form->getValue("comment"), Zend_Auth::getInstance()->getIdentity()->id_user);
 		$this->view->comment = $comment;
+		
+		$this->_helper->FlashMessenger("Komentář přidán");
 	}
 	
 	public function completeAction() {
@@ -36,6 +38,8 @@ class TaskController extends Zend_Controller_Action {
 				"completed_at" => new Zend_Db_Expr("NOW()"),
 				"completed_by" => Zend_Auth::getInstance()->getIdentity()->id_user
 				), array("id in (?)" => $taskIds));
+		
+		$this->_helper->FlashMessenger("Úkol splněn");
 	}
 	
 	public function deleteAction() {
@@ -114,6 +118,7 @@ class TaskController extends Zend_Controller_Action {
 				}
 				
 				$task->save();
+				$this->_helper->FlashMessenger("Úkol vytvořen");
 				
 				$this->view->task = $task;
 			}
@@ -139,6 +144,7 @@ class TaskController extends Zend_Controller_Action {
 				$task->setFromArray($form->getValues(true));
 				
 				$task->save();
+				$this->_helper->FlashMessenger("Změny byly uloženy");
 			}
 		}
 		

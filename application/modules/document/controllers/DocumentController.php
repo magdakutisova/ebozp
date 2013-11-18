@@ -30,6 +30,8 @@ class Document_DocumentController extends Zend_Controller_Action {
 			));
 		}
 		
+		$this->_helper->FlashMessenger("Dokument byl uložen do adresáře");
+		
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId", 0), "fileId" => $file->id), "document-get");
 		$this->_redirect($url);
 	}
@@ -62,6 +64,9 @@ class Document_DocumentController extends Zend_Controller_Action {
 				"clientId" => $this->getRequest()->getParam("clientId", 0),
 				"fileId" => $file->id
 		), "document-get");
+		
+		
+		$this->_helper->FlashMessenger("Dokument byl odstraněn z adresáře");
 		
 		$this->_redirect($url);
 	}
@@ -184,6 +189,8 @@ class Document_DocumentController extends Zend_Controller_Action {
 		// zapis do ciloveho adresare
 		$fileRow->attach($directory);
 		
+		$this->_helper->FlashMessenger("Dokument byl vytvořen");
+		
 		// presmerovani zpet na adresar
 		$url = $this->view->url($this->getRequest()->getParams(), "document-directory-get");
 		$this->_redirect($url);
@@ -209,6 +216,8 @@ class Document_DocumentController extends Zend_Controller_Action {
 				"clientId" => $this->getRequest()->getParam("clientId", 0),
 				"fileId" => $file->id
 		), "document-get");
+		
+		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
 		$this->_redirect($url);
 	}
@@ -244,6 +253,8 @@ class Document_DocumentController extends Zend_Controller_Action {
 		$element = $form->getElement("file");
 		
 		$file->createVersionFromFile($element->getFileName(), $element->getMimeType());
+		
+		$this->_helper->FlashMessenger("Nová verze byla uložena");
 		
 		// presmerovani na get
 		$url = $this->view->url(array("clientId" => $this->getRequest()->getParam("clientId", 0), "fileId" => $file->id), "document-get");

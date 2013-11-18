@@ -146,9 +146,19 @@ echo $this->formHidden("client_id", $this->client->id_client);
 					"show" => array(
 							"caption" => "Zobrazit",
 							"type" => "button"
+							),
+					"edit" => array(
+							"type" => "button",
+							"caption" => "Editovat"
+							),
+					"selected[]" => array(
+							"type" => "checkbox",
+							"caption" => "Vybrat"
 							)
 					)
 			);
+	
+	$options["form"] = array("action" => "/audit/audit/subdead?auditId=" . $audit->id);
 	
 	echo $this->deadlineTable($this->deadlines, $options);
 	echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");

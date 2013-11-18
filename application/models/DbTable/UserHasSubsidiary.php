@@ -74,7 +74,7 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 		$processed = array();
 		if (count($result) != 0){		
 			foreach($result as $row){
-				$processed[] = $row->username;
+				$processed[] = $row->name;
 			}
 		}
 		return implode(', ', $processed);

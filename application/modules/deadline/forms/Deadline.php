@@ -60,6 +60,17 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"label" => "Specifikace"
 		));
 		
+		$this->addElement("select", "deadline_type", array(
+				"decorators" => $elementDecorator,
+				"required" => true,
+				"label" => "Lhůta se týká",
+				"multiOptions" => array(
+						self::TARGET_UNDEFINED => "Jiný typ",
+						self::TARGET_EMPLOYEE => "Zaměstnance",
+						self::TARGET_CHEMICAL => "Chemické látky",
+						self::TARGET_DEVICE => "Technického zařízení")
+		));
+		
 		$this->addElement("select", "type", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
@@ -124,17 +135,6 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"required" => false,
 				"label" => "Pracoviště"
-				));
-		
-		$this->addElement("select", "deadline_type", array(
-				"decorators" => $elementDecorator,
-				"required" => true,
-				"label" => "Lhůta se týká",
-				"multiOptions" => array(
-						self::TARGET_UNDEFINED => "Jiný typ", 
-						self::TARGET_EMPLOYEE => "Zaměstnance", 
-						self::TARGET_CHEMICAL => "Chemické látky", 
-						self::TARGET_DEVICE => "Technického zařízení")
 				));
 		
 		$this->addElement("select", "object_id", array(

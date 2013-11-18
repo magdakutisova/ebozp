@@ -1,20 +1,20 @@
 <div id="watch-tabs">
 	<ul>
-		<li><a href="#overview">Přehled</a></li>
-		<li><a href="#discuss">Provedeno</a></li>
+		<li><a href="#tab-overview">Přehled</a></li>
+		<li><a href="#tab-discuss">Provedeno</a></li>
 		<?php 
 		if (!$this->watch->also_audit) {
 		?>
-		<li><a href="#mistakes">Neshody</a></li>
-		<li><a href="#deadlines">Lhůty</a></li>
+		<li><a href="#tab-mistakes">Neshody</a></li>
+		<li><a href="#tab-deadlines">Lhůty</a></li>
 		<?php 
 		}
 		?>
-		<li><a href="#changes">Změny</a></li>
-		<li><a href="#orders">Objednávky</a></li>
-		<li><a href="#outputs">Realizační výstup</a></li>
+		<li><a href="#tab-changes">Změny</a></li>
+		<li><a href="#tab-orders">Objednávky</a></li>
+		<li><a href="#tab-outputs">Realizační výstup</a></li>
 	</ul>
-	<div id="overview">
+	<div id="tab-overview">
 		<h1>Dohlídka</h1>
 		<?php
 		$watch = $this->watch;
@@ -22,6 +22,11 @@
 		echo $this->form;
 		
 		$url = "/audit/watch/protocol.pdf";
+		
+		echo "<form action='/audit/watch/send' method='get'>" .
+				$this->formHidden("watchId", $watch->id) . $this->formSubmit("protocol", "Odeslat návrh protokolu") . "</form>";
+		
+		echo "<br />";
 		
 		echo "<form action='$url' target='_blank' method='get'>" . 
 			$this->formHidden("watchId", $watch->id) . $this->formSubmit("protocol", "Náhled protokolu") . "</form>";
@@ -37,7 +42,7 @@
 		?>
 		</div>
 	</div>
-	<div id="discuss">
+	<div id="tab-discuss">
 		<form action="/audit/watch/discuss" method="post" id="form-discuss">
 			<ol id="discuss-list">
 			<?php 
@@ -58,7 +63,7 @@
 			</div>
 		</form>
 	</div>
-	<div id="changes">
+	<div id="tab-changes">
 		<form action="/audit/watch/changes" method="post" id="form-changes">
 			<ol id="change-list">
 			<?php 
@@ -82,7 +87,7 @@
 <?php 
 if (!$this->watch->also_audit) {
 ?>
-	<div id="mistakes">
+	<div id="tab-mistakes">
 		<h2>Nová neshoda</h2>
 		<?php 
 		$url = "/audit/watch/createmistake?watchId=$watch->id&clientId=$watch->client_id&subsidiary_id=$watch->subsidiary_id";
@@ -120,7 +125,7 @@ if (!$this->watch->also_audit) {
 			<table class="multirow-table" id="mistakes">
 			<?php 
 			echo $this->mistakeTable()->header();
-			$params = array("selector" => true, "actions" => array("get" => "Zobrazit", "edit" => "Upravit"));
+			$params = array("selector" => true, "actions" => array("get" => "Zobrazit", "edit" => "Editovat"));
 			
 			foreach ($this->mistakes as $mistake) {
 				// vyhodnoceni, zda je neshoda kriticka
@@ -140,8 +145,15 @@ if (!$this->watch->also_audit) {
 			</p>
 		</form>
 	</div>
-	<div id="deadlines">
+	<div id="tab-deadlines">
 		<?php 
+		echo "<p>";
+		echo $this->formButton("new-deadline", "Zobrazit/skrýt novou lhůtu");
+		echo "</p>";
+		echo "<div id='deadlineform-container' style='display: none;'>";
+		echo $this->action("create.html", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
+		echo "</div>";
+		
 		$options = array(
 				"buttons" => array(
 						"show" => array(
@@ -151,9 +163,18 @@ if (!$this->watch->also_audit) {
 						"edit" => array(
 								"caption" => "Editovat",
 								"type" => "button"
+								),
+						"selected[]" => array(
+								"caption" => "Vybrat",
+								"type" => "checkbox"
 								)
 						)
 				);
+		
+		$options["form"] = array(
+				"action" => "/audit/watch/subdead?watchId=" . $watch->id
+				);
+		
 		echo $this->deadlineTable($this->deadlines, $options);
 		echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
 		?>
@@ -161,7 +182,7 @@ if (!$this->watch->also_audit) {
 <?php 
 }
 ?>
-	<div id="orders">
+	<div id="tab-orders">
 		<form action="/audit/watch/orders" method="post" id="form-orders">
 			<ol id="order-list">
 			<?php 
@@ -182,7 +203,7 @@ if (!$this->watch->also_audit) {
 			</div>
 		</form>
 	</div>
-	<div id="outputs">
+	<div id="tab-outputs">
 		<form action="/audit/watch/outputs" method="post" id="form-output">
 			<?php echo $this->formTextarea("outputs", $watch->outputs, array("style" => "height: 10em; width: 80%; ")); ?>
 			<div>
