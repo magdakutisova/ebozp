@@ -146,14 +146,21 @@ if (!$this->watch->also_audit) {
 		echo "<div>-</div>";
 	}
 	*/
-	?>
-	<h2>Neodstraněné neshody z minulých kontrol</h2>
-	<?php 
-	if ($marked) {
-		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
-	} else {
-		echo "<div>-</div>";
+	
+	// vyhodnoceni zobrazeni neodstranenych neshod
+	if ($watch->display_mistakes) {
+		?>
+		<h2>Neodstraněné neshody z minulých kontrol</h2>
+		<?php 
+		if ($marked) {
+			echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+		} else {
+			echo "<div>-</div>";
+		}
 	}
+	
+	// vyhodnoceni zobrazeni lhut
+	if ($watch->display_deadlines) {
 	?>
 	<h1>Propadlé lhůty</h1>
 	<table border="1" cellpadding="2">
@@ -164,6 +171,7 @@ if (!$this->watch->also_audit) {
 		?>
 	</table>
 	<?php
+	}
 }
 ?>
 <div></div><div></div>

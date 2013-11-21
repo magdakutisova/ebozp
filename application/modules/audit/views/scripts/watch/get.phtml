@@ -1,3 +1,6 @@
+<?php 
+$watch = $this->watch;
+?>
 <div id="watch-tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
@@ -84,6 +87,9 @@
 			</tr>
 				<?php 
 			}
+			
+			echo $this->tableLayout()->row("Zobrazení neshod v protokolu", $watch->display_mistakes ? "Ano" : "Ne");
+			echo $this->tableLayout()->row("Zobrazení lhůt v protokolu", $watch->display_deadlines ? "Ano" : "Ne");
 			?>
 		</table>
 		<?php
@@ -121,7 +127,6 @@ if (!$this->watch->also_audit) {
 $new = array();
 $removed = array();
 $marked = array();
-$watch = $this->watch;
 
 foreach ($this->mistakes as $mistake) {
 	// vyhodnoceni neshody

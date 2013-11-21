@@ -17,5 +17,8 @@ class Audit_Form_WatchCreate extends Audit_Form_Watch {
 				"decorators" => $elementDecorator,
 				"order" => 8
 				));
+		
+		$this->removeElement("display_mistakes");
+		$this->removeElement("display_deadlines");
 	}
 }
