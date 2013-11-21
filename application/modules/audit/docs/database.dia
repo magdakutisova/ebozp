@@ -2447,19 +2447,19 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O7">
       <dia:attribute name="obj_pos">
-        <dia:point val="56.15,68.75"/>
+        <dia:point val="58.45,67.25"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="56.1,68.7;72.0025,81.8"/>
+        <dia:rectangle val="58.4,67.2;74.3025,81.1"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="56.15,68.75"/>
+        <dia:point val="58.45,67.25"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="15.8025"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="13.000000000000002"/>
+        <dia:real val="13.800000000000002"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_forms_categories_questions#</dia:string>
@@ -2676,6 +2676,29 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#text pro farplan#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#mistake_comment#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#text#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#komentář k neshodě#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -3262,13 +3285,13 @@
         <dia:point val="48,68.05"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="47.8882,67.7191;56.2618,71.7809"/>
+        <dia:rectangle val="47.8882,67.7191;58.5618,70.2809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="48,68.05"/>
-        <dia:point val="52.075,68.05"/>
-        <dia:point val="52.075,71.45"/>
-        <dia:point val="56.15,71.45"/>
+        <dia:point val="53.225,68.05"/>
+        <dia:point val="53.225,69.95"/>
+        <dia:point val="58.45,69.95"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -5220,13 +5243,13 @@
         <dia:point val="56.9,29.85"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="55.05,29.5191;57.0118,70.9809"/>
+        <dia:rectangle val="55.8,29.5191;58.5618,69.4809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="56.9,29.85"/>
-        <dia:point val="55.1,29.85"/>
-        <dia:point val="55.1,70.65"/>
-        <dia:point val="56.15,70.65"/>
+        <dia:point val="55.85,29.85"/>
+        <dia:point val="55.85,69.15"/>
+        <dia:point val="58.45,69.15"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -5261,16 +5284,16 @@
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O28">
       <dia:attribute name="obj_pos">
-        <dia:point val="56.15,70.65"/>
+        <dia:point val="58.45,69.15"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="55.05,70.3191;56.2618,80.5809"/>
+        <dia:rectangle val="57.35,68.8191;58.5618,79.8809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="56.15,70.65"/>
-        <dia:point val="55.1,70.65"/>
-        <dia:point val="55.1,80.25"/>
-        <dia:point val="56.15,80.25"/>
+        <dia:point val="58.45,69.15"/>
+        <dia:point val="57.4,69.15"/>
+        <dia:point val="57.4,79.55"/>
+        <dia:point val="58.45,79.55"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -5300,7 +5323,7 @@
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O7" connection="8"/>
-        <dia:connection handle="1" to="O7" connection="32"/>
+        <dia:connection handle="1" to="O7" connection="34"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O29">
@@ -7735,7 +7758,7 @@
         <dia:point val="59.8263,49.425"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="59.7763,49.375;75.3912,55.275"/>
+        <dia:rectangle val="59.7763,49.375;75.3913,55.275"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="59.8263,49.425"/>
@@ -7987,7 +8010,7 @@
         <dia:point val="41.0763,58.075"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="41.0263,58.025;54.7163,63.125"/>
+        <dia:rectangle val="41.0263,58.025;54.7163,63.925"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="41.0763,58.075"/>
@@ -7996,7 +8019,7 @@
         <dia:real val="13.59"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="5"/>
+        <dia:real val="5.8000000000000007"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_farplans#</dia:string>
@@ -8134,6 +8157,29 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
+            <dia:string>#form_id#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#int#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#identifikační číslo formuláře, ze kterého je farplán vytvořen#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
             <dia:string>#name#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
@@ -8216,7 +8262,7 @@
         <dia:point val="54.6663,59.975"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="54.5544,51.7941;59.9381,60.3059"/>
+        <dia:rectangle val="54.5545,51.7941;59.9381,60.3059"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="54.6663,59.975"/>
@@ -8264,8 +8310,8 @@
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="36.12,19.35"/>
-        <dia:point val="38.5981,19.35"/>
-        <dia:point val="38.5981,60.775"/>
+        <dia:point val="38.5982,19.35"/>
+        <dia:point val="38.5982,60.775"/>
         <dia:point val="41.0763,60.775"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
@@ -8533,7 +8579,7 @@
         <dia:point val="75.3413,51.325"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="75.2294,48.1441;79.5881,51.6559"/>
+        <dia:rectangle val="75.2295,48.1441;79.5881,51.6559"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="75.3413,51.325"/>
