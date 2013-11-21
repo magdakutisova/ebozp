@@ -207,6 +207,26 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 	}
 	
 	/**
+	 * vraci hodnotu rizika pobocky
+	 * 
+	 * @param int $subsidiaryId id pobocky
+	 * @return int
+	 */
+	public function getScore($subsidiaryId) {
+		// sestaveni vyhledavaciho dotazu
+		$select = new Zend_Db_Select($this->getAdapter());
+		
+		$select->from($this->_name, array(
+				new Zend_Db_Expr("SUM(weight)")
+				));
+		
+		$select->where("subsidiary_id = ?", $subsidiaryId)
+					->where("!is_removed")->where("is_submited")->group("subsidiary_id");
+		
+		return $select->query()->fetchColumn();
+	}
+	
+	/**
 	 * vraci seznam vsech nezarazenych neshod
 	 * 
 	 * @param Audit_Model_Row_Audit $audit audit ke kteremu se vazou

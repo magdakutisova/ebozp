@@ -10,7 +10,7 @@
 	</div>
 
 <div class="span-5 overflow push-1 box width-200"><h3>Hodnota rizika pobočky</h3>
-<p>*****</p></div>
+<p><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></p></div>
 <?php 
 // pokud se jedna pouze o sidlo, nebude se dal ve vypisech pokracovat
 if ($this->subsidiary['subsidiary']->getHqOnly()) return;

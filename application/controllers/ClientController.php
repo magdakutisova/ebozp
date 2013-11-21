@@ -159,6 +159,12 @@ class ClientController extends Zend_Controller_Action
 		 * PETR JINDRA 4. 9. 2013
 		 */
 		
+		// nacteni velikosti rizika
+		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+		$riskScore = $tableMistakes->getScore($subsidiary->getIdSubsidiary());
+		
+		$this->view->riskScore = $riskScore;
+		
 		// nacteni propadlych lhut
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$invalidDeads = $tableDeadlines->findInvalids($clientId);
