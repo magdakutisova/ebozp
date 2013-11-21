@@ -36,6 +36,7 @@ class Audit_Form_Question extends Zend_Form {
 		$this->addElement("text", "concretisation", array("label" => "Upřesnění", "decorators" => $elementDecorator));
 		$this->addElement("textarea", "mistake", array("label" => "Neshoda", "decorators" => $elementDecorator, "required" => true));
 		$this->addElement("textarea", "suggestion", array("label" => "Návrh řešení", "decorators" => $elementDecorator, "required" => true));
+		$this->addElement("textarea", "mistake_comment", array("label" => "Komentář k neshodě", "decorators" => $elementDecorator, "required" => true));
 		$this->addElement("submit", "submit", array("label" => "Uložit", "decorators" => $lastDecorator));
 	}
 }

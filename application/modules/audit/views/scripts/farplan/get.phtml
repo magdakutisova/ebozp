@@ -1,0 +1,14 @@
+<?php
+// tlacitko zpet
+$url = $this->url(array(
+		"clientId" => $this->audit->client_id,
+		"subsidiaryId" => $this->audit->subsidiary_id,
+		"auditId" => $this->audit->id
+		), "audit-get");
+
+printf("<a href='%s'>Zpět na audit</a>", $url);
+
+// vypsani nadpisu
+printf("<h2>Osnova - %s</h2>", $this->farplan->name);
+
+echo $this->farplan($this->farplanData);

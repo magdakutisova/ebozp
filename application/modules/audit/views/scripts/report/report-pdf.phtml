@@ -74,21 +74,47 @@ $pdf->MultiCell(180, 0, $report->summary, 0, "L");
 // zapis systematicke casi
 $index = 0;
 
-foreach ($this->forms as $form) {
-	$pdf->AddPage("P", "A4");
+if ($audit->is_check) {
+	foreach ($this->forms as $form) {
+		$pdf->AddPage("P", "A4");
 	
-	$formId = $form["id"];
-	$groups = $this->formsGroups[$formId];
-	
-	// nadpis
-	$this->pdf()->header($pdf, $form["name"]);
-	
-	// graf
-	list($format,  $data) = explode(",", $this->charts[$index++]);
-	$pdf->Image("@" . base64_decode($data),'', '', 170);
-	$pdf->Ln(75);
-	
-	$this->pdf()->form($pdf, $groups);
+		// nadpis
+		$this->pdf()->header($pdf, $form["name"]);
+		$pdf->SetY($pdf->GetY() - 5);
+		
+		// zapsani kategorii a hodnot
+		$data = $form->findData(true);
+		
+		foreach ($data as $category) {
+			$this->pdf()->header($pdf, $category["category"]->name, 15);
+			$pdf->SetY($pdf->GetY() - 10);
+			
+			foreach ($category["texts"] as $text) {
+				$pdf->MultiCell(180, 0, $text->text, 0, "L");
+			}
+		}
+		
+		// vlozeni dat
+		$pdf->SetMargins(20, 20);
+		// $pdf->writeHTML($this->farplan($form->findData(true)));
+	}
+} else {
+	foreach ($this->forms as $form) {
+		$pdf->AddPage("P", "A4");
+		
+		$formId = $form["id"];
+		$groups = $this->formsGroups[$formId];
+		
+		// nadpis
+		$this->pdf()->header($pdf, $form["name"]);
+		
+		// graf
+		list($format,  $data) = explode(",", $this->charts[$index++]);
+		$pdf->Image("@" . base64_decode($data),'', '', 170);
+		$pdf->Ln(75);
+		
+		$this->pdf()->form($pdf, $groups);
+	}
 }
 
 // vyhodnoceni a kontrola pracovist
@@ -126,22 +152,24 @@ if ($this->workplaces["workplaces"]) {
 $pdf->AddPage("P", "A4");
 $this->pdf()->header($pdf, "Registr neshod");
 
-foreach ($this->forms as $form) {
-	$this->pdf()->header($pdf, $form["name"], 18, "ib");
-
-	// zpracovani skupin
-	$formId = $form["id"];
-	$groups = $this->formsGroups[$formId];
-		
-	for ($i = 0; $i < count($groups["groups"]); $i++) {
-		// vyhodnoceni jestli je nejaka neshoda v teto skupine
-		$group = $groups["groups"][$i];
-		$groupId = $group["id"];
-
-		if (!isset($this->mistakes["forms"][$groupId])) continue;
-
-		$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
-		$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);
+if (!$audit->is_check) {
+	foreach ($this->forms as $form) {
+		$this->pdf()->header($pdf, $form["name"], 18, "ib");
+	
+		// zpracovani skupin
+		$formId = $form["id"];
+		$groups = $this->formsGroups[$formId];
+			
+		for ($i = 0; $i < count($groups["groups"]); $i++) {
+			// vyhodnoceni jestli je nejaka neshoda v teto skupine
+			$group = $groups["groups"][$i];
+			$groupId = $group["id"];
+	
+			if (!isset($this->mistakes["forms"][$groupId])) continue;
+	
+			$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
+			$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);
+		}
 	}
 }
 

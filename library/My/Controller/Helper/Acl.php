@@ -35,6 +35,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:section"));
 		$this->add(new Zend_Acl_Resource("audit:question"));
 		$this->add(new Zend_Acl_Resource("audit:watch"));
+		$this->add(new Zend_Acl_Resource("audit:farplan"));
 		
 		/*
 		 * ZDROJE MODULU DOCUMENT 
@@ -101,6 +102,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, "deadline:index");
 		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put"));
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
+		$this->allow($client, "audit:farplan", array("get"));
 		
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');
@@ -125,7 +127,9 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($technician, "deadline:deadline", array("import"));
 		$this->allow($technician, "document:documentation");
 		$this->deny($technician, "document:documentation", array("import", "reset"));
+		$this->allow($technician, "task", array("post", "post.html", "put", "put.html", "delete", "delete.html"));
 		$this->allow($technician, "task", array("comment", "comment.html", "complete", "complete.html", "list", "list.html", "comment", "get", "get.html", "index"));
+		$this->allow($technician, "audit:farplan");
 		
 		$this->allow($coordinator, "deadline:deadline", array("import"));
 		$this->allow($coordinator, 'client', array('new', 'delete'));
@@ -133,7 +137,6 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));
 		$this->allow($coordinator, "document:preset");
 		$this->allow($coordinator, "audit:form");
-		$this->allow($coordinator, "task", array("post", "post.html", "put", "put.html", "delete", "delete.html"));
 		
 		$this->allow($superadmin);
 		$this->deny($admin, 'utility');

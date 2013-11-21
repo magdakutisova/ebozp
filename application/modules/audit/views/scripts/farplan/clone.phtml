@@ -1,0 +1,10 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+$url = $this->url(array(
+		"clientId" => $this->audit->client_id,
+		"auditId" => $this->audit->id,
+		"farplanId" => $this->farplan->id
+		), "audit-farplan-edit");
+
+$redirector->gotoUrlAndExit($url);

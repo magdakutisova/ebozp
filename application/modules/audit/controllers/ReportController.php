@@ -21,8 +21,14 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$auditor = $audit->getAuditor();
 		
 		// nacteni formularu
-		$forms = $audit->getForms();
-		$formsGroups = self::getFormsGroups($forms);
+		if ($audit->is_check) {
+			$forms = $audit->getFarplans();
+			$formsGroups = array();
+		} else {
+			$forms = $audit->getForms();
+			$formsGroups = self::getFormsGroups($forms);
+			$forms = $forms->toArray();
+		}
 		
 		// nacteni pracovist
 		$workplaces = self::getWorkplaces($audit);
@@ -59,7 +65,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->subsidiary = $subsidiary;
 		$this->view->hq = $hq;
 		
-		$this->view->forms = $forms->toArray();
+		$this->view->forms = $forms;
 		$this->view->formsGroups = $formsGroups;
 		
 		$this->view->workplaces = $workplaces;
@@ -90,9 +96,18 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
 		
-		$forms = $audit->getForms();
-		$this->view->forms = $forms->toArray();
-		$this->view->formsGroups = self::getFormsGroups($forms);
+		if ($audit->is_check) {
+			$forms = $audit->getFarplans();
+			$formsGroups = array();
+		} else {
+			$forms = $audit->getForms();
+			$formsGroups = self::getFormsGroups($forms);
+			$forms = $forms->toArray();
+		}
+		
+		
+		$this->view->forms = $forms;
+		$this->view->formsGroups = $formsGroups;
 		$this->view->workplaces = self::getWorkplaces($audit);
 		$this->view->mistakes = self::getMistakes($audit);
 		
@@ -117,8 +132,14 @@ class Audit_ReportController extends Zend_Controller_Action {
 		foreach ($itemList as $item) $items[] = $item->content;
 		
 		// nacteni formularu
-		$forms = $audit->getForms();
-		$formsGroups = self::getFormsGroups($forms);
+		if ($audit->is_check) {
+			$forms = $audit->getFarplans();
+			$formsGroups = array();
+		} else {
+			$forms = $audit->getForms();
+			$formsGroups = self::getFormsGroups($forms);
+			$forms = $forms->toArray();
+		}
 		
 		// nacteni pracovist
 		$workplaces = self::getWorkplaces($audit);
@@ -139,7 +160,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->report = $report;
 		$this->view->items = $items;
 		
-		$this->view->forms = $forms->toArray();
+		$this->view->forms = $forms;
 		$this->view->formsGroups = $formsGroups;
 		
 		$this->view->workplaces = $workplaces;

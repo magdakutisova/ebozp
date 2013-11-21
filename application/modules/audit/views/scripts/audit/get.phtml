@@ -12,7 +12,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled auditu</a></li>
-		<li><a href="#forms">Formuláře</a></li>
+		<li><a href="#forms"><?php echo $this->audit->is_check ? "Osnovy" : "Formuláře"; ?></a></li>
 		<li><a href="#mistakes">Neshody</a>
 		<li><a href="#deadlines">Lhůty</a></li>
 	</ul>
@@ -29,7 +29,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 			<thead>
 				<tr>
 					<th>
-					Formulář
+					<?php echo $this->audit->is_check ? "Osnova" : "Formulář"; ?>
 					</th>
 					<th>
 					&nbsp;
@@ -38,6 +38,14 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 			</thead>
 			<tbody>
 			<?php 
+			if ($this->audit->is_check) {
+				$route = "audit-farplan-get";
+				$paramName = "farplanId";
+			} else {
+				$route = "audit-form-get";
+				$paramName = "formId";
+			}
+			
 			// sestaveni parametru
 			$params = array(
 					"clientId" => $this->audit->client_id,
@@ -46,7 +54,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 			);
 			
 			foreach ($this->forms as $form) {
-				$params["formId"] = $form->id;
+				$params[$paramName] = $form->id;
 				?>
 				<tr>
 					<td>
@@ -54,7 +62,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 					</td>
 					<td>
 					<?php 
-					$url = $this->url($params, "audit-form-get");
+					$url = $this->url($params, $route);
 					
 					echo "<a href='$url'>Zobrazit</a>";
 					?>

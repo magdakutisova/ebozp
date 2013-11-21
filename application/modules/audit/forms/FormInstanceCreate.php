@@ -38,7 +38,7 @@ class Audit_Form_FormInstanceCreate extends Zend_Form {
 		));
 	}
 	
-	public function loadUnused(Audit_Model_Rowset_AuditsForms $usedForms) {
+	public function loadUnused($usedForms) {
 		$ids = array(0);
 		
 		foreach ($usedForms as $form) {

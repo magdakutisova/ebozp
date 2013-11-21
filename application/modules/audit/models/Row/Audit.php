@@ -29,6 +29,15 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	}
 	
 	/**
+	 * vraci existujici farplany
+	 * 
+	 * @return Zend_Db_Table_Rowset_Abstract
+	 */
+	public function getFarplans() {
+		return $this->findDependentRowset("Audit_Model_Farplans", "audit");
+	}
+	
+	/**
 	 * vraci instance formularu
 	 * 
 	 * @return Audit_Model_Rowset_AuditsForms

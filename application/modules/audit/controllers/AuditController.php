@@ -360,21 +360,40 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$form->setAction($this->view->url($params, "audit-put"));
 		
-		// nacteni instanci formularu
-		$formInstances = $this->_audit->getForms();
-		
-		// nactei formularu, ktere jeste mohou byt vyplneny
-		$instanceForm = new Audit_Form_FormInstanceCreate();
-		$instanceForm->loadUnused($formInstances);
-		
-		// vytvoreni odkazu pro novy formular
-		$url = $this->view->url(array(
-				"clientId" => $this->_audit->client_id,
-				"subsidiaryId" => $this->_audit->subsidiary_id,
-				"auditId" => $this->_auditId
-		), "audit-form-instance");
-		
-		$instanceForm->setAction($url);
+		// vyhodnoceni zda se jedna o audit nebo proverku
+		if ($this->_audit->is_check) {
+			// jedna se o proverku - zobrazi se farplany
+			
+			// nacteni existujicich farplanu
+			$formInstances = $this->_audit->getFarplans();
+			
+			// nactei formularu, ktere jeste mohou byt vyplneny
+			$instanceForm = new Audit_Form_FormInstanceCreate();
+			$instanceForm->loadUnused($formInstances);
+			
+			// vytvoreni odkazu pro novy formular
+			$url = sprintf("/audit/farplan/clone?auditId=%s", $this->_audit->id);
+				
+			$instanceForm->setAction($url);
+		} else {
+			// jedna se o audit - zobrazi se formulare
+			
+			// nacteni instanci formularu
+			$formInstances = $this->_audit->getForms();
+			
+			// nactei formularu, ktere jeste mohou byt vyplneny
+			$instanceForm = new Audit_Form_FormInstanceCreate();
+			$instanceForm->loadUnused($formInstances);
+			
+			// vytvoreni odkazu pro novy formular
+			$url = $this->view->url(array(
+					"clientId" => $this->_audit->client_id,
+					"subsidiaryId" => $this->_audit->subsidiary_id,
+					"auditId" => $this->_auditId
+			), "audit-form-instance");
+			
+			$instanceForm->setAction($url);
+		}
 		
 		// nacteni neshod tykajicich se auditu
 		$auditMistakes = $this->_audit->getMistakes();
@@ -464,7 +483,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$subsidiary = $audit->getSubsidiary();
 		
 		// nacteni formularu
-		$forms = $audit->getForms();
+		if ($audit->is_check) {
+			$forms = $audit->getFarplans();
+		} else {
+			$forms = $audit->getForms();
+		}
 		
 		$this->view->layout()->setLayout("client-layout");
 		
@@ -717,11 +740,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$audit->save();
 		
 		// presmerovani na fill nebo review, dle role
-		if ($this->_user->getIdUser() == $audit->auditor_id) {
-			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
-		} else {
-			$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
-		}
+		$url = $this->view->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
@@ -883,6 +902,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 			
 			Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 			
+			// odstraneni farplanu, ktere nejsou zaskrtle
 			$this->_helper->FlashMessenger("Audit uzavřen");
 			
 			// presmerovani na get

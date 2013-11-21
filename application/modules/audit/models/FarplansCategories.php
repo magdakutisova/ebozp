@@ -7,7 +7,7 @@ class Audit_Model_FarplansCategories extends Zend_Db_Table_Abstract {
 	
 	protected $_primary = array("id");
 	
-	protected $_refrenceMap = array(
+	protected $_referenceMap = array(
 			"farplan" => array(
 					"columns" => "farplan_id",
 					"refTableClass" => "Audit_Model_Farplans",

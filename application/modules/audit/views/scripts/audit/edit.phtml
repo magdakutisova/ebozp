@@ -7,7 +7,7 @@ echo $this->formHidden("client_id", $this->client->id_client);
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
-		<li><a href="#forms">Formuláře</a></li>
+		<li><a href="#forms"><?php echo $this->audit->is_check ? "Osnovy" : "Formuláře"; ?></a></li>
 		<li><a href="#mistakes">Neshody</a></li>
 		<li><a href="#deadlines">Lhůty</a></li>
 		<li><a href="#workcomments">Kontrola pracovišť</a></li>
@@ -54,27 +54,35 @@ echo $this->formHidden("client_id", $this->client->id_client);
 		?>
 	</div>
 	<div id="forms" class="tab">
-		<h3>Formuláře</h3>
 		<table>
 			<thead>
 				<tr>
 					<th>
-					Formulář
+					<?php echo $this->audit->is_check ? "Osnova" : "Formulář"; ?>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
 		<?php 
+		if ($this->audit->is_check) {
+			$route = "audit-farplan-edit";
+			$paramName = "farplanId";
+		} else {
+			$route = "audit-form-fill";
+			$paramName = "formId";
+		}
+		
 		$params = array(
 				"clientId" => $this->client->id_client,
 				"subsidiaryId" => $this->subsidiary->id_subsidiary,
-				"auditId" => $this->audit->id
+				"auditId" => $this->audit->id,
+				"action" => "edit"
 		);
 		
 		foreach ($this->formInstances as $instance) {
-			$params["formId"] = $instance->id;
+			$params[$paramName] = $instance->id;
 			
-			$href = $this->url($params, "audit-form-fill");
+			$href = $this->url($params, $route);
 			
 			?>
 				<tr>

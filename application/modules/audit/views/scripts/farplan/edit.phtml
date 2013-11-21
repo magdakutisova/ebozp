@@ -1,0 +1,23 @@
+<?php
+// tlacitko zpet
+$url = $this->url(array(
+		"clientId" => $this->audit->client_id,
+		"subsidiaryId" => $this->audit->subsidiary_id,
+		"auditId" => $this->audit->id
+		), "audit-edit");
+
+printf("<a href='%s'>Zpět na audit</a>", $url);
+
+// vypsani nadpisu
+printf("<h2>Osnova - %s</h2>", $this->farplan->name);
+
+$url = sprintf("/audit/farplan/save?farplanId=%s&auditId=%s&clientId=%s", $this->farplan->id, $this->farplan->audit_id, $this->audit->client_id);
+
+echo $this->farplan($this->farplanData, array("checkbox" => true, "form" => true, "action" => $url));
+
+// formular pro smazani
+$url = "/audit/farplan/delete";
+$submit = $this->formSubmit("delete-submit", "Smazat farplán");
+$hidden = $this->formHidden("farplanId", $this->farplan->id);
+
+printf("<form action='%s' onsubmit='return confirm(\"Skutečně odstranit farplán?\")'>%s%s</form>", $url, $hidden, $submit);

@@ -7,7 +7,9 @@ class Audit_Model_Farplans extends Zend_Db_Table_Abstract {
 	
 	protected $_primary = array("id");
 	
-	protected $_refrenceMap = array(
+	protected $_rowClass = "Audit_Model_Row_Farplan";
+	
+	protected $_referenceMap = array(
 			"audit" => array(
 					"columns" => "audit_id",
 					"refTableClass" => "Audit_Model_Audits",
@@ -25,6 +27,7 @@ class Audit_Model_Farplans extends Zend_Db_Table_Abstract {
 		// vytvoreni farplanu
 		$farplan = $this->createRow(array(
 				"audit_id" => $audit->id,
+				"form_id" => $form->id,
 				"name" => $form->name
 				));
 		
@@ -36,7 +39,7 @@ class Audit_Model_Farplans extends Zend_Db_Table_Abstract {
 		$tableQuestions = new Audit_Model_FormsCategoriesQuestions();
 		
 		$nameQuestions = $tableQuestions->info("name");
-		$nameTexts = $tableQuestions->info("name");
+		$nameTexts = $tableTexts->info("name");
 		
 		$categories = $form->findCategories();
 		
@@ -44,7 +47,7 @@ class Audit_Model_Farplans extends Zend_Db_Table_Abstract {
 			// vytvoreni kategorie farplanu
 			$farCat = $tableCategories->createRow(array(
 					"farplan_id" => $farplan->id,
-					"farplan_text" => $category->name
+					"name" => $category->name
 					));
 			
 			$farCat->save();
@@ -55,10 +58,18 @@ class Audit_Model_Farplans extends Zend_Db_Table_Abstract {
 			$select->where("group_id = ?", $category->id)->where("new_id IS NULL")->where("!is_deleted")->order("position");
 			
 			// sestaveni vkladaciho SQL dtoazu
-			$sql = sprintf("insert into %s (category_id, `text`) %s", $nameTexts, $select->assemble());
+			$sql = sprintf("insert into %s (`text`, category_id) %s", $nameTexts, $select->assemble());
 			$this->getAdapter()->query($sql);
 		}
 		
 		return $farplan;
+	}
+	
+	/**
+	 * @return Audit_Model_Row_Farplan
+	 * @param unknown_type $id
+	 */
+	public function findById($id) {
+		return $this->find($id)->current();
 	}
 }

@@ -1,0 +1,9 @@
+<?php
+$url = $this->url(array(
+		"auditId" => $this->auditId,
+		"clientId" => $this->clientId,
+		"farplanId" => $this->farplanId
+		), "audit-farplan-edit");
+
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$redirector->gotoUrlAndExit($url);
