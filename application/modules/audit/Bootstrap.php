@@ -472,5 +472,25 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "get"
 						))
 		);
+		
+		$router->addRoute(
+				"audit-farplan-edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/farplan/:farplanId/edit",
+						array(
+								"module" => "audit",
+								"controller" => "farplan",
+								"action" => "edit"
+						))
+		);
+		
+		$router->addRoute(
+				"audit-farplan-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/farplan/:farplanId/get",
+						array(
+								"module" => "audit",
+								"controller" => "farplan",
+								"action" => "get"
+						))
+		);
 	}
 }
