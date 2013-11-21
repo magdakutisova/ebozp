@@ -1,3 +1,7 @@
+<?php 
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+?>
 <div class="box">
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientIndex')?>">Zpět na centrálu</a>
 	<?php if($this->subsidiary['subsidiary']->getActive()){?>
@@ -16,12 +20,16 @@
 if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 ?>
 <div class="box clear">
-<?php if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){?>
+<?php if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
+	if ($user->role != My_Role::ROLE_CLIENT) {
+	?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
 	 | <?php }?><a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
-	 | <a class='large' href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-list"); ?>">Audity</a>
+	 | 
+	 <?php } ?>
+	 <a class='large' href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-list"); ?>">Audity</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
 	 |
@@ -32,10 +40,7 @@ if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-mistakes-index-subs"); ?>">Neshody</a>
 </div>
 
-<?php
-$acl = new My_Controller_Helper_Acl();
-$user = Zend_Auth::getInstance()->getIdentity();
- 
+<?php 
 if ($acl->isAllowed($user->role, "task", "index")) {
 ?>
 <div class="box tasks">
