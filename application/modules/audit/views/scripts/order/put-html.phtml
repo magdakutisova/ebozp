@@ -1,0 +1,6 @@
+<?php
+$orderId = $this->order->id;
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$url = sprintf("/audit/order/edit.html?orderId=%s", $orderId);
+
+$redirector->gotoUrlAndExit($url);

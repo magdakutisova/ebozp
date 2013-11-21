@@ -20,8 +20,9 @@ $user = Zend_Auth::getInstance()->getIdentity();
 if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 ?>
 <div class="box clear">
-<?php if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
-	if ($user->role != My_Role::ROLE_CLIENT) {
+<?php 
+if (true == false) {
+if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
 	 | <?php }?><a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>

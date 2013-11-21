@@ -1,0 +1,57 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+$order = $this->order;
+?>
+<table>
+	<tbody>
+		<tr>
+			<td>
+				<strong>
+				Klient a pobočka
+				</strong>
+			</td>
+			<td>
+			<?php echo $order->subsidiary_name; ?>
+			</td>
+		</tr>
+<?php 
+if ($order->finished_at) {
+	?>
+		<tr>
+			<td>
+				<strong>
+				Vyřízeno dne
+				</strong>
+			</td>
+			<td>
+				<?php echo $this->sqlDate($order->finished_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>
+				Vyřídil
+				</strong>
+			</td>
+			<td>
+				<?php echo $order->username ? $order->username : "?"; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+		<tr>
+			<td colspan='2'>
+			<strong>
+			Objednávka
+			</strong>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<?php echo nl2br($order->content); ?>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<?php echo $this->form; ?>

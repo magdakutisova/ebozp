@@ -36,6 +36,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("audit:question"));
 		$this->add(new Zend_Acl_Resource("audit:watch"));
 		$this->add(new Zend_Acl_Resource("audit:farplan"));
+		$this->add(new Zend_Acl_Resource("audit:order"));
 		
 		/*
 		 * ZDROJE MODULU DOCUMENT 
@@ -137,6 +138,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));
 		$this->allow($coordinator, "document:preset");
 		$this->allow($coordinator, "audit:form");
+		$this->allow($coordinator, "audit:order");
 		
 		$this->allow($superadmin);
 		$this->deny($admin, 'utility');

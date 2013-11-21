@@ -1,0 +1,63 @@
+<h1>Objednávky</h1>
+<form>
+	<?php 
+	$request = Zend_Controller_Front::getInstance()->getRequest();
+	$checked = array("checked" => "checked");
+	
+	echo $this->formLabel("showFinished", "Vyřízené");
+	echo $this->formCheckbox("showFinished", 1, $request->getParam("showFinished", 0) ? $checked : null);
+	echo " ";
+	echo $this->formLabel("showActive", "Nevyřízené");
+	echo $this->formCheckbox("showActive", 1, $request->getParam("showActive", 1) ? $checked : null);
+	echo " ";
+	echo $this->formSubmit("filter-submit", "Zobrazit");
+	?>
+</form>
+<table class="multirow-table" id="order-table">
+	<thead>
+		<tr>
+			<th>
+			Klient a pobočka
+			</th>
+			<th width="50px">
+			Zpracováno
+			</td>
+			<th width="50px">
+			Akce
+			</th>
+		</tr>
+		<tr>
+			<th colspan="3">
+			Objednávka
+			</th>
+		</tr>
+	</thead>
+<?php 
+foreach ($this->orders as $order) {
+	?>
+	<tbody>
+		<tr>
+			<td>
+			<?php echo $order->subsidiary_name; ?>
+			</td>
+			<td>
+			<?php echo is_null($order->finished_at) ? "Ne" : "Ano"; ?>
+			</td>
+			<td>
+			<?php 
+			echo $this->formButton(sprintf("order-%s", $order->id), "Zobrazit");
+			?>
+			</td>
+		</tr>
+		<tr>
+			<td colspan='3'>
+			<?php echo $order->content; ?>
+			</td>
+		</tr>
+	</tbody>
+	<?php
+}
+?>
+</table>
+
+<script type="text/javascript" src="/js/audit/order.js"></script>

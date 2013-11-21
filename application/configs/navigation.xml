@@ -61,6 +61,12 @@
 				</clientimport>
 			</pages>
 		</utility>
+		<orders>
+			<label>Objednávky</label>
+			<uri>/audit/order/index</uri>
+			<resource>audit:order</resource>
+			<priviledge>index</priviledge>
+		</orders>
 		<forms>
 			<label>Formuláře auditů</label>
 			<uri>/audit/form/index</uri>
