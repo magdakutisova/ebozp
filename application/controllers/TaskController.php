@@ -112,12 +112,32 @@ class TaskController extends Zend_Controller_Action {
 				$subsidiary = $tableSubsidiary->find($this->_request->getParam("subsidiaryId"))->current();
 				
 				if ($form->getValue("global")) {
-					$task->client_id = $subsidiary->client_id;
+					// ukol je globalni - vlozeni pro kazdou pobocku
+					$tableSubsidiary = new Application_Model_DbTable_Subsidiary();
+					$nameSubsidiary = $tableSubsidiary->info("name");
+					$nameTask = $tableTasks->info("name");
+					$adapter = $tableSubsidiary->getAdapter();
+					
+					$select = new Zend_Db_Select($adapter);
+					$select->from($nameSubsidiary, array(
+							"id_subsidiary",
+							new Zend_Db_Expr($task->created_by),
+							new Zend_Db_Expr("CURRENT_DATE"),
+							new Zend_Db_Expr($adapter->quote($task->task)),
+							new Zend_Db_Expr($adapter->quote($task->description))))->where("client_id = ?", $subsidiary->client_id);
+					
+					$sqlP = "insert into %s (subsidiary_id, created_by, created_at, task, description) %s";
+					$sql = sprintf($sqlP, $nameTask, $select);
+					
+					$adapter->query($sql);
+					
+					// nacteni zaznamu aktualni pobocky
+					$task = $tableTasks->fetchRow(array("subsidiary_id = ?" => $subsidiary->id_subsidiary), "id desc");
 				} else {
 					$task->subsidiary_id = $subsidiary->id_subsidiary;
+					$task->save();
 				}
 				
-				$task->save();
 				$this->_helper->FlashMessenger("Úkol vytvořen");
 				
 				$this->view->task = $task;
