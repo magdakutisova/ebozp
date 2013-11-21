@@ -6,6 +6,7 @@
 .project
 library/Zend
 *.log
+*.autosave
 /logs
 application/modules/document/files
 application/searchIndex
