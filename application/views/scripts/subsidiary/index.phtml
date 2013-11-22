@@ -21,7 +21,7 @@ if ($this->subsidiary['subsidiary']->getHqOnly()) return;
 ?>
 <div class="box clear">
 <?php 
-if (true == false) {
+if ($user->role != My_Role::ROLE_CLIENT) {
 if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
