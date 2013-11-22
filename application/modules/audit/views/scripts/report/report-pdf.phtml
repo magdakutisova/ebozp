@@ -173,7 +173,7 @@ if (!$audit->is_check) {
 	}
 }
 
-if (!empty($this->mistkaes["others"])) {
+if (!empty($this->mistakes["others"])) {
 	$this->pdf()->header($pdf, "Ostatní neshody", 18, "ib");
 	
 	$this->pdf()->mistakes($pdf, $this->mistakes["others"]);

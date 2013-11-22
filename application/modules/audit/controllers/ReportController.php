@@ -404,10 +404,15 @@ class Audit_ReportController extends Zend_Controller_Action {
 		}
 		
 		// nacteni ostatnich neshod
+		$tableAssocs = new Audit_Model_AuditsMistakes();
+		$nameAssocs = $tableAssocs->info("name");
+		
+		$subSelect = new Zend_Db_Select($tableMistakes->getAdapter());
+		$subSelect->from($nameAssocs, array("mistake_id"))->where("audit_id = ?", $audit->id)->where("status != 2");
+		
 		$other = $tableMistakes->fetchAll(array(
-				"audit_id = " . $audit->id,
-				"workplace_id is null",
-				"record_id is null"
+				"id in (?)" => new Zend_Db_Expr($subSelect),
+				"(audit_id != $audit->id) OR (workplace_id IS NULL AND record_id IS NULL)"
 		));
 		
 		$retVal = array("forms" => $mistakeIndex, "others" => $other->toArray());
