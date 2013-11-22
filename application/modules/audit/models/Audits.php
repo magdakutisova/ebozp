@@ -119,10 +119,12 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		return $this->find($id)->current();
 	}
 	
-	public function findAudits($clientId, $subsidiaryId = null) {
+	public function findAudits($clientId, $subsidiaryId = null, $closedOnly = false) {
 		$where = array("$this->_name.client_id = ?" => $clientId);
 		
 		if (!is_null($subsidiaryId)) $where["subsidiary_id = ?"] = $subsidiaryId;
+		
+		if ($closedOnly) $where[] = "is_closed";
 		
 		$select = $this->prepareSelect($where);
 		$select->order("done_at desc");

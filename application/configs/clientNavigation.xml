@@ -44,13 +44,6 @@
 			<privilege>index</privilege>
 			<clientId>clientId</clientId>
 		</documents>
-		<documentation>
-			<label>Dokumentace</label>
-			<route>document-documentation-index</route>
-			<resource>document:documentation</resource>
-			<privilege>index</privilege>
-			<clientId>clientId</clientId>
-		</documentation>
 		<print>
 			<label>Záznamy (k tisku)</label>
 			<route>printIndex</route>

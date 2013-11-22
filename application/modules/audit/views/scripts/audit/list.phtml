@@ -1,10 +1,17 @@
 <h1>Audity a prověrky</h1>
+<?php 
+$acl = new My_Controller_Helper_Acl();
+$role = Zend_Auth::getInstance()->getIdentity()->role;
+
+if ($acl->isAllowed($role, "audit:audit", "post")) {
+?>
 <div class="box">
 	<a href='<?php 
 	$request = Zend_Controller_Front::getInstance()->getRequest();
 	echo $this->url(array("clientId" => $request->getParam("clientId"), "subsidiaryId" => $request->getParam("subsidiaryId")), "audit-create"); 
 	?>'>Provést audit</a>
 </div>
+<?php } ?>
 <em>PT - potvrzeno technikem</em>
 <table>
 	<thead>

@@ -612,7 +612,8 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$subsidiaryId = $this->_request->getParam("subsidiaryId", null);
 		
 		$tableAudits = new Audit_Model_Audits();
-		$audits = $tableAudits->findAudits($clientId, $subsidiaryId);
+		$role = Zend_Auth::getInstance()->getIdentity()->role;
+		$audits = $tableAudits->findAudits($clientId, $subsidiaryId, $role == My_Role::ROLE_CLIENT);
 		
 		$this->view->audits = $audits;
 	}

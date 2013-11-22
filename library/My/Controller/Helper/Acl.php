@@ -74,22 +74,14 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($guest, array('user', 'error'));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
 		
-		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', 'workplace', 'position', 'print'));
+		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
-		$this->allow($client, 'work');
-		$this->allow($client, 'technical');
-		$this->allow($client, 'chemical');
-		$this->allow($client, 'employee');
 		$this->allow($client, "audit:audit", array("list", "get"));
 		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
 		$this->allow($client, "audit:report", array("get", "preview.pdf"));
 		$this->allow($client, "audit:form", array("get"));
-		$this->allow($client, "document:directory");
-		$this->allow($client, "document:document");
 		$this->deny($client, "document:directory", array("editother", "showall", "post", "delete"));				// pomocne akce - editother umoznuje editovat cizi adresare a show all umoznuje pristup k cizim adresarum
 		$this->deny($client, "document:document", array("editother", "showall"));					// pomocna akce - viz adresare
-		$this->allow($client, "document:documentation", array("index"));
-		$this->allow($client, "document:index");
 		$this->deny($client, 'client', array('new', 'delete', 'list'));
 		$this->deny($client, 'user', array('register', 'rights', 'delete', 'revoke'));
 		$this->deny($client, 'subsidiary', array('new', 'delete'));
@@ -104,6 +96,22 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put"));
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
 		$this->allow($client, "audit:farplan", array("get"));
+		$this->deny($client, "client", "archivelist");
+		
+		/**
+		 * presunuto od klienta
+		 */
+		$this->allow($technician, 'work');
+		$this->allow($technician, 'technical');
+		$this->allow($technician, 'chemical');
+		$this->allow($technician, 'employee');
+		$this->allow($technician, 'workplace');
+		$this->allow($technician, 'print');
+		$this->allow($technician, 'position');
+		$this->allow($technician, "document:directory");
+		$this->allow($technician, "document:document");
+		$this->allow($technician, "document:documentation", array("index"));
+		$this->allow($technician, "document:index");
 		
 		$this->allow($technician, 'private');
 		$this->allow($technician, 'client', 'list');

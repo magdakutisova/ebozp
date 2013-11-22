@@ -42,6 +42,9 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 </div>
 
 <?php 
+// pokud se jedna o klienta, pak se vse ostatni skryje
+if ($user->role == My_Role::ROLE_CLIENT) return;
+
 if ($acl->isAllowed($user->role, "task", "index")) {
 ?>
 <div class="box tasks">
