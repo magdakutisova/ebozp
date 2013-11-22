@@ -74,7 +74,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 	public function getAction() {
 		if (!$this->_audit) throw new Zend_Exception("Audit must be set");
 		$session = $this->_updateSession();
-		$info = $this->_getWorkplace($session->workplaceId);
+		$info = $this->_getWorkplace($session->workplaceId, $this->_audit);
 		
 		if (!$info) {
 			$this->view->notFound = true;
@@ -155,7 +155,7 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 	 * @param int $workplaceId idnetifikacni cislo pracoviste
 	 * @return stdClass
 	 */
-	protected function _getWorkplace($workplaceId) {
+	protected function _getWorkplace($workplaceId, $audit) {
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
 		$tableComments = new Audit_Model_AuditsWorkcomments();
 		
@@ -165,12 +165,19 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		// nacteni informaci o pracovisti a komentari
 		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$workplaceIdQ = $adapter->quote($workplaceId);
-		$sql = "select `$nameWorkplaces`.*, `$nameComments`.`comment`, `$nameComments`.workplace_id, (comment is null) as `create` from `$nameWorkplaces` left join `$nameComments` on workplace_id = id_workplace and audit_id = " . $adapter->quote($this->_auditId) . " where id_workplace = $workplaceIdQ";
+		$sql = "select `$nameWorkplaces`.*, `$nameComments`.`comment`, `$nameComments`.workplace_id, (comment is null) as `create` from `$nameWorkplaces` left join `$nameComments` on workplace_id = id_workplace and audit_id = " . $adapter->quote($this->_auditId) . " where id_workplace = $workplaceIdQ and subsidiary_id = " . $audit->subsidiary_id;
 		
 		$workplaceInfo = $adapter->query($sql)->fetch();
 		
-		// pokud je workplaceInfo == False, pak zadne pracoviste nebylo nalezeno a nema cenu pokracovat
-		if (!$workplaceInfo) return false;
+		// pokud je workplaceInfo == False, pak zadne pracoviste nebylo - pokusi se najit jine pracoviste
+		if (!$workplaceInfo) {
+			$sql = "select `$nameWorkplaces`.*, `$nameComments`.`comment`, `$nameComments`.workplace_id, (comment is null) as `create` from `$nameWorkplaces` left join `$nameComments` on workplace_id = id_workplace and audit_id = " . $adapter->quote($this->_auditId) . " where subsidiary_id = " . $audit->subsidiary_id . " order by name limit 0, 1";
+			
+			$workplaceInfo = $adapter->query($sql)->fetch();
+			
+			// pokud ani nyni nic nebylo nalezeno, pak pobocka zadne pracoviste nema a nema smysl pokracovat
+			if (!$workplaceInfo) return false;
+		}
 		
 		if (is_null($workplaceInfo["workplace_id"])) $workplaceInfo["workplace_id"] = $workplaceInfo["id_workplace"];
 		
