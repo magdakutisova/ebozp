@@ -1,0 +1,47 @@
+<?php
+// preklad jmen dle hloubky
+$depthIndex = array(
+		"Kategorie (Lhůta se týká)",
+		"Druh",
+		"Forma",
+		"Specifikace"
+);
+
+$depth = $this->category->depth;
+
+// navrat na predka
+if ($this->category->parent_id) {
+	$url = sprintf("/deadline/category/edit?categoryId=%s", $this->category->parent_id);
+} else {
+	$url = "/deadline/category/index";
+}
+
+printf("<a href='%s'>Návrat na předka</a>", $url);
+
+printf("<h2>%s - %s</h2>", $depthIndex[$depth], $this->category->name);
+
+echo $this->editForm;
+
+sprintf("<h3>Smazat %s</h3>", $depthIndex[$depth]);
+echo $this->deleteForm;
+
+if ($depth == 3) return;
+?>
+<h3><?php echo $depthIndex[$depth + 1]; ?></h3>
+<ul>
+<?php
+foreach ($this->children as $item) {
+	printf("<li><a href='/deadline/category/edit?categoryId=%s'>%s</a></li>", $item->id, $item->name);
+}
+?>
+</ul>
+<?php 
+// pokud je uroven zanoreni dve mensi nez dve, vykpise se formular pro vytvoreni podkategorie
+
+if ($this->category->depth < 3) {
+	?>
+<h3>Nová <?php echo $depthIndex[$depth + 1]; ?></h3>
+	<?php 
+	echo $this->newForm;
+}
+?>

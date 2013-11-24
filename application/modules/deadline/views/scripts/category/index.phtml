@@ -1,0 +1,11 @@
+<h2>Kategorie</h2>
+<ul>
+<?php
+foreach ($this->categories as $item) {
+	printf("<li><a href='/deadline/category/edit?categoryId=%s'>%s</a></li>", $item->id, $item->name);
+}
+?>
+</ul>
+<?php
+echo "<h3>Nová kategorie</h3>";
+echo $this->form;

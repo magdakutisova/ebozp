@@ -18,8 +18,14 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// nastaveni id klienta
 		$clientId = $this->_request->getParam("clientId", null);
 		$form->setAction("/deadline/deadline/post?clientId=$clientId");
+
+		$form->isValidPartial($this->_request->getParams());
+
+		// nacteni kategorii
+		$tableCategories = new Deadline_Model_Categories();
 		
 		$this->view->form = $form;
+		$this->view->categories = $tableCategories->findAll();
 	}
 	
 	public function createHtmlAction() {
@@ -267,7 +273,22 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		
 		// nacteni pobocek
 		self::setSubsidiaries($form, $clientId);
-		
+
+		// nastaveni druhu a specifikace
+		$specificEl = $form->getElement("specific");
+		$kindEl = $form->getElement("kind");
+
+		// vlozeni hodnot do multioptions
+		$specVal = $specificEl->getValue();
+
+		if (!is_null($specVal))
+			$specificEl->addMultiOption($specVal, $specVal);
+
+		$kindVal = $kindEl->getValue();
+
+		if (!is_null($kindVal))
+			$kindEl->setMultiOptions(array($kindVal => $kindVal));
+
 		// vyhodnoceni, ktery typ zodpovedne osoby pouzit
 		$respType = $form->getValue("resp_type");
 		

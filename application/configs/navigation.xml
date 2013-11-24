@@ -79,5 +79,11 @@
 			<resource>audit:category</resource>
 			<priviledge>post</priviledge>
 		</mistakecategories>
+		<deadlinecategories>
+			<label>Kategorie lhůt</label>
+			<uri>/deadline/category/index</uri>
+			<resource>deadline:category</resource>
+			<priviledge>post</priviledge>
+		</deadlinecategories>
 	</nav>
 </configdata>

@@ -1,0 +1,10 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+if ($this->parent) {
+	$url = sprintf("/deadline/category/edit?categoryId=%s", $this->parent->id);
+} else {
+	$url = "/deadline/category/index";
+}
+
+$redirector->gotoUrlAndExit($url);
