@@ -266,7 +266,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// nacteni aktivni asociace a zaznamu
 			$where = array(
 					"audit_id = " . $this->_audit->id,
-					"record_id = " . $mistake->record_id
+					"mistake_id = " . $mistake->id
 			);
 			
 			$tableAssocs = new Audit_Model_AuditsMistakes();

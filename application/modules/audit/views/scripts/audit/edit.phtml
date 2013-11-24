@@ -127,13 +127,8 @@ echo $this->formHidden("client_id", $this->client->id_client);
 					$classes = array("mistake-marked");
 				}
 				
-				// vyhodnoceni akci
-				if ($mistake->audit_id == $this->audit->id) {
-					// jedna se o neshodu pochazejici z tohoto auditu
-					$actions = array("edit-mistake" => "Upravit");
-				} else {
-					$actions = array("get-mistake" => "Zobrazit");
-				}
+				// nastaveni tlacitek editovat a zobrazit
+				$actions = array("edit-mistake" => "Upravit", "get-mistake" => "Zobrazit");
 				
 				echo $this->mistakeTable()->mistake($mistake, array("classes" => $classes, "actions" => $actions, "selector" => $selector));
 			}
