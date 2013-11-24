@@ -65,13 +65,23 @@ class Audit_Model_WatchesOrders extends Zend_Db_Table_Abstract {
 		$select->from(array("o" => $this->_name));
 		
 		// napojeni dohlidky
-		$select->joinInner(array("w" => $nameWatches), "watch_id = w.id", array());
+		$select->joinInner(array("w" => $nameWatches), "watch_id = w.id", array("watched_at"));
 		
 		// napojeni pobocky
 		$select->joinInner(array("subs" => $nameSubsidiary), "subs.id_subsidiary = w.subsidiary_id", array(
 				"subsidiary_name" => new Zend_Db_Expr("CONCAT(subsidiary_name, ' - ', subsidiary_town, ', ', subsidiary_street)")
 				));
 		
+		// pirpojeni kontaktni osoby
+		$tableContacts = new Application_Model_DbTable_ContactPerson();
+		$nameContacts = $tableContacts->info("name");
+		
+		$select->joinLeft(array("cp" => $nameContacts), "cp.id_contact_person = w.contactperson_id", array(
+				"contact_person_name" => new Zend_Db_Expr("CONCAT(IFNULL(w.contact_name, ''), IFNULL(cp.name, ''))"),
+				"contact_person_phone" => new Zend_Db_Expr("CONCAT(IFNULL(w.contact_phone, ''), IFNULL(cp.phone, ''))"),
+				"contact_person_email" => new Zend_Db_Expr("CONCAT(IFNULL(w.contact_email, ''), IFNULL(cp.email, ''))")
+		));
+
 		// napojeni uzivatele
 		$select->joinLeft(array("u" => $nameUser), "o.finished_by = u.id_user", array("login" => "username", "username" => "name"));
 		

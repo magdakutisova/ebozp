@@ -14,6 +14,36 @@ $order = $this->order;
 			<?php echo $order->subsidiary_name; ?>
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<strong>
+				Kontaktní osoba
+				</strong>
+			</td>
+			<td>
+			<?php echo $order->contact_person_name; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>
+				Kontaktní email
+				</strong>
+			</td>
+			<td>
+			<?php echo $order->contact_person_email; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>
+				Kontaktní telefon
+				</strong>
+			</td>
+			<td>
+			<?php echo $order->contact_person_phone; ?>
+			</td>
+		</tr>
 <?php 
 if ($order->finished_at) {
 	?>
