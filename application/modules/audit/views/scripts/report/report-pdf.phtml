@@ -199,8 +199,7 @@ Telefon: 466535700, E-mail: guard7@guard7.cz, www.guard7.cz");
 
 if (!$this->disableHeaders) {
 	header("Content-Type: application/pdf");
-	header("Content-Disposition: attachment");
+	header("Content-Disposition: attachment; filename=protokol.pdf");
 }
 
 echo $pdf->Output("zprava.pdf", "S");
-die;
