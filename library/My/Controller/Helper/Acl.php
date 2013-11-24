@@ -54,6 +54,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource("deadline:index"));
 		$this->add(new Zend_Acl_Resource("deadline:deadline"));
 		$this->add(new Zend_Acl_Resource("deadline:log"));
+		$this->add(new Zend_Acl_Resource("deadline:category"));
 		
 		$preventist = My_Role::ROLE_PREVENTIST;
 		$guest = My_Role::ROLE_GUEST;

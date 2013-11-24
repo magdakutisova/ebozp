@@ -48,18 +48,6 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"label" => "Pobočka"
 				));
 		
-		$this->addElement("text", "kind", array(
-				"decorators" => $elementDecorator,
-				"required" => true,
-				"label" => "Druh"
-				));
-		
-		$this->addElement("text", "specific", array(
-				"decorators" => $elementDecorator,
-				"required" => false,
-				"label" => "Specifikace"
-		));
-		
 		$this->addElement("select", "deadline_type", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
@@ -69,24 +57,34 @@ class Deadline_Form_Deadline extends Zend_Form {
 						self::TARGET_EMPLOYEE => "Zaměstnance",
 						self::TARGET_CHEMICAL => "Chemické látky",
 						self::TARGET_DEVICE => "Technického zařízení")
-		));
+				));
 		
 		$this->addElement("select", "type", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
 				"label" => "Forma",
 				"multiOptions" => array(
-						self::TYPE_OTHER => "Jiná",
-						self::TYPE_PRESENT => "Prezenční",
-						self::TYPE_ELEARNING => "Elearning"
-						),
-				"value" => self::TYPE_OTHER
+					self::TYPE_OTHER => "Jiná",
+					self::TYPE_ELEARNING => "E-learning",
+					self::TYPE_PRESENT => "Prezenční"
+				)
 		));
 		
-		$this->addElement("textarea", "note", array(
+		$this->addElement("select", "kind", array(
 				"decorators" => $elementDecorator,
-				"required" => false,
-				"label" => "Poznámka"
+				"required" => true,
+				"label" => "Druh"
+		));
+		
+		$this->addElement("select", "specific", array(
+				"decorators" => $elementDecorator,
+				"required" => true,
+				"label" => "Specifikace"
+		));
+		
+		$this->addElement("select", "object_id", array(
+				"decorators" => $elementDecorator,
+				"label" => "Vyberte objekt"
 		));
 		
 		$this->addElement("checkbox", "is_period", array(
@@ -100,6 +98,12 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"required" => false,
 				"label" => "Perioda (měsíců)"
+		));
+		
+		$this->addElement("textarea", "note", array(
+				"decorators" => $elementDecorator,
+				"required" => false,
+				"label" => "Poznámka"
 		));
 		
 		$this->addElement("text", "last_done", array(
@@ -135,11 +139,6 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"required" => false,
 				"label" => "Pracoviště"
-				));
-		
-		$this->addElement("select", "object_id", array(
-				"decorators" => $elementDecorator,
-				"label" => "Vyberte objekt"
 				));
 		
 		$this->addElement("submit", "submit", array(

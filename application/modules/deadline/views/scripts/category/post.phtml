@@ -1,0 +1,6 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$category = $this->category;
+
+$url = sprintf("/deadline/category/edit?categoryId=%s", $category->id);
+$redirector->gotoUrlAndExit($url);
