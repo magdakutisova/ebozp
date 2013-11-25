@@ -7,16 +7,6 @@ $user = Zend_Auth::getInstance()->getIdentity();
 
 // vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
 $editable = $acl->isAllowed($user->role, "document:documentation", "put");
-
-echo "<h1>" . $this->client->company_name;
-$subsidiaryId = null;
-
-if ($this->subsidiary) {
-	echo " - " . $this->subsidiary->subsidiary_name;
-	$subsidiaryId = $this->subsidiary->id_subsidiary;
-}
-
-echo "</h1>";
 ?>
 <h2>Dokumentace</h2>
 <?php 

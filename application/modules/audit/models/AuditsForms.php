@@ -135,7 +135,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 							$adapter->quote($item["concretisation"]),					//specifikace
 							$adapter->quote($item["mistake"]),							//neshoda
 							$adapter->quote($item["suggestion"]),						//navrh
-							"''",														// komentar
+							$adapter->quote($item["mistake_comment"]),					// komentar
 							"''"														// zodpovedna osoba
 					);
 					
