@@ -322,30 +322,28 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni id neshod
 		$mistakes = (array) $this->_request->getParam("mistake", array());
 		
-		$removed = array(0);
-		$notRemoved = array(0);
+		$selecteds = array(0);
 		
 		foreach ($mistakes as $id => $val) {
 			if ($val["select"]) {
-				$removed[] = $id;
-			} else {
-				$notRemoved[] = $id;
+				$selecteds[] = $id;
 			}
 		}
 		
 		// zapis odstranenych neshod
 		$where = array(
 				"watch_id = ?" => $watch->id,
-				"mistake_id in (?)" => $removed
+				"mistake_id in (?)" => $selecteds
 		);
 		
+		if ($this->_request->getParam("mistake-remove", 0)) {
+			$data = array("set_removed" => 1);
+		} else {
+			$data = array("set_removed" => 0);
+		}
+		
 		$tableAssocs = new Audit_Model_WatchesMistakes();
-		$tableAssocs->update(array("set_removed" => 1), $where);
-		
-		// zapis neodstranenych neshod
-		$where["mistake_id in (?)"] = $notRemoved;
-		
-		$tableAssocs->update(array("set_removed" => 0), $where);
+		$tableAssocs->update($data, $where);
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 		

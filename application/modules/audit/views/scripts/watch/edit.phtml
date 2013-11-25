@@ -125,23 +125,26 @@ if (!$this->watch->also_audit) {
 			<table class="multirow-table" id="mistakes">
 			<?php 
 			echo $this->mistakeTable()->header();
-			$params = array("selector" => true, "actions" => array("get" => "Zobrazit", "edit" => "Editovat"));
+			$params = array("selector" => true, "actions" => array("edit" => "Upravit", "get" => "Zobrazit"));
 			
 			foreach ($this->mistakes as $mistake) {
 				// vyhodnoceni, zda je neshoda kriticka
-				if ($mistake->is_marked)
+				if ($mistake->set_removed) {
+					$params["classes"] = array("mistake-removed");
+				} elseif ($mistake->is_marked)
 					$params["classes"] = array("mistake-marked");
 				else
 					$params["classes"] = array();
-				
-				$params["selected"] = $mistake->set_removed;
 				
 				echo $this->mistakeTable()->mistake($mistake, $params);
 			}
 			?>
 			</table>
 			<p>
-			<?php echo $this->formSubmit("mistake-submit", "Uložit"); ?>
+			<?php 
+			echo $this->formSubmit("mistake-remove", "Označit jako odstraněné"); 
+			echo $this->formSubmit("mistake-unremove", "Označit jako NEodstraněné");
+			?>
 			</p>
 		</form>
 	</div>
