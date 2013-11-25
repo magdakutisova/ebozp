@@ -2,8 +2,9 @@
 echo $this->formHidden("auditId", $this->audit->id);
 echo $this->formHidden("clientId", $this->client->id_client);
 echo $this->formHidden("client_id", $this->client->id_client);
+
+printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 ?>
-<?php echo $this->auditInfo()->header($this->audit, $this->client, $this->subsidiary); ?>
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>

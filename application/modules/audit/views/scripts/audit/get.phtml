@@ -7,8 +7,7 @@ echo "var AUDIT_ID=" . $this->audit->id;
 $today = (int) Zend_Date::now()->get("yMMdd");
 ?>
 </script>
-<h1>Audit</h1>
-<h2><?php echo $this->subsidiary->subsidiary_name; ?></h2>
+<?php printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit"); ?>
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled auditu</a></li>
