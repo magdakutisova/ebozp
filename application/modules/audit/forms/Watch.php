@@ -110,13 +110,13 @@ class Audit_Form_Watch extends Zend_Form {
 		
 		// zobrazeni neshod
 		$this->addElement("checkbox", "display_mistakes", array(
-				"label" => "Neshody v protokolu",
+				"label" => "Stávající neshody v protokolu",
 				"decorators" => $elementDecorator
 		));
 		
 		// zobrazeni lhut
 		$this->addElement("checkbox", "display_deadlines", array(
-				"label" => "Lhůlty v protokolu",
+				"label" => "Propadlé hůlty v protokolu",
 				"decorators" => $elementDecorator
 		));
 		

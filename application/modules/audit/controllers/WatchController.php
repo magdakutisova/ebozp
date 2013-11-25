@@ -184,6 +184,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 			
 			$this->view->deadlines = $deadlines;
 			$this->view->mistakes = $mistakes;
+		} else {
+			$form->removeElement("display_mistakes");
+			$form->removeElement("display_deadlines");
 		}
 		
 		// nacteni pracovist pobocky
@@ -569,7 +572,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// kontrolni nacteni 
 		$watch = self::loadWatch($this->_request->getParam("watchId"));
 		
-		$preview = (!$watch->is_closed) ? " návrh" : "";
+		$preview = (!$watch->is_closed) ? " návrh protokolu" : " protokol";
 		
 		// vygenerovani protokolu
 		$pdfProt = $this->view->action("protocol.pdf", "watch", "audit", array("watchId" => $watch->id, "disableHeaders" => 1));
@@ -588,7 +591,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$msg = self::generateMail("Dobrý den,
 
-v příloze zasíláme$preview protokol z provedené dohlídky BOZP a PO na Vašem pracovišti.
+v příloze zasíláme$preview z provedené dohlídky BOZP a PO na Vašem pracovišti.
 
 S pozdravem
 
