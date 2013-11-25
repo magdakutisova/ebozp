@@ -105,7 +105,6 @@ class Audit_ReportController extends Zend_Controller_Action {
 			$forms = $forms->toArray();
 		}
 		
-		
 		$this->view->forms = $forms;
 		$this->view->formsGroups = $formsGroups;
 		$this->view->workplaces = self::getWorkplaces($audit);
@@ -340,8 +339,11 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		// nacteni neshod dle pracoviste
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        $tableAssocs = new Audit_Model_AuditsMistakes();
+        $nameAssocs = $tableAssocs->info("name");
+        
 		$mistakes = $tableMistakes->fetchAll(array(
-				"audit_id = " . $audit->id,
+				"id in (select mistake_id from $nameAssocs where audit_id = ?)" => $audit->id,
 				"workplace_id is not null"
 		), "workplace_id");
 		

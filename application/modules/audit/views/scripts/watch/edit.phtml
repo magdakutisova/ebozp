@@ -96,25 +96,8 @@ if (!$this->watch->also_audit) {
 		<form action="<?php echo $url; ?>" method="post">
 			<table>
 				<tr>
-					<td>
-					<?php echo $this->formLabel("mistake-workplace_id", "Pracoviště"); ?>
-					</td>
-					<td>
-					<?php 
-					// zpracovani pobocek
-					$workplaces = array("0" => "--- MIMO PRACOVIŠTĚ ---");
-					
-					foreach ($this->workplaces as $item) {
-						$workplaces[$item->id_workplace] = $item->name;
-					}
-					
-					echo $this->formSelect("workplaceId", null, array(), $workplaces);
-					?>
-					</td>
-				</tr>
-				<tr>
 					<td colspan="2">
-					<?php echo $this->formSubmit("mistake-new", "Nová neshoda"); ?>
+					<?php echo $this->formSubmit("mistake-new", "Přidat novou neshodu"); ?>
 					</td>
 				</tr>
 			</table>

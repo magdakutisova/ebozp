@@ -11,3 +11,5 @@ library/Zend
 application/modules/document/files
 application/searchIndex
 library/My/Tcpdf/cache
+/nbproject/private/
+/nbproject

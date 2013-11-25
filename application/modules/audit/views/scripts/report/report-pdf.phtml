@@ -119,6 +119,26 @@ if ($audit->is_check) {
 		$pdf->Ln(75);
 		
 		$this->pdf()->form($pdf, $groups);
+        
+        $formMistakes = array();
+        
+        for ($i = 0; $i < count($groups["groups"]); $i++) {
+			// vyhodnoceni jestli je nejaka neshoda v teto skupine
+			$group = $groups["groups"][$i];
+			$groupId = $group["id"];
+	
+			if (!isset($this->mistakes["forms"][$groupId])) continue;
+            
+            $formMistakes = array_merge($formMistakes, $this->mistakes["forms"][$groupId]);
+	/*  stare seskupovani neshod - pozdeji smazat
+			$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
+			$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);*/
+		}
+        
+        if ($formMistakes) {
+            $this->pdf()->header($pdf, "Registr neshod", 16, 'b');
+            $this->pdf()->mistakes($pdf, $formMistakes);
+        }
 	}
 }
 
@@ -156,7 +176,7 @@ if ($this->workplaces["workplaces"]) {
 // neshody
 $pdf->AddPage("P", "A4");
 $this->pdf()->header($pdf, "Registr neshod");
-
+/*
 if (!$audit->is_check) {
 	foreach ($this->forms as $form) {
 		$this->pdf()->header($pdf, $form["name"], 18, "ib");
@@ -177,11 +197,29 @@ if (!$audit->is_check) {
 		}
 	}
 }
-
+*/
 if (!empty($this->mistakes["others"])) {
-	$this->pdf()->header($pdf, "Ostatní neshody", 18, "ib");
-	
-	$this->pdf()->mistakes($pdf, $this->mistakes["others"]);
+    // rozrazeni neshod na nove a stavajici
+    $news = array();
+    $stays = array();
+    
+    foreach ($this->mistakes["others"] as $mistake) {
+        if ($mistake["audit_id"] == $audit->id) {
+            $news[] = $mistake;
+        } else {
+            $stays[] = $mistake;
+        }
+    }
+    
+    if ($news){
+        $this->pdf()->header($pdf, "Ostatní neshody", 18, "ib");
+        $this->pdf()->mistakes($pdf, $news);
+    }
+    
+    if ($stays){
+        $this->pdf()->header($pdf, "Stávající neodstraněné neshody", 18, "ib");
+        $this->pdf()->mistakes($pdf, $stays);
+    }
 }
 
 // lhuty

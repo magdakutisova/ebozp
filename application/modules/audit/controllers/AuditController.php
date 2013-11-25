@@ -497,11 +497,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		// sestaveni podminek
 		$nameAssocs = $tableAssocs->info("name");
-		$mistakes = $tableMistakes->fetchAll(array("is_submited", "id in (select mistake_id from $nameAssocs where audit_id = $audit->id)"));
+		$mistakes = $tableMistakes->fetchAll(array("is_submited", "id in (select mistake_id from $nameAssocs where audit_id = $audit->id and status != 2)"));
 		
 		// nacteni pracovist
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
-		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_auditId, "name");
+		$workplaces = $tableWorkplaces->fetchAll("client_id = " . $this->_audit->client_id, "name");
 		
 		// indexace pracovist dle ud
 		$workplaceIndex = array();

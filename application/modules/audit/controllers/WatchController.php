@@ -76,26 +76,37 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->_request->setParam("clientId", $watch->client_id);
 		$this->_request->setParam("subsidiaryId", $watch->subsidiary_id);
 		
-		// nacteni id pracoviste, pokud je treba
-		$workplaceId = $this->_request->getParam("workplaceId", 0);
-		$workplace = null;
-		
 		// sestaveni URL
 		$url = "/audit/watch/postmistake?watchId=" . $watch->id . "&clientId=" . $watch->client_id . "&subsidiaryId=" . $watch->subsidiary_id;
 		
-		if ($workplaceId) {
-			$tableWorkplaces = new Application_Model_DbTable_Workplace();
-			$workplace = $tableWorkplaces->find($workplaceId)->current();
-		}
+		// nacteni a priprava pracovist
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$workplaces = $tableWorkplaces->fetchAll(array(
+			"subsidiary_id = ?" => $watch->subsidiary_id
+		), "name");
+                
+                // indexace dat pro zarazeni do vyberu
+        $workIndex = array("0" => "--MIMO PRACOVIŠTĚ--");
+        
+        foreach ($workplaces as $workplace) {
+            $workIndex[$workplace->id_workplace] = $workplace->name;
+        }
 		
 		// priprava formulare a nastaveni akce
 		$form = new Audit_Form_MistakeCreateAlone();
 		$form->setAction($url);
 		$form->isValidPartial($this->_request->getParams());
-		$form->getElement("workplace_id")->setValue($workplaceId);
+		
+		// prenastaveni vyberu pracovisted
+		$form->removeElement("workplace_id");
+		$form->addElement("select", "workplace_id", array(
+				"label" => "Pracoviště",
+				"decorators" => $form->getElement("category")->getDecorators(),
+				"multiOptions" => $workIndex,
+                                "order" => 0
+		));
 		
 		$this->view->form = $form;
-		$this->view->workplace = $workplace;
 		$this->view->watch = $watch;
 	}
 	
@@ -225,7 +236,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 			// nacteni lhut
 			$tableDeadlines = new Audit_Model_WatchesDeadlines();
 			$deadlines = $tableDeadlines->findExtendedByWatch($watch);
-			$mistakes = $watch->findMistakes();
+			$mistakes = $watch->findMistakes(true);
 			
 			$this->view->deadlines = $deadlines;
 			$this->view->mistakes = $mistakes;

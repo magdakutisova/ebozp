@@ -41,7 +41,7 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 		return $tableOrders->fetchAll(array("watch_id = ?" => $this->_data["id"]), "id");
 	}
 	
-	public function findMistakes() {
+	public function findMistakes($disableRemoved = false) {
 		// sestaveni vyhledavaciho dotazu
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAssocs = new Audit_Model_WatchesMistakes();
@@ -58,6 +58,11 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 		$nameWorkplaces = $tableWorkplaces->info("name");
 		
 		$select->joinLeft($nameWorkplaces, "id_workplace = workplace_id", array("workplace_name" => "name"));
+                
+        // vyhodnoceni, zda se maji vyradit z vyberu odebrane neshody
+        if ($disableRemoved) {
+            $select->where("!set_removed");
+        }
 		
 		$data = $select->query()->fetchAll();
 		$retVal = new Audit_Model_Rowset_AuditsRecordsMistakes(array(
