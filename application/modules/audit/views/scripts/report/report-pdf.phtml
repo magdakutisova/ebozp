@@ -86,12 +86,17 @@ if ($audit->is_check) {
 		$data = $form->findData(true);
 		
 		foreach ($data as $category) {
-			$this->pdf()->header($pdf, $category["category"]->name, 15);
+			$pdf->SetY($pdf->GetY() + 3);
+			$this->pdf()->header($pdf, $category["category"]->name, 12);
 			$pdf->SetY($pdf->GetY() - 10);
+			
+			$pdf->SetFont("dejavusans", "", 8);
 			
 			foreach ($category["texts"] as $text) {
 				$pdf->MultiCell(180, 0, $text->text, 0, "L");
 			}
+			
+			$pdf->SetFont("dejavusans", 12, "");
 		}
 		
 		// vlozeni dat
