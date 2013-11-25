@@ -6,4 +6,6 @@ $params = array(
 );
 
 $redirector = new Zend_Controller_Action_Helper_Redirector();
-$redirector->gotoRouteAndExit($params, "audit-watch-edit");
+
+$url = $this->url($params, "audit-watch-edit") . "#tab-mistakes";
+$redirector->gotoUrlAndExit($url);

@@ -1,7 +1,8 @@
 <h1>Audity a prověrky</h1>
 <?php 
 $acl = new My_Controller_Helper_Acl();
-$role = Zend_Auth::getInstance()->getIdentity()->role;
+$user = Zend_Auth::getInstance()->getIdentity();
+$role = $user->role;
 
 if ($acl->isAllowed($role, "audit:audit", "post")) {
 ?>
@@ -17,17 +18,21 @@ if ($acl->isAllowed($role, "audit:audit", "post")) {
 	<thead>
 		<tr>
 			<th>
-			Technik
+			Datum provedení
 			</th>
 			<th>
-			Datum provedení
+			Provedl
 			</th>
 			<th>
 			Typ
 			</th>
+			<?php 
+			if ($role != My_Role::ROLE_CLIENT) {
+			?>
 			<th>
 			PT
 			</th>
+			<?php } ?>
 			<th>
 			Akce
 			</th>
@@ -36,7 +41,6 @@ if ($acl->isAllowed($role, "audit:audit", "post")) {
 	<tbody>
 	<?php 
 	$subIndex = $this->subIndex;
-	$user = Zend_Auth::getInstance()->getIdentity();
 	
 	foreach ($this->audits as $audit) {
 		// vyhodnoceni akce
@@ -53,10 +57,14 @@ if ($acl->isAllowed($role, "audit:audit", "post")) {
 		$action = "<a href='$href'>$caption</a>";
 		?>
 		<tr>
-			<td><?php echo $audit->auditor_name; ?></td>
 			<td><?php echo $this->sqlDate($audit->done_at); ?></td>
+			<td><?php echo $audit->auditor_name; ?></td>
 			<td><?php echo $audit->is_check ? "Prověrka" : "Audit"; ?></td>
+			<?php 
+			if ($role != My_Role::ROLE_CLIENT) {
+			?>
 			<td><?php echo $audit->auditor_confirmed_at[0] == '0' ? "Ne" : "Ano"; ?></td>
+			<?php } ?>
 			<td><?php echo $action; ?></td>
 		</tr>
 		<?php 

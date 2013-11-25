@@ -98,6 +98,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
 		$this->allow($client, "audit:farplan", array("get"));
 		$this->deny($client, "client", "archivelist");
+		$this->allow($client, "document:documentation", array("index"));
+		$this->allow($client, "document:document", "download");
 		
 		/**
 		 * presunuto od klienta
@@ -111,7 +113,6 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'position');
 		$this->allow($technician, "document:directory");
 		$this->allow($technician, "document:document");
-		$this->allow($technician, "document:documentation", array("index"));
 		$this->allow($technician, "document:index");
 		
 		$this->allow($technician, 'private');

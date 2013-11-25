@@ -14,7 +14,10 @@ if ($this->onlyClosed) {
 	<thead>
 		<tr>
 			<th>
-			Datum dohldíky
+			Datum dohlídky
+			</th>
+			<th>
+			Provedl
 			</th>
 			<th>
 			Zobrazit
@@ -31,6 +34,9 @@ if ($this->onlyClosed) {
 		<tr>
 			<td>
 			<?php echo $this->sqlDate($watch->watched_at); ?>
+			</td>
+			<td>
+			<?php echo $watch->name; ?>
 			</td>
 			<td>
 			<?php 

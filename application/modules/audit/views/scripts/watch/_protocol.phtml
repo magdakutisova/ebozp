@@ -159,8 +159,8 @@ if (!$this->watch->also_audit) {
 		}
 	}
 	
-	// vyhodnoceni zobrazeni lhut
-	if ($watch->display_deadlines) {
+	// vyhodnoceni zobrazeni lhut lhuty se zobrazi pokud je zobrazeni nastaveno a pokud jsou nejake lhuty k dispozici
+	if ($watch->display_deadlines && $this->deadlines->count()) {
 	?>
 	<h1>Propadlé lhůty</h1>
 	<table border="1" cellpadding="2">
