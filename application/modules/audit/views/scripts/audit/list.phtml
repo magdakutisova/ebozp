@@ -1,4 +1,4 @@
-<h1>Audity a prověrky</h1>
+<h2>Audity a prověrky</h2>
 <?php 
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
@@ -12,8 +12,10 @@ if ($acl->isAllowed($role, "audit:audit", "post")) {
 	echo $this->url(array("clientId" => $request->getParam("clientId"), "subsidiaryId" => $request->getParam("subsidiaryId")), "audit-create"); 
 	?>'>Provést audit</a>
 </div>
-<?php } ?>
-<em>PT - potvrzeno technikem</em>
+<?php } 
+
+if ($role != My_Role::ROLE_CLIENT) echo "<em>PT - potvrzeno technikem</em>";
+?>
 <table>
 	<thead>
 		<tr>
