@@ -1,47 +1,6 @@
 <?php
 $user = Zend_Auth::getInstance()->getIdentity();
 $acl = new My_Controller_Helper_Acl();
- 
-// vygenerovani seznamu trid pro filtraci
-$filter = $this->formFilter;
-$categories = $filter->getElement("category")->getMultiOptions();
-$subcategories = $filter->getElement("subcategory")->getMultiOptions();
-$workplaces = $filter->getElement("workplace_id")->getMultiOptions();
-
-$catIndex = array();
-$subCatList = array();
-$workList = array("work-nowork");
-
-// zpracovani kategorii
-foreach ($categories as $category) {
-	if ($category != "---") {
-		$catIndex[$category] = "cat-" . crc32($category);
-	}
-}
-
-// zpracovani podkategorii
-foreach ($subcategories as $catName => $subcats) {
-	if (!is_array($subcats)) continue;
-	
-	foreach ($subcats as $item) {
-		$subCatList[$catName][$item] = "subcat-" . crc32("$catName-$item");
-	}
-}
-
-// zpracovani pracovist
-foreach ($workplaces as $item) {
-	if ($item != "---") {
-		$workList[$item] = "work-" . crc32($item);
-	}
-}
-
-$table = array(
-		"categories" => $catIndex,
-		"subcategories" => $subCatList,
-		"workplaces" => $workList
-		);
-
-printf("<script type='text/javascript'>var HASH_TABLE = %s</script>", Zend_Json::encode($table));
 ?>
 <script type="text/javascript">
 var CLIENTID = <?php echo $this->client->id_client; ?>
@@ -78,7 +37,7 @@ foreach ($this->mistakes as $mistake) {
 		$classes[] = "mistake-marked";
 	}
 	
-	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "hashTable" => $table));
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes));
 }
 ?>
 </table>

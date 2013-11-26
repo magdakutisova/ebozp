@@ -574,11 +574,29 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        
+        // vyhodnoceni dalsich filtru
+        $filterVals = $formFilter->getValues(true);
+        $otherFilters = array();
+        
+        foreach ($filterVals as $key => $val) {
+            if ($key != "filter" && $val !== '0') {
+                
+                // vyhodnoceni typu
+                if ($key == "category" || $key == "subcategory") {
+                    $otherFilters["$key like ?"] = $val;
+                } else {
+                    if ($key == "subsidiary_id") $key = "audit_audits_records_mistakes.$key";
+                    
+                    $otherFilters["$key = ?"] = $val;
+                }
+            }
+        }
 		
 		if ($subsidiary) {
-			$mistakes = $tableMistakes->getBySubsidiary($subsidiary, $formFilter->getValue("filter"));
+			$mistakes = $tableMistakes->getBySubsidiary($subsidiary, $formFilter->getValue("filter"), $otherFilters);
 		} else {
-			$mistakes = $tableMistakes->getByClient($client, $formFilter->getValue("filter"));
+			$mistakes = $tableMistakes->getByClient($client, $formFilter->getValue("filter"), $otherFilters);
 		}
 		
 		// nastaveni hodnot pro vyber filtracniho formulare
@@ -590,14 +608,15 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			if ($mistake->workplace_name)
 				$workplaces[$mistake->id_workplace] = $mistake->workplace_name;
 			
-			$categories[] = $mistake->category;
+			$categories[$mistake->category] = $mistake->category;
 			
-			$subcategories[$mistake->category][$mistake->subcategory] = $mistake->subcategory;
+			$subcategories[$mistake->subcategory] = $mistake->subcategory;
 		}
 		
 		$workplaces = array_unique($workplaces);
 		$categories = array_unique($categories);
-		
+		$subcategories = array_unique($subcategories);
+        
 		foreach ($subcategories as &$list) {
 			if (is_array($list))
 				$list = array_unique($list);
