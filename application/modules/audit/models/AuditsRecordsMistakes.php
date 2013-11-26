@@ -111,7 +111,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		return $this->fetchAll(array("audit_id = " . $audit->id, "is_submited"));
 	}
 	
-	public function getByClient(Zend_Db_Table_Row_Abstract $client, $filter) {
+	public function getByClient(Zend_Db_Table_Row_Abstract $client, $filter, array $otherFilter = array()) {
 		$where = array(
 				"$this->_name.is_submited", 
 				"$this->_name.client_id = ?" => $client->id_client
@@ -127,6 +127,8 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				$where[] = "is_removed";
 				break;
 		}
+        
+        $where = array_merge($where, $otherFilter);
 		
 		return $this->_findMistakes($where);
 	}
@@ -166,7 +168,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				);
 	}
 	
-	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $filter) {
+	public function getBySubsidiary(Zend_Db_Table_Row_Abstract $subsidiary, $filter, array $otherFilters = array()) {
 		$where = array("$this->_name.subsidiary_id = ?" => $subsidiary->id_subsidiary, "$this->_name.is_submited");
 		
 		switch ($filter) {
@@ -179,6 +181,8 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				$where[] = "is_removed";
 				break;
 		}
+        
+        $where = array_merge($where, $otherFilters);
 		
 		return $this->_findMistakes($where);
 	}
@@ -331,7 +335,7 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				$nameWorkplaces, sprintf("%s.workplace_id = %s.id_workplace", 
 						$this->_name, 
 						$nameWorkplaces), 
-				array("workplace_name" => "name"));
+				array("workplace_name" => "name", "id_workplace"));
 		
 		// nastaveni seskupovani
 		$select->group("id");

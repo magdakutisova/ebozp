@@ -20,7 +20,9 @@ class Audit_QuestionController extends Zend_Controller_Action {
 		
 		// priprava dat pred smazanim a smazani
 		$category = $question->getCategory();
-		$question->delete();
+        
+		$question->is_deleted = 1;
+        $question->save();
 		
 		$this->_helper->FlashMessenger("Otázka byla smazána");
 		

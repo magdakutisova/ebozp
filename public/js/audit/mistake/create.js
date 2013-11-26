@@ -15,19 +15,19 @@ $(function () {
 	function checkCategory() {
 		var context = $(this);
 		var subContext = $("select#mistake-subcategory");
-		
+		/*
 		// kontrola "jineho"
 		if (context.val() == "") {
 			context.replaceWith($("<input type='text' />").attr("id", context.attr("id")).attr("name", context.attr("name")));
 			
 			subContext.replaceWith($("<input type='text' />").attr("id", subContext.attr("id")).attr("name", subContext.attr("name")));
-		} else {
+		} else {*/
 			// skryti vsech skupin
 			subContext.children("optgroup").hide();
 			
 			// zobrazeni skupiny odpovidajici kategorii
 			subContext.children("optgroup[label='" + context.val() + "']").show();
-		}
+		//}
 	}
 	
 	function checkSubcategory() {
@@ -45,6 +45,6 @@ $(function () {
 		"firstDay" : 1
 	});
 	
-	//$("#mistake-category").change(checkCategory).change();
+	$("#mistake-category").change(checkCategory).change();
 	//$("#mistake-subcategory").change(checkSubcategory);
 });

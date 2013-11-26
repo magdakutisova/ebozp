@@ -258,7 +258,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			// nacteni pracoviste
 			$this->view->workplace = $mistake->getWorkplace();
 			$record = null;
-		} elseif ($this->_audit) {
+		} elseif ($mistake->record_id) {
 			$form = new Audit_Form_MistakeCreate();
 				
 			$deleteForm = null;
@@ -588,7 +588,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		foreach ($mistakes as $mistake) {
 			if ($mistake->workplace_name)
-				$workplaces[] = $mistake->workplace_name;
+				$workplaces[$mistake->id_workplace] = $mistake->workplace_name;
 			
 			$categories[] = $mistake->category;
 			

@@ -16,6 +16,8 @@ $(function () {
 	
 	var replaced = false;
 	var replacer = null;
+    
+    if (window.DEADLINE_CATEGORIES == undefined) DEADLINE_CATEGORIES = [];
 	
 	objs = {
 			"deadline_type" : DEADLINE_CATEGORIES,
