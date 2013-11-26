@@ -17,7 +17,7 @@ $(function () {
 	var replaced = false;
 	var replacer = null;
     
-    if (window.DEADLINE_CATEGORIES == undefined) DEADLINE_CATEGORIES = [];
+    if (window.DEADLINE_CATEGORIES === undefined) DEADLINE_CATEGORIES = [];
 	
 	objs = {
 			"deadline_type" : DEADLINE_CATEGORIES,
@@ -27,7 +27,9 @@ $(function () {
 	};
 	
 	var selects = $("#deadline-deadline_type,#deadline-type,#deadline-kind,#deadline-specific");
-	
+    var oldSpecificVal = selects.filter("#deadline-specific").val();
+	var justLoaded = true;
+    
 	function changeSelects() {
 		// nacteni jmena zmeneneho selectu
 		var name = $(this).attr("id").split("-")[1];
@@ -41,10 +43,16 @@ $(function () {
 		// nacteni vybraneho objektu
 		var selectedVal = s.val();
 		
-		if (selectedVal == boundary) {
+		if (selectedVal === boundary) {
 			replacer = $("<input type='text' />").attr("name", s.attr("name")).attr("id", s.attr("id"));
 			s.replaceWith(replacer);
 			replacer.focus();
+            
+            if (oldSpecificVal !== null) {
+                replacer.val(oldSpecificVal);
+                oldSpecificVal = null;
+            }
+            
 			replacer.blur(onBlur);
 			
 			replaced = true;
@@ -62,10 +70,17 @@ $(function () {
 		// nastaveni novych hodnot do do predka a prepsani selectu
 		var nextName = pairs[name];
 		
-		if (nextName == undefined) return;
+		if (nextName === undefined) {
+            // prave zmenena informace je posledni z retezu - kontrola periody
+            if (indexItem.period !== null && !justLoaded) {
+                $("#deadline-period").val(indexItem.period);
+            }
+            
+            return;
+        }
 		
 		// kontrola, jestli je dalsi objekt specifikace a jestli je specifikace nahrazena textem
-		if (nextName == "specific" && replaced) {
+		if (nextName === "specific" && replaced) {
 			var original = selects.filter("#deadline-" + nextName);
 			replacer.replaceWith(original);
 			replaced = false;
@@ -77,7 +92,7 @@ $(function () {
 		var nextObj = selects.filter("#deadline-" + nextName);
 		objs[nextName] = indexItem.children;
 		
-		switchOptions(nextObj, indexItem.children, pairs[nextName] == undefined);
+		switchOptions(nextObj, indexItem.children, pairs[nextName] === undefined);
 		
 		doChange(nextName);
 	}
@@ -85,7 +100,7 @@ $(function () {
 	function onBlur() {
 		var replacer = $(this);
 		
-		if (replacer.val() == "") {
+		if (replacer.val() === "") {
 			// prohozeni dat
 			replaced = false;
 			
@@ -115,7 +130,7 @@ $(function () {
 			var currVal = item.value ? item.value : item.name;
 			var opt = $("<option />").attr("value", currVal).text(item.name);
 			
-			if (currVal == oldVal) opt.attr("selected", "selected");
+			if (currVal === oldVal) opt.attr("selected", "selected");
 			
 			obj.append(
 					opt
@@ -129,6 +144,7 @@ $(function () {
 	
 	selects.change(changeSelects);
 	selects.filter("#deadline-deadline_type").change();
+    justLoaded = false;
 	
 	// prepinani periodicke a neperiodicke lhuty
 	function togglePeriodic() {
@@ -173,69 +189,11 @@ $(function () {
 		$("#deadlinefilter").toggle();
 	}
 	
-	function filter() {
-		// zobrazeni vsech zaznamu lhut
-		var table = $("#deadlinetable");
-		table.find("tbody").show();
-		
-		// nacteni filtracnich podminek
-		var filterConds = {};
-		
-		$(this).find("select").each(function () {
-			var context = $(this);
-			var val = context.find("option:checked").text();
-			
-			if (val == "---") return;
-			
-			filterConds[context.attr("name")] = val;
-		});
-		
-		// nacteni filtracnich trid
-		var classes = {};
-		
-		$(this).find(":checkbox").each(function () {
-			var context = $(this);
-			var clsName = context.val();
-			var checked = context.filter(":checked").length;
-			
-			classes[clsName] = checked;
-			
-		});
-		
-		// skryti tech lhut, ktere nevyhovuji podminkam
-		table.find("tbody").each(function () {
-			// nalezeni hodnot
-			var isOk = true;
-			var context = $(this);
-			
-			for (var item in filterConds) {
-				var val = context.find(":hidden[name='" + item + "']").val();
-				
-				if (val != filterConds[item]) isOk = false;
-			}
-			
-			// vyhodnoceni trid
-			for (var cls in classes) {
-				if (context.hasClass(cls)) {
-					if (!classes[cls])
-						isOk = false;
-					
-					break;
-				}
-			}
-			
-			if (!isOk) context.hide();
-		});
-		
-		return false;
-	}
-	
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
 	// $("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
 	$("#deadlinetable tbody tr td button").filter("[name='edit']").click(openEdit).end().filter("[name='get']").click(openGet);
 	$("#deadline-filter-toggle").click(toggleFilter);
-	$("#deadlinefilter").submit(filter);
 	
 	$("#deadline-done_at,#deadline-last_done").datepicker({
 		"dateFormat" : "yy-mm-dd",

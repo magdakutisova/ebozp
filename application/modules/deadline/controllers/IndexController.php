@@ -12,7 +12,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
 		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 	
-		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_DEVICE, $filter);
+        $filterForm = new Deadline_Form_Filter();
+        $filterForm->populate($this->_request->getParams());
+        
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_DEVICE, $filter, $filterForm);
 	
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
@@ -28,12 +31,15 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
 		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 		
-		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_EMPLOYEE, $filter);
+        $filterForm = new Deadline_Form_Filter();
+        $filterForm->populate($this->_request->getParams());
+        
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_EMPLOYEE, $filter, $filterForm);
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		
-		$this->_prepareFilterForm($deadlines);
+		$this->_prepareFilterForm($deadlines, $filterForm);
 	}
 	
 	public function chemicalAction() {
@@ -42,7 +48,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
 		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 		
-		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_CHEMICAL, $filter);
+        $filterForm = new Deadline_Form_Filter();
+        $filterForm->populate($this->_request->getParams());
+        
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_CHEMICAL, $filter, $filterForm);
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
@@ -72,7 +81,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$filter["clientId"] = $this->_request->getParam("clientId", 0);
 		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
 		
-		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_UNDEFINED, $filter);
+        $filterForm = new Deadline_Form_Filter();
+        $filterForm->populate($this->_request->getParams());
+        
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_UNDEFINED, $filter, $filterForm);
 		
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
@@ -85,9 +97,38 @@ class Deadline_IndexController extends Zend_Controller_Action {
 	 * @param array $filerSet parametry filtrace
 	 * @return Deadline_Model_Rowset_Deadlines
 	 */
-	public static function filterDeadlines($objType, array $filterSet) {
+	public static function filterDeadlines($objType, array $filterSet, $filterForm) {
 		$select = self::prepareFilterSelect($objType, $filterSet);
 		
+        // nastaveni filtru z formulare
+        $filterVals = $filterForm->getValues(true);
+        
+        foreach ($filterVals as $key => $val) {
+            if ($val && $key[0] != 'c') {
+                switch ($key) {
+                    case "specific":
+                    case "kind":
+                        $select->where("$key like ?", $val);
+                        
+                    default:
+                        $select->where("$key = ?", $val);
+                }
+            }
+        }
+        
+        // vyhodnoceni casovych omezeni
+        if (!$filterVals["clsok"]) {
+            $select->where("next_date < NOW()");
+        }
+        
+        if (!$filterVals["clsinvalid"]) {
+            $select->where("next_date >= NOW()");
+        }
+        
+        if (!$filterVals["clsclose"]) {
+            $select->where("NOT (next_date BETWEEN NOW() and ADDDATE(NOW(), INTERVAL 1 MONTH))", $val);
+        }
+        
 		return $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
 	}
 	
@@ -180,18 +221,6 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				throw new Zend_Db_Table_Exception("Invalid type of filter");
 		}
 		
-		// nastaveni pobocky, pokud je potreba
-		if (isset($filterSet["subsidiaryId"])) {
-			// kontrola hodnoty subsidiary
-			if ($filterSet["subsidiaryId"] == 0) {
-				// filtruji se pouze globalni terminy
-				$select->where("subsidiary_id IS NULL");
-			} else {
-				// filtruje se konkretni pobocka
-				$select->where("subsidiary_id = ?", $filterSet["subsidiaryId"]);
-			}
-		}
-		
 		return $select;
 	}
 	
@@ -231,10 +260,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		// iterace nad daty a zapis polozek
 		foreach ($deadlines as $item) {
-			$periods[] = $item->period;
-			$kinds[] = $item->kind;
-			$names[] = $item->name;
-			$specifics[] = $item->specific;
+			$periods[$item->period] = $item->period;
+			$kinds[$item->kind] = $item->kind;
+			$names[$item->name] = $item->name;
+			$specifics[$item->specific] = $item->specific;
 		}
 		
 		// serazeni polozek
@@ -246,9 +275,35 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$form = new Deadline_Form_Filter();
 		$form->getElement("period")->setMultiOptions($periods);
 		$form->getElement("kind")->setMultiOptions($kinds);
-		$form->getElement("name")->setMultiOptions($names);
+		//$form->getElement("name")->setMultiOptions($names);
 		$form->getElement("specific")->setMultiOptions($specifics);
-		
+        
+        // naplneni filtracniho formulare pobockami
+        $userId = Zend_Auth::getInstance()->getIdentity()->id_user;
+        
+        $tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+        $nameAssocs = $tableAssocs->info("name");
+        
+        $subSelect = new Zend_Db_Select($tableAssocs->getAdapter());
+		$subSelect->from($nameAssocs, array("id_subsidiary"));
+        $subSelect->where("id_user = ?", $userId);
+        
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $subsidiaries = $tableSubsidiaries->fetchAll(array(
+            "id_subsidiary in (?)" => new Zend_Db_Expr($subSelect),
+            "client_id = ?" => $this->_request->getParam("clientId", 0)
+        ), array("subsidiary_town", "subsidiary_street"));
+        
+        $subsidiaryIndex = array("0" => "---VŠECHNY POBOČKU---");
+        
+        foreach ($subsidiaries as $item) {
+            $subsidiaryIndex[$item->id_subsidiary] = sprintf("%s, %s", $item->subsidiary_town, $item->subsidiary_street);
+        }
+        
+        $form->getElement("subsidiary_id")->setMultiOptions($subsidiaryIndex);
+        
+        $form->populate($this->_request->getParams());
+        
 		$this->view->filterForm = $form;
 	}
 }

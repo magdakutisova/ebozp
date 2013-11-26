@@ -80,12 +80,15 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deleteForm = new Deadline_Form_Delete();
 		$url = $this->view->url(array("clientId" => $deadline->client_id, "deadlineId" => $deadline->id), "deadline-delete");
 		$deleteForm->setAction($url);
+        
+        $tableCategories = new Deadline_Model_Categories();
 		
 		$this->view->form = $form;
 		$this->view->deadline = $deadline;
 		$this->view->formSubmit = $formSubmit;
 		$this->view->logs = $logs;
 		$this->view->deleteForm = $deleteForm;
+        $this->view->categories = $tableCategories->findAll();
 	}
 	
 	/**

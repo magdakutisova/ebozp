@@ -4,14 +4,15 @@ class Deadline_Form_Filter extends Zend_Form {
 	public function init() {
 		
 		$this->setName("deadlinefilter");
-		
+		$this->setMethod(Zend_Form::METHOD_GET);
+        
 		// nastaveni dekoratoru
 		$this->setDecorators(array(
 				'FormElements',
 				array('HtmlTag', array('tag' => 'table')),
 				'Form',
 		));
-		
+        
 		$elementDecorator = array(
 				'ViewHelper',
 				array('Errors'),
@@ -25,6 +26,22 @@ class Deadline_Form_Filter extends Zend_Form {
 				array(array("data" => "HtmlTag"), array("tag" => "td", "class" => "element", "colspan" => 2)),
 				array(array("row" => "HtmlTag"), array("tag" => "tr"))
 		);
+        
+        $this->addElement("select", "subsidiary_id", array(
+            "label" => "Pobočka",
+            "decorators" => $elementDecorator
+        ));
+        
+        $this->addElement("select", "type", array(
+				"label" => "Forma",
+				"decorators" => $elementDecorator,
+				"multiOptions" => array(
+						"---",
+						Deadline_Form_Deadline::TYPE_OTHER => "Jiná",
+						Deadline_Form_Deadline::TYPE_PRESENT => "Prezenční",
+						Deadline_Form_Deadline::TYPE_ELEARNING => "Elearning"
+						)
+				));
 		
 		$this->addElement("select", "kind", array(
 				"label" => "Druh",
@@ -36,27 +53,16 @@ class Deadline_Form_Filter extends Zend_Form {
 				"decorators" => $elementDecorator
 				));
 		
-		$this->addElement("select", "type", array(
-				"label" => "Forma",
-				"decorators" => $elementDecorator,
-				"multiOptions" => array(
-						"---",
-						Deadline_Form_Deadline::TYPE_OTHER => "Jiná",
-						Deadline_Form_Deadline::TYPE_PRESENT => "Prezenční",
-						Deadline_Form_Deadline::TYPE_ELEARNING => "Elearning"
-						)
-				));
-		
 		$this->addElement("select", "period", array(
 				"label" => "Perioda",
 				"decorators" => $elementDecorator
 				));
-		
+		/* urceno pro nejblizsi smazani
 		$this->addElement("select", "name", array(
 				"label" => "Jméno",
 				"decorators" => $elementDecorator
 		));
-		
+		*/
 		$this->addElement("checkbox", "clsok", array(
 				"label" => "Splněné lhůty",
 				"checkedValue" => "deadline-ok",

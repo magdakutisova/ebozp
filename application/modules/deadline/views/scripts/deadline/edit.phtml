@@ -13,3 +13,6 @@ echo $this->deleteForm;
 echo $this->partial("deadline/_logs.phtml", $this);
 ?>
 <script type="text/javascript" src="/js/deadline/deadline.js"></script>
+<script type="text/javascript">
+var DEADLINE_CATEGORIES = <?php echo Zend_Json::encode($this->categories); ?>
+</script>
