@@ -89,7 +89,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 				'port' => 465,
 				'auth' => 'login',
 				'username' => 'guardian@guard7.cz',
-				'password' => 'guardian',
+				'password' => 'guardianG7',
 				);
 		$transport = new Zend_Mail_Transport_Smtp('smtp.gmail.com', $settings);
 		

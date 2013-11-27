@@ -580,7 +580,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
         $otherFilters = array();
         
         foreach ($filterVals as $key => $val) {
-            if ($key != "filter" && $val !== '0') {
+            if ($key != "filter" && $val !== '0' && !is_null($val)) {
                 
                 // vyhodnoceni typu
                 if ($key == "category" || $key == "subcategory") {
