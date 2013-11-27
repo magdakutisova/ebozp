@@ -108,10 +108,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
                 switch ($key) {
                     case "specific":
                     case "kind":
-                        $select->where("$key like ?", $val);
+                        $select->where("`$key` like ?", $val);
                         
                     default:
-                        $select->where("$key = ?", $val);
+                        $select->where("`$key` = ?", $val);
                 }
             }
         }

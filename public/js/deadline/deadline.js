@@ -62,6 +62,8 @@ $(function () {
 		
 		// vybrani kategorie
 		var indexItem = objs[name][selectedVal];
+        
+        if (indexItem === undefined) return;
 		
 		/**
 		 * prozatim predpokladame, ze kategorie existuje
@@ -191,7 +193,7 @@ $(function () {
 	
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
-	// $("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
+    $("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
 	$("#deadlinetable tbody tr td button").filter("[name='edit']").click(openEdit).end().filter("[name='get']").click(openGet);
 	$("#deadline-filter-toggle").click(toggleFilter);
 	
