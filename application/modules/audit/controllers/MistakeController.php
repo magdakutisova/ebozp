@@ -882,6 +882,41 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		$this->view->response = true;
 	}
+    
+    /*
+     * hromadne odesle neshody
+     */
+    public function submitsAction() {
+        // nacteni dat
+        $clientId = $this->_request->getParam("clientId", 0);
+        $data = (array) $this->_request->getParam("mistake", array());
+        
+        // pokud zadna data nebyla odeslana, pak se nic delat nebude
+        if (!$data) return;
+        
+        $mistakeIds = array(0);
+        
+        foreach ($data as $key => $item) {
+            if ($item["select"]) {
+                $mistakeIds[] = $key;
+            }
+        }
+        
+        // nastaveni vsech oznacenych neshod jako odstranenych
+        $tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        
+        $where = array(
+            "client_id = ?" => $clientId,
+            "id in (?)" => $mistakeIds
+        );
+        
+        $updateData = array(
+            "removed_at" => new Zend_Db_Expr("NOW()"),
+            "is_removed" => 1
+        );
+        
+        $tableMistakes->update($updateData,  $where);
+    }
 	
 	public function switchAction() {
 		// nacteni zaznamu

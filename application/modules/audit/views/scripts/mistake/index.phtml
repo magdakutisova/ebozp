@@ -1,6 +1,8 @@
 <?php
 $user = Zend_Auth::getInstance()->getIdentity();
 $acl = new My_Controller_Helper_Acl();
+
+$clientId = $this->client->id_client;
 ?>
 <script type="text/javascript">
 var CLIENTID = <?php echo $this->client->id_client; ?>
@@ -15,6 +17,7 @@ if ($acl->isAllowed($user->role, "audit:mistake", "post")) {
 $this->formFilter->setAttrib("style", "display:none");
 echo $this->formFilter;
 ?>
+<?php printf("<form action='/audit/mistake/submits?clientId=%s' method='post' onsubmit='return confirm(\"Provedené změny již nepůjdou vrátit zpět. Skutečně pokračovat?\")'>", $clientId); ?>
 <table id="mistake-list" class="multirow-table">
 <?php 
 echo $this->mistakeTable()->header();
@@ -37,11 +40,18 @@ foreach ($this->mistakes as $mistake) {
 		$classes[] = "mistake-marked";
 	}
 	
-	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes));
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true));
 }
 ?>
 </table>
 <?php 
+// dokonceni formulare pro hromadne odeslani neshod
+if ($acl->isAllowed($user->role, "audit:mistake", "submits")) {
+    printf("<div>%s</div>", $this->formSubmit("submit-all", "Odeslat všechny neshody"));
+}
+
+echo "</form>";
+
 if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 ?>
 <h2>Import neshod</h2>
