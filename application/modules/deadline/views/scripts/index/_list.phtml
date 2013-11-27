@@ -15,18 +15,23 @@ $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
 $options = array("name" => $this->caption);
+$clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
+
+$options["buttons"] = array("get" => array("type" => "button", "caption" => "Zobrazit"));
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
-	$options["buttons"] = array("edit" => array("type" => "button", "caption" => "Upravit"));
-} else {
-	$options["buttons"] = array("get" => array("type" => "button", "caption" => "Zobrazit"));
+	$options["buttons"]["edit"] = array("type" => "button", "caption" => "Upravit");
+    $options["form"] = array("action" => "/deadline/deadline/submits?clientId=" . $clientId);
+
+    $options["buttons"]["selected[]"] = array("caption" => "Vybrat", "type" => "checkbox");
 }
 
-$clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
 echo $this->formHidden("CLIENT_ID", $clientId);
 
 echo $this->filterForm;
 echo sprintf("<div>%s</div>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"));
+
+// nastaveni for,ulůare - mozna pozdeji osetrit pravy
 
 // nacteni ACL a vyhodnoceni akci
 echo $this->deadlineTable($this->deadlines, $options);

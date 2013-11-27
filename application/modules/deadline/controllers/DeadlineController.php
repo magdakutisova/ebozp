@@ -250,6 +250,68 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$this->view->deadline = $deadline;
 		$this->_helper->FlashMessenger("Lhůta byla označena jako splněná");
 	}
+    
+    /**
+     * odesle vybrane lhuty najednou
+     */
+    public function submitsAction() {
+        // nacteni odeslanych informaci
+        $clientId = $this->_request->getParam("clientId", 0);
+        $deadIds = (array) $this->_request->getParam("selected", array());
+        
+        // pokud je seznam prazdny, nema cenu pokracovat
+        if (empty($deadIds)) return;
+        
+        // kontrola odesilaciho formulare
+        $form = new Deadline_Form_Done();
+        
+        if (!$form->isValid($this->_request->getParams())) {
+            // nespravna data - odeslani zpravy a return
+            $this->_helper->FlashMessenger("Nesprávně zadaná data (pravděpodobně špatné datum splnění)");
+            return;
+        }
+        
+        // aktualizace data lhuty
+        $where = array(
+            "id in (?)" => $deadIds
+        );
+        
+        $data = array(
+            "last_done" => $form->getValue("done_at")
+        );
+        
+        $tableDeadlines = new Deadline_Model_Deadlines();
+        $tableDeadlines->update($data, $where);
+        
+        // posunuti period
+        $tableDeadlines->update(array(
+            "next_date" => new Zend_Db_Expr("ADDDATE(last_done, INTERVAL period MONTH)")
+        ), $where);
+        
+        // zapis do logu
+        $tableLogs = new Deadline_Model_Logs();
+        $userId = Zend_Auth::getInstance()->getIdentity()->id_user;
+        $adapter = $tableLogs->getAdapter();
+        
+        $select = new Zend_Db_Select($adapter);
+        
+        $select->from($tableDeadlines->info("name"), array(
+            "id",
+            new Zend_Db_Expr($adapter->quote($userId)),
+            new Zend_Db_Expr($adapter->quote($form->getValue("done_at")))
+        ));
+        
+        // vygenerovani vkladaciho sql dotazu
+        $sql = "insert into %s (deadline_id, user_id, done_at) %s";
+        $adapter->query(sprintf($sql, $tableLogs->info("name"), $select->assemble()));
+        
+        // nacteni lhut a kontrola datumu
+        $deadlines = $tableDeadlines->find($deadIds);
+        
+        foreach ($deadlines as $item) {
+            self::checkDeadlineDate($item);
+        }
+    }
 	
 	/**
 	 * nacte lhutu dle id
