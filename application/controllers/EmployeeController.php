@@ -27,6 +27,52 @@ class EmployeeController extends Zend_Controller_Action{
 		$this->_canDeleteEmployee = $this->_acl->isAllowed($this->_user, 'employee', 'delete');
 		$this->view->canDeleteEmployee = $this->_canDeleteEmployee;
 	}
+    
+    /**
+     * formular pro vytvoreni noveho zamestnance
+     */
+    public function createAction() {
+        $form = new Application_Form_Employee();
+        
+        // odstraneni nekterych voleb
+        $form->removeElement("sex");
+        $form->removeElement("year_of_birth");
+        
+        $form->addElement("submit", "save_employee", array(
+            "label" => "Vytvořit",
+            "decorators" => $form->getElement("save_employee")->getDecorators()
+        ));
+        
+        $form->isValidPartial($this->_request->getParams());
+        
+        if ($this->_request->isPost()) {
+            // kontrola validity
+            if ($form->isValid($this->_request->getParams())) {
+                // vytvoreni a zapsani radku
+                $tableEmployee = new Application_Model_DbTable_Employee();
+                
+                $employee = $tableEmployee->createRow($form->getValues(true));
+                $employee->client_id = $this->_request->getParam("clientId", null);
+                $employee->save();
+                
+                // predani radku do view
+                $this->view->employee = $employee;
+            }
+        }
+        
+        $this->view->form = $form;
+    }
+
+    /**
+     * posle samostatny formular pro vytvoreni zamestnance bez zadneho layoutu
+     */
+    public function createPartAction() {
+        $this->createAction();
+    }
+    
+    public function createJsonAction() {
+        $this->createAction();
+    }
 	
 	public function listAction(){
 		$clients = new Application_Model_DbTable_Client();

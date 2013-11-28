@@ -517,14 +517,21 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			if ($select) {
 				// nacteni a zapis dat
 				$objs = $select->query()->fetchAll();
-				$objList = array();
+				$objList = array("0" => "-VYBERTE-");
 				
 				foreach ($objs as $obj) {
 					$objList[$obj["id"]] = $obj["name"];
 				}
+                
+                // pridani vyberoveho policka
+                $objList["-1"] = "-VYTVOŘIT NOVÝ OBJEKT-";
 				
 				$form->getElement("object_id")->setMultiOptions($objList);
 				$form->getElement("object_id")->setAttrib("disabled", null);
+                
+                if ($form->getValue("object_id") == "-1")  {
+                    $form->getElement("object_id")->setValue("0");
+                }
 			}
 		}
 	}

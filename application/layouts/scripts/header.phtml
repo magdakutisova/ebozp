@@ -30,6 +30,10 @@ echo $this->doctype ();
 		
 	<?php echo $this->headLink()?>
 	<?php echo $this->headScript()?>
+    <script type="text/javascript">
+var CLIENT_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")) ?>;
+var SUBSIDIARY_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId")) ?>;
+    </script>
 </head>
 
 <body>

@@ -1,0 +1,20 @@
+<?php
+// vyhodnoceni odpovedi
+$response = array(
+    "created" => false,
+    "data" => null,
+    "errors" => array(),
+    "objName" => null,
+    "objId" => null
+);
+
+if ($this->employee) {
+    $response["created"] = true;
+    $response["data"] = $this->employee->toArray();
+    $response["objName"] = sprintf("%s %s", $this->employee->first_name, $this->employee->surname);
+    $response["objId"] = $this->employee->id_employee;
+} else {
+    $response["errors"] = $this->form->getErrors();
+}
+
+echo $this->json($response);

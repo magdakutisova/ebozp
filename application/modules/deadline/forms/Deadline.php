@@ -59,6 +59,12 @@ class Deadline_Form_Deadline extends Zend_Form {
 						self::TARGET_DEVICE => "Technického zařízení")
 				));
 		
+        $this->addElement("select", "kind", array(
+				"decorators" => $elementDecorator,
+				"required" => true,
+				"label" => "Druh"
+		));
+        
 		$this->addElement("select", "type", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
@@ -68,12 +74,6 @@ class Deadline_Form_Deadline extends Zend_Form {
 					self::TYPE_ELEARNING => "E-learning",
 					self::TYPE_PRESENT => "Prezenční"
 				)
-		));
-		
-		$this->addElement("select", "kind", array(
-				"decorators" => $elementDecorator,
-				"required" => true,
-				"label" => "Druh"
 		));
 		
 		$this->addElement("select", "specific", array(

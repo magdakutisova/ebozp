@@ -3,15 +3,15 @@ $(function () {
 	var boundary = "asf513saf43asf165sa4dfs54f";
 	
 	var pairs = {
-			"deadline_type" : "type",
-			"type" : "kind",
-			"kind" : "specific"
+			"deadline_type" : "kind",
+			"kind" : "type",
+			"type" : "specific"
 	};
 	
 	var parents = {
-		"specific" : "kind",
-		"kind" : "type",
-		"type" : "deadline_type"
+		"specific" : "type",
+		"type" : "kind",
+		"kind" : "deadline_type"
 	};
 	
 	var replaced = false;
@@ -190,7 +190,89 @@ $(function () {
 	function toggleFilter() {
 		$("#deadlinefilter").toggle();
 	}
+    
+    function sendNewObject() {
+        // nacteni dat z formulare
+        var form = $(this);
+        var dataItems = form.find("input, textarea,select");
+        var data = {};
+        
+        dataItems.each(function () {
+            var context = $(this);
+            var val = context.val();
+            
+            if (val === null) return;
+            
+            if (val.trim().length > 0)
+                data[context.attr("name")] = context.val();
+        });
+        
+        // pokus o odeslani dat
+        $.post(form.attr("action"), data, function (response) {
+            // kontrola, jeslti byl objekt vytvoren
+            if (response.created) {
+                // vytvoreni noveho opt a prirazeni do selectu
+                var opt = $("<option />").attr("value", response.objId).text(response.objName);
+                var target = $("#deadline-object_id");
+                
+                opt.appendTo(target);
+                target.val(response.objId);
+                
+                submitDeadlineForm();
+            } else {
+                // oznaceni chybnych poli
+                for (var n in response.errors) {
+                    var errList = response.errors[n];
+                    
+                    // kontrola, jeslti jsou pritomny nejake chyby
+                    if (errList.length) {
+                        // chyby jsou pritomny, oznaceni radku
+                        $("#" + n).parents("tr:first").addClass("error");
+                    } else {
+                        // odznaceni radku
+                        $("#" + n).parents("tr:first").removeClass("error");
+                    }
+                }
+            }
+        }, "json");
+        
+        return false;
+    }
 	
+    function newObject() {
+        if ($(this).val() !== "-1") return;
+        
+        // vyhodnoceni, ktereho typu objektu se lhuta tyka
+        var objType = $("#deadline-deadline_type").val();
+        var url = "";
+        var action = "";
+        
+        switch(objType) {
+            case "1":
+                url = "/employee/create.part";
+                action = "/employee/create.json";
+                break;
+                
+            default:
+                return;
+        }
+        
+        // nacteni formulare a jeho zobrazeni
+        $.get(url, {clientId : CLIENT_ID}, function (response) {
+            response = $(response);
+            
+            $("<div />").append(response).dialog({
+                modal : true,
+                width : "700",
+                height : "500"
+            });
+            
+            // prepsani akce odeslani
+            response.attr("action", action).submit(sendNewObject);
+            
+        }, "html");
+    }
+    
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
     $("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
@@ -204,4 +286,5 @@ $(function () {
 		"firstDay" : 1
 	});
 	
+    $("#deadline-object_id").change(newObject);
 });
