@@ -202,6 +202,16 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$select->joinLeft(array("respemp" => $nameEmployees), "$nameDead.responsible_id = respemp.id_employee", array());
 		$select->joinLeft($nameUsers, "id_user = responsible_user_id", array());
 		
+        // provazani na tabulku pobocek
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $nameSubsidiary = $tableSubsidiaries->info("name");
+        
+        $select->joinInner($nameSubsidiary, "$nameDead.subsidiary_id = id_subsidiary", array(
+            "subsidiary_name",
+            "subsidiary_town",
+            "subsidiary_street"
+        ));
+        
 		// vyfiltrovani typu
 		switch ($objType) {
 			case Deadline_Form_Deadline::TARGET_CHEMICAL:

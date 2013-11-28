@@ -99,7 +99,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 				$this->_wrapToTd($mistake->subcategory, "subcategory"),
 				$this->_wrapToTd($mistake->concretisation),
 				$this->_wrapToTd($workplaceName),
-				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 2, "width" => "50px"))
+				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 3, "width" => "50px"))
 		);
 		
 		$row1 = $this->_wrapToTag(implode("", $columns), "tr", array());
@@ -111,9 +111,11 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		);
 		
 		$row2 = $this->_wrapToTag(implode("", $columns), "tr", array());
+        
+        $row3 = sprintf("<tr><td colspan='4'>%s, %s</td></tr>", $mistake->subsidiary_town, $mistake->subsidiary_street);
 		
 		// slouceni a vraceni vysledku
-		$content = $row1 . $row2;
+		$content = $row1 . $row2 . $row3;
 		
 		return $this->_wrapToTag($content, "tbody", array("class" => implode(" ", $config["classes"])));
 	}

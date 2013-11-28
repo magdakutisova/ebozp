@@ -73,6 +73,9 @@ class Audit_Model_AuditsDeadlines extends Zend_Db_Table_Abstract {
 		// sestaveni dotazu
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
+        
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $nameSubsidiaries = $tableSubsidiaries->info("name");
 		
 		// vlozeni omezeni na asociovane lhuty
 		$subSelect = new Zend_Db_Select($this->getAdapter());
@@ -85,7 +88,8 @@ class Audit_Model_AuditsDeadlines extends Zend_Db_Table_Abstract {
 		$select->where("deadline_deadlines.id in ?", $subSelect);
 		
 		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.audit_id = " . $audit->id, array("is_done"));
-		
+		$select->joinInner($nameSubsidiaries, "id_subsidiary = subsidiary_id", array("subsidiary_street", "subsidiary_name", "subsidiary_town"));
+        
 		$data = $select->query()->fetchAll();
 		
 		return new Zend_Db_Table_Rowset(array("data" => $data, "readOnly" => true));

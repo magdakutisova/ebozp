@@ -63,7 +63,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		);
 		
 		if (!$config["noAction"]) {
-			$row[] = $this->wrap("td", $buttons, array("rowspan" => 2));
+			$row[] = $this->wrap("td", $buttons, array("rowspan" => 3));
 		}
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));
@@ -77,8 +77,10 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		);
 		
 		$rowStr2 = $this->wrap("tr", implode("", $row));
+        
+        $rowStr3 = sprintf("<tr><td colspan=\"5\">%s, %s</td></tr>", $deadline["subsidiary_town"], $deadline["subsidiary_street"]);
 		
-		$content = $rowStr1 . $rowStr2;
+		$content = $rowStr1 . $rowStr2 . $rowStr3;
 		
 		// vyhodnoceni jestli je lhuta propadla
 		if (@$deadline["is_done"]) {

@@ -74,6 +74,9 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
 		
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $nameSubsidiaries = $tableSubsidiaries->info("name");
+        
 		// vlozeni omezeni na asociovane lhuty
 		$subSelect = new Zend_Db_Select($this->getAdapter());
 		$subSelect->from($this->_name, array("deadline_id"))->where("watch_id = ?", $watch->id);
@@ -87,7 +90,8 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 		}
 		
 		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.watch_id = " . $watch->id, array("is_done"));
-		
+		$select->joinInner($nameSubsidiaries, "id_subsidiary = subsidiary_id", array("subsidiary_street", "subsidiary_name", "subsidiary_town"));
+
 		$select->where("deadline_deadlines.id in ?", $subSelect);
 		$select->order("name");
 		

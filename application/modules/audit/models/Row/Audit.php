@@ -51,7 +51,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 	 * 
 	 * @return Audit_Model_Rowset_AuditsRecordsMistakes
 	 */
-	public function getMistakes() {
+	public function getMistakes($notRemovedOnly = false, $subtedOnly = false) {
 		// sestaveni podminky a nacteni dat
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAssocs = new Audit_Model_AuditsMistakes();
@@ -60,10 +60,16 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		
 		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 		$subSelect->from($nameAssocs, array("mistake_id"))->where("audit_id = ?", $this->id);
+        
+        if ($notRemovedOnly) {
+            $subSelect->where("status != 2");
+        }
 		
 		$where = array(
 				"id in (?)" => new Zend_Db_Expr($subSelect->assemble())
 				);
+        
+        if ($subtedOnly) $where[] = $tableMistakes->info("name") . ".is_submited";
 		
 		return $tableMistakes->_findMistakes($where);
 	}

@@ -195,12 +195,14 @@ class Audit_WorkplaceController extends Zend_Controller_Action {
 		// nacteni neshod
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableAssocs = new Audit_Model_AuditsMistakes();
+        $tableSubsidiary = new Application_Model_DbTable_Subsidiary();
 		
 		$nameMistakes = $tableMistakes->info("name");
 		$nameAssocs = $tableAssocs->info("name");
+        $nameSubsidiary = $tableSubsidiary->info("name");
 		
 		// sestaveni SQL
-		$sql = "select `$nameMistakes`.*, status from `$nameMistakes`, `$nameAssocs` where mistake_id = id and workplace_id = $workplaceIdQ and `$nameAssocs`.audit_id = " . $this->_audit->id;
+		$sql = "select `$nameMistakes`.*, status, subsidiary_town, subsidiary_name, subsidiary_street from `$nameMistakes`, `$nameAssocs`, `$nameSubsidiary` where mistake_id = id and workplace_id = $workplaceIdQ and `$nameAssocs`.audit_id = " . $this->_audit->id . " and $nameMistakes.subsidiary_id = $nameSubsidiary.id_subsidiary";
 		$mistakesData = $adapter->query($sql)->fetchAll();
 		$mistakes = new Audit_Model_Rowset_AuditsRecordsMistakes(array("data" => $mistakesData, "table" => $tableMistakes, "rowClass" => $tableMistakes->getRowClass()));
 		

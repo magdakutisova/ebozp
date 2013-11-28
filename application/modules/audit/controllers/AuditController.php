@@ -496,8 +496,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$tableAssocs = new Audit_Model_AuditsMistakes();
 		
 		// sestaveni podminek
-		$nameAssocs = $tableAssocs->info("name");
-		$mistakes = $tableMistakes->fetchAll(array("is_submited", "id in (select mistake_id from $nameAssocs where audit_id = $audit->id and status != 2)"));
+        $mistakes = $audit->getMistakes(true, true);
 		
 		// nacteni pracovist
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();

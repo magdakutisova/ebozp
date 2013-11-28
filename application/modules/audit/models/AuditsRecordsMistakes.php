@@ -304,8 +304,10 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		$tableAWatches = new Audit_Model_WatchesMistakes();
 		$tableAAudits = new Audit_Model_AuditsMistakes();
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
 		$nameAWatches = $tableAWatches->info("name");
 		$nameAAudits = $tableAAudits->info("name");
+        $nameSubsidiary = $tableSubsidiaries->info("name");
 		
 		// sestaveni vyhledavaciho dotazu
 		$select = new Zend_Db_Select($this->getAdapter());
@@ -318,6 +320,13 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 		$select->joinLeft($nameAAudits, "$nameAAudits.mistake_id = id and $nameAAudits.is_submited", array())
 				->joinLeft($nameAWatches, "$nameAWatches.mistake_id = id and $nameAWatches.is_submited", array());
 		
+        // propojeni s tabulkou pobocek
+        $select->joinInner($nameSubsidiary, "id_subsidiary = $this->_name.subsidiary_id", array(
+            "subsidiary_name",
+            "subsidiary_town",
+            "subsidiary_street"
+        ));
+        
 		// vlozeni omezeni z parametru
 		foreach ($where as $cond => $val) {
 			if (is_numeric($cond)) {
