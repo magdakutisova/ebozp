@@ -4,13 +4,13 @@
 		<ul><?php foreach ($this->subsidiaries as $subsidiary){ 
 			$item = $subsidiary["subsidiary"];
 			
-			if ($item->getHq()){
+			if ((int) $item->getHq()){
 			?>
 			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId()), 'clientIndex') ?>"><?php printf("%s, %s, %s (centrála)", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
 			<?php 
 			} else {
 			?>
-			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId(), 'subsidiary' => $item->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php printf("%s, %s %s (centrála)", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
+			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId(), 'subsidiary' => $item->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php printf("%s, %s %s", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
 		<?php }
 		}?></ul>
 	</div>

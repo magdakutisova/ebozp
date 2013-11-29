@@ -56,7 +56,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 				"multiOptions" => array(
 						self::TARGET_UNDEFINED => "Jiný typ",
 						self::TARGET_EMPLOYEE => "Zaměstnance",
-						self::TARGET_CHEMICAL => "Chemické látky",
+						/* v budoucnu k odebrani self::TARGET_CHEMICAL => "Chemické látky", */
 						self::TARGET_DEVICE => "Technického zařízení")
 				));
 		

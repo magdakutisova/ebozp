@@ -3,6 +3,17 @@ require_once (APPLICATION_PATH . "/modules/deadline/controllers/DeadlineControll
 
 class Audit_WatchController extends Zend_Controller_Action {
 	
+    protected $_standardDiscused = array(
+        "Byla provedena roční prověrka v oblasti BOZP a PO. Z prověrky bude pořízen samostatný zápis včetně výčtu zjištěných závad.",
+        "Byla provedena kontrola odstraněných závad z minulých kontrol.",
+        "Byla provedena kontrola pracoviště, zda jsou dodržovány předpisy v oblasti BOZP a PO.",
+        "Byla provedena kontrola zavedené dokumentace BOZP a PO.",
+        "Byla provedena kontrola lhůt školení zaměstnanců a revizí a kontrol.",
+        "Proveden zápis do požární knihy o provedené preventivní požární prohlídce v rámci roční prověrky BOZP a PO.",
+        "Bylo provedeno školení vedoucích zaměstnanců BOZP a PO.",
+        "Byla zavedena kniha kontrol BOZP a PO."
+    );
+    
 	public function init() {
 		$this->view->layout()->setLayout("client-layout");
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
@@ -443,6 +454,16 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$watch = $tableWatches->createRow($data);
 		$watch->save();
+        
+        // zapis standardnich prodiskutovanych
+        $tableDiscusseds = new Audit_Model_WatchesDiscussed();
+        
+        foreach ($this->_standardDiscused as $content) {
+            $tableDiscusseds->insert(array(
+                "content" => $content,
+                "watch_id" => $watch->id
+            ));
+        }
 		
 		// vyhodnoceni, zda se jedna o dohlidku spolecne s proverkou/auditem
 		if (!$watch->also_audit) {
