@@ -19,7 +19,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$clientId = $this->_request->getParam("clientId", null);
 		$form->setAction("/deadline/deadline/post?clientId=$clientId");
 
-		$form->isValidPartial($this->_request->getParams());
+        if ($this->_request->getActionName() != "create")
+            $form->isValidPartial($this->_request->getParams());
 
 		// nacteni kategorii
 		$tableCategories = new Deadline_Model_Categories();

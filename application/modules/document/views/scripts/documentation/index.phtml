@@ -5,6 +5,8 @@ var CLIENT_ID = <?php echo $this->client->id_client; ?>;
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
+$subsidiaryId = Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId");
+
 // vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
 $editable = $acl->isAllowed($user->role, "document:documentation", "put");
 ?>

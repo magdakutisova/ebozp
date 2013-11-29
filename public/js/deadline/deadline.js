@@ -102,6 +102,9 @@ $(function () {
 	function onBlur() {
 		var replacer = $(this);
 		
+        if (objs.specific === undefined) return true;
+        if (objs.specific.length == 0) return true;
+        
 		if (replacer.val() === "") {
 			// prohozeni dat
 			replaced = false;
