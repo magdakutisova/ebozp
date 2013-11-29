@@ -28,4 +28,6 @@ if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {
 	
 	echo $this->importForm;
 }
+
+echo $this->action("all", "index", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
 ?>

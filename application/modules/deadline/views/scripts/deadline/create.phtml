@@ -1,6 +1,14 @@
-<h2>Nová lhůta</h2>
 <?php
-echo $this->form;
+// vyhodnoceni skryti formulare
+if (is_null($this->form->getValue("deadline_type"))) {
+    $this->form->setAttrib("style", "display: none;");
+}
+
+printf("<fieldset><legend>Nová lhůta</legend><div>%s</div>%s</fieldset>", 
+        $this->formButton("toggle-new-deadline", "Zobrazit/skrýt přidání nové lhůty", array(
+            "onclick" => "$('#deadlinefilter').toggle()"
+        )),
+        $this->form);
 ?>
 <script type="text/javascript" src="/js/deadline/deadline.js"></script>
 <script type="text/javascript">

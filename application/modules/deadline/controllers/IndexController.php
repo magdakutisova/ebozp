@@ -5,6 +5,35 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->layout()->setLayout("client-layout");
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 	}
+    
+    public function allAction() {
+        // nacteni dat
+		$filter = $this->_request->getParam("filter", array());
+		$filter["clientId"] = $this->_request->getParam("clientId", 0);
+		$filter["subsidiaryId"] = $this->_request->getParam("subsidiaryId", 0);
+	
+        $filterForm = new Deadline_Form_Filter();
+        $filterForm->populate($this->_request->getParams());
+        
+        // nastaveni zobrazeni dat, pokud neni nastaveno
+        if (is_null($this->_request->getParam("filter"))) {
+            $filterForm->populate(array(
+                "clsok" => "",
+                "clsclose" => "deadline-yellow",
+                "clsinvalid" => "mistake-marked"
+            ));
+        }
+        
+        if (is_null($filterForm->getValue("subsidiary_id"))) {
+            $filterForm->getElement("subsidiary_id")->setValue($this->_request->getParam("subsidiaryId"));
+        }
+        
+		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_ALL, $filter, $filterForm);
+	
+		$this->view->deadlines = $deadlines;
+		$this->view->filterSet = $this->_request->getParam("filter", array());
+		$this->_prepareFilterForm($deadlines, $filterForm);
+    }
 	
 	public function deviceAction() {
 		// nacteni dat
@@ -242,6 +271,25 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$select->where("employee_id IS NULL")->where("technical_device_id IS NULL")->where("chemical_id IS NULL");
 				$select->columns(array("name" => new Zend_Db_Expr("''")));
 				break;
+            
+            case Deadline_Form_Deadline::TARGET_ALL:
+                $tableChemicals = new Application_Model_DbTable_Chemical();
+				$nameChemicals = $tableChemicals->info("name");
+				$select->joinLeft($nameChemicals, "chemical_id = id_chemical", array());
+                
+				$select->joinLeft($nameDevices, "technical_device_id = id_technical_device", array());
+                
+				$tableEmployees = new Application_Model_DbTable_Employee();
+				$nameEmployees = $tableEmployees->info("name");
+		
+				$select->joinLeft($nameEmployees, "employee_id = $nameEmployees.id_employee", array());
+                
+                // pripojeni jmena
+                $select->columns(array(
+                    "name" => new Zend_Db_Expr("CONCAT(IFNULL($devName, ''), IFNULL($empName, ''), IFNULL($chemName, ''))")
+                ));
+              
+                break;
 		
 			default:
 				throw new Zend_Db_Table_Exception("Invalid type of filter");

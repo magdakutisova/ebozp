@@ -9,7 +9,8 @@ $params = array(
 
 $url = $this->url($params, "deadline-index");
 
-printf("<a href='%s'>Zpět na výběr kategorie lhůty</a>", $url);
+if (!$this->disableReturnLink)
+    printf("<a href='%s'>Zpět na výběr kategorie lhůty</a>", $url);
 
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
@@ -28,12 +29,15 @@ if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
 
 echo $this->formHidden("CLIENT_ID", $clientId);
 
-echo $this->filterForm;
-echo sprintf("<div>%s</div>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"));
+$this->filterForm->setAttrib("style", "display: none; ");
+
+printf("<fieldset><legend>Filtrace</legend><div>%s</div>%s</fieldset>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"), $this->filterForm);
 
 // nastaveni for,ulůare - mozna pozdeji osetrit pravy
 
 // nacteni ACL a vyhodnoceni akci
 echo $this->deadlineTable($this->deadlines, $options);
+
+if (Zend_Controller_Front::getInstance()->getRequest()->getActionName() !== "index")
+    echo "<script type=\"text/javascript\" src=\"/js/deadline/deadline.js\"></script>";
 ?>
-<script type="text/javascript" src="/js/deadline/deadline.js"></script>

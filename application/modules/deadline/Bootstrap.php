@@ -82,5 +82,16 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "device"
 						))
 		);
+        
+        // seznam vsech lhut
+		$router->addRoute(
+				"deadline-all",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadlines/all",
+						array(
+								"module" => "deadline",
+								"controller" => "index",
+								"action" => "all"
+						))
+		);
 	}
 }

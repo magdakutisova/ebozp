@@ -5,6 +5,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 	const TARGET_CHEMICAL = 2;
 	const TARGET_DEVICE = 3;
 	const TARGET_UNDEFINED = 4;
+    const TARGET_ALL = 15;
 	
 	const RESP_EXTERNAL = 4;
 	const RESP_GUARD = 5;
