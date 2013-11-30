@@ -78,7 +78,8 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error'));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, "audit:audit", array("list", "get"));
-		$this->allow($client, "audit:mistake", array("get", "get.html", "index"));
+		$this->allow($client, "audit:mistake");
+        $this->deny($client, "audit:mistake", "import");
 		$this->allow($client, "audit:report", array("get", "preview.pdf"));
 		$this->allow($client, "audit:form", array("get"));
 		$this->deny($client, "document:directory", array("editother", "showall", "post", "delete"));				// pomocne akce - editother umoznuje editovat cizi adresare a show all umoznuje pristup k cizim adresarum
@@ -94,7 +95,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'chemical', array('edit', 'delete'));
 		$this->deny($client, 'employee', array('edit', 'delete'));
 		$this->allow($client, "deadline:index");
-		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put"));
+		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put", "create", "create.html", "post.html", "submit", "submits"));
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
 		$this->allow($client, "audit:farplan", array("get"));
 		$this->deny($client, "client", "archivelist");

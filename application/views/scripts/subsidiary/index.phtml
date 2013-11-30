@@ -12,9 +12,14 @@ $user = Zend_Auth::getInstance()->getIdentity();
 <div class="box overflow span-11" id="informations">
 		<?php echo $this->subsidiary();?>
 	</div>
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Hodnota rizika u klienta</h3>
+<div><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></div></div>
 
-<div class="span-5 overflow push-1 box width-200"><h3>Hodnota rizika pobočky</h3>
-<p><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></p></div>
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Kontakty na G U A R D 7, v.o.s.</h3>
+<strong>Adresa</strong>: Divišova 235. 530 03 Pardubice<br />
+<strong>Telefon</strong>: 466 535 700<br />
+<strong>Email</strong>: guardian@guard7.cz
+</div>
 <?php 
 // pokud se jedna pouze o sidlo, nebude se dal ve vypisech pokracovat
 if ($this->subsidiary['subsidiary']->getHqOnly()) return;
@@ -28,22 +33,40 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	 | <?php }?><a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiary['subsidiary']->getIdSubsidiary(), 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
+     | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
+     | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-mistakes-index-subs"); ?>">Neshody</a>
 	 | 
 	 <?php } ?>
 	 <a class='large' href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-list"); ?>">Audity</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
-	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "document-documentation-index") . "?subId=" . $this->subsidiary['subsidiary']->getIdSubsidiary(); ?>">Dokumentace</a>
-	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-mistakes-index-subs"); ?>">Neshody</a>
+	 
 </div>
 
 <?php 
-// pokud se jedna o klienta, pak se vse ostatni skryje
-if ($user->role == My_Role::ROLE_CLIENT) return;
+// pokud se jedna o klienta, pak se zobrazi vypisy neshod a lhut
+if ($user->role == My_Role::ROLE_CLIENT) {
+    $request = Zend_Controller_Front::getInstance()->getRequest();
+    $request->setParam("subsidiaryId", $this->subsidiary["subsidiary"]->getIdSubsidiary());
+    $params = $request->getParams();
+    $params["subsidiaryId"] = $this->subsidiary["subsidiary"]->getIdSubsidiary();
+    
+    echo "<h3 id='deadlines'>Lhůty</h3>";
+    printf("<fieldset><legend>Nová lhůta</legend>%s</fieldset>",
+            $this->formButton("new-deadline", "Přidat novou lhůtu")
+    );
+    
+    echo $this->action("all", "index", "deadline", $params);
+    
+    $request->setParam("subsidiaryId", null);
+    
+    echo "<h3 id='mistakes'>Neshody</h3>";
+    echo $this->action("index", "mistake", "audit", $params);
+    
+    return;
+}
 
 if ($acl->isAllowed($user->role, "task", "index")) {
 ?>

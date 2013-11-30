@@ -133,11 +133,8 @@ if (!$this->watch->also_audit) {
 	<div id="tab-deadlines">
 		<?php 
 		echo "<p>";
-		echo $this->formButton("new-deadline", "Zobrazit/skrýt novou lhůtu");
+		echo $this->formButton("new-deadline", "Přidat novou lhůtu");
 		echo "</p>";
-		echo "<div id='deadlineform-container' style='display: none;'>";
-		echo $this->action("create.html", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
-		echo "</div>";
 		
 		$options = array(
 				"buttons" => array(
@@ -162,6 +159,8 @@ if (!$this->watch->also_audit) {
 		
 		echo $this->deadlineTable($this->deadlines, $options);
 		echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
+        
+        $this->headScript()->appendFile("/js/deadline/deadline.js");
 		?>
 	</div>
 <?php 

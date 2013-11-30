@@ -189,10 +189,6 @@ $(function () {
 		// otevreni iframe dialogu s editaci lhuty
 		$.iframeDialog(url, 800, 400, "Úprava lhůty");
 	}
-	
-	function toggleFilter() {
-		$("#deadlinefilter").toggle();
-	}
     
     function sendNewObject() {
         // nacteni dat z formulare
@@ -276,11 +272,17 @@ $(function () {
         }, "html");
     }
     
+    function openNewDeadlineForm() {
+        var url = "/deadline/deadline/create.html?clientId=" + CLIENT_ID + "&subsidiaryId=" + SUBSIDIARY_ID;
+        
+        $.iframeDialog(url, 700, 500, "Nová lhůta", "refresh")
+    }
+    
+    $("button#new-deadline").click(openNewDeadlineForm);
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
     $("#deadline-subsidiary_id,#deadline-deadline_type").change(submitDeadlineForm);
 	$("#deadlinetable tbody tr td button").filter("[name='edit']").click(openEdit).end().filter("[name='get']").click(openGet);
-	$("#deadline-filter-toggle").click(toggleFilter);
 	
 	$("#deadline-done_at,#deadline-last_done").datepicker({
 		"dateFormat" : "yy-mm-dd",

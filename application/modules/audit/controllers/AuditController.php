@@ -1023,6 +1023,24 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$postForm->removeElement("new_workplace");
 		$postForm->removeElement("workplaces");
 		$postForm->removeElement("workplaceList");
+        
+        // vedouci
+        $formBoss = new Application_Form_ResponsibleEmployee();
+    	$formBoss->clientId->setValue($this->_clientId);
+    	$formBoss->removeElement('save_responsible_employee');
+    	$elementDecorator2 = array(
+    			'ViewHelper',
+    			array('Errors'),
+    			array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+    			array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+    	);
+    	$formBoss->addElement('button', 'save_boss', array(
+				'decorators' => $elementDecorator2,
+				'label' => 'Uložit zaměstnance',
+    			));
+    	$formBoss->save_boss->setAttrib('class', array('boss', 'workplace', 'ajaxSave'));
+    	$formBoss->setName('boss');
+        
 		$workForm = new Application_Form_Work();
 		$this->view->workForm = $workForm;
 		$techForm = new Application_Form_TechnicalDevice();
@@ -1031,6 +1049,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->chemForm = $chemForm;
 		$folderForm = new Application_Form_Folder();
 		$this->view->folderForm = $folderForm;
+        $this->view->bossForm = $formBoss;
 		
 	}
 	

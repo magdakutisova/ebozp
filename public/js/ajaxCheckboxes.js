@@ -268,7 +268,7 @@ $(function(){
 	
 	$('#new_boss').click(function(){
 		$('#new_boss_form input[type=text]').val('');
-		validatorBoss.resetForm();
+        validatorBoss.resetForm();
 		$('#new_boss_form').dialog('open');
 	});
 	

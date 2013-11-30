@@ -144,6 +144,8 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 	</div>
 	<div id="deadlines">
 	<?php 
+    printf("<p>%s</p>", $this->formButton("new-deadline", "Přidat novou lhůtu"));
+    
 	$options = array(
 			"buttons" => array(
 					"show" => array(
@@ -165,6 +167,8 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 	
 	echo $this->deadlineTable($this->deadlines, $options);
 	echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
+    
+    $this->headScript()->appendFile("/js/deadline/deadline.js");
 	?>
 	</div>
 	<div id="newworkplace">
@@ -194,4 +198,9 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 <div class="hidden" id="new_folder_form">
 	<?php echo $this->folderForm; ?>
 </div>
-<script type="text/javascript" src="/js/audit/audit/edit.js"></script>
+<div class="hidden" id="new_boss_form">
+    <?php echo $this->bossForm; ?>
+</div>
+<?php
+$this->headScript()->appendFile("/js/audit/audit/edit.js");
+?>

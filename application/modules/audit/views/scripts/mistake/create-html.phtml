@@ -1,3 +1,5 @@
 <?php
-$this->layout()->disableLayout();
+$this->layout()->setLayout("floating-layout");
 echo "<div>$this->form</div>";
+
+$this->headScript()->appendFile("/js/audit/mistake/create.js");

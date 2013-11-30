@@ -16,7 +16,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
         $filterForm->populate($this->_request->getParams());
         
         // nastaveni zobrazeni dat, pokud neni nastaveno
-        if (is_null($this->_request->getParam("filter"))) {
+        if (is_null($this->_request->getParam("clsok"))) {
             $filterForm->populate(array(
                 "clsok" => "",
                 "clsclose" => "deadline-yellow",
@@ -147,16 +147,18 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
         // nastaveni filtru z formulare
         $filterVals = $filterForm->getValues(true);
+        $tableDeadlines = new Deadline_Model_Deadlines();
+        $nameDeadlines = $tableDeadlines->info("name");
         
         foreach ($filterVals as $key => $val) {
             if ($val && $key[0] != 'c') {
                 switch ($key) {
                     case "specific":
                     case "kind":
-                        $select->where("`$key` like ?", $val);
+                        $select->where("$nameDeadlines.`$key` like ?", $val);
                         
                     default:
-                        $select->where("`$key` = ?", $val);
+                        $select->where("$nameDeadlines.`$key` = ?", $val);
                 }
             }
         }

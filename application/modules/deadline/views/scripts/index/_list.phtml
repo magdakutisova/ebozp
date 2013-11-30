@@ -29,15 +29,14 @@ if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
 
 echo $this->formHidden("CLIENT_ID", $clientId);
 
-$this->filterForm->setAttrib("style", "display: none; ");
+$this->filterForm->setAction("#deadlines");
 
-printf("<fieldset><legend>Filtrace</legend><div>%s</div>%s</fieldset>", $this->formButton("deadline-filter-toggle", "Zobrazit/skrýt filtraci"), $this->filterForm);
+echo $this->showHidePanel($this->filterForm, "Filtrace", "Zobrazit/skrýt filtraci", true);
 
-// nastaveni for,ulůare - mozna pozdeji osetrit pravy
+// nastaveni formulare - mozna pozdeji osetrit pravy
 
 // nacteni ACL a vyhodnoceni akci
 echo $this->deadlineTable($this->deadlines, $options);
 
-if (Zend_Controller_Front::getInstance()->getRequest()->getActionName() !== "index")
-    echo "<script type=\"text/javascript\" src=\"/js/deadline/deadline.js\"></script>";
+$this->headScript()->appendFile("/js/deadline/deadline.js");
 ?>

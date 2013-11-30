@@ -63,7 +63,8 @@ class Deadline_Form_Deadline extends Zend_Form {
         $this->addElement("select", "kind", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
-				"label" => "Druh"
+				"label" => "Druh",
+            "registerInArrayValidator" => true
 		));
         
 		$this->addElement("select", "type", array(
@@ -74,13 +75,15 @@ class Deadline_Form_Deadline extends Zend_Form {
 					self::TYPE_OTHER => "Jiná",
 					self::TYPE_ELEARNING => "E-learning",
 					self::TYPE_PRESENT => "Prezenční"
-				)
+				),
+            "registerInArrayValidator" => false
 		));
 		
 		$this->addElement("select", "specific", array(
 				"decorators" => $elementDecorator,
 				"required" => true,
-				"label" => "Specifikace"
+				"label" => "Specifikace",
+            "registerInArrayValidator" => true
 		));
 		
 		$this->addElement("select", "object_id", array(

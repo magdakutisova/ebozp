@@ -30,6 +30,32 @@ $(function () {
 			context.replaceWith($("<input type='text' />").attr("id", context.attr("id")).attr("name", context.attr("name")));
 		}
 	}
+    
+    function validate() {
+        // kontrola datumu
+        var dateStr = $(this).find("input[name='mistake[will_be_removed_at]']").val();
+        
+        if (dateStr.length == "") return true;
+        
+        // prevod na cislo
+        var dateArr = dateStr.split(". ");
+        var date = Number(dateArr[2] + dateArr[1] + dateArr[0]);
+        
+        var dateObj = new Date();
+        var today = dateObj.getFullYear() * 10000 + (dateObj.getUTCMonth() + 1) * 100 + dateObj.getUTCDate();
+        
+        if (date < today) {
+            var row = $(this).find("input[name='mistake[will_be_removed_at]']").parents("tr:first");
+            row.addClass("error");
+            
+            row.find("ul").remove();
+            row.find("td:last").append($("<ul>").append("<li>").text("Navrhované datum odstranění nesmí být dřív než dnešní datum"))
+            
+            return false;
+        }
+        
+        return true;
+    }
 	
 	$("#mistake-will_be_removed_at").datepicker({
 		"dateFormat" : "dd. mm. yy",
@@ -37,6 +63,8 @@ $(function () {
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
 		"firstDay" : 1
 	});
+    
+    $("#mistakepost").submit(validate);
 	
 	$("#mistake-category").change(checkCategory).change();
 	//$("#mistake-subcategory").change(checkSubcategory);

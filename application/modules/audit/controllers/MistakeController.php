@@ -142,7 +142,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$form->setAction("/audit/mistake/post?clientId=" . $this->_request->getParam("clientId", 0));
 		
 		$this->_preprareCreateForm($form);
-		$form->setFilledCategory($_REQUEST["mistake"]["category"], $_REQUEST["mistake"]["subcategory"]);
+		$form->setFilledCategory(@$_REQUEST["mistake"]["category"], @$_REQUEST["mistake"]["subcategory"]);
 		
 		$form->isValidPartial($this->_request->getParams());
 		

@@ -8,14 +8,13 @@ $clientId = $this->client->id_client;
 var CLIENTID = <?php echo $this->client->id_client; ?>
 </script>
 <?php
-echo $this->formButton("toggle-filter", "Zobrazit/skrýt filtraci");
-
 if ($acl->isAllowed($user->role, "audit:mistake", "post")) {
-	echo $this->formButton("new-mistake", "Přidat novou neshodu");
+	printf("<fieldset><legend>Nová neshoda</legend>%s</fieldset>", $this->formButton("new-mistake", "Přidat novou neshodu"));
 }
 
-$this->formFilter->setAttrib("style", "display:none");
-echo $this->formFilter;
+$this->formFilter->setAction("#mistakes");
+
+echo $this->showHidePanel($this->formFilter, "Filtrace", "Zobrazit/skrýt filtraci", true);
 ?>
 <?php printf("<form action='/audit/mistake/submits?clientId=%s' method='post' onsubmit='return confirm(\"Provedené změny již nepůjdou vrátit zpět. Skutečně pokračovat?\")'>", $clientId); ?>
 <table id="mistake-list" class="multirow-table">
@@ -89,5 +88,6 @@ if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 <b>Pozor! při importu budou všechny stávající neshody, které nejsou vázány na audit smazány a nahrazeny novými!</b>
 <?php 
 }
+
+$this->headScript()->appendFile("/js/audit/mistake/index.js");
 ?>
-<script type="text/javascript" src="/js/audit/mistake/index.js"></script>

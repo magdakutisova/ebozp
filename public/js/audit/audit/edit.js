@@ -129,7 +129,7 @@ $(function () {
 	$("#new-workplace").click(toggleWorkplace);
 	$("#audit-contactperson_id").change(checkContact).change();
 	
-	$("#deadlinetable button[name='show']").click(openDeadline);
-	$("#deadlinetable button[name='edit']").click(editDeadline);
+	$("#deadlinetable button[name='show']").unbind("click").click(openDeadline);
+	$("#deadlinetable button[name='edit']").unbind("click").click(editDeadline);
 	$("#add-deadlines").click(openDeadList);
 });

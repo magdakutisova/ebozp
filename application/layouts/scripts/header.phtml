@@ -3,6 +3,10 @@ $this->headMeta ()->appendHttpEquiv ( 'Content-Type', 'text/html;charset=utf-8' 
 $this->headTitle ()->setSeparator ( ' - ' );
 $this->headTitle ( 'Guardian' );
 echo $this->doctype ();
+
+// zaloha javascriptu zapsanych behem generovani view
+$jsScripts = $this->headScript()->__toString();
+$this->headScript()->exchangeArray(array());
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -30,6 +34,7 @@ echo $this->doctype ();
 		
 	<?php echo $this->headLink()?>
 	<?php echo $this->headScript()?>
+    <?php echo $jsScripts; ?>
     <script type="text/javascript">
 var CLIENT_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")) ?>;
 var SUBSIDIARY_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId")) ?>;

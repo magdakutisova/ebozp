@@ -177,6 +177,17 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	}
 	
 	public function postHtmlAction() {
+        // vytvoreni instance formulare
+		$form = new Deadline_Form_Deadline();
+		$form->populate($this->_request->getParams());
+		self::prepareDeadlineForm($form, $this->_request->getParam("clientId"), $this->_request->getParam("subsidiaryId"));
+		
+		// kontrola validity
+		if (!$form->isValid($this->_request->getParams())) {
+			$this->_forward("create.html");
+			return;
+		}
+        
 		$this->postAction();
 	}
 	

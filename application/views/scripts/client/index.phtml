@@ -1,6 +1,8 @@
 <?php 
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
+
+printf("<script type='text/javascript'>var SUBSIDIARY_ID = %s</script>", $this->subsidiaryId);
 ?>
 <div class="box" id="pobocky">
 		<?php echo $this->form; ?>
@@ -10,9 +12,14 @@ $user = Zend_Auth::getInstance()->getIdentity();
 		<?php echo $this->client();?>
 </div>	
 
-<div class="span-5 floating-box"><h3>Hodnota rizika u klienta</h3>
-<p><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></p></div>
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Hodnota rizika u klienta</h3>
+<div><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></div></div>
 
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Kontakty na G U A R D 7, v.o.s.</h3>
+<strong>Adresa</strong>: Divišova 235. 530 03 Pardubice<br />
+<strong>Telefon</strong>: 466 535 700<br />
+<strong>Email</strong>: guardian@guard7.cz
+</div>
 <div class="span-5 floating-box">
 <?php if(!$this->archived){?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Edituj klienta</a>
@@ -31,22 +38,39 @@ if ($user->role != My_Role::ROLE_CLIENT) {
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'positionList')?>">Pracovní pozice</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'vse'), 'workplaceList')?>">Pracoviště</a>
 	 | <a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient(), 'subsidiaryId' => $this->subsidiaryId, 'filter' => 'podle-pracovist'), 'workList')?>">Pracovní činnosti</a>
+	 | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
+     | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-mistakes-index-subs"); ?>">Neshody</a>
 	 | 
 	 <?php } ?>
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiaryId), "audit-list"); ?>">Audity</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiaryId), "deadline-index"); ?>">Lhůty</a>
-	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "audit-watch-index-client"); ?>">Dohlídky</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "document-documentation-index") . "?subId=" . $this->subsidiaryId; ?>">Dokumentace</a>
-	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiaryId), "audit-mistakes-index-subs"); ?>">Neshody</a>
 </div>
 
 <?php 
-// pokud se jedna o klienta, pak se vse ostatni skryje
-if ($user->role == My_Role::ROLE_CLIENT) return;
+// pokud se jedna o klienta, pak se zobrazi vypisy neshod a lhut
+if ($user->role == My_Role::ROLE_CLIENT) {
+    $request = Zend_Controller_Front::getInstance()->getRequest();
+    $request->setParam("subsidiaryId", $this->subsidiaryId);
+    $params = $request->getParams();
+    $params["subsidiaryId"] = $this->subsidiaryId;
+    
+    echo "<h3 id='deadlines'>Lhůty</h3>";
+    printf("<fieldset><legend>Nová lhůta</legend>%s</fieldset>",
+            $this->formButton("new-deadline", "Přidat novou lhůtu")
+    );
+    
+    echo $this->action("all", "index", "deadline", $params);
+    
+    $request->setParam("subsidiaryId", null);
+    
+    echo "<h3 id='mistakes'>Neshody</h3>";
+    echo $this->action("index", "mistake", "audit", $params);
+    
+    return;
+}
 
 if ($acl->isAllowed($user->role, "task", "index")) {
 ?>

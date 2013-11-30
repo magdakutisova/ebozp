@@ -20,7 +20,9 @@ $acl = new My_Controller_Helper_Acl();
 $user = Zend_auth::getInstance()->getIdentity();
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "post")) {
-	echo $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
+	$content = $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
+    
+    echo $this->showHidePanel($content, "Nová lhůta", "Zobrazit/skrýt formulář", true);
 }
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {

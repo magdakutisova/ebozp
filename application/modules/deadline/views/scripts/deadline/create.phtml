@@ -1,16 +1,8 @@
 <?php
-// vyhodnoceni skryti formulare
-if (is_null($this->form->getValue("deadline_type"))) {
-    $this->form->setAttrib("style", "display: none;");
-}
+echo $this->form;
 
-printf("<fieldset><legend>Nová lhůta</legend><div>%s</div>%s</fieldset>", 
-        $this->formButton("toggle-new-deadline", "Zobrazit/skrýt přidání nové lhůty", array(
-            "onclick" => "$('#deadlinefilter').toggle()"
-        )),
-        $this->form);
+$this->headScript()->appendFile("/js/deadline/deadline.js");
 ?>
-<script type="text/javascript" src="/js/deadline/deadline.js"></script>
 <script type="text/javascript">
 var DEADLINE_CATEGORIES = <?php echo Zend_Json::encode($this->categories); ?>
 </script>

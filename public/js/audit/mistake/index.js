@@ -84,30 +84,12 @@ $(function() {
 
 		if (subsidiaryId)
 			data["mistake[subsidiary_id]"] = subsidiaryId;
-
-		// nacteni dat a otevreni dialogu
-		$.get("/audit/mistake/create.html", data, function(response) {
-			response = $(response);
-			response.find("#mistake-subsidiary_id").change(loadWorkplaces);
-            response.find("#mistake-category").change(checkCategory).change();
-			response.find("#mistake-will_be_removed_at,#mistake-notified_at")
-					.datepicker(
-							{
-								"dateFormat" : "dd. mm. yy",
-								"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
-								"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
-								"firstDay" : 1
-							});
-
-			$("<div />").append(response).dialog({
-				modal : true,
-				resizable : false,
-				draggable : false,
-				width : 700
-			});
-            
-            response.find("#mistake-category").change();
-		}, "html");
+        
+        var url = "/audit/mistake/create.html?clientId=" + CLIENT_ID + "&mistake[subsidiary_id]=" + SUBSIDIARY_ID;
+        
+        $.iframeDialog(url, 800, 500, "Nová neshoda", "refresh");
+        
+        return;
 	}
     
 	$("#mistake-list button").click(openMistake);
