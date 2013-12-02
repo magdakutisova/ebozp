@@ -33,7 +33,11 @@
 		
 		$url = "/audit/watch/submit?watchId=" . $this->watch->id;
 		
-		echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>"
+        if ($watch->time_from && $watch->time_to) {
+            echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>";
+        } else {
+            echo "<p><strong>Před uzavřením dohlídky vyplňte čas začátku a konce</strong></p>";
+        }
 		?>
 		<div id="other-contact-person">
 		<h2>Jiný zástupce klienta</h2>

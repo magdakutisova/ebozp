@@ -1,0 +1,11 @@
+<?php
+$params = array(
+    "auditId" => $this->audit->id,
+    "clientId" => $this->audit->client_id,
+    "subsidiaryId" => $this->audit->subsidiary_id
+);
+
+$url = $this->url($params, "audit-edit");
+
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+$redirector->gotoUrlAndExit($url);

@@ -53,6 +53,54 @@ class Audit_FormController extends Zend_Controller_Action {
 		// presmerovani na index
 		$this->_redirect("/audit/form/index");
 	}
+    
+    /**
+     * odebere formular z auditu
+     */
+    public function dettachAction() {
+        // nacteni dat
+        $formId = $this->_request->getParam("formId");
+        $auditId = $this->_request->getParam("auditId");
+        
+        $tableAudits = new Audit_Model_Audits();
+        $tableForms = new Audit_Model_AuditsForms();
+        
+        // nacteni auditu
+        $audit = $tableAudits->getById($auditId);
+        if (!$audit) throw new Zend_Db_Table_Exception(sprintf("audit #%s not found", $auditId));
+        
+        // nacteni formulare
+        $form = $tableForms->fetchRow(array("id = ?" => $formId, "audit_id = ?" => $auditId));
+        if (!$form) throw new Zend_Db_Table_Exception("form #%s not found in audit #%s", $formId, $auditId);
+        
+        // vytvoreni dodatecnych tabulek
+        $tableRecords = new Audit_Model_AuditsRecords();
+        $tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        
+        // smazani neshod
+        
+        // vytvoreni vyhledavaciho dotazu
+        $adapter = $tableAudits->getAdapter();
+        $select = new Zend_Db_Select($adapter);
+        
+        $select->from($tableRecords->info("name"), array("id"));
+        $select->where("audit_form_id = ?", $formId);
+        
+        $tableMistakes->delete(array(
+            "audit_id = ?" => $auditId,
+            "record_id in (?)" => new Zend_Db_Expr($select->assemble())
+        ));
+        
+        // smazani zaznamu
+        $tableRecords->delete(array(
+            "audit_form_id = ?" => $formId
+        ));
+        
+        // smazani formulare
+        $form->delete();
+        
+        $this->view->audit = $audit;
+    }
 	
 	/*
 	 * zobrazi formular pro editaci

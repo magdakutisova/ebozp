@@ -1026,7 +1026,7 @@ class Audit_AuditController extends Zend_Controller_Action {
         
         // vedouci
         $formBoss = new Application_Form_ResponsibleEmployee();
-    	$formBoss->clientId->setValue($this->_clientId);
+    	$formBoss->clientId->setValue($this->_audit->client_id);
     	$formBoss->removeElement('save_responsible_employee');
     	$elementDecorator2 = array(
     			'ViewHelper',

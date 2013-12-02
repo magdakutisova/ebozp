@@ -7,5 +7,7 @@ $url = $this->url(array("watchId" => $watch->id, "clientId" => $watch->client_id
 echo "<a href='$url'>Zpět na dohlídku</a>";
 
 echo $this->form;
+
+$this->headScript()->appendFile("/js/audit/watch.js");
+$this->headScript()->appendFile("/js/audit/mistake/create.js");
 ?>
-<script type="text/javascript" src="/js/audit/watch.js"></script>

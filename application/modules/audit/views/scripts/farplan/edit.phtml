@@ -17,7 +17,7 @@ echo $this->farplan($this->farplanData, array("checkbox" => true, "form" => true
 
 // formular pro smazani
 $url = "/audit/farplan/delete";
-$submit = $this->formSubmit("delete-submit", "Smazat farplán");
+$submit = $this->formSubmit("delete-submit", "Smazat osnovu");
 $hidden = $this->formHidden("farplanId", $this->farplan->id);
 
-printf("<form action='%s' onsubmit='return confirm(\"Skutečně odstranit farplán?\")'>%s%s</form>", $url, $hidden, $submit);
+printf("<form action='%s' onsubmit='return confirm(\"Skutečně odstranit osnovu?\")'>%s%s</form>", $url, $hidden, $submit);

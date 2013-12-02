@@ -12,10 +12,10 @@ $user = Zend_Auth::getInstance()->getIdentity();
 <div class="box overflow span-11" id="informations">
 		<?php echo $this->subsidiary();?>
 	</div>
-<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Hodnota rizika u klienta</h3>
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;" title="součet závažností všech neodstraněných neshod">Hodnota rizika u klienta</h3>
 <div><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></div></div>
 
-<div class="span-5 floating-box"><h3 style="margin-top: 0px;">Kontakty na G U A R D 7, v.o.s.</h3>
+<div class="span-5 floating-box"><h3 style="margin-top: 0px;">G U A R D 7, v.o.s.</h3>
 <strong>Adresa</strong>: Divišova 235. 530 03 Pardubice<br />
 <strong>Telefon</strong>: 466 535 700<br />
 <strong>Email</strong>: guardian@guard7.cz

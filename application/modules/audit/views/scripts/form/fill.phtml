@@ -151,4 +151,13 @@ echo $this->formHidden("formId", $this->form->id);
 		</tbody>
 	</table>
 </form>
-<script type="text/javascript" src="/js/audit/form/fill.js"></script>
+<?php
+// formular pro smazani
+$url = "/audit/form/dettach";
+$submit = $this->formSubmit("delete-submit", "Smazat formullář");
+$hidden = $this->formHidden("formId", $this->form->id) . $this->formHidden("auditId", $this->auditId);
+
+printf("<form action='%s' onsubmit='return confirm(\"Skutečně odstranit formulář z auditu?\")'>%s%s</form>", $url, $hidden, $submit);
+
+$this->headScript()->appendFile("/js/audit/form/fill.js");
+?>

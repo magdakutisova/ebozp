@@ -107,7 +107,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$form = new Audit_Form_MistakeCreateAlone();
 		$form->setAction($url);
 		$form->isValidPartial($this->_request->getParams());
-		
+		$form->removeElement("is_removed");
+        
 		// prenastaveni vyberu pracovisted
 		$form->removeElement("workplace_id");
 		$form->addElement("select", "workplace_id", array(
@@ -458,11 +459,25 @@ class Audit_WatchController extends Zend_Controller_Action {
         // zapis standardnich prodiskutovanych
         $tableDiscusseds = new Audit_Model_WatchesDiscussed();
         
-        foreach ($this->_standardDiscused as $content) {
-            $tableDiscusseds->insert(array(
-                "content" => $content,
-                "watch_id" => $watch->id
-            ));
+        // nacteni naposledy provedene dohlidky
+        $lastWatch = $tableWatches->fetchRow(array(
+            "subsidiary_id = ?" => $watch->subsidiary_id,
+            "is_closed"
+        ), "watched_at desc");
+        
+        // pokud byla nalezena posledni dohlidka, pak se prekopiruji veci z ni, jinak se nastavi vychozi
+        if ($lastWatch) {
+            $sqlBase = "insert into %s (watch_id, content) select %s, content from %s where watch_id = %s order by id";
+            $sql = sprintf($sqlBase, $tableDiscusseds->info("name"), $watch->id, $tableDiscusseds->info("name"), $lastWatch->id);
+            
+            $tableDiscusseds->getAdapter()->query($sql);
+        } else {
+            foreach ($this->_standardDiscused as $content) {
+                $tableDiscusseds->insert(array(
+                    "content" => $content,
+                    "watch_id" => $watch->id
+                ));
+            }
         }
 		
 		// vyhodnoceni, zda se jedna o dohlidku spolecne s proverkou/auditem
@@ -475,7 +490,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$tableDeadlines = new Audit_Model_WatchesDeadlines();
 			$tableDeadlines->createByWatch($watch);
 		}
-		
+        
 		$this->_helper->FlashMessenger("Dohldíka vytvořena");
 		
 		$this->view->watch = $watch;

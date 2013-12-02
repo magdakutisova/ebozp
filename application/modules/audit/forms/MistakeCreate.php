@@ -126,7 +126,8 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		$this->addElement("checkbox", "is_removed", array(
 				"label" => "Odstraněno",
 				"required" => true,
-				"decorators" => $elementDecorator
+				"decorators" => $elementDecorator,
+                "value" => 0
 		));
 		
 		$this->addElement("hidden", "record_id", array(
