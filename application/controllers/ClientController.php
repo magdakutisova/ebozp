@@ -398,8 +398,15 @@ class ClientController extends Zend_Controller_Action
 						$userSubs = new Application_Model_DbTable_UserHasSubsidiary();
 						$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
 					}
-						
-					$this->_helper->diaryRecord($this->_username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
+					
+                    $identity = Zend_Auth::getInstance()->getIdentity();
+                    $username = $identity->name;
+
+                    if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                        $username .= " (G7)";
+                    }
+                    
+					$this->_helper->diaryRecord($username, 'přidal nového klienta', array('clientId' => $clientId), 'clientIndex', $client->getCompanyName(), $subsidiaryId);
 						
 					//uložení transakce
 					$adapter->commit();
@@ -685,8 +692,14 @@ class ClientController extends Zend_Controller_Action
 				}
 			}
 			
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
 			 
-			$this->_helper->diaryRecord($this->_username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
+			$this->_helper->diaryRecord($username, 'upravil klienta', array('clientId' => $client->getIdClient()), 'clientIndex', $client->getCompanyName(), $subsidiary->getIdSubsidiary());
 			 
 			//uložení transakce
 			$adapter->commit();
@@ -718,8 +731,15 @@ class ClientController extends Zend_Controller_Action
 			$subsidiaryId = $subsidiary->getIdSubsidiary();
 			$clients->deleteClient ( $clientId );
 			//$subsidiaries->deleteSubsidiary($subsidiaryId);
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
 				
-			$this->_helper->diaryRecord($this->_username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
+			$this->_helper->diaryRecord($username, 'smazal klienta', null, null, $companyName, $subsidiaryId);
 				
 			$this->_helper->FlashMessenger ( 'Klient <strong>' . $companyName . '</strong> smazán' );
 			$this->_helper->redirector->gotoRoute ( array (), 'clientList' );
@@ -749,7 +769,14 @@ class ClientController extends Zend_Controller_Action
 				$subsidiaries->updateSubsidiary($subObj);
 			}
 			
-			$this->_helper->diaryRecord($this->_username, 'archivoval klienta', null, null, $companyName, $subsidiaryId);
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
+			$this->_helper->diaryRecord($username, 'archivoval klienta', null, null, $companyName, $subsidiaryId);
 			$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl přesunut do archivu');
 			$this->_helper->redirector->gotoRoute(array(), 'clientList');
 		}
@@ -775,8 +802,15 @@ class ClientController extends Zend_Controller_Action
 			$subObj->setActive(1);
 			$subsidiaries->updateSubsidiary($subObj);
 		}
+        
+        $identity = Zend_Auth::getInstance()->getIdentity();
+        $username = $identity->name;
+
+        if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+            $username .= " (G7)";
+        }
 		
-		$this->_helper->diaryRecord($this->_username, 'obnovil z archivu klienta', null, null, $companyName, $subsidiaryId);
+		$this->_helper->diaryRecord($username, 'obnovil z archivu klienta', null, null, $companyName, $subsidiaryId);
 		$this->_helper->FlashMessenger('Klient <strong>' . $companyName . '</strong> byl obnoven z archivu');
 		$this->_helper->redirector->gotoRoute(array(), 'clientList');
 	}

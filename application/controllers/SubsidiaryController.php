@@ -235,7 +235,14 @@ class SubsidiaryController extends Zend_Controller_Action {
 						$userSubs->addRelation($this->_user->getIdUser(), $subsidiaryId);
 					}
 					
-					$this->_helper->diaryRecord($this->_username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+                    $identity = Zend_Auth::getInstance()->getIdentity();
+                    $username = $identity->name;
+
+                    if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                        $username .= " (G7)";
+                    }
+                    
+					$this->_helper->diaryRecord($username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
 					
 					//uložení transakce
 					$adapter->commit();
@@ -367,8 +374,15 @@ class SubsidiaryController extends Zend_Controller_Action {
 							}
 						}
 					}
+                    
+                    $identity = Zend_Auth::getInstance()->getIdentity();
+                    $username = $identity->name;
+
+                    if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                        $username .= " (G7)";
+                    }
 					
-					$this->_helper->diaryRecord($this->_username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+					$this->_helper->diaryRecord($username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
 					
 					//uložení transakce
 					$adapter->commit();
@@ -460,7 +474,14 @@ class SubsidiaryController extends Zend_Controller_Action {
 			
 			$subsidiaries->deleteSubsidiary ( $subsidiaryId );
 			
-			$this->_helper->diaryRecord($this->_username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
+			$this->_helper->diaryRecord($username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
 			$this->_helper->redirector->gotoRoute (array ('clientId' => $clientId ), 'clientAdmin' );

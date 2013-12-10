@@ -234,10 +234,18 @@ class PositionController extends Zend_Controller_Action
     		
     		//uložení transakce
     		$adapter->commit();
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
     		foreach($positionIds as $positionId){
     			$position = $positions->getPosition($positionId);
     			$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
-    			$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
+    			$this->_helper->diaryRecord($username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     		}
     		$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' přidána.');
     		unset($defaultNamespace->form);
@@ -305,7 +313,15 @@ class PositionController extends Zend_Controller_Action
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
     	$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+        
+        $identity = Zend_Auth::getInstance()->getIdentity();
+        $username = $identity->name;
+        
+        if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+            $username .= " (G7)";
+        }
+        
+    	$this->_helper->diaryRecord($username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
     }
 
     public function populateworkplacesAction()
@@ -769,7 +785,15 @@ class PositionController extends Zend_Controller_Action
         	//uložení transakce
         	$adapter->commit();
         	$subsidiary = $subsidiaries->getSubsidiary($positionNew->getSubsidiaryId());
-        	$this->_helper->diaryRecord($this->_username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $positionNew->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $positionNew->getSubsidiaryId());
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
+        	$this->_helper->diaryRecord($username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $positionNew->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $positionNew->getSubsidiaryId());
         	
         	$this->_helper->FlashMessenger('Pracovní pozice ' . $positionNew->getPosition() . ' upravena.');
         	unset($defaultNamespace->form);
@@ -798,7 +822,15 @@ class PositionController extends Zend_Controller_Action
         	
         	$positions->deletePosition($positionId);
         	$subsidiary = $subsidiariesDb->getSubsidiary($subsidiaryId);
-        	$this->_helper->diaryRecord($this->_username, 'smazal pracovní pozici "' . $name . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
+        	$this->_helper->diaryRecord($username, 'smazal pracovní pozici "' . $name . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
         	
         	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');

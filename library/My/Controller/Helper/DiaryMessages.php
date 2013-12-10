@@ -40,7 +40,14 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     	
     	if($this->request->isPost() && in_array('Odeslat', $this->request->getPost())){
     		$formData = $this->request->getPost();
-    		$username = Zend_Auth::getInstance()->getIdentity()->username;
+    		
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
     		$diary = new Application_Model_DbTable_Diary();
     		if ($formMessages->isValid($formData)){
     			$recipients = null;

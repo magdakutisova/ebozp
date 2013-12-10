@@ -200,9 +200,16 @@ class WorkplaceController extends Zend_Controller_Action
 			
 			//uložení transakce
 			$adapter->commit();
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
 			
 			$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
 	    	unset($defaultNamespace->form);
@@ -410,10 +417,18 @@ class WorkplaceController extends Zend_Controller_Action
     	$this->_helper->positionRelationships($data, $positionIds);
     	
     	$subsidiaries = new Application_Model_DbTable_Subsidiary();
+        
+        $identity = Zend_Auth::getInstance()->getIdentity();
+        $username = $identity->name;
+
+        if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+            $username .= " (G7)";
+        }
+        
     	foreach($positionIds as $positionId){
     		$position = $positions->getPosition($positionId);
     		$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
-    		$this->_helper->diaryRecord($this->_username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
+    		$this->_helper->diaryRecord($username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
     	}
     }
     
@@ -595,8 +610,15 @@ class WorkplaceController extends Zend_Controller_Action
     		//uložení transakce
 			$adapter->commit();
     		
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
     		$subsidiary = $subsidiaries->getSubsidiary($workplaceNew->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($this->_username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
+	    	$this->_helper->diaryRecord($username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
     		
     		$this->_helper->FlashMessenger('Pracoviště ' . $workplaceNew->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
@@ -621,7 +643,15 @@ class WorkplaceController extends Zend_Controller_Action
         	
         	$subsidiaries = new Application_Model_DbTable_Subsidiary();
         	$subsidiary = $subsidiaries->getSubsidiary($subsidiaryId);
-	    	$this->_helper->diaryRecord($this->_username, ' smazal pracoviště ' . $name . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $subsidiaryId);
+            
+            $identity = Zend_Auth::getInstance()->getIdentity();
+            $username = $identity->name;
+            
+            if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
+                $username .= " (G7)";
+            }
+            
+	    	$this->_helper->diaryRecord($username, ' smazal pracoviště ' . $name . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $subsidiaryId);
     		
         	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
