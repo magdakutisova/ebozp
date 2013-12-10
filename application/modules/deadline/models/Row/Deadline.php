@@ -129,7 +129,8 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$this->responsible_id = null;
 		$this->responsible_user_id = null;
 		$this->responsible_external_name = null;
-		$this->anonymous_employee;
+		$this->anonymous_employee = 0;
+        $this->anonymous_guard = 0;
 		
 		switch ($data["resp_type"]) {
 			case Deadline_Form_Deadline::RESP_CLIENT:
@@ -142,7 +143,11 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 				break;
 			
 			case Deadline_Form_Deadline::RESP_GUARD:
-				$this->responsible_user_id = $data["responsible_id"];
+                if ($data["responsible_id"])
+                    $this->responsible_user_id = $data["responsible_id"];
+                else {
+                    $this->anonymous_guard = 1;
+                }
 				break;
 				
 			default:
@@ -164,19 +169,41 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 		$this->employee_id = null;
 		$this->chemical_id = null;
 		$this->technical_device_id = null;
+        
+        $this->anonymous_obj_emp = 0;
+        $this->anonymous_obj_tech = 0;
+        $this->anonymous_obj_chem = 0;
 		
 		// vyhodnoceni typu lhuty
 		switch ($data["deadline_type"]) {
 			case Deadline_Form_Deadline::TARGET_EMPLOYEE:
-				$this->employee_id = $data["object_id"];
+                
+                if ($data["object_id"]) {
+                    $this->employee_id = $data["object_id"];
+                } else {
+                    $this->anonymous_obj_emp = 1;
+                }
+                
 				break;
 				
 			case Deadline_Form_Deadline::TARGET_CHEMICAL:
-				$this->chemical_id = $data["object_id"];
+                
+                if ($data["object_id"]) {
+                    $this->chemical_id = $data["object_id"];
+                } else {
+                    $this->anonymous_obj_chem = 1;
+                }
+                
 				break;
 				
 			case Deadline_Form_Deadline::TARGET_DEVICE:
-				$this->technical_device_id = $data["object_id"];
+				
+                if ($data["object_id"]) {
+                    $this->technical_device_id = $data["object_id"];
+                } else {
+                    $this->anonymous_obj_tech = 1;
+                }
+                
 				break;
 			
 			case Deadline_Form_Deadline::TARGET_UNDEFINED:

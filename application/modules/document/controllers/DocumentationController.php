@@ -98,9 +98,15 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		// zapis jmen
 		self::prepareNames($form, $doc);
 
+        // nacteni interniho a verejneho souboru (pokud nejsou dostupne - NULL)
+        $internal = $doc->getInternal();
+        $public = $doc->getPublic();
+
 		$this->view->documentation = $doc;
 		$this->view->form = $form;
-		$this->view->root = $root;
+        $this->view->root = $root;
+        $this->view->internal = $internal;
+        $this->view->public = $public;
 	}
 
 	public function editHtmlAction() {
@@ -438,21 +444,30 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 		// zapis novych dokumentacnich souboru
 		if ($form->getElement("internal_file")->getValue()) {
-			// vytvoreni souboru
-			$file = self::_saveFile($form->getElement("internal_file"), $dir);
+			// nacteni souboru
+            $fileRow = $row->findParentRow("Document_Model_Files", "internal");
+
+            // vytvoreni souboru
+			$file = self::_saveFile($form->getElement("internal_file"), $dir, $fileRow);
+            
 			$row->internal_file_id = $file->id;
 				
 			// pripojeni souboru do adresare
-			$file->attach($dir);
+            if (!$fileRow)
+                $file->attach($dir);
 		}
 
 		if ($form->getElement("external_file")->getValue()) {
+            // nacteni souboru
+            $fileRow = $row->findParentRow("Document_Model_Files", "file");
+            
 			// vytvoreni souboru
-			$file = self::_saveFile($form->getElement("external_file"), $dir);
+			$file = self::_saveFile($form->getElement("external_file"), $dir, $fileRow);
 			$row->file_id = $file->id;
 				
 			// pripojeni souboru do adresare
-			$file->attach($dir);
+            if (!$fileRow)
+                $file->attach($dir);
 		}
 	}
 	
@@ -485,17 +500,20 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	 *
 	 * @param Zend_Form_Element_File $fileElement
 	 * @param Document_Model_Row_Directory $target
+     * @param Document_Model_Row_File $fileRow
 	 * @return Document_Model_Row_File
 	 */
-	private static function _saveFile(Zend_Form_Element_File $fileElement, Document_Model_Row_Directory $target) {
+	private static function _saveFile(Zend_Form_Element_File $fileElement, Document_Model_Row_Directory $target, Document_Model_Row_File $fileRow = null) {
 		// vytvoreni noveho souboru
 		$user = Zend_Auth::getInstance()->getIdentity();
+        
+        if (is_null($fileRow)) {
+            $tableFiles = new Document_Model_Files();
+            $fileRow = $tableFiles->createFile($fileElement->getFileName(null, false), $fileElement->getMimeType(), $user->id_user);
+        }
+        
+		$fileRow->createVersionFromFile($fileElement->getFileName(), $fileElement->getMimeType());
 
-		$tableFiles = new Document_Model_Files();
-		$file = $tableFiles->createFile($fileElement->getFileName(null, false), $fileElement->getMimeType(), $user->id_user);
-
-		$file->createVersionFromFile($fileElement->getFileName(), $fileElement->getMimeType());
-
-		return $file;
+		return $fileRow;
 	}
 }

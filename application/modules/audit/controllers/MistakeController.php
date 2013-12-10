@@ -132,6 +132,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->workplace = $workplace;
 		$this->view->mistakes = $mistakes;
 	}
+    
+    public function createalone2HtmlAction() {
+        $this->createalone2Action();
+    }
 	
 	/**
 	 * vytvoreni nove neshody z registru neshod
@@ -155,6 +159,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	 */
 	public function createHtmlAction() {
 		$this->createAction();
+        
+        $this->view->form->setAction($this->view->form->getAction() . "&isHtml=1");
 	}
 
 	public function deleteAction($redirect = true) {
@@ -674,15 +680,18 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		unset($data["record_id"]);
 		
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
-		$tableMistakes->insert($data);
+		$mistakeId = $tableMistakes->insert($data);
 		
 		$this->_helper->FlashMessenger("Neshoda vytvořena");
 		
 		$this->view->clientId = $clientId;
 		$this->view->mistake = $data;
+        $this->view->isHtml = $this->_request->getParam("isHtml", 0);
+        
+        $this->view->mistakeId = $mistakeId;
 	}
 
-	public function postaloneAction() {
+	public function postaloneAction($ignoreRedirect = false) {
 
 		// kontrola dat
 		$form = new Audit_Form_MistakeCreateAlone();
@@ -716,6 +725,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nastaveni zodpovedne osoby
 		$mistake->responsibile_name = $form->getValue("responsibile_name");
 		$mistake->save();
+        
+        $this->view->mistake = $mistake;
 
 		// zaneseni zaznamu o asociaci
 		$tableAssocs = new Audit_Model_AuditsMistakes();
@@ -734,10 +745,25 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		$this->_helper->FlashMessenger("Neshoda vytvořena");
 		
-		$url = $this->view->url($params, "audit-edit");
-
-		$this->_redirect($url);
+        if (!$ignoreRedirect) {
+            $url = $this->view->url($params, "audit-edit");
+            $this->_redirect($url);
+        }
 	}
+    
+    public function postaloneHtmlAction() {
+        $this->postaloneAction(true);
+        $mistake = $this->view->mistake;
+        
+        $params = array(
+            "auditId" => $mistake->audit_id,
+            "mistakeId" => $mistake->id,
+            "clientId" => $mistake->client_id
+        );
+        
+        $url = $this->view->url($params, "audit-mistake-edit-html");
+        $this->_redirect($url);
+    }
 
 	public function putAction($redirect = true, $forwardOnError = null) {
 		// nacteni neshody

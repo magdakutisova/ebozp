@@ -29,4 +29,4 @@ echo $this->formHidden("categoryId", $this->category->id);
 echo "<p>" . $this->formSubmit("submit", "Uložit pořadí") , "</p>";
 echo "</form>";
 
-echo $this->headScript()->appendFile("/js/audit/section/edit.js", "text/javascript");
+$this->headScript()->appendFile("/js/audit/section/edit.js", "text/javascript");

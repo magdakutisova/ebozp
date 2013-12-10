@@ -5,7 +5,8 @@ class Deadline_Form_Filter extends Zend_Form {
 		
 		$this->setName("deadlinefilter");
 		$this->setMethod(Zend_Form::METHOD_GET);
-        
+        	$this->setElementsBelongTo("deadlinefilter");
+
 		// nastaveni dekoratoru
 		$this->setDecorators(array(
 				'FormElements',

@@ -97,6 +97,14 @@ $(function() {
 		
 		$.iframeDialog(url, 800, 400, "Vyberte lhůty", "refresh");
 	}
+    
+    function createMistake() {
+        var url = $(this).attr("action");
+        
+        $.iframeDialog(url, 800, 400, "Nová neshoda", "refresh");
+        
+        return false;
+    }
 	
 	function checkContact() {
 		if ($(this).val() == "0") {
@@ -146,4 +154,5 @@ $(function() {
 	
 	$("#watch-contactperson_id").change(checkContact).change();
 	$("#new-deadline").click(newDeadline);
+    $("#create-new-mistake-form").submit(createMistake);
 });

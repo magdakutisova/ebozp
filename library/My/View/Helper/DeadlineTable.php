@@ -34,7 +34,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 	 * @param array $config
 	 */
 	public function deadline($deadline, array $config = array()) {
-		$config = array_merge(array("noAction" => false), $config);
+		$config = array_merge(array("noAction" => false, "subsidiaryRow" => true), $config);
 		
 		// vyhodnoceni typu
 		switch ($deadline["type"]) {
@@ -53,9 +53,22 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		// vygenerovani prvniho radku
 		$buttons = $this->_generateButtons($deadline, $config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
 		$w = $this->view;
+        
+        // vygenerovani jmena
+        $name = "";
+        
+        if ($deadline["anonymous_obj_emp"]) {
+            $name = "-";
+        } elseif ($deadline["anonymous_obj_tech"]) {
+            $name = "-";
+        } elseif ($deadline["anonymous_obj_chem"]) {
+            $name = "-";
+        } else {
+            $name = $deadline["name"];
+        }
 		
 		$row = array(
-				$this->wrap("td", $deadline["name"] . $this->_hidden("name", $deadline["name"]), array("rowspan" => 2)),
+				$this->wrap("td", $name . $this->_hidden("name", $name), array("rowspan" => 2)),
 				$this->wrap("td", $deadline["kind"]. $this->_hidden("kind", $deadline["kind"])),
 				$this->wrap("td", $deadline["specific"] . $this->_hidden("specific", $deadline["specific"])),
 				$this->wrap("td", $type . $this->_hidden("type", $type)),
@@ -68,19 +81,29 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));
 		
+        // vyhodnoceni zodpovedne osoby
+        if ($deadline["anonymous_employee"]) {
+            $resp = "Neurčený zaměstnanec";
+        } elseif ($deadline["anonymous_guard"]) {
+            $resp = "GUARD7";
+        } else {
+            $resp = $deadline["responsible_name"];
+        }
+        
 		// druhy radek
 		$row = array(
 				$this->wrap("td", $this->_sqlDate($deadline["last_done"])),
 				$this->wrap("td", $this->_sqlDate($deadline["next_date"])),
 				$this->wrap("td", $deadline["note"]),
-				$this->wrap("td", $deadline["anonymous_employee"] ? "Neurčený zaměstnanec" : $deadline["responsible_name"]),
+				$this->wrap("td", $resp),
 		);
 		
 		$rowStr2 = $this->wrap("tr", implode("", $row));
+        $content = $rowStr1 . $rowStr2;
         
-        $rowStr3 = sprintf("<tr><td colspan=\"5\">%s, %s</td></tr>", $deadline["subsidiary_town"], $deadline["subsidiary_street"]);
-		
-		$content = $rowStr1 . $rowStr2 . $rowStr3;
+        // pokud se ma zobrazit nazev pobocky, tak se zobrazi
+        if ($config["subsidiaryRow"])
+            $content .= sprintf("<tr><td colspan=\"5\">%s, %s</td></tr>", $deadline["subsidiary_town"], $deadline["subsidiary_street"]);
 		
 		// vyhodnoceni jestli je lhuta propadla
 		if (@$deadline["is_done"]) {
@@ -140,7 +163,18 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 					break;
 				
 				default:
-					$btnList[] = sprintf("<button type='%s' name='%s'>%s</button>", $c["type"], $name, $c["caption"]);
+                    if (!isset($c["url"])) {
+                        $c["url"] = "";
+                    } else {
+                        // sestaveni url
+                        $url = $c["url"];
+                    	$url = str_replace("%clientId", $deadline["client_id"], $url);
+                        $url = str_replace("%deadlineId", $deadline["id"], $url);
+                        
+                        $c["url"] = $url;
+                    }
+                    
+					$btnList[] = sprintf("<button type='%s' name='%s' g7:url='%s'>%s</button>", $c["type"], $name, $c["url"], $c["caption"]);
 			}
 		}
 		

@@ -1,0 +1,10 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+?>
+<h2>Nová neshoda k dohlídce</h2>
+<?php
+echo $this->form;
+
+$this->headScript()->appendFile("/js/audit/watch.js");
+$this->headScript()->appendFile("/js/audit/mistake/create.js");
+?>

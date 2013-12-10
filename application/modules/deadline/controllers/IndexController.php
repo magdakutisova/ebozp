@@ -16,7 +16,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
         $filterForm->populate($this->_request->getParams());
         
         // nastaveni zobrazeni dat, pokud neni nastaveno
-        if (is_null($this->_request->getParam("clsok"))) {
+        if (is_null($this->_request->getParam("deadlinefilter"))) {
             $filterForm->populate(array(
                 "clsok" => "",
                 "clsclose" => "deadline-yellow",
@@ -165,15 +165,15 @@ class Deadline_IndexController extends Zend_Controller_Action {
         
         // vyhodnoceni casovych omezeni
         if (!$filterVals["clsok"]) {
-            $select->where("next_date < NOW()");
+            $select->where("next_date < ADDDATE(NOW(), INTERVAL 1 MONTH) OR next_date IS NULL");
         }
         
         if (!$filterVals["clsinvalid"]) {
-            $select->where("next_date >= NOW()");
+            $select->where("next_date >= NOW() AND next_date IS NOT NULL");
         }
         
         if (!$filterVals["clsclose"]) {
-            $select->where("NOT (next_date BETWEEN NOW() and ADDDATE(NOW(), INTERVAL 1 MONTH))", $val);
+            $select->where("NOT (next_date BETWEEN NOW() and ADDDATE(NOW(), INTERVAL 1 MONTH)) OR next_date IS NULL", $val);
         }
         
 		return $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
@@ -246,7 +246,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		// vyfiltrovani typu
 		switch ($objType) {
 			case Deadline_Form_Deadline::TARGET_CHEMICAL:
-				$select->where("chemical_id IS NOT NULL");
+				$select->where("(chemical_id IS NOT NULL OR anonymous_obj_chem)");
 		
 				$tableChemicals = new Application_Model_DbTable_Chemical();
 				$nameChemicals = $tableChemicals->info("name");
@@ -255,13 +255,13 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				break;
 		
 			case Deadline_Form_Deadline::TARGET_DEVICE:
-				$select->where("technical_device_id IS NOT NULL");
+				$select->where("(technical_device_id IS NOT NULL OR anonymous_obj_tech)");
 		
 				$select->joinInner($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
 				break;
 		
 			case Deadline_Form_Deadline::TARGET_EMPLOYEE:
-				$select->where("employee_id IS NOT NULL");
+				$select->where("(employee_id IS NOT NULL OR anonymous_obj_emp)");
 		
 				$tableEmployees = new Application_Model_DbTable_Employee();
 				$nameEmployees = $tableEmployees->info("name");
@@ -270,7 +270,13 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				break;
 				
 			case Deadline_Form_Deadline::TARGET_UNDEFINED:
-				$select->where("employee_id IS NULL")->where("technical_device_id IS NULL")->where("chemical_id IS NULL");
+				$select->where("employee_id IS NULL")
+                    ->where("technical_device_id IS NULL")
+                    ->where("chemical_id IS NULL")
+                    ->where("!anonymous_obj_tech")
+                    ->where("!anonymous_obj_chem")
+                    ->where("!anonymous_obj_emp");
+                
 				$select->columns(array("name" => new Zend_Db_Expr("''")));
 				break;
             
@@ -290,7 +296,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
                 $select->columns(array(
                     "name" => new Zend_Db_Expr("CONCAT(IFNULL($devName, ''), IFNULL($empName, ''), IFNULL($chemName, ''))")
                 ));
-              
+                
                 break;
 		
 			default:

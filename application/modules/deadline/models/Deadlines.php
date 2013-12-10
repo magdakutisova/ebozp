@@ -85,15 +85,11 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 		$thisName = $this->_name;
 		$select->where("$thisName.client_id = ?", $clientId);
         
-        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
-        $nameSubsidiaries = $tableSubsidiaries->info("name");
-		
 		if (!is_null($subsidiaryId)) {
 			$select->where("$thisName.subsidiary_id = ?", $subsidiaryId);
 		}
 		
 		$select->where("$thisName.next_date < ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)");
-        $select->joinInner($nameSubsidiaries, "subsidiary_id = id_subsidiary", array("subsidiary_name", "subsidiary_town", "subsidiary_street"));
 		$data = $select->query()->fetchAll();
 		
 		return new Deadline_Model_Rowset_Deadlines(array("data" => $data, "table" => $this, "rowClass" => $this->_rowClass));
@@ -136,6 +132,11 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 		
 		$select->joinLeft($nameUsers, "responsible_user_id = user.id_user", array());
 		
+        // reference na pobocku
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $nameSubsidiaries = $tableSubsidiaries->info("name");
+        $select->joinInner($nameSubsidiaries, "id_subsidiary = subsidiary_id", array("subsidiary_street", "subsidiary_name", "subsidiary_town"));
+        
 		// pripojeni reference na zamestnance
 		$select->joinLeft($nameEmployees, "$nameEmployees.id_employee = employee_id", array("employee_name" => new Zend_Db_Expr("$nameEmployees.first_name, ' ', $nameEmployees.surname")));
 		

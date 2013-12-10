@@ -95,7 +95,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'chemical', array('edit', 'delete'));
 		$this->deny($client, 'employee', array('edit', 'delete'));
 		$this->allow($client, "deadline:index");
-		$this->allow($client, "deadline:deadline", array("get", "submit", "post", "put", "create", "create.html", "post.html", "submit", "submits"));
+		$this->allow($client, "deadline:deadline", array("edit", "edit.html", "get", "submit", "post", "put", "create", "create.html", "post.html", "submit", "submits"));
 		$this->allow($client, "audit:watch", array("get", "index", "protocol.pdf"));
 		$this->allow($client, "audit:farplan", array("get"));
 		$this->deny($client, "client", "archivelist");
@@ -126,7 +126,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'chemical', array('edit', 'delete'));
 		$this->allow($technician, 'employee', array('edit', 'delete'));
 		$this->allow($technician, "audit:audit", array("subdead", "index", "create", "clone", "post", "edit", "put", "get", "submit", "newcontact", "getdead.html", "subdead.html", "deadlist.html"));
-		$this->allow($technician, "audit:mistake", array("submits", "attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
+		$this->allow($technician, "audit:mistake", array("submits", "attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "createalone2.html", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save", "saveone.json", "dettach"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));

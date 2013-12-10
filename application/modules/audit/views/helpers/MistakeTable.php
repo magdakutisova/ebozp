@@ -25,7 +25,15 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 	
 	public function mistake(Audit_Model_Row_AuditRecordMistake $mistake, array $config = array()) {
 		// vytvoreni zakladni konfigurace a slouceni s predanou
-		$baseConfig = array("classes" => array(), "submitStatus" => $mistake->is_submited, "actions" => array(), "semaphore" => false, "selector" => false, "selected" => false, "hashTable" => null);
+		$baseConfig = array("classes" => array(), 
+            "submitStatus" => $mistake->is_submited, 
+            "actions" => array(), 
+            "semaphore" => false, 
+            "selector" => false, 
+            "selected" => false, 
+            "hashTable" => null,
+            "subsidiaryRow" => true);
+        
 		$config = array_merge($baseConfig, (array) $config);
 		
 		// vygenerovani obsahu prvniho radku
@@ -112,10 +120,12 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 		
 		$row2 = $this->_wrapToTag(implode("", $columns), "tr", array());
         
-        $row3 = sprintf("<tr><td colspan='4'>%s, %s</td></tr>", $mistake->subsidiary_town, $mistake->subsidiary_street);
-		
-		// slouceni a vraceni vysledku
-		$content = $row1 . $row2 . $row3;
+        // slouceni a vraceni vysledku
+		$content = $row1 . $row2;
+        
+        // pokud se ma zobrazit i nazev pobocky, pak se zobrazi
+        if ($config["subsidiaryRow"])
+            $content .= sprintf("<tr><td colspan='4'>%s, %s</td></tr>", $mistake->subsidiary_town, $mistake->subsidiary_street);
 		
 		return $this->_wrapToTag($content, "tbody", array("class" => implode(" ", $config["classes"])));
 	}

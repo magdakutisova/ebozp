@@ -45,7 +45,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 		echo $this->contactForm;
 		echo "</div>";
 		
-		if ($isReport) {
+		if ($isReport && $this->form->getValue("summary") && ($this->audit->contactperson_id || $this->audit->contact_name)) {
 			?>
 		<h3>Uzavření auditu</h3>
 			<?php 
@@ -100,7 +100,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 	<div id="mistakes" class="tab">
 		<h3>Nová neshoda</h3>
 		<?php 
-			printf("<form action='%s' method='post'>", $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone2"));
+			printf("<form action='%s' method='post' id='new-mistake-form'>", $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-createalone2"));
 			echo $this->formHidden("mistake[workplace_id]", 0);
 			echo $this->formSubmit("submit", "Vytvořit novou samostatnou neshodu");
 			echo "</form>";

@@ -44,52 +44,83 @@ echo  implode(" | ", $links);
 <?php 
 }
 ?>
-<table id="docs-table">
+<table id="docs-table" class="multirow-table">
 	<thead>
 		<tr>
-			<td>
+			<th>
 			Název
-			</td>
-			<td>
+			</th>
+			<th>
 			Pobočka
-			</td>
-			<td>
-			Komentář
-			</td>
-			<td>
+			</th>
+			<th>
 			Soubor
-			</td>
+			</th>
 			<?php 
 			if ($editable) {
-				echo "<td>Interní</td>";
-				echo "<td>Akce</td>";
+				echo "<th>Interní</th>";
+				echo "<th rowspan='2'>Akce</th>";
 			}
 			?>
 		</tr>
+        <?php
+        if ($editable) {
+        ?>
+        <tr>
+            <th colspan="2">
+                Komentář
+            </th>
+            <th colspan="2">
+                Interní komentář
+            </th>
+        </tr>
+        <?php
+        } else {
+            ?>
+        <tr>
+            <th colspan="3">
+                Komentář
+            </th>
+        </tr>
+        <?php
+        }
+        ?>
 	</thead>
 	<tbody>
 	<?php 
 
 foreach ($this->documentations as $doc) {
 	// vyhodnoceni, zda se jedna o prazdny
-	$class = ""; // $doc->fileid ? "" : "error";
+	$class = "";
+    
+    if (!$doc->file_id && !$doc->internal_file_id && empty($doc->comment)) {
+        $class = "error";
+    }
 	
 	echo "<tr class='$class'>";
 	
 	echo "<td>$doc->name</td>";
 	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";
-	echo "<td>" . $doc->comment . "</td>";
 	
 	if ($editable) {
-		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid), "show", $subsidiaryId) : "-") . "</td>";
-		echo "<td>" . ($doc->i_fileid ? $this->file((object) array("name" => $doc->i_filename, "id" => $doc->i_fileid), "show", $subsidiaryId) : "-") . "</td>";
-		echo "<td>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
+		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid), "download", $subsidiaryId) : "-") . "</td>";
+		echo "<td>" . ($doc->i_fileid ? $this->file((object) array("name" => $doc->i_filename, "id" => $doc->i_fileid), "download", $subsidiaryId) : "-") . "</td>";
+		echo "<td rowspan='2'>" . ($editable ? $this->formButton("edit-" . $doc->id, "Upravit") : "&nbsp") . "</td>";
 		
 	} else {
 		echo "<td>" . ($doc->fileid ? $this->file((object) array("name" => $doc->filename, "id" => $doc->fileid), "download") : "-") . "</td>";
 	}
-	
+    
 	echo "</tr>";
+    
+    /**
+     * @todo prasecina - predelat a optimalizovat
+     */
+    if ($editable) {
+        printf("<tr><td colspan=\"2\">%s</td><td colspan=\"2\">%s</td></tr>", nl2br($doc->comment), nl2br($doc->comment_internal));
+    } else {
+        printf("<tr><td colspan=\"3\">%s</td></tr>", nl2br($doc->comment));
+    }
 }
 	?>
 	</tbody>

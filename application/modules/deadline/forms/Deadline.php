@@ -101,7 +101,8 @@ class Deadline_Form_Deadline extends Zend_Form {
 		$this->addElement("text", "period", array(
 				"decorators" => $elementDecorator,
 				"required" => false,
-				"label" => "Perioda (měsíců)"
+				"label" => "Perioda (měsíců)",
+                "value" => 0
 		));
 		
 		$this->addElement("textarea", "note", array(
@@ -112,7 +113,7 @@ class Deadline_Form_Deadline extends Zend_Form {
 		
 		$this->addElement("text", "last_done", array(
 				"decorators" => $elementDecorator,
-				"required" => true,
+				"required" => false,
 				"label" => "Naposledy provedeno:"
 		));
 		

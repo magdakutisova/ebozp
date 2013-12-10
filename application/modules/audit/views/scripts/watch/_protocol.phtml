@@ -99,10 +99,20 @@
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Provedeno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
 echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podniku", "items" => $this->changes, "notFound" => "Nic nebylo změněno"));
 
-echo "<h2>Realizační výstup</h2>";
-echo nl2br($this->watch->outputs);
+if ($this->watch->changes) {
+    echo "<h2>Změny v podniku</h2>";
+    echo nl2br($this->watch->changes);
+}
 
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Objednávky u G U A R D 7, v.o.s.", "items" => $this->orders, "notFound" => "Nic nebylo objednáno", "note" => "Závazně objednávám:"));
+if ($this->watch->outputs) {
+    echo "<h2>Realizační výstup</h2>";
+    echo nl2br($this->watch->outputs);
+}
+
+if ($this->watch->orders) {
+    echo "<h2>Objednávky u G U A R D 7, v.o.s.</h2>";
+    echo nl2br($this->watch->orders);
+}
 
 // pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty
 if (!$this->watch->also_audit) {
@@ -162,10 +172,10 @@ if (!$this->watch->also_audit) {
 	// vyhodnoceni zobrazeni lhut lhuty se zobrazi pokud je zobrazeni nastaveno a pokud jsou nejake lhuty k dispozici
 	if ($watch->display_deadlines && $this->deadlines->count()) {
 	?>
-	<h1>Propadlé lhůty</h1>
+	<h2>Propadlé lhůty</h2>
 	<table border="1" cellpadding="2">
 		<?php 
-		$config = array("noAction" => true, "headBg" => "#c6c6c6");
+		$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
 		echo $this->deadlineTable()->header($config);
 		echo implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
 		?>

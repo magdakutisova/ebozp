@@ -1,0 +1,89 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+?>
+<h1>Nová nezařazená neshoda</h1>
+<h3><?php echo $this->workplace ? $this->workplace->name : "Samostatná neshoda"; ?></h3>
+<?php
+$url = $this->url(array(
+				"clientId" => $this->audit->client_id,
+				"auditId" => $this->audit->id), "audit-mistake-postalone-html");
+
+$this->form->setAction($url);
+
+echo $this->form;
+
+if ($this->mistakes->count()) {
+	$url = $this->url(array("clientId" => $this->audit->client_id, "auditId" => $this->audit->id), "audit-mistake-attach");
+	?>
+<h3>Podobné neshody</h3>
+<form action="<?php echo $url; ?>" method="post">
+	<table class="multirow-table">
+		<thead>
+			<tr>
+				<th>
+				Kategorie
+				</th>
+				<th>
+				Podkategorie
+				</th>
+				<th>
+				Upřesnění
+				</th>
+				<th>
+				Vytvořeno
+				</th>
+				<th rowspan="2">
+				Použít
+				</th>
+			</tr>
+			<tr>
+				<th colspan="2">
+				Neshoda
+				</th>
+				<th colspan="2">
+				Návrh řešení
+				</th>
+			</tr>
+		</thead>
+		<?php 
+		
+		foreach ($this->mistakes as $similar) {
+			?>
+		<tbody>
+			<tr>
+				<td>
+				<?php echo $similar->category; ?>
+				</td>
+				<td>
+				<?php echo $similar->subcategory; ?>
+				</td>
+				<td>
+				<?php echo $similar->concretisation; ?>
+				</td>
+				<td>
+				<?php echo $this->sqlDate($similar->created_at); ?>
+				</td>
+				<td rowspan="2">
+				<input type="radio" name="mistake[<?php echo $similar->id; ?>]" value="1" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2"><?php echo $similar->mistake; ?></td>
+				<td colspan="2"><?php echo $similar->suggestion?></td>
+			</tr>
+		</tbody>
+			<?php 
+		}
+		?>
+	</table>
+	<p>
+	<?php
+	echo $this->formSubmit("similar-submit", "Použít"); 
+	?>
+	</p>
+</form>
+	<?php 
+}
+
+$this->headScript()->appendFile("/js/audit/mistake/create.js");
+?>

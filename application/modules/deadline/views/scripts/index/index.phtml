@@ -22,14 +22,25 @@ $user = Zend_auth::getInstance()->getIdentity();
 if ($acl->isAllowed($user->role, "deadline:deadline", "post")) {
 	$content = $this->action("create", "deadline", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
     
-    echo $this->showHidePanel($content, "Nová lhůta", "Zobrazit/skrýt formulář", true);
-}
-
-if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {
-	echo "<h2>Importovat lhůty</h2>";
-	
-	echo $this->importForm;
+    $form = new Deadline_Form_Deadline();
+    $form->populate(Zend_Controller_Front::getInstance()->getRequest()->getParams());
+    
+    echo $this->showHidePanel($content, "Nová lhůta", "Zobrazit/skrýt formulář", is_null($form->getValue("subsidiary_id")));
 }
 
 echo $this->action("all", "index", "deadline", Zend_Controller_Front::getInstance()->getRequest()->getParams());
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {
+	?>
+<fieldset>
+    <legend>Import lhůt</legend>
+    <div>
+        <?php echo $this->formButton("display-import-dead", "Zobrazit/skrát import lhůt", array("onclick" => "$('#deadline-impdiv').toggle()")); ?>
+    </div>
+    <div id="deadline-impdiv" style="display: none; ">
+        <?php echo $this->importForm; ?>
+    </div>
+</fieldset>
+<?php
+}
 ?>

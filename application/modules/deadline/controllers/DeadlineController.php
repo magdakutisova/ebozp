@@ -19,7 +19,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$clientId = $this->_request->getParam("clientId", null);
 		$form->setAction("/deadline/deadline/post?clientId=$clientId");
 
-        if ($this->_request->getActionName() != "create")
+        if (strpos($this->_request->getActionName(), "create") === false)
             $form->isValidPartial($this->_request->getParams());
 
 		// nacteni kategorii
@@ -168,6 +168,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		
 		// nastaveni dat radku
 		$row->updateAll($data);
+        ///die(var_dump($row->toArray()));
 		$row->save();
 		
 		self::checkDeadlineDate($row);
@@ -208,9 +209,11 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$rowData = self::prepareDeadlineRowData($deadline);
 		$requestData = array_merge($rowData, $requestData);
 		
-		$requestData["deadline"]["object_id"] = $rowData["object_id"];
-		$requestData["deadline"]["deadline_type"] = $rowData["deadline_type"];
-		
+        if (!isset($requestData["deadline"]["object_id"])) {
+            $requestData["deadline"]["object_id"] = $rowData["object_id"];
+            $requestData["deadline"]["deadline_type"] = $rowData["deadline_type"];
+        }
+        
 		$form->populate($requestData);
 		
 		self::prepareDeadlineForm($form, $this->_request->getParam("clientId"));
@@ -228,6 +231,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deadline->updateCommons($data);
 		$deadline->updatePeriod($data);
 		$deadline->updateResponsible($data);
+        $deadline->updateObjectId($data);
 
 		$deadline->save();
 		
@@ -376,11 +380,24 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			if ($respType == Deadline_Form_Deadline::RESP_GUARD) {
 				// nacteni pracovniku G7
 				$tableUsers = new Application_Model_DbTable_User();
-				$users = $tableUsers->fetchAll(array("role in (?)" => array(
+                $select = $tableUsers->select(true);
+                
+                $select->reset(Zend_Db_Table_Select::COLUMNS);
+                $select->columns(array(
+                    "id_user",
+                    "username" => new Zend_Db_Expr("name")
+                ));
+                
+                $select->where("role in (?)", array(
 						My_Role::ROLE_ADMIN, 
 						My_Role::ROLE_COORDINATOR, 
 						My_Role::ROLE_TECHNICIAN
-						)));
+						));
+                
+				$users = $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
+                
+                $users[] = (object) array("id_user" => "0", "username" => "--NEZNÁMÝ--");
+                
 			} else {
 				// nacteni zamestnancu
 				$tableEmployee = new Application_Model_DbTable_Employee();
@@ -388,6 +405,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				$empSelect->from($tableEmployee->info("name"), array("id_user" => "id_employee", "username" => new Zend_Db_Expr("CONCAT(first_name, ' ', surname)")));
 				$empSelect->where("client_id = ?", $clientId);
 				
+                /*
 				// vyhodnoceni pobocky
 				if ($subsidiaryId) {
 					// pro nacteni zodpovednych osob klienta musi byt vybrana pobocka
@@ -400,7 +418,9 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 					$select->from($nameResponsibles, array("id_employee"))->where("id_subsidiary = ?", $subsidiaryId);
 					$empSelect->where("id_employee in (?)", new Zend_Db_Expr($select->assemble()));
 				}
-				
+                 * 
+                 * pro jistotu nechavam
+				*/
 				$users = $empSelect->query()->fetchAll(Zend_Db::FETCH_OBJ);
 				$users = array_merge(array((object) array("id_user" => 0, "username" => "--NEZNÁMÝ--")), $users);
 				
@@ -529,7 +549,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			if ($select) {
 				// nacteni a zapis dat
 				$objs = $select->query()->fetchAll();
-				$objList = array("0" => "-VYBERTE-");
+				$objList = array("0" => "--JINÉ--");
 				
 				foreach ($objs as $obj) {
 					$objList[$obj["id"]] = $obj["name"];
@@ -550,8 +570,6 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	
 	public static function disableEditInputs(Deadline_Form_Deadline $form) {
 		$form->getElement("subsidiary_id")->setAttrib("disabled", "disabled");
-		$form->getElement("deadline_type")->setAttrib("disabled", "disabled");
-		$form->getElement("object_id")->setAttrib("disabled", "disabled");
 	}
 	
 	/**
@@ -573,8 +591,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			$retVal["object_id"] = $retVal["chemical_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_CHEMICAL;
 			
-		} elseif (!is_null($retVal["technical_device_id"])) {
-			
+		} elseif ($retVal["technical_device_id"]) {
 			$retVal["object_id"] = $retVal["technical_device_id"];
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_DEVICE;
 		
@@ -586,10 +603,12 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		}
 		
 		// vyhodnoceni zodpovedne osoby
-		if ($retVal["responsible_user_id"]) {
+		if (!is_null($retVal["responsible_user_id"]) || $retVal["anonymous_guard"]) {
 			
 			$retVal["responsible_id"] = $retVal["responsible_user_id"];
 			$retVal["resp_type"] = Deadline_Form_Deadline::RESP_GUARD;
+            
+            if ($retVal["anonymous_guard"]) $retVal["responsible_id"] = 0;
 			
 		} elseif (!is_null($retVal["responsible_external_name"])) {
 			

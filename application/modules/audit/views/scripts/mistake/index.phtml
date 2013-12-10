@@ -46,46 +46,51 @@ foreach ($this->mistakes as $mistake) {
 <?php 
 // dokonceni formulare pro hromadne odeslani neshod
 if ($acl->isAllowed($user->role, "audit:mistake", "submits")) {
-    printf("<div>%s</div>", $this->formSubmit("submit-all", "Odeslat všechny neshody"));
+    printf("<div>%s</div>", $this->formSubmit("submit-all", "Označit jako odstraněné"));
 }
 
 echo "</form>";
 
 if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
 ?>
-<h2>Import neshod</h2>
-<em>Podporovaný formát je CSV s nastavením:
-<ul>
-	<li>Text uzavřen do uvozovek</li>
-	<li>Položky odděleny čárkami</li>
-	<li>Escapovací znak zpětné lomítko</li>
-</ul></em>
-<form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "audit-mistake-import"); ?>" method="post" enctype="multipart/form-data">
-	<p>
-		<?php 
-		echo $this->formLabel("importfile", "Soubor s neshodami");
-		echo $this->formFile("importfile");
-		?>
-	</p>
-	<p>
-		<?php 
-		$items = $this->formFilter->getElement("subsidiary_id")->getMultiOptions();
-		$items[0] = "---Vyberte---";
-		echo $this->formLabel("subsidiaryId", "Pobočka: ");
-		echo $this->formSelect("subsidiaryId", Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId"), null, $items);
-		?>
-	</p>
-	<p>
-	<?php 
-	echo $this->formLabel("encoding", "Kódování souboru:");
-	echo $this->formSelect("encoding", null, array(), array("CP1250" => "CP-1250 (windows)", "UTF8" => "UTF-8"))
-	?>
-	</p>
-	<p>
-		<?php echo $this->formSubmit("import-submit", "Importovat"); ?>
-	</p>
-</form>
-<b>Pozor! při importu budou všechny stávající neshody, které nejsou vázány na audit smazány a nahrazeny novými!</b>
+<fieldset>
+    <legend>Import neshod</legend>
+    <div><?php echo $this->formButton("display-import-mist", "Zobrazit/skrýt import neshod", array("onclick" => "$('#mistake-impdiv').toggle()")); ?></div>
+    <div id="mistake-impdiv" style="display: none; ">
+        <em>Podporovaný formát je CSV s nastavením:
+        <ul>
+            <li>Text uzavřen do uvozovek</li>
+            <li>Položky odděleny čárkami</li>
+            <li>Escapovací znak zpětné lomítko</li>
+        </ul></em>
+        <form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "audit-mistake-import"); ?>" method="post" enctype="multipart/form-data">
+            <p>
+                <?php 
+                echo $this->formLabel("importfile", "Soubor s neshodami");
+                echo $this->formFile("importfile");
+                ?>
+            </p>
+            <p>
+                <?php 
+                $items = $this->formFilter->getElement("subsidiary_id")->getMultiOptions();
+                $items[0] = "---Vyberte---";
+                echo $this->formLabel("subsidiaryId", "Pobočka: ");
+                echo $this->formSelect("subsidiaryId", Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId"), null, $items);
+                ?>
+            </p>
+            <p>
+            <?php 
+            echo $this->formLabel("encoding", "Kódování souboru:");
+            echo $this->formSelect("encoding", null, array(), array("CP1250" => "CP-1250 (windows)", "UTF8" => "UTF-8"))
+            ?>
+            </p>
+            <p>
+                <?php echo $this->formSubmit("import-submit", "Importovat"); ?>
+            </p>
+        </form>
+        <b>Pozor! při importu budou všechny stávající neshody, které nejsou vázány na audit smazány a nahrazeny novými!</b>
+    </div>
+</fieldset>
 <?php 
 }
 

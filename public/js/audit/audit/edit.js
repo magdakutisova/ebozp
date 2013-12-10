@@ -123,6 +123,14 @@ $(function () {
 		
 		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
 	}
+    
+    function createMistake() {
+        var url = "/audit/mistake/createalone2.html?mistake[workplace_id]=0&auditId=" + auditId + "&clientId=" + clientId;
+        
+        $.iframeDialog(url, 800, 400, "Nová neshoda", "refresh");
+        
+        return false;
+    }
 	
 	$("#save-mistakes").click(sendMistakes);
 	$("#paginator-workplace").change(workplaceSelect);
@@ -132,4 +140,6 @@ $(function () {
 	$("#deadlinetable button[name='show']").unbind("click").click(openDeadline);
 	$("#deadlinetable button[name='edit']").unbind("click").click(editDeadline);
 	$("#add-deadlines").click(openDeadList);
+    
+    $("#new-mistake-form").submit(createMistake);
 });

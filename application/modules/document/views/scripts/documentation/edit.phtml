@@ -13,6 +13,35 @@ echo $this->formHidden("clientId", $this->documentation->client_id);
 echo $this->formSubmit("delete-submit", "Smazat");
 echo "</form>";
 
+// zobrazeni aktualnich souboru
+echo "<h2>Nastavené soubory</h2>";
+
+if ($this->internal) {
+   $internalText = $this->file($this->internal); 
+} else {
+    $internalText = "Není";
+}
+
+if ($this->public) {
+    $publicText = $this->file($this->public);
+} else {
+    $publicText = "Není";
+}
+
+?>
+<table border="0">
+    <tbody>
+        <tr>
+            <td><strong>Interní soubor</strong></td>
+            <td><?php echo $internalText; ?></td>
+        </tr>
+        <tr>
+            <td><strong>Veřejný soubor</strong></td>
+            <td><?php echo $publicText; ?></td>
+        </tr>
+    </tbody>
+</table>
+<?php
 // adresarova struktura pro vyber souboru
 echo "<h2>Výběr souboru</h2>";
 echo $this->formHidden("root-id", $this->root->id);

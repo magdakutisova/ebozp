@@ -78,7 +78,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 	
-	public function createmistakeAction() {
+	public function createmistakeHtmlAction() {
 		// nacteni dat dohlidky
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
@@ -299,12 +299,15 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
 		
-		// tvorba tabulky a nacteni dat
-		$tableChanges = new Audit_Model_WatchesChanges();
-		$contents = (array) $this->_request->getParam("change", array());
-		$contents = array_merge(array("content" => array()), $contents);
-		
-		self::_writeListItems($tableChanges, $watch, $contents["content"]);
+		// nacteni dat
+        $changes = $this->_request->getParam("changes", null);
+        
+        if (!$changes) {
+            $changes = null;
+        }
+        
+        $watch->changes = $changes;
+        $watch->save();
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 		
@@ -410,13 +413,16 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
 	
-		// nacteni dat a rpiprava tabulky
-		$tableOrders = new Audit_Model_WatchesOrders();
-		$contents = (array) $this->_request->getParam("order", array());
-		$contents = array_merge(array("content" => array()), $contents);
-	
-		self::_writeListItems($tableOrders, $watch, $contents["content"]);
-		
+		// nacteni dat
+        $orders = $this->_request->getParam("orders", null);
+        
+        if (!$orders) {
+            $orders = null;
+        }
+        
+        $watch->orders = $orders;
+        $watch->save();
+        
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 	
 		$this->view->watch = $watch;
@@ -463,7 +469,7 @@ class Audit_WatchController extends Zend_Controller_Action {
         $lastWatch = $tableWatches->fetchRow(array(
             "subsidiary_id = ?" => $watch->subsidiary_id,
             "is_closed"
-        ), "watched_at desc");
+        ), array("watched_at desc", "id desc"));
         
         // pokud byla nalezena posledni dohlidka, pak se prekopiruji veci z ni, jinak se nastavi vychozi
         if ($lastWatch) {

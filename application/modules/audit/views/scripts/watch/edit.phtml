@@ -32,11 +32,22 @@
 			$this->formHidden("watchId", $watch->id) . $this->formSubmit("protocol", "Náhled protokolu") . "</form>";
 		
 		$url = "/audit/watch/submit?watchId=" . $this->watch->id;
+        
+        // kontrola dat
+        $errors = array();
+        
+        if (!$watch->time_from || !$watch->time_to) {
+            $errors[] = "<p><strong>Před uzavřením dohlídky vyplňte čas začátku a konce</strong></p>";
+        }
+        
+        if (is_null($watch->contact_name) && is_null($watch->contactperson_id)) {
+            $errors[] = "<p><strong>Před uzavřením dohlídky vyplňte zástupce klienta</strong></p>";
+        }
 		
-        if ($watch->time_from && $watch->time_to) {
-            echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>";
+        if ($errors) {
+            echo implode("", $errors);
         } else {
-            echo "<p><strong>Před uzavřením dohlídky vyplňte čas začátku a konce</strong></p>";
+            echo "<br/><br/><p><a onclick=\"return confirm('Skutečně uzavřít dohlídku?')\" href='$url' id='close-watch'>Uzavřít dohlídku</a></p>";
         }
 		?>
 		<div id="other-contact-person">
@@ -69,21 +80,16 @@
 	</div>
 	<div id="tab-changes">
 		<form action="/audit/watch/changes" method="post" id="form-changes">
-			<ol id="change-list">
-			<?php 
-			foreach ($this->changes as $item) {
-				echo "<li>";
-				echo $this->formTextarea("change[content][]", $item->content, array("rows" => 4, "cols" => 50));
-				echo $this->formButton("change-$item->id-delete", "Smazat");
-				echo "</li>";
-			}
-			?>
-			</ol>
+			<div>
+                <?php
+                echo $this->formLabel("changes", "Změny:") . "<br />";
+                echo $this->formTextarea("changes", $watch->changes);
+                ?>
+            </div>
 			<div>
 			<?php 
 			echo $this->formHidden("watchId", $this->watch->id);
 			echo $this->formSubmit("change-submit", "Uložit");
-			echo $this->formButton("add-change", "Přidat položku");
 			?>
 			</div>
 		</form>
@@ -94,9 +100,9 @@ if (!$this->watch->also_audit) {
 	<div id="tab-mistakes">
 		<h2>Nová neshoda</h2>
 		<?php 
-		$url = "/audit/watch/createmistake?watchId=$watch->id&clientId=$watch->client_id&subsidiary_id=$watch->subsidiary_id";
+		$url = "/audit/watch/createmistake.html?watchId=$watch->id&clientId=$watch->client_id&subsidiary_id=$watch->subsidiary_id";
 		?>
-		<form action="<?php echo $url; ?>" method="post">
+		<form action="<?php echo $url; ?>" method="post" id="create-new-mistake-form">
 			<table>
 				<tr>
 					<td colspan="2">
@@ -136,6 +142,7 @@ if (!$this->watch->also_audit) {
 	</div>
 	<div id="tab-deadlines">
 		<?php 
+        echo "<h2>Nová lhůta</h2>";
 		echo "<p>";
 		echo $this->formButton("new-deadline", "Přidat novou lhůtu");
 		echo "</p>";
@@ -161,6 +168,8 @@ if (!$this->watch->also_audit) {
 				"action" => "/audit/watch/subdead?watchId=" . $watch->id
 				);
 		
+        echo "<h2>Lhůty</h2>";
+        
 		echo $this->deadlineTable($this->deadlines, $options);
 		echo $this->formButton("add-deadlines", "Zkontrolovat ostatní lhůty");
         
@@ -172,21 +181,16 @@ if (!$this->watch->also_audit) {
 ?>
 	<div id="tab-orders">
 		<form action="/audit/watch/orders" method="post" id="form-orders">
-			<ol id="order-list">
-			<?php 
-			foreach ($this->orders as $item) {
-				echo "<li>";
-				echo $this->formTextarea("order[content][]", $item->content, array("rows" => 4, "cols" => 50));
-				echo $this->formButton("order-$item->id-delete", "Smazat");
-				echo "</li>";
-			}
-			?>
-			</ol>
+            <div>
+                <?php
+                echo $this->formLabel("orders", "Objednávky:") . "<br />";
+                echo $this->formTextarea("orders", $watch->orders);
+                ?>
+            </div>
 			<div>
 			<?php 
 			echo $this->formHidden("watchId", $this->watch->id);
 			echo $this->formSubmit("order-submit", "Uložit");
-			echo $this->formButton("add-order", "Přidat položku");
 			?>
 			</div>
 		</form>

@@ -230,6 +230,14 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"controller" => "mistake",
 								"action" => "postalone"))
 		);
+        
+        $router->addRoute(
+				"audit-mistake-postalone-html",
+				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/post-mistake.html",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "postalone.html"))
+		);
 		
 		// zobrazeni vypisu neshod
 		$router->addRoute(
