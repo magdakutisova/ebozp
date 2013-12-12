@@ -1,7 +1,17 @@
 <?php echo $this->render('header.phtml') ?>
 
 <div class="clear">
-<div class="span-25 identification"><?php echo $this->clientInfo();?></div>
+    <span class="icon-home">
+        <a href="/" title="Go home"></a>
+    </span>
+    <div id="cnt-identification">
+        <span id="client-name">
+            <?php echo $this->clientInfo();?>
+        </span>
+        <span id="client-risks">
+            Úroveň rizika&nbsp;&nbsp;<span class="big"><?php echo $this->clientRisk() * 1; ?></span>
+        </span>
+    </div><br class="clear">
 <div class="span-5 border navigation">
 	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>
 	<?php echo $this->navigation()->menu()->renderMenu($clientNav); ?>
