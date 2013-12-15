@@ -39,7 +39,13 @@ foreach ($this->mistakes as $mistake) {
 		$classes[] = "mistake-marked";
 	}
 	
-	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true));
+    if (!is_null($this->subsidiary) && !$this->subsidiary->hq) {
+        $subsidiaryRow = false;
+    } else {
+        $subsidiaryRow = true;
+    }
+    
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true, "subsidiaryRow" => $subsidiaryRow));
 }
 ?>
 </table>
@@ -72,8 +78,12 @@ if ($acl->isAllowed($user->role, "audit:mistake", "import")) {
             </p>
             <p>
                 <?php 
-                $items = $this->formFilter->getElement("subsidiary_id")->getMultiOptions();
                 $items[0] = "---Vyberte---";
+                
+                foreach ($this->subsidiaries as $item) {
+                    $items[$item->id_subsidiary] = $item->subsidiary_name . "(" . $item->subsidiary_town . " - " . $item->subsidiary_street . ")";
+                }
+                
                 echo $this->formLabel("subsidiaryId", "Pobočka: ");
                 echo $this->formSelect("subsidiaryId", Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId"), null, $items);
                 ?>

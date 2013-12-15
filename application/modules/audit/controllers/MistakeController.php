@@ -632,10 +632,17 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$formFilter->getElement("workplace_id")->setMultiOptions($workplaces);
 		$formFilter->getElement("category")->setMultiOptions($categories);
 		$formFilter->getElement("subcategory")->setMultiOptions($subcategories);
+        
+        // pokud neni pobocka centrala, pak se odstrani vyber pobocky
+        if (!is_null($subsidiary) && !$subsidiary->hq) {
+            $formFilter->removeElement("subsidiary_id");
+        }
 		
 		$this->view->formFilter = $formFilter;
 		$this->view->mistakes = $mistakes;
 		$this->view->client = $client;
+        $this->view->subsidiary = $subsidiary;
+        $this->view->subsidiaries = $subsidiaries;
 	}
 	
 	public function indexJsonAction() {

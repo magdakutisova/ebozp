@@ -15,7 +15,7 @@ if (!$this->disableReturnLink)
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
-$options = array("name" => $this->caption);
+$options = array("name" => $this->caption, "subsidiaryRow" => !$this->hideSubsidiaryRow);
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
 
 $options["buttons"] = array("get" => array("type" => "button", "caption" => "Zobrazit"));

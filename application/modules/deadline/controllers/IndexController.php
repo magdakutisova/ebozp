@@ -389,6 +389,18 @@ class Deadline_IndexController extends Zend_Controller_Action {
         
         $form->getElement("subsidiary_id")->setMultiOptions($subsidiaryIndex);
         
+        // kontrola skryti pobocky - TODO: vlozit podminku proti zbytecnemu nacitani
+        $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        
+        if ($subsidiaryId) {
+            $subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+            
+            if (!$subsidiary->hq) {
+                $form->removeElement("subsidiary_id");
+                $this->view->hideSubsidiaryRow = true;
+            }
+        }
+        
         $form->populate($this->_request->getParams());
         
 		$this->view->filterForm = $form;
