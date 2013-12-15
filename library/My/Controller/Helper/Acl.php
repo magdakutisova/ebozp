@@ -91,7 +91,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->deny($client, 'position', array('new', 'edit', 'delete'));
 		$this->deny($client, 'private');
 		$this->deny($client, 'work', array('edit', 'delete'));
-		$this->deny($client, 'technical', array('edit', 'delete'));
+		$this->deny($client, 'technical', array('edit', 'delete', "create", "create.part", "create.json"));
 		$this->deny($client, 'chemical', array('edit', 'delete'));
 		$this->deny($client, 'employee', array('edit', 'delete'));
 		$this->allow($client, "deadline:index");

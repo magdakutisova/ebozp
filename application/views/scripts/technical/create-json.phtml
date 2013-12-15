@@ -1,0 +1,20 @@
+<?php
+// vyhodnoceni odpovedi
+$response = array(
+    "created" => false,
+    "data" => null,
+    "errors" => array(),
+    "objName" => null,
+    "objId" => null
+);
+
+if ($this->device) {
+    $response["created"] = true;
+    $response["data"] = $this->device->toArray();
+    $response["objName"] = sprintf("%s %s", $this->device->sort, $this->device->type);
+    $response["objId"] = $this->device->id_technical_device;
+} else {
+    $response["errors"] = $this->form->getErrors();
+}
+
+echo $this->json($response);

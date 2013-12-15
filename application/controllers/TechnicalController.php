@@ -27,6 +27,81 @@ class TechnicalController extends Zend_Controller_Action{
 		$this->_canDeleteTechnical = $this->_acl->isAllowed($this->_user, 'technical', 'delete');
 		$this->view->canDeleteTechnical = $this->_canDeleteTechnical;
 	}
+    
+    public function createAction() {
+        $form = new Application_Form_TechnicalDevice_Alone();
+        
+        $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        
+        // naplnenni seznamu pracovist
+        $tableWorkplaces = new Application_Model_DbTable_Workplace();
+        $workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $subsidiaryId), "name");
+        $selectWorkplaces = $form->getElement("workplace_id");
+        
+        foreach ($workplaces as $workplace) {
+            $selectWorkplaces->addMultiOption($workplace->id_workplace, $workplace->name);
+        }
+        
+        // naůezeni seznamu pracovnich pozic
+        $tablePositions = new Application_Model_DbTable_Position();
+        $positions = $tablePositions->fetchAll(array("subsidiary_id = ?" => $subsidiaryId), "position");
+        $selectPositions = $form->getElement("position_id");
+        
+        foreach ($positions as $position) {
+            $selectPositions->addMultiOption($position->id_position, $position->position);
+        }
+        
+        if ($this->_request->isPost()) {
+            // vylidace formulare
+            if ($form->isValid($this->_request->getParams())) {
+                // formular je validni, vytvori se radek a zapise zakladni asociace
+                $tableDevices = new Application_Model_DbTable_TechnicalDevice();
+                $device = $tableDevices->createRow($form->getValues(true));
+                $device->save();
+                
+                // zapis standardni asociace
+                $tableAssocs = new Application_Model_DbTable_ClientHasTechnicalDevice();
+                $tableAssocs->insert(array(
+                    "id_client" => $this->_request->getParam("clientId"),
+                    "id_technical_device" => $device->id_technical_device
+                ));
+                
+                // vyhodnoceni zapsani asociace na pracovni pozici
+                $positionId = $form->getValue("position_id");
+                
+                if ($positionId) {
+                    $tableAssocsPos = new Application_Model_DbTable_PositionHasTechnicalDevice();
+                    $tableAssocsPos->insert(array(
+                        "id_technical_device" => $device->id_technical_device,
+                        "id_position" => $positionId
+                    ));
+                }
+                
+                // vyhodnoceni asociace na pracoviste
+                $workplaceId = $form->getValue("workplaceId");
+                
+                if ($workplaceId) {
+                    $tableAssocsWorks = new Application_Model_DbTable_WorkplaceHasTechnicalDevice();
+                    $tableAssocsWorks->insert(array(
+                        "id_technical_device" => $device->id_technical_device,
+                        "id_workplace" => $workplaceId
+                    ));
+                }
+                
+                $this->view->device = $device;
+            }
+        }
+        
+        $this->view->form = $form;
+    }
+    
+    public function createPartAction() {
+        $this->createAction();
+    }
+    
+    public function createJsonAction() {
+        $this->createAction();
+    }
 	
 	public function listAction(){
 		$clients = new Application_Model_DbTable_Client();

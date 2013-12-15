@@ -206,6 +206,9 @@ $(function () {
                 data[context.attr("name")] = context.val();
         });
         
+        data["clientId"] = CLIENT_ID;
+        data["subsidiaryId"] = $("#deadline-subsidiary_id").val();
+        
         // pokus o odeslani dat
         $.post(form.attr("action"), data, function (response) {
             // kontrola, jeslti byl objekt vytvoren
@@ -252,12 +255,17 @@ $(function () {
                 action = "/employee/create.json";
                 break;
                 
+            case "3":
+                url = "/technical/create.part";
+                action = "/technical/create.json";
+                break;
+                
             default:
                 return;
         }
         
         // nacteni formulare a jeho zobrazeni
-        $.get(url, {clientId : CLIENT_ID}, function (response) {
+        $.get(url, {clientId : CLIENT_ID, "subsidiaryId" : $("#deadline-subsidiary_id").val()}, function (response) {
             response = $(response);
             
             $("<div />").append(response).dialog({
