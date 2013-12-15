@@ -97,6 +97,7 @@ foreach ($this->documentations as $doc) {
         $class = "error";
     }
 	
+    echo "<tbody>";
 	echo "<tr class='$class'>";
 	
 	echo "<td>$doc->name</td>";
@@ -117,10 +118,12 @@ foreach ($this->documentations as $doc) {
      * @todo prasecina - predelat a optimalizovat
      */
     if ($editable) {
-        printf("<tr><td colspan=\"2\">%s</td><td colspan=\"2\">%s</td></tr>", nl2br($doc->comment), nl2br($doc->comment_internal));
+        printf("<tr><td colspan=\"1\">%s</td><td colspan=\"3\">%s</td></tr>", nl2br($doc->comment), nl2br($doc->comment_internal));
     } else {
         printf("<tr><td colspan=\"3\">%s</td></tr>", nl2br($doc->comment));
     }
+    
+    echo "</tbody>";
 }
 	?>
 	</tbody>
