@@ -226,7 +226,7 @@ if (!empty($this->mistakes["others"])) {
 $pdf->AddPage("P", "A4");
 $this->pdf()->header($pdf, "Propadlé lhůty");
 
-$config = array("noAction" > true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
+$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
 
 $deadHead = $this->deadlineTable()->header($config);
 $deadBody = $this->deadlineTable()->deadlines($this->deadlines, $config);
