@@ -251,13 +251,13 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$tableChemicals = new Application_Model_DbTable_Chemical();
 				$nameChemicals = $tableChemicals->info("name");
 		
-				$select->joinInner($nameChemicals, "chemical_id = id_chemical", array("name" => "chemical"));
+				$select->joinLeft($nameChemicals, "chemical_id = id_chemical", array("name" => "chemical"));
 				break;
 		
 			case Deadline_Form_Deadline::TARGET_DEVICE:
 				$select->where("(technical_device_id IS NOT NULL OR anonymous_obj_tech)");
 		
-				$select->joinInner($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
+				$select->joinLeft($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
 				break;
 		
 			case Deadline_Form_Deadline::TARGET_EMPLOYEE:
@@ -266,7 +266,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 				$tableEmployees = new Application_Model_DbTable_Employee();
 				$nameEmployees = $tableEmployees->info("name");
 		
-				$select->joinInner($nameEmployees, "employee_id = $nameEmployees.id_employee", array("name" => new Zend_Db_Expr("CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)")));
+				$select->joinLeft($nameEmployees, "employee_id = $nameEmployees.id_employee", array("name" => new Zend_Db_Expr("CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)")));
 				break;
 				
 			case Deadline_Form_Deadline::TARGET_UNDEFINED:
