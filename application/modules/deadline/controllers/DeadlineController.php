@@ -581,18 +581,18 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	public static function prepareDeadlineRowData(Deadline_Model_Row_Deadline $row) {
 		$retVal = $row->toArray();
 		
-		if (!is_null($retVal["employee_id"])) {
+		if (!is_null($retVal["employee_id"]) || $retVal["anonymous_obj_emp"]) {
 			
-			$retVal["object_id"] = $retVal["employee_id"];
+			$retVal["object_id"] = $retVal["employee_id"] ? $retVal["employee_id"] : 0;
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_EMPLOYEE;
 			
-		} elseif (!is_null($retVal["chemical_id"])) {
+		} elseif (!is_null($retVal["chemical_id"]) || $retVal["anonymous_obj_chem"]) {
 			
-			$retVal["object_id"] = $retVal["chemical_id"];
+			$retVal["object_id"] = $retVal["chemical_id"] ? $retVal["chemical_id"] : 0;
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_CHEMICAL;
 			
-		} elseif ($retVal["technical_device_id"]) {
-			$retVal["object_id"] = $retVal["technical_device_id"];
+		} elseif ($retVal["technical_device_id"] || $retVal["anonymous_obj_tech"]) {
+			$retVal["object_id"] = $retVal["technical_device_id"] ? $retVal["technical_device_id"] : 0;
 			$retVal["deadline_type"] = Deadline_Form_Deadline::TARGET_DEVICE;
 		
 		} else {
