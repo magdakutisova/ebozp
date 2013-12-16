@@ -110,7 +110,7 @@ $sysName = $audit->is_check ? "Osnova" : "Systematická část";
 							foreach ($this->progresItems as $item) {
 								echo "<li>";
 								echo "<button name='delete' type='button'>Odebrat</button>";
-								echo $this->formText("report[item][$i]", $item, array("style" => "width: 500px"));
+								echo $this->formText("report[item][$i]", $item["content"], array("style" => "width: 500px"));
 
 								echo "</li>";
 

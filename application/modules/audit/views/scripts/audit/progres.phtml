@@ -1,0 +1,7 @@
+<?php
+// presmerovani na index
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+$audit = $this->audit;
+$url = $this->url(array("auditId" => $audit->id, "clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-edit");
+$redirector->gotoUrlAndExit($url);

@@ -20,6 +20,21 @@ class Audit_AuditController extends Zend_Controller_Action {
 	 * @var int
 	 */
 	protected $_auditId = 0;
+    
+    protected $_progresCheck = array(
+			"Kontrola funkčnosti systému BOZP a PO.",
+			"Prověření přetrvávajících neshod.",
+			"Fyzická kontrola všech pracovišť.",
+			"Doplnění a úprava registru neshod.",
+			"Návrh konkrétních opatření k odstranění BOZP a PO."
+	);
+    
+    protected $_progresAudit = array(
+            "Kontrola systému BOZP a PO - dokumentace, záznamy, výcvik a školení, technická bezpečnost, atd.",
+			"Fyzická kontrola pracovišť.",
+			"Zpracování registru neshod.",
+			"Návrh konkrétních opatření k dosažení požadované úrovně BOZP a PO."
+    );
 	
 	public function init() {
 		// zapsani helperu
@@ -451,6 +466,9 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// nacteni dat o lhutach z databaze
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$deadlines = $tableDeadlines->findExtendedByAudit($this->_audit);
+        
+        // nactnei polozek prubehu
+        $progres = $this->_audit->getProgres();
 		
 		$this->view->subsidiary = $this->_audit->getSubsidiary();
 		$this->view->client = $this->_audit->getClient();
@@ -468,6 +486,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$this->view->contactForm = $contactForm;
 		$this->view->mistakeAssocIndex = $mistakeAssocsIndex;
 		$this->view->deadlines = $deadlines;
+        $this->view->progres = $progres;
 	}
 	
 	public function getAction() {
@@ -690,6 +709,17 @@ class Audit_AuditController extends Zend_Controller_Action {
 		// navazeni propadlych lhut k auditu
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$tableDeadlines->createByAudit($audit);
+        
+        // zapis zaznamu prubehu
+        $tableProgres = new Audit_Model_AuditsProgresitems();
+        $items = $audit->is_check ? $this->_progresCheck : $this->_progresAudit;
+        
+        foreach ($items as $item) {
+            $tableProgres->insert(array(
+                "audit_id" => $audit->id,
+                "content" => $item
+            ));
+        }
 		
 		$this->_helper->FlashMessenger("Audit vytvořen");
 		
@@ -698,6 +728,25 @@ class Audit_AuditController extends Zend_Controller_Action {
 		);
 	}
 	
+    public function progresAction() {
+        // nacteni dat
+        $data = (array) $this->_request->getParam("item", array());
+        $tableProgres = new Audit_Model_AuditsProgresitems();
+        
+        // smazani starych dat
+        $tableProgres->delete(array("audit_id = ?" => $this->_audit->id));
+        
+        // zapis novych prvku
+        foreach ($data as $item) {
+            $tableProgres->insert(array(
+                "audit_id" => $this->_audit->id,
+                "content" => $item
+            ));
+        }
+        
+        $this->view->audit = $this->_audit;
+    }
+    
 	public function putAction() {
 		// nacteni dat
 		$data = $this->getRequest()->getParam("audit");

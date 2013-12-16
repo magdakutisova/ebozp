@@ -131,6 +131,12 @@ $(function () {
         
         return false;
     }
+    
+    function addProgres() {
+        $("#progreslist").append(
+            $("<li></li>").append($("<input type='text' name='item[]'>")).append($("<input type='button' value='X'>").click(function () { if (confirm("Skutečně odstranit?")) $(this).parent().remove();}))
+        );
+    }
 	
 	$("#save-mistakes").click(sendMistakes);
 	$("#paginator-workplace").change(workplaceSelect);
@@ -142,4 +148,6 @@ $(function () {
 	$("#add-deadlines").click(openDeadList);
     
     $("#new-mistake-form").submit(createMistake);
+    $("#add-progres").click(addProgres);
+    $("#progreslist").sortable();
 });

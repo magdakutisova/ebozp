@@ -4493,13 +4493,13 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O23">
       <dia:attribute name="obj_pos">
-        <dia:point val="-9.85,17.3"/>
+        <dia:point val="-14.4,26.55"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-9.9,17.25;6.485,32.15"/>
+        <dia:rectangle val="-14.45,26.5;1.935,41.4"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-9.85,17.3"/>
+        <dia:point val="-14.4,26.55"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="16.285"/>
@@ -4972,15 +4972,15 @@
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O24">
       <dia:attribute name="obj_pos">
-        <dia:point val="6.435,19.2"/>
+        <dia:point val="1.885,28.45"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="6.3232,18.8691;19.5618,26.8809"/>
+        <dia:rectangle val="1.7732,26.2191;19.5618,28.7809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="6.435,19.2"/>
-        <dia:point val="12.9425,19.2"/>
-        <dia:point val="12.9425,26.55"/>
+        <dia:point val="1.885,28.45"/>
+        <dia:point val="10.6675,28.45"/>
+        <dia:point val="10.6675,26.55"/>
         <dia:point val="19.45,26.55"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
@@ -5016,22 +5016,22 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O25">
       <dia:attribute name="obj_pos">
-        <dia:point val="-37.5,25.5"/>
+        <dia:point val="-10.58,17.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-37.55,25.45;-21.2725,29.95"/>
+        <dia:rectangle val="-10.63,17.35;1.935,21.85"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-37.5,25.5"/>
+        <dia:point val="-10.58,17.4"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="16.177500000000002"/>
+        <dia:real val="12.465"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="4.4000000000000004"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#audit_audits_reports_progresitems#</dia:string>
+        <dia:string>#audit_audits_progresitems#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -5143,7 +5143,7 @@
         </dia:composite>
         <dia:composite type="umlattribute">
           <dia:attribute name="name">
-            <dia:string>#report_id#</dia:string>
+            <dia:string>#audit_id#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#int#</dia:string>
@@ -5196,16 +5196,16 @@
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O26">
       <dia:attribute name="obj_pos">
-        <dia:point val="-9.85,19.2"/>
+        <dia:point val="19.45,19.35"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-21.4343,18.8691;-9.7382,27.7309"/>
+        <dia:rectangle val="1.7732,18.9691;19.5618,19.6809"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-9.85,19.2"/>
-        <dia:point val="-15.5862,19.2"/>
-        <dia:point val="-15.5862,27.4"/>
-        <dia:point val="-21.3225,27.4"/>
+        <dia:point val="19.45,19.35"/>
+        <dia:point val="10.6675,19.35"/>
+        <dia:point val="10.6675,19.3"/>
+        <dia:point val="1.885,19.3"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -5234,7 +5234,7 @@
         <dia:real val="0.5"/>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O23" connection="8"/>
+        <dia:connection handle="0" to="O1" connection="8"/>
         <dia:connection handle="1" to="O25" connection="9"/>
       </dia:connections>
     </dia:object>

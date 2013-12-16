@@ -91,7 +91,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		$this->view->report = $report;
 		$this->view->audit = $audit;
-		$this->view->items = $report->getItems();
+		$this->view->items = $audit->getProgres();
 		$this->view->charts = $charts;
 		
 		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
@@ -125,10 +125,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$auditor = $audit->getAuditor();
 		
 		// nacteni itemu
-		$itemList = $report->getItems();
-		$items = array();
-		
-		foreach ($itemList as $item) $items[] = $item->content;
+		$items = $audit->getProgres();
 		
 		// nacteni formularu
 		if ($audit->is_check) {
@@ -201,12 +198,12 @@ class Audit_ReportController extends Zend_Controller_Action {
 		}
 		
 		// zapis polozek cilu
-		$tableItems = new Audit_Model_AuditsReportsProgresitems();
-		$tableItems->delete("report_id = " . $report->id);
+		$tableItems = new Audit_Model_AuditsProgresitems();
+		$tableItems->delete("audit_id = " . $audit->id);
 		
 		foreach ($data["item"] as $item) {
 			$tableItems->insert(array(
-					"report_id" => $report->id,
+					"audit_id" => $audit->id,
 					"content" => $item
 			));
 		}

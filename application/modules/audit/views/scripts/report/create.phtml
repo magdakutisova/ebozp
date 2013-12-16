@@ -15,13 +15,6 @@ if ($audit->is_check) {
 	$target = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a podle Zákona 262/2006 Sb. Zákoník práce, § 108, odst. 5.";
 	$progresCaption = "Průběh roční prověrky BOZP a PO";
 	
-	$progresItems = array(
-			"Kontrola funkčnosti systému BOZP a PO.",
-			"Prověření přetrvávajících neshod.",
-			"Fyzická kontrola všech pracovišť.",
-			"Doplnění a úprava registru neshod.",
-			"Návrh konkrétních opatření k odstranění BOZP a PO."
-	);
 } else {
 	$name = "Zpráva o provedení auditu bezpečnosti práce a požární ochrany";
 	$progresNoteCaption = "Cíl auditu BOZP a PO";
@@ -29,12 +22,6 @@ if ($audit->is_check) {
 Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 	$progresCaption = "Průběh auditu BOZP a PO";
 	
-	$progresItems = array(
-			"Kontrola systému BOZP a PO - dokumentace, záznamy, výcvik a školení, technická bezpečnost, atd.",
-			"Fyzická kontrola pracovišť.",
-			"Zpracování registru neshod.",
-			"Návrh konkrétních opatření k dosažení požadované úrovně BOZP a PO."
-	);
 }
 
 $address = sprintf("%s, %s, %s", $this->subsidiary->subsidiary_town, $this->subsidiary->subsidiary_street, $this->subsidiary->subsidiary_code);
@@ -68,7 +55,7 @@ $opts = array(
 				"groups" => $this->formsGroups
 		),
 		
-		"progresItems" => $progresItems,
+		"progresItems" => $audit->getProgres(),
 		
 		"workplaces" => $this->workplaces,
 		

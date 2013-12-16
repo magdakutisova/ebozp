@@ -41,7 +41,7 @@ class Audit_Form_AuditFill extends Audit_Form_Audit {
 		
 		// poznamka
 		$this->addElement("textarea", "progress_note", array(
-				"label" => "Cíle a průběh auditu",
+				"label" => "Cíle",
 				"decorators" => $elementDecorator
 		));
 		

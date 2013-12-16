@@ -44,7 +44,19 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 		echo "<h2>Jiná kontaktní osoba</h2>";
 		echo $this->contactForm;
 		echo "</div>";
-		
+        ?>
+        <h2>Průběh auditu</h2>
+        <form action="<?php printf("/audit/audit/progres?auditId=%s", $audit->id); ?>" method="post">
+            <ol id="progreslist">
+                <?php
+            foreach ($this->progres as $progres) {
+                printf("<li><input type='text' name='item[]', value='%s'><input type='button' onclick=\"if (confirm('Skutečně odstranit?')) $(this).parent().remove();\" value='X'></li>", $progres->content);
+            }
+                ?>
+            </ol>
+            <input type="button" value="Přidat položku" id="add-progres" /> <input type="submit" value="Uložit" />
+        </form>
+        <?php
 		if ($isReport && $this->form->getValue("summary") && ($this->audit->contactperson_id || $this->audit->contact_name)) {
 			?>
 		<h3>Uzavření auditu</h3>
