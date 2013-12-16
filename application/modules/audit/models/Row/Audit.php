@@ -57,7 +57,7 @@ class Audit_Model_Row_Audit extends Zend_Db_Table_Row_Abstract {
 		$tableAssocs = new Audit_Model_AuditsMistakes();
 		
 		$nameAssocs = $tableAssocs->info("name");
-		
+        
 		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 		$subSelect->from($nameAssocs, array("mistake_id"))->where("audit_id = ?", $this->id);
         

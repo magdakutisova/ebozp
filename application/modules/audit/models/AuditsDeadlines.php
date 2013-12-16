@@ -74,18 +74,17 @@ class Audit_Model_AuditsDeadlines extends Zend_Db_Table_Abstract {
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
         
-		// vlozeni omezeni na asociovane lhuty
-		$subSelect = new Zend_Db_Select($this->getAdapter());
-		$subSelect->from($this->_name, array("deadline_id"))->where("audit_id = ?", $audit->id);
+		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.audit_id = " . $audit->id, array(
+            "is_done",
+            "last_done" => new Zend_Db_Expr("IFNULL(done_at, last_done)"),
+            "next_date" => new Zend_Db_Expr("IFNULL(ADDDATE(done_at, INTERVAL period MONTH), next_date)")
+        ));
 		
+        // vlozeni omezeni na asociovane lhuty
 		if ($undoneOnly) {
-			$subSelect->where("!is_done");
+			$select->where("!is_done");
 		}
-		
-		$select->where("deadline_deadlines.id in ?", $subSelect);
-		
-		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.audit_id = " . $audit->id, array("is_done"));
-		
+        
 		$data = $select->query()->fetchAll();
 		
 		return new Zend_Db_Table_Rowset(array("data" => $data, "readOnly" => true));

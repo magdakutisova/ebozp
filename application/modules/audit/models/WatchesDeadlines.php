@@ -74,22 +74,21 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
 		
-		// vlozeni omezeni na asociovane lhuty
-		$subSelect = new Zend_Db_Select($this->getAdapter());
-		$subSelect->from($this->_name, array("deadline_id"))->where("watch_id = ?", $watch->id);
+		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.watch_id = " . $watch->id, array(
+            "is_done",
+            "last_done" => new Zend_Db_Expr("IFNULL(done_at, last_done)"),
+            "next_date" => new Zend_Db_Expr("IFNULL(ADDDATE(done_at, INTERVAL period MONTH), next_date)")
+        ));
 		
-		if ($undoneOnly) {
-			$subSelect->where("!is_done");
+
+        if ($undoneOnly) {
+			$select->where("!is_done");
 		}
 		
 		if ($invalidOnly) {
-			$subSelect->where("valid_to < NOW()");
+			$select->where("valid_to < NOW()");
 		}
-		
-		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.watch_id = " . $watch->id, array("is_done"));
-		
-
-		$select->where("deadline_deadlines.id in ?", $subSelect);
+        
 		$select->order("name");
 		
 		$data = $select->query()->fetchAll();
