@@ -441,6 +441,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		} else {
 			$dir = $root;
 		}
+        
+        $uploaded = 0;
 
 		// zapis novych dokumentacnich souboru
 		if ($form->getElement("internal_file")->getValue()) {
@@ -455,6 +457,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			// pripojeni souboru do adresare
             if (!$fileRow)
                 $file->attach($dir);
+            
+            $uploaded++;
 		}
 
 		if ($form->getElement("external_file")->getValue()) {
@@ -468,7 +472,13 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			// pripojeni souboru do adresare
             if (!$fileRow)
                 $file->attach($dir);
+            
+            $uploaded++;
 		}
+        
+        if ($uploaded == 2) {
+            $row->is_marked = 0;
+        }
 	}
 	
 	public static function prepareNames($form, $row = null) {

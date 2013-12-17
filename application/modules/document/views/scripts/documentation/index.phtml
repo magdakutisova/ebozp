@@ -95,10 +95,12 @@ foreach ($this->documentations as $doc) {
     
     if (!$doc->file_id && !$doc->internal_file_id && empty($doc->comment)) {
         $class = "error";
+    } elseif ($doc->is_marked) {
+        $class = "deadline-yellow";
     }
 	
-    echo "<tbody>";
-	echo "<tr class='$class'>";
+    echo "<tbody class='$class'>";
+	echo "<tr>";
 	
 	echo "<td>$doc->name</td>";
 	echo "<td>" . ($doc->subsidiary_name ? $doc->subsidiary_name : "CENTRÁLNÍ DOKUMENTACE") . "</td>";

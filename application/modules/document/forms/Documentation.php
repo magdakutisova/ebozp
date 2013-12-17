@@ -58,6 +58,12 @@ class Document_Form_Documentation extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"label" => "Interní komentář"
 		));
+        
+        $this->addElement("checkbox", "is_marked", array(
+				"required" => false,
+				"decorators" => $elementDecorator,
+				"label" => "Označit k aktualizaci"
+		));
 		
 		$this->addElement("file", "internal_file", array(
 				"required" => false,
