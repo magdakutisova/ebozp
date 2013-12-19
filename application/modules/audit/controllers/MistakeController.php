@@ -538,7 +538,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$filterArr = (array) $this->_request->getParam("mistake", array());
 		$filterArr = array_merge(array("subsidiary_id" => null), $filterArr);
 		
-		if (!is_null($filterArr["subsidiary_id"])) {
+		if (!is_null($filterArr["subsidiary_id"]) && $filterArr["subsidiary_id"] == 0) {
 			$subsidiaryId = $filterArr["subsidiary_id"];
 			$this->_request->setParam("subsidiaryId", $subsidiaryId ? $subsidiaryId : null);
 		} elseif (is_null($filterArr["subsidiary_id"])) {
