@@ -41,8 +41,10 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "document-documentation-index") . "?subId=" . $this->subsidiary['subsidiary']->getIdSubsidiary(); ?>">Dokumentace</a>
-	 
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "documentation"), "document-documentation-index") . "?subId=" . $this->subsidiary['subsidiary']->getIdSubsidiary(); ?>">Dokumentace</a>
+	 |
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "record"), "document-documentation-index") . "?subId=" . $this->subsidiary['subsidiary']->getIdSubsidiary(); ?>">Dokumentace</a>
+     
 </div>
 
 <?php 

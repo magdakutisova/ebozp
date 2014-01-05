@@ -3,10 +3,42 @@ require_once __DIR__ . "/DocumentController.php";
 require_once __DIR__ . "/DirectoryController.php";
 
 class Document_DocumentationController extends Zend_Controller_Action {
+    
+    const REQ_PARAM = "TYPE";
+    const REQ_DOC = "documentation";
+    const REQ_REC = "record";
+    
+    /**
+     *
+     * @var Document_Model_Documentations
+     */
+    protected $_tableItems;
+    
+    /**
+     * typ dotazu
+     *
+     * @var str
+     */
+    protected $_type;
 
 	public function init() {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 		$this->view->layout()->setLayout("client-layout");
+        
+        $reqType = $this->_request->getParam(self::REQ_PARAM, self::REQ_DOC);
+        
+        switch ($reqType) {
+            case self::REQ_DOC:
+                $this->_tableItems = new Document_Model_Documentations();
+                break;
+            
+            case self::REQ_REC:
+                $this->_tableItems = new Document_Model_Records();
+                break;
+        }
+        
+        $this->view->REQ_TYPE = $reqType;
+        $this->_type = $reqType;
 	}
 
 	public function attachAction() {
@@ -14,7 +46,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$documentationId = $this->_request->getParam("documentationId", 0);
 		$fileId = $this->_request->getParam("fileId", 0);
 
-		$documentation = self::loadDocumentation($documentationId);
+		$documentation = self::loadDocumentation($documentationId, $this->_tableItems);
 
 		// vyhodnoceni typu odeslani a nastaveni dat
 		if ($this->_request->getParam("submit-client", false)) {
@@ -67,8 +99,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$clientId = $this->_request->getParam("clientId", 0);
 		$docId = $this->_request->getParam("documentationId", 0);
 
-		$tableDocumentations = new Document_Model_Documentations();
-		$tableDocumentations->delete(array("id = ?" => $docId));
+		$this->_tableItems->delete(array("id = ?" => $docId));
 		
 		$this->_helper->FlashMessenger("Dokumentace byla smazána");
 		
@@ -80,13 +111,13 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		// nacteni dat
 		$docId = $this->_request->getParam("documentationId", 0);
 		$clientId = $this->_request->getParam("clientId", 0);
-		$doc = self::loadDocumentation($docId);
+		$doc = self::loadDocumentation($docId, $this->_tableItems);
 
 		// vytvoreni formulare
 		$form = new Document_Form_Documentation();
 		self::insertSubs($form, $clientId);
 		$form->populate($doc->toArray());
-		$url = $this->view->url(array("documentationId" => $docId, "clientId" => $clientId), "document-documentation-put");
+		$url = $this->view->url(array("documentationId" => $docId, "clientId" => $clientId, self::REQ_PARAM => $this->_type), "document-documentation-put");
 		$form->setAction($url);
 		$form->isValidPartial($this->_request->getParams());
 		$form->getElement("subsidiary_id")->setAttrib("disabled", "disabled");
@@ -96,7 +127,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$root = $tableDirectories->root($clientId);
 		
 		// zapis jmen
-		self::prepareNames($form, $doc);
+		self::prepareNames($form, $doc, $this->_type);
 
         // nacteni interniho a verejneho souboru (pokud nejsou dostupne - NULL)
         $internal = $doc->getInternal();
@@ -147,7 +178,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 
 		// smazani puvodni dokumentace
-		$tableDocumentations = new Document_Model_Documentations();
+		$tableDocumentations = $this->_tableItems;
 		$tableDocumentations->delete($where);
 
 		// nacteni dat
@@ -216,7 +247,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			$this->_request->setParam("subsidiaryId", null);
 		}
 
-		$tableDocumentations = new Document_Model_Documentations();
+		$tableDocumentations = $this->_tableItems;
 		
 		// pokud je dovoleno polozky dokumentace editovat, centralni dokumentace se nevypise
 		$role = Zend_Auth::getInstance()->getIdentity()->role;
@@ -230,12 +261,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		self::insertSubs($addForm, $clientId);
 
 		// nastaveni akce
-		$url = $this->view->url(array("clientId" => $client->id_client), "document-documentation-post");
+		$url = $this->view->url(array("clientId" => $client->id_client, "TYPE" => $this->_type), "document-documentation-post");
 		$addForm->setAction($url);
 		$addForm->getElement("subsidiary_id")->setValue($subsidiaryId);
 		$addForm->isValidPartial($this->_request->getParams());
 		
-		self::prepareNames($addForm);
+		self::prepareNames($addForm, null, $this->_type);
 		
 		// vyhodnoceni jmena
 		$currName = $addForm->getValue("name");
@@ -253,7 +284,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$form = new Document_Form_Documentation();
 		
 		self::insertSubs($form, $this->_request->getParam("clientId"));
-		self::prepareNames($form, $_REQUEST["documentation"]["name"]);
+		self::prepareNames($form, $_REQUEST["documentation"]["name"], $this->_type);
 		
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("index");
@@ -266,7 +297,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		if (!$subsidiaryId) $subsidiaryId = null;
 
 		// zapis dat
-		$tableDocumentation = new Document_Model_Documentations();
+		$tableDocumentation = $this->_tableItems;
 		$slot = $tableDocumentation->createSlot(
 				$form->getValue("name"),
 				$this->_request->getParam("clientId"),
@@ -295,11 +326,11 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$clientId = $this->_request->getParam("clientId");
 		$documentationId = $this->_request->getParam("documentationId");
 
-		$doc = self::loadDocumentation($documentationId);
+		$doc = self::loadDocumentation($documentationId, $this->_tableItems);
 
 		$form = new Document_Form_Documentation();
 		self::insertSubs($form, $clientId);
-		self::prepareNames($form, $_REQUEST["documentation"]["name"]);
+		self::prepareNames($form, $_REQUEST["documentation"]["name"], $this->_type);
 
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("edit");
@@ -333,8 +364,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		if ($subsidiaryId < -1) throw new Zend_Exception("Unkonown subsidiary set");
 
 		// vyhodnoceni id pobocky
-		$tablePresets = new Document_Model_DocumentationsPresets();
-
+        if ($this->_type == self::REQ_DOC) {
+            $tablePresets = new Document_Model_DocumentationsPresets();
+        } else {
+            $tablePresets = new Document_Model_RecordsPresets();
+        }
+        
 		switch ($subsidiaryId) {
 			case -1:
 				$tablePresets->resetClient($clientId);
@@ -378,12 +413,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	 * nacte a vraci slot dokumentace
 	 *
 	 * @param int $id id slotu
+     * @param Document_Model_Documentations $table tabulka s daty
 	 * @return Document_Model_Row_Documentation
 	 * @throws Zend_Db_Table_Exception
 	 */
-	public static function loadDocumentation($id) {
-		$tableDocs = new Document_Model_Documentations();
-		$doc = $tableDocs->find($id)->current();
+	public static function loadDocumentation($id, $table) {
+		$doc = $table->find($id)->current();
 
 		if (!$doc) throw new Zend_Db_Table_Exception("Documentation slot #$id not found");
 
@@ -481,7 +516,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
         }
 	}
 	
-	public static function prepareNames($form, $row = null) {
+	public static function prepareNames($form, $row = null, $type = self::REQ_DOC) {
 		$nameIndex = array();
 		
 		if ($row) {
@@ -493,7 +528,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 		
 		// nacteni prednastavenych jmen dokumentace
-		$tableNames = new Document_Model_Names();
+        if ($type == self::REQ_DOC) {
+            $tableNames = new Document_Model_Names();
+        } else {
+            $tableNames = new Document_Model_RecordsNames();
+        }
+        
 		$names = $tableNames->fetchAll(null, "name");
 		
 		foreach ($names as $name) {

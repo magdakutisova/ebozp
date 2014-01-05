@@ -46,7 +46,9 @@ if ($user->role != My_Role::ROLE_CLIENT) {
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "audit-watch-index-client"); ?>">Dohlídky</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient()), "document-documentation-index") . "?subId=" . $this->subsidiaryId; ?>">Dokumentace</a>
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "documentation"), "document-documentation-index") . "?subId=" . $this->subsidiaryId; ?>">Dokumentace</a>
+     |
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "record"), "document-documentation-index") . "?subId=" . $this->subsidiaryId; ?>">Záznamy</a>
 </div>
 
 <?php 

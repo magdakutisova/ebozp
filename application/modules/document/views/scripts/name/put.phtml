@@ -2,6 +2,6 @@
 $name = $this->name;
 $redirector = new Zend_Controller_Action_Helper_Redirector();
 
-$url = sprintf("/document/name/edit?nameId=%s", $name->id);
+$url = sprintf("/document/name/edit?TYPE=%s&nameId=%s", $this->REQ_TYPE, $name->id);
 
 $redirector->gotoUrlAndExit($url);

@@ -1,4 +1,4 @@
-<h1>Přednastavení jmen souborů</h1>
+<h1>Přednastavení jmen souborů - <?php echo $this->REQ_TYPE == Document_DocumentationController::REQ_DOC ? "dokumentace" : "záznamy" ?></h1>
 <?php
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
@@ -9,7 +9,7 @@ $rows = array();
 if ($acl->isAllowed($user->role, "document:name", "put")) {
 	foreach ($this->names as $name) {
 		$rows[] = sprintf("<tr><td><a href='%s'>%s</td></tr>",
-				$this->url(array("nameId" => $name->id), "document-name-edit"),
+				$this->url(array("nameId" => $name->id, "TYPE" => $this->REQ_TYPE), "document-name-edit"),
 				$name->name);
 	}
 } else {

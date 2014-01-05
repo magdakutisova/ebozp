@@ -1,5 +1,16 @@
+<?php
+if ($this->REQ_TYPE == Document_DocumentationController::REQ_DOC) {
+    ?>
 <h1>Přednastavená dokumentace</h1>
 <h2>Obecná dokumentace</h2>
+    <?php
+} else {
+    ?>
+<h1>Přednastavené záznamy</h1>
+<h2>Obecné záznamy</h2>
+<?php
+}
+    ?>
 <table>
 	<thead>
 		<tr>
@@ -20,7 +31,7 @@ foreach ($this->commons as $item) {
 			<?php echo $item->name; ?>
 			</td>
 			<td>
-			<?php echo "<a href='/document/preset/delete?presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
+			<?php echo "<a href='/document/preset/delete?TYPE=$this->REQ_TYPE&presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
 			</td>
 		</tr>
 	<?php 
@@ -28,7 +39,7 @@ foreach ($this->commons as $item) {
 ?>
 	</tbody>
 </table>
-<h2>Dokumentace pro pobočku</h2>
+<h2><?php echo $this->REQ_TYPE == "DOC" ? "Dokumentace pro pobočku" : "Záznamy pro pobočku"; ?></h2>
 <table>
 	<thead>
 		<tr>
@@ -49,7 +60,7 @@ foreach ($this->noCommons as $item) {
 			<?php echo $item->name; ?>
 			</td>
 			<td>
-			<?php echo "<a href='/document/preset/delete?presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
+			<?php echo "<a href='/document/preset/delete?TYPE=$this->REQ_TYPE&presetId=$item->id' onclick='return confirm(\"Skutečně smazat?\")'>Smazat</a>"; ?>
 			</td>
 		</tr>
 	<?php 
@@ -57,6 +68,6 @@ foreach ($this->noCommons as $item) {
 ?>
 	</tbody>
 </table>
-<h2>Nová přednastavená dokumentace</h2>
+<h2><?php echo $this->REQ_TYPE == "DOC" ? "Nová přednastavená dokumentace" : "Nové přednastavené záznamy"; ?></h2>
 <?php
 echo $this->form;

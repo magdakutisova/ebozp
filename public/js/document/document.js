@@ -182,7 +182,7 @@ $(function () {
 		var id = $(this).attr("name").split("-")[1];
 		var url = "/document/documentation/edit.html";
 		
-		$.get(url, { documentationId : id, clientId : CLIENT_ID }, function (response) {
+		$.get(url, { documentationId : id, clientId : CLIENT_ID, TYPE : TYPE }, function (response) {
 			response = $(response);
 			response.appendTo("body");
 			response.find("#attach-file").submit(checkAttach);

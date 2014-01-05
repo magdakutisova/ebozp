@@ -204,7 +204,7 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-documentation-index",
-				new Zend_Controller_Router_Route("/klient/:clientId/documentation",
+				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE",
 						array(
 								"module" => "document",
 								"controller" => "documentation",
@@ -214,7 +214,7 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-documentation-post",
-				new Zend_Controller_Router_Route("/klient/:clientId/documentation/post",
+				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE/post",
 						array(
 								"module" => "document",
 								"controller" => "documentation",
@@ -224,7 +224,7 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-documentation-put",
-				new Zend_Controller_Router_Route("/klient/:clientId/documentation/:documentationId/put",
+				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE/:documentationId/put",
 						array(
 								"module" => "document",
 								"controller" => "documentation",
@@ -234,7 +234,7 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-documentation-attach",
-				new Zend_Controller_Router_Route("/klient/:clientId/documentation/:documentationId/attach",
+				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE/:documentationId/attach",
 						array(
 								"module" => "document",
 								"controller" => "documentation",
@@ -244,7 +244,7 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-name-edit",
-				new Zend_Controller_Router_Route("/document/name/:nameId/edit",
+				new Zend_Controller_Router_Route("/document/:TYPE/name/:nameId/edit",
 						array(
 								"module" => "document",
 								"controller" => "name",

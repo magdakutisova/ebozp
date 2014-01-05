@@ -9,5 +9,5 @@ $acl = new My_Controller_Helper_Acl();
 
 if ($acl->isAllowed($user->role, "document:name", "delete")) {
 	echo "<h2>Smazat název</h2>";
-	printf("<a href='/document/name/delete?nameId=%s' onclick=\"return confirm('Skutečně smazat?')\">Smazat<a/>", $this->name->id);
+	printf("<a href='/document/name/delete?TYPE=%s&nameId=%s' onclick=\"return confirm('Skutečně smazat?')\">Smazat<a/>", $this->REQ_TYPE, $this->name->id);
 }

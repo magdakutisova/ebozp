@@ -1,6 +1,6 @@
 <?php
 $redirector = new Zend_Controller_Action_Helper_Redirector();
-$url = $this->url(array("clientId" => $this->clientId), "document-documentation-index");
+$url = $this->url(array("clientId" => $this->clientId, "TYPE" => $this->REQ_TYPE), "document-documentation-index");
 
 $url .= "?subId=" . $this->subId;
 

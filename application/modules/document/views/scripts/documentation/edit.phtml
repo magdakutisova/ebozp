@@ -7,7 +7,7 @@ echo "<h2>Úprava pozice</h2>";
 echo $this->form;
 
 echo "<h2>Smazat</h2>";
-echo "<form action='/document/documentation/delete' onsubmit='return confirm(\"Skutečně smazat?\")'>";
+echo "<form action='/document/documentation/delete?TYPE=" . $this->REQ_TYPE . "' onsubmit='return confirm(\"Skutečně smazat?\")'>";
 echo $this->formHidden("documentationId", $this->documentation->id);
 echo $this->formHidden("clientId", $this->documentation->client_id);
 echo $this->formSubmit("delete-submit", "Smazat");
@@ -15,7 +15,6 @@ echo "</form>";
 
 // zobrazeni aktualnich souboru
 echo "<h2>Nastavené soubory</h2>";
-
 if ($this->internal) {
    $internalText = $this->file($this->internal); 
 } else {
@@ -46,7 +45,7 @@ if ($this->public) {
 echo "<h2>Výběr souboru</h2>";
 echo $this->formHidden("root-id", $this->root->id);
 
-$attachUrl = $this->url(array("documentationId" => $this->documentation->id, "clientId" => $this->documentation->client_id), "document-documentation-attach");
+$attachUrl = $this->url(array("documentationId" => $this->documentation->id, "clientId" => $this->documentation->client_id, "TYPE" => $this->REQ_TYPE), "document-documentation-attach");
 ?>
 <div id="attach-path"></div>
 <div>

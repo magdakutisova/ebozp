@@ -2,6 +2,29 @@
 var CLIENT_ID = <?php echo $this->client->id_client; ?>;
 </script>
 <?php
+echo $this->docType();
+
+// vyhodnoceni typu a nastaveni promennych s popisky
+switch ($this->REQ_TYPE) {
+    case Document_DocumentationController::REQ_DOC:
+        $mainHeader = "Dokumentace";
+        $addHeader = "Přidat novou dokumentaci";
+        $defaultHeader = "Nastavit výchozí dokumentaci";
+        $importHeader = "Import dokumentace ze souboru";
+        $presetLabel = "Přednastavená dokumentace";
+        $nameLabel = "Přednastavená jména dokumentace";
+        break;
+    
+    case Document_DocumentationController::REQ_REC:
+        $mainHeader = "Záznamy";
+        $addHeader = "Přidat nový záznam";
+        $defaultHeader = "Nastavit výchozí záznamy";
+        $importHeader = "Import záznamů ze souboru";
+        $presetLabel = "Přednastavené záznamy";
+        $nameLabel = "Přednastavená jména záznamů";
+        break;
+}
+
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
@@ -10,12 +33,12 @@ $subsidiaryId = Zend_Controller_Front::getInstance()->getRequest()->getParam("su
 // vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
 $editable = $acl->isAllowed($user->role, "document:documentation", "put");
 ?>
-<h2>Dokumentace</h2>
+<h2><?php echo $mainHeader; ?></h2>
 <?php 
 if ($editable) {
 ?>
 <div class="box">
-	<form action="<?php echo $this->url(array("clientId" => $this->client->id_client), "document-documentation-index"); ?>" method="get">
+	<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "TYPE" => $this->REQ_TYPE), "document-documentation-index"); ?>" method="get">
 		<?php 
 		$mo = $this->addForm->getElement("subsidiary_id")->getMultiOptions();
 		$subList = array("-1" => "-- VŠECHNA DOKUMENTACE --");
@@ -31,11 +54,11 @@ if ($editable) {
 $links = array();
 
 if ($acl->isAllowed($user->role, "document:preset")) {
-	$links[] = "<a href='/document/preset/index'>Přednastavená dokumentace</a>";
+	$links[] = sprintf("<a href='/document/preset/index?TYPE=%s'>%s</a>", $this->REQ_TYPE, $presetLabel);
 }
 
 if ($acl->isAllowed($user->role, "document:name")) {
-	$links[] =  "<a href='/document/name/index'>Přednastavená jména dokumentace</a>";
+	$links[] =  sprintf("<a href='/document/name/index?TYPE=%s'>%s</a>", $this->REQ_TYPE, $nameLabel);
 }
 
 echo  implode(" | ", $links);
@@ -133,13 +156,13 @@ foreach ($this->documentations as $doc) {
 <?php 
 // pokud je uzivatel opravnen, zobrazi se formular na pridani
 if ($acl->isAllowed($user->role, "document:documentation", "post")) {
-	echo "<h3>Přidat novou dokumentaci</h3>";
+	printf("<h3>%s</h3>", $addHeader);
 	echo $this->addForm; 
 }
 
 if ($acl->isAllowed($user->role, "document:documentation", "reset")) {
 	?>
-<h2>Nastavit výchozí dokumentace</h2>
+<h2><?php echo $defaultHeader; ?></h2>
 <form action="/document/documentation/reset?clientId=<?php echo $this->client->id_client; ?>" method="post" onsubmit="return confirm('Skutečně pokračovat?')">
 	<em>Pozor! Při resetu bude stávající dokumentace smazána a nahrazena prázdnými sloty!</em>
 	<table>
@@ -164,7 +187,7 @@ if ($acl->isAllowed($user->role, "document:documentation", "reset")) {
 // vypsani importu ze souboru, pokud ma uzivatel opravneni
 if ($acl->isAllowed($user->role, "document:documentation", "import")) {
 	?>
-<h2>Import dokumentace ze souboru</h2>
+<h2><?php echo $importHeader; ?></h2>
 <em>Funkce pro import souborů s definicí dokumentace vytvořených pomocí programu ClientReaper</em>
 	<?php 
 }
