@@ -253,7 +253,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$role = Zend_Auth::getInstance()->getIdentity()->role;
 		$acl = new My_Controller_Helper_Acl();
 		$withCentral = !$acl->isAllowed($role, "document:documentation", "put");
-		
+        
 		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId, $withCentral);
 
 		// formular pridani noveho supliku

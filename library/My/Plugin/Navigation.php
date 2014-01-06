@@ -69,6 +69,18 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			foreach($pages as $page){
 				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId, 'filter' => 'podle-pracovist'));
 			}
+            
+            // nacteni upper panelu
+            $configUpper = new Zend_Config_Xml(APPLICATION_PATH . '/configs/upperPanelNavigation.xml', 'nav');		
+            $navigationUpper = new Zend_Navigation($configUpper);
+            Zend_Registry::set("UpperPanel", $navigationUpper);
+            
+            $pages = $navigationUpper->findAllBy("clientId", "clientId");
+            $newParams = array("clientId" => $clientId, "subsidiaryId" => $defSubId, "subId" => $defSubId);
+            
+            foreach ($pages as $page) {
+                $page->setParams(array_merge($page->getParams(), $newParams));
+            }
 		}
 		
 		Zend_Registry::set('ClientNavigation', $clientNavigation);

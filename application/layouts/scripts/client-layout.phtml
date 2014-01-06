@@ -1,6 +1,13 @@
 <?php echo $this->render('header.phtml') ?>
 
 <div class="clear">
+    <div id="upper-panel">
+        <?php 
+        $this->navigation()->findHelper("menu")->setUlClass("common-menu");
+        echo $this->navigation()->menu()->renderMenu(Zend_Registry::get("UpperPanel"));
+        $this->navigation()->findHelper("menu")->setUlClass("");
+        ?>
+    </div>
     <span class="icon-home">
         <a href="/" title="Go home"></a>
     </span>

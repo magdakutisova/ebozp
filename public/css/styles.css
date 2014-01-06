@@ -6,6 +6,9 @@
         Purpose of the stylesheet follows.
 */
 
+#guardian-logo {float: left; }
+#logged-in-as { float: right; }
+
 #cnt-identification { background-color: #e3ecf6; border-radius: 10px; height: 50px; margin-left: 69px;}
 .icon-home { padding-right: 15px;  float: left; }
 .icon-home a { background: no-repeat url(/images/home.png); height: 50px; width: 54px; display: block; }
@@ -17,3 +20,9 @@
 
 .big { font-size: 18pt; font-weight: bolder; }
 #client-risks .big { position: relative; top: 3pt; }
+
+#upper-panel { background-color: #585858; color: #ffffff; border-radius: 10px; text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0 15px 0; }
+#upper-panel a { color: #ffffff; text-decoration: none; padding: 10px 0px; }
+#upper-panel a:hover { text-decoration: underline;}
+.common-menu { padding: 10px 0; margin: 0; }
+.common-menu li { display: inline; margin: auto; margin: 0 15px; }

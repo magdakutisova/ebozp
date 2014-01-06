@@ -43,6 +43,6 @@ var SUBSIDIARY_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInsta
 </head>
 
 <body>
-	<div class="container">
-		<div id="header" class="prepend-top"><div id="logged-in-as" class="push-20 last span-4"><?php echo $this->loggedInAs(); ?></div>
-		<h1 class="span-19 pull-3 border"><?php echo "Guardian"; ?></h1></div>
+	<div class="container"><img src="/images/logo.png" id="guardian-logo" />
+		<div id="header" class="prepend-top"><div id="logged-in-as"><?php echo $this->loggedInAs(); ?></div><br class="clear">
+		</div>
