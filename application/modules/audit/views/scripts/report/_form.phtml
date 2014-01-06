@@ -1,14 +1,12 @@
 <?php 
 $common = $this->common;
 $audit = $this->audit;
-
-$sysName = $audit->is_check ? "Osnova" : "Systematická část";
 ?>
 <menu id="up-menu">
 	<li><a href="#common">Obecné informace</a></li>
 	<li><a href="#target">Cíl a průběh auditu</a></li>
 	<li><a href="#summary">Zjištění z auditu</a></li>
-	<li><a href="#forms"><?php echo $sysName; ?></a></li>
+	<li><a href="#forms">Systematická část</a></li>
 	<li><a href="#workplaces">Vyhodnocení pracovišť</a></li>
 	<li><a href="#mistakes">Registr neshod</a></li>
 	<li><a href="#deadlines">Lhůty</a></li>
@@ -133,7 +131,7 @@ $sysName = $audit->is_check ? "Osnova" : "Systematická část";
 	<fieldset>
 		<legend id="forms">
 			<small>[<a href="#up-menu">Nahoru</a>]
-			</small> <?php echo $sysName; ?>
+			</small> Systematická část
 		</legend>
 		<?php 
 		foreach ($this->forms["list"] as $form) {
@@ -143,12 +141,7 @@ $sysName = $audit->is_check ? "Osnova" : "Systematická část";
 			<?php echo $form["name"]; ?>
 		</h2>
 		<?php 
-		if ($audit->is_check) {
-			$data = $form->findData(true);
-			
-			echo $this->farplan($data);
-		} else {
-			$groups = $this->forms["groups"][$formId];
+		$groups = $this->forms["groups"][$formId];
 		?>
 		<div id="<?php echo "chart-$formId"; ?>"></div>
 		<table class="report" id="frm-<?php echo $formId; ?>">
@@ -177,7 +170,6 @@ $sysName = $audit->is_check ? "Osnova" : "Systematická část";
 			</tbody>
 		</table>
 		<?php 
-		}
 		}
 		?>
 	</fieldset>

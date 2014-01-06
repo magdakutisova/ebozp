@@ -74,72 +74,41 @@ $pdf->MultiCell(180, 0, $report->summary, 0, "L");
 // zapis systematicke casi
 $index = 0;
 
-if ($audit->is_check) {
-	foreach ($this->forms as $form) {
-		$pdf->AddPage("P", "A4");
-	
-		// nadpis
-		$this->pdf()->header($pdf, $form["name"]);
-		$pdf->SetY($pdf->GetY() - 5);
-		
-		// zapsani kategorii a hodnot
-		$data = $form->findData(true);
-		
-		foreach ($data as $category) {
-			$pdf->SetY($pdf->GetY() + 3);
-			$this->pdf()->header($pdf, $category["category"]->name, 12);
-			$pdf->SetY($pdf->GetY() - 10);
-			
-			$pdf->SetFont("dejavusans", "", 8);
-			
-			foreach ($category["texts"] as $text) {
-				$pdf->MultiCell(180, 0, $text->text, 0, "L");
-			}
-			
-			$pdf->SetFont("dejavusans", 12, "");
-		}
-		
-		// vlozeni dat
-		$pdf->SetMargins(20, 20);
-		// $pdf->writeHTML($this->farplan($form->findData(true)));
-	}
-} else {
-	foreach ($this->forms as $form) {
-		$pdf->AddPage("P", "A4");
-		
-		$formId = $form["id"];
-		$groups = $this->formsGroups[$formId];
-		
-		// nadpis
-		$this->pdf()->header($pdf, $form["name"]);
-		
-		// graf
-		list($format,  $data) = explode(",", $this->charts[$index++]);
-		$pdf->Image("@" . base64_decode($data),'', '', 170);
-		$pdf->Ln(75);
-		
-		$this->pdf()->form($pdf, $groups);
-        
-        $formMistakes = array();
-        
-        for ($i = 0; $i < count($groups["groups"]); $i++) {
-			// vyhodnoceni jestli je nejaka neshoda v teto skupine
-			$group = $groups["groups"][$i];
-			$groupId = $group["id"];
-	
-			if (!isset($this->mistakes["forms"][$groupId])) continue;
-            
-            $formMistakes = array_merge($formMistakes, $this->mistakes["forms"][$groupId]);
-	/*  stare seskupovani neshod - pozdeji smazat
-			$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
-			$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);*/
-		}
-        
-        if ($formMistakes) {
-            $this->pdf()->header($pdf, "Registr neshod", 16, 'b');
-            $this->pdf()->mistakes($pdf, $formMistakes);
-        }
-	}
+foreach ($this->forms as $form) {
+    $pdf->AddPage("P", "A4");
+
+    $formId = $form["id"];
+    $groups = $this->formsGroups[$formId];
+
+    // nadpis
+    $this->pdf()->header($pdf, $form["name"]);
+
+    // graf
+    list($format,  $data) = explode(",", $this->charts[$index++]);
+    $pdf->Image("@" . base64_decode($data),'', '', 170);
+    $pdf->Ln(75);
+
+    $this->pdf()->form($pdf, $groups);
+
+    $formMistakes = array();
+
+    for ($i = 0; $i < count($groups["groups"]); $i++) {
+        // vyhodnoceni jestli je nejaka neshoda v teto skupine
+        $group = $groups["groups"][$i];
+        $groupId = $group["id"];
+
+        if (!isset($this->mistakes["forms"][$groupId])) continue;
+
+        $formMistakes = array_merge($formMistakes, $this->mistakes["forms"][$groupId]);
+/*  stare seskupovani neshod - pozdeji smazat
+        $this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
+        $this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);*/
+    }
+
+    if ($formMistakes) {
+        $this->pdf()->header($pdf, "Registr neshod", 16, 'b');
+        $this->pdf()->mistakes($pdf, $formMistakes);
+    }
 }
 
 // vyhodnoceni a kontrola pracovist

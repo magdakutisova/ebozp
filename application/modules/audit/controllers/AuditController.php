@@ -375,40 +375,21 @@ class Audit_AuditController extends Zend_Controller_Action {
 		
 		$form->setAction($this->view->url($params, "audit-put"));
 		
-		// vyhodnoceni zda se jedna o audit nebo proverku
-		if ($this->_audit->is_check) {
-			// jedna se o proverku - zobrazi se farplany
-			
-			// nacteni existujicich farplanu
-			$formInstances = $this->_audit->getFarplans();
-			
-			// nactei formularu, ktere jeste mohou byt vyplneny
-			$instanceForm = new Audit_Form_FormInstanceCreate();
-			$instanceForm->loadUnused($formInstances);
-			
-			// vytvoreni odkazu pro novy formular
-			$url = sprintf("/audit/farplan/clone?auditId=%s", $this->_audit->id);
-				
-			$instanceForm->setAction($url);
-		} else {
-			// jedna se o audit - zobrazi se formulare
-			
-			// nacteni instanci formularu
-			$formInstances = $this->_audit->getForms();
-			
-			// nactei formularu, ktere jeste mohou byt vyplneny
-			$instanceForm = new Audit_Form_FormInstanceCreate();
-			$instanceForm->loadUnused($formInstances);
-			
-			// vytvoreni odkazu pro novy formular
-			$url = $this->view->url(array(
-					"clientId" => $this->_audit->client_id,
-					"subsidiaryId" => $this->_audit->subsidiary_id,
-					"auditId" => $this->_auditId
-			), "audit-form-instance");
-			
-			$instanceForm->setAction($url);
-		}
+        // nacteni instanci formularu
+        $formInstances = $this->_audit->getForms();
+
+        // nactei formularu, ktere jeste mohou byt vyplneny
+        $instanceForm = new Audit_Form_FormInstanceCreate();
+        $instanceForm->loadUnused($formInstances);
+
+        // vytvoreni odkazu pro novy formular
+        $url = $this->view->url(array(
+                "clientId" => $this->_audit->client_id,
+                "subsidiaryId" => $this->_audit->subsidiary_id,
+                "auditId" => $this->_auditId
+        ), "audit-form-instance");
+
+        $instanceForm->setAction($url);
 		
 		// nacteni neshod tykajicich se auditu
 		$auditMistakes = $this->_audit->getMistakes();
@@ -501,12 +482,7 @@ class Audit_AuditController extends Zend_Controller_Action {
 		$client = $audit->getClient();
 		$subsidiary = $audit->getSubsidiary();
 		
-		// nacteni formularu
-		if ($audit->is_check) {
-			$forms = $audit->getFarplans();
-		} else {
-			$forms = $audit->getForms();
-		}
+		$forms = $audit->getForms();
 		
 		$this->view->layout()->setLayout("client-layout");
 		

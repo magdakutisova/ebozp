@@ -21,14 +21,10 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$auditor = $audit->getAuditor();
 		
 		// nacteni formularu
-		if ($audit->is_check) {
-			$forms = $audit->getFarplans();
-			$formsGroups = array();
-		} else {
-			$forms = $audit->getForms();
-			$formsGroups = self::getFormsGroups($forms);
-			$forms = $forms->toArray();
-		}
+		$forms = $audit->getForms();
+		$formsGroups = self::getFormsGroups($forms);
+		$forms = $forms->toArray();
+		
 		
 		// nacteni pracovist
 		$workplaces = self::getWorkplaces($audit);
@@ -96,14 +92,10 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
 		
-		if ($audit->is_check) {
-			$forms = $audit->getFarplans();
-			$formsGroups = array();
-		} else {
-			$forms = $audit->getForms();
-			$formsGroups = self::getFormsGroups($forms);
-			$forms = $forms->toArray();
-		}
+		$forms = $audit->getForms();
+		$formsGroups = self::getFormsGroups($forms);
+		$forms = $forms->toArray();
+		
 		
 		$this->view->forms = $forms;
 		$this->view->formsGroups = $formsGroups;
@@ -128,14 +120,10 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$items = $audit->getProgres();
 		
 		// nacteni formularu
-		if ($audit->is_check) {
-			$forms = $audit->getFarplans();
-			$formsGroups = array();
-		} else {
-			$forms = $audit->getForms();
-			$formsGroups = self::getFormsGroups($forms);
-			$forms = $forms->toArray();
-		}
+		$forms = $audit->getForms();
+		$formsGroups = self::getFormsGroups($forms);
+		$forms = $forms->toArray();
+		
 		
 		// nacteni pracovist
 		$workplaces = self::getWorkplaces($audit);

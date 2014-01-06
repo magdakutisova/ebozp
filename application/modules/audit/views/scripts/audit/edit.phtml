@@ -8,7 +8,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 <div id="tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
-		<li><a href="#forms"><?php echo $this->audit->is_check ? "Osnovy" : "Formuláře"; ?></a></li>
+		<li><a href="#forms">Formuláře</a></li>
 		<li><a href="#mistakes">Neshody</a></li>
 		<li><a href="#deadlines">Lhůty</a></li>
 		<li><a href="#workcomments">Kontrola pracovišť</a></li>
@@ -69,20 +69,13 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 		<table>
 			<thead>
 				<tr>
-					<th>
-					<?php echo $this->audit->is_check ? "Osnova" : "Formulář"; ?>
-					</th>
+					<th>Formulář</th>
 				</tr>
 			</thead>
 			<tbody>
 		<?php 
-		if ($this->audit->is_check) {
-			$route = "audit-farplan-edit";
-			$paramName = "farplanId";
-		} else {
-			$route = "audit-form-fill";
-			$paramName = "formId";
-		}
+		$route = "audit-form-fill";
+		$paramName = "formId";
 		
 		$params = array(
 				"clientId" => $this->client->id_client,
