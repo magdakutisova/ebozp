@@ -126,7 +126,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, 'chemical', array('edit', 'delete'));
 		$this->allow($technician, 'employee', array('edit', 'delete'));
 		$this->allow($technician, "audit:audit", array("subdead", "index", "create", "clone", "post", "edit", "put", "get", "submit", "newcontact", "getdead.html", "subdead.html", "deadlist.html"));
-		$this->allow($technician, "audit:mistake", array("submits", "attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "createalone2.html", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
+		$this->allow($technician, "audit:mistake", array("import", "submits", "attach", "detach", "edit.html", "get", "delete", "createalone1", "createalone2", "createalone2.html", "postalone", "edit", "delete.html", "delete", "put.html", "setstatus.json", "switch", "post", "create.html"));
 		$this->allow($technician, "audit:form", array("instance", "fill", "save", "saveone.json", "dettach"));
 		$this->deny($technician, "audit:audit", array("clientlist"));
 		$this->allow($technician, "audit:category", array("children.json"));
@@ -136,7 +136,6 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "audit:report",array("report.pdf", "create", "edit", "save", "send"));
 		$this->allow($technician, "audit:watch");
 		$this->allow($technician, "deadline:deadline");
-		$this->deny($technician, "deadline:deadline", array("import"));
 		$this->allow($technician, "document:documentation");
 		$this->deny($technician, "document:documentation", array("import", "reset"));
 		$this->allow($technician, "task", array("post", "post.html", "put", "put.html", "delete", "delete.html"));
