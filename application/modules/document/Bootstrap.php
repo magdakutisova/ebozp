@@ -204,11 +204,12 @@ class Document_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"document-documentation-index",
-				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE/subsidiary/:subsidiaryId",
+				new Zend_Controller_Router_Route("/klient/:clientId/:TYPE/subsidiary/:subsidiaryId/:subId",
 						array(
 								"module" => "document",
 								"controller" => "documentation",
-								"action" => "index"
+								"action" => "index",
+                                "subId" => null
 						))
 		);
 		

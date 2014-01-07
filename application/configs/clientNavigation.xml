@@ -1,42 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
 	<nav>
-		<home>
-			<label>Domů</label>
-			<route>home</route>
-		</home>
 		<client>
-			<label>Klienti</label>
-			<route>clientList</route>
-			<resource>client</resource>
-			<privilege>list</privilege>
-			<pages>
-				<choose>
-					<label>Vyber jiného klienta</label>
-					<route>clientList</route>
-					<resource>client</resource>
-					<privilege>list</privilege>
-				</choose>
-				<search>
-					<label>Hledej</label>
-					<route>search</route>
-					<resource>search</resource>
-				</search>
-				<new>
-					<label>Založ nového klienta</label>
-					<route>clientNew</route>
-					<resource>client</resource>
-					<privilege>new</privilege>
-				</new>
-			</pages>
+			<label>Pobočky</label>
+			<route>home</route>
+			<resource>index</resource>
+			<privilege>index</privilege>
 		</client>
-		<documents>
-			<label>Dokumenty</label>
-			<route>document-index</route>
+        <audits>
+            <label>Audity a prověrky</label>
+            <route>audit-list</route>
+            <resource>audit:audit</resource>
+            <privilege>list</privilege>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+        </audits>
+		<documentation>
+			<label>Dokumentace</label>
+			<route>document-documentation-index</route>
 			<resource>document:index</resource>
 			<privilege>index</privilege>
 			<clientId>clientId</clientId>
-		</documents>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+            <TYPE>documentation</TYPE>
+		</documentation>
+        <watches>
+            <label>Protokoly</label>
+            <route>audit-watch-index</route>
+            <resource>audit:watch</resource>
+            <privilege>index</privilege>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+        </watches>
+        <records>
+			<label>Záznamy</label>
+			<route>document-documentation-index</route>
+			<resource>document:index</resource>
+			<privilege>index</privilege>
+			<clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+            <TYPE>record</TYPE>
+		</records>
+        <mistakes>
+            <label>Neshody</label>
+            <route>audit-mistakes-index-subs</route>
+            <resource>audit:mistake</resource>
+            <privilege>index</privilege>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+        </mistakes>
+        <deadlines>
+            <label>Lhůtníky</label>
+            <route>deadline-index</route>
+            <resource>deadline:index</resource>
+            <privilege>index</privilege>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
+        </deadlines>
+        <contacts>
+            <label>Kontakty</label>
+            <route>home</route>
+            <resource>index</resource>
+            <privilege>index</privilege>
+        </contacts>
+        <about>
+            <label>O GUARDIANU</label>
+            <route>home</route>
+            <resource>index</resource>
+            <privilege>index</privilege>
+        </about>
+        
+        <!--
 		<print>
 			<label>Záznamy (k tisku)</label>
 			<route>printIndex</route>
@@ -52,7 +86,7 @@
 					<clientId>clientId</clientId>
 				</diary>
 			</pages>
-		</print>
+		</print>-->
 		<workplace>
 			<label>Databáze pracovišť</label>
 			<route>workplaceList</route>

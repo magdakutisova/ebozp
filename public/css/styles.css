@@ -6,6 +6,8 @@
         Purpose of the stylesheet follows.
 */
 
+.container { width: 1200px; }
+
 #guardian-logo {float: left; }
 #logged-in-as { float: right; }
 
@@ -15,7 +17,7 @@
 .icon-home { padding-right: 15px;  float: left; }
 .icon-home a { background: no-repeat url(/images/home.png); height: 50px; width: 54px; display: block; }
 
-#client-name { font-size: 14pt; padding: 10px 10px 15px 10px; float: left; display: block; max-width: 500px; overflow: hidden; white-space: pre; }
+#client-name { font-size: 14pt; padding: 10px 10px 15px 10px; float: left; display: block; max-width: 800px; overflow: hidden; white-space: pre; }
 #client-name a { text-decoration: none; color: #393185; }
 #client-name a:hover { text-decoration: underline; } 
 #client-risks { background-color: #e31e24; color: white; font-size: 10pt; float: right; border-radius: 10px; padding: 4px 10px 10px 10px; font-weight: bolder; height: 36px; }
@@ -27,7 +29,14 @@
 #upper-panel a { color: #ffffff; text-decoration: none; padding: 10px 0px; }
 #upper-panel a:hover { text-decoration: underline;}
 .common-menu { padding: 10px 0; margin: 0; }
-.common-menu li { display: inline; margin: auto; margin: 0 15px; }
+.common-menu li { display: inline; margin: auto; margin: 0 30px; }
+
+#left-menu { background: #e3ecf6; padding: 40px 5px 10px 5px; border-radius: 10px; float: left; font-size: 12pt; width: 200px; font-variant: small-caps; }
+#left-menu ul { list-style: none; padding-left: 5px; }
+#left-menu li { margin: 5px 0; }
+#left-menu li:first-child { font-weight: bold; }
+#left-menu a { color: #393185; }
+
 .subsidiary-list { fonst-size: 14pt; list-style: none; }
 .subsidiary-list li { padding: 2px 5px; }
 .subsidiary-list li:nth-child(2n+1) { background-color: #e5ecf9;}
