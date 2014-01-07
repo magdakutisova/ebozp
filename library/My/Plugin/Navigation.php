@@ -75,8 +75,14 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
             $navigationUpper = new Zend_Navigation($configUpper);
             Zend_Registry::set("UpperPanel", $navigationUpper);
             
+            $subsidiaryId = $request->getParam("subsidiaryId", null);
+            
+            if (is_null($subsidiaryId)) {
+                $subsidiaryId = $request->getParam("subsidiary", $defSubId);
+            }
+            
             $pages = $navigationUpper->findAllBy("clientId", "clientId");
-            $newParams = array("clientId" => $clientId, "subsidiaryId" => $defSubId, "subId" => $defSubId);
+            $newParams = array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId, "subId" => $defSubId);
             
             foreach ($pages as $page) {
                 $page->setParams(array_merge($page->getParams(), $newParams));

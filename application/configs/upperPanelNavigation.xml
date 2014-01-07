@@ -3,7 +3,7 @@
     <nav>
         <mistakes>
             <label>Neshody</label>
-            <route>audit-mistakes-index</route>
+            <route>audit-mistakes-index-subs</route>
             <resource>document:documentation</resource>
             <privilege>index</privilege>
             <clientId>clientId</clientId>
@@ -23,7 +23,7 @@
             <resource>document:documentation</resource>
             <privilege>index</privilege>
             <clientId>clientId</clientId>
-            <subId>subId</subId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
             <params>
                 <TYPE>documentation</TYPE>
             </params>
@@ -34,7 +34,7 @@
             <resource>document:documentation</resource>
             <privilege>index</privilege>
             <clientId>clientId</clientId>
-            <subId>subId</subId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
             <params>
                 <TYPE>record</TYPE>
             </params>

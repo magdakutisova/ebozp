@@ -41,9 +41,9 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "documentation", "subId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Dokumentace</a>
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "documentation", "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Dokumentace</a>
 	 |
-	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "record", "subId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Dokumentace</a>
+	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "record", "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Dokumentace</a>
      
 </div>
 
