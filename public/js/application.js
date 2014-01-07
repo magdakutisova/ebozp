@@ -855,6 +855,49 @@ $(function(){
 		
 		$.iframeDialog(url, 700, 500);
 	});
+    
+    /**
+     * prejde na pobocku
+     */
+    function gotoSub() {
+        var url = "/klient/" + CLIENT_ID + "/pobocka/" + $(this).parent().find("select").val();
+        
+        location.href = url;
+    }
+    
+    /**
+     * vyber pobocky
+     */
+    function writeSubsidiaryList(response) {
+        var wrapper = $("<div id='subselect-dialog'>").append(response).appendTo("body");
+        
+        wrapper.find("button").click(gotoSub);
+        
+        wrapper.dialog({
+            "autoOpen" : false,
+            "title" : "Vyberte pobočku",
+            "modal" : true,
+            "width" : 600,
+            "height" : 100,
+            "resizable" : false,
+            "draggable" : false
+        });
+        
+        displaySubsidiaryList();
+    }
+    
+    function displaySubsidiaryList() {
+        // kontrola, jestli je uz dialog nacte
+        var closedDialog = $("#subselect-dialog");
+        
+        if (!closedDialog.length) {
+            $.get("/subsidiary/list.part", {clientId : CLIENT_ID, subsidiaryId : SUBSIDIARY_ID}, writeSubsidiaryList, "html");
+        } else {
+            closedDialog.dialog("open");
+        }
+    }
+    
+    $("#select-other-subsidiary").click(displaySubsidiaryList);
 });
 
 /**
@@ -983,5 +1026,4 @@ $.iframeDialog = function (src, width, height, title, onClose) {
 			return methods["status"].apply(this, []);
 		}
 	};
-	
 })(jQuery);

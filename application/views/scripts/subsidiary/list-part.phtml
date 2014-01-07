@@ -1,0 +1,23 @@
+<?php
+$this->layout()->disableLayout();
+?>
+<span>
+    <?php
+    $rows = array();
+    
+    foreach ($this->subsidiaries as $sub) {
+        $hq = "";
+
+        if ($sub->getHqOnly()) {
+            $hq = "(pouze sídlo)";
+        } elseif ($sub->getHq()) {
+            $hq = "(Centrála)";
+        }
+
+        $rows[$sub->getIdSubsidiary()] = sprintf("%s - %s, %s, %s %s", $sub->getSubsidiaryName(), $sub->getSubsidiaryTown(), $sub->getSubsidiaryStreet(), $sub->getSubsidiaryCode(), $hq);
+    }
+    
+    echo $this->formSelect("new-subsidiary-id", $this->subsidiaryId, null, $rows);
+    echo $this->formButton("send", "Přejít");
+    ?>
+</span>

@@ -12,12 +12,17 @@
         <a href="/" title="Go home"></a>
     </span>
     <div id="cnt-identification">
-        <span id="client-name">
-            <?php echo $this->clientInfo();?>
-        </span>
+        <?php 
+        $clientInfo = $this->clientInfo();
+        $stripped = strip_tags($clientInfo);
+        ?>
+        <span id="client-name" title="<?php echo $stripped;?>"><?php echo $clientInfo;?></span>
         <span id="client-risks">
             Úroveň rizika&nbsp;&nbsp;<span class="big"><?php echo $this->clientRisk() * 1; ?></span>
         </span>
+        <div id="client-menu">
+            <a href="#" id="select-other-subsidiary">Vybrat jinou pobočku</a>
+        </div>
     </div><br class="clear">
 <div class="span-5 border navigation">
 	<?php $clientNav = Zend_Registry::get('ClientNavigation'); ?>

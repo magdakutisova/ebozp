@@ -502,6 +502,11 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$this->view->subsidiaries = $subsidiaryList;
 		$this->view->subtitle = 'Seznam poboček klienta ' . $subsidiaries[0]->getSubsidiaryName();
 	}
+    
+    public function listPartAction() {
+        $this->listAction();
+        $this->view->subsidiaryId = $this->_request->getParam("subsidiaryId");
+    }
 	
 	public function newcontactpersonAction(){
 		$ajaxContext = $this->_helper->getHelper('AjaxContext');

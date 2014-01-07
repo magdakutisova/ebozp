@@ -9,11 +9,13 @@
 #guardian-logo {float: left; }
 #logged-in-as { float: right; }
 
+#client-menu { float: right; margin: 2px 15px; font-size: 11pt; }
+
 #cnt-identification { background-color: #e3ecf6; border-radius: 10px; height: 50px; margin-left: 69px;}
 .icon-home { padding-right: 15px;  float: left; }
 .icon-home a { background: no-repeat url(/images/home.png); height: 50px; width: 54px; display: block; }
 
-#client-name { font-size: 14pt; padding: 10px 10px 15px 10px; float: left; display: block; }
+#client-name { font-size: 14pt; padding: 10px 10px 15px 10px; float: left; display: block; max-width: 500px; overflow: hidden; white-space: pre; }
 #client-name a { text-decoration: none; color: #393185; }
 #client-name a:hover { text-decoration: underline; } 
 #client-risks { background-color: #e31e24; color: white; font-size: 10pt; float: right; border-radius: 10px; padding: 4px 10px 10px 10px; font-weight: bolder; height: 36px; }
@@ -26,3 +28,6 @@
 #upper-panel a:hover { text-decoration: underline;}
 .common-menu { padding: 10px 0; margin: 0; }
 .common-menu li { display: inline; margin: auto; margin: 0 15px; }
+.subsidiary-list { fonst-size: 14pt; list-style: none; }
+.subsidiary-list li { padding: 2px 5px; }
+.subsidiary-list li:nth-child(2n+1) { background-color: #e5ecf9;}

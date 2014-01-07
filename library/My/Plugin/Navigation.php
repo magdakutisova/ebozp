@@ -20,54 +20,38 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 			$username = Zend_Auth::getInstance()->getIdentity()->username;
 			$users = new Application_Model_DbTable_User();
 			$user = $users->getByUsername($username);
-			$subsidiariesDb = new Application_Model_DbTable_Subsidiary();
-			$subsidiaries = $subsidiariesDb->getSubsidiariesComplete($clientId);
+            
 			$acl = new My_Controller_Helper_Acl();
-			$subIds = array();
-			foreach($subsidiaries as $subsidiary){
-				// pokud je pobocka pouze sidlo, preskoci se
-				// if ($subsidiary->getHqOnly()) continue; - uprva petr jindra - pokud bylo pouze sidlo, tak to padalo
-				
-				if($acl->isAllowed($user, $subsidiary)){
-					$active = '';
-					if(!$subsidiary->getActive()){
-						$active = ' (neaktivní)';
-					}				 
-					$hqOnly = '';
-					if($subsidiary->getHqOnly()){
-						$hqOnly = ' (pouze sídlo)';
-					}
-					$subs->addPage(array(
-						'label' => sprintf("%s, %s, %s", $subsidiary->getSubsidiaryName(), $subsidiary->getSubsidiaryTown(), $subsidiary->getSubsidiaryStreet()),
-						'route' => 'subsidiaryIndex',
-						'resource' => 'subsidiary',
-						'privilege' => 'index',
-						'params' => array(
-							'clientId' => $clientId,
-							'subsidiary' => $subsidiary->getIdSubsidiary(),
-						)
-					));
-					$subIds[] = $subsidiary->getIdSubsidiary();
-				}
-			}
+            
+            $subsidiaryId = $request->getParam("subsidiaryId", null);
+            
+            if (is_null($subsidiaryId)) {
+                $subsidiaryId = $request->getParam("subsidiary", $subsidiaryId);
+            }
 			
-			$defSubId = $subIds[0];
-			if($subsidiariesDb->getSubsidiary($defSubId)->getHqOnly() && count($subIds) > 1){
-				$defSubId = $subIds[1];
-			}
-			
+            // pokud je id pobocky stale null, nacte se vychozi pobocka klienta
+            if (is_null($subsidiaryId)) {
+                $tableSubs = new Application_Model_DbTable_Subsidiary();
+                $sub = $tableSubs->fetchRow(array(
+                    "client_id = ?" => $clientId,
+                    "hq"
+                ));
+                
+                $subsidiaryId = $sub->id_subsidiary;
+            }
+            
 			$pages = $clientNavigation->findAllBy('subsidiaryId', 'subsidiaryId');
 			foreach ($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subsidiaryId));
 			}
 			
 			$pages = $clientNavigation->findAllBy('filter', 'filter');
 			foreach($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId, 'filter' => 'vse'));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'));
 			}
 			$pages = $clientNavigation->findAllBy('filter2', 'filter2');
 			foreach($pages as $page){
-				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $defSubId, 'filter' => 'podle-pracovist'));
+				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'podle-pracovist'));
 			}
             
             // nacteni upper panelu
@@ -75,14 +59,8 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
             $navigationUpper = new Zend_Navigation($configUpper);
             Zend_Registry::set("UpperPanel", $navigationUpper);
             
-            $subsidiaryId = $request->getParam("subsidiaryId", null);
-            
-            if (is_null($subsidiaryId)) {
-                $subsidiaryId = $request->getParam("subsidiary", $defSubId);
-            }
-            
             $pages = $navigationUpper->findAllBy("clientId", "clientId");
-            $newParams = array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId, "subId" => $defSubId);
+            $newParams = array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId, "subId" => $subsidiaryId);
             
             foreach ($pages as $page) {
                 $page->setParams(array_merge($page->getParams(), $newParams));

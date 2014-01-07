@@ -37,8 +37,11 @@ $this->headScript()->exchangeArray(array());
 	<?php echo $this->headScript()?>
     <?php echo $jsScripts; ?>
     <script type="text/javascript">
-var CLIENT_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")) ?>;
-var SUBSIDIARY_ID = <?php echo Zend_Json::encode(Zend_Controller_Front::getInstance()->getRequest()->getParam("subsidiaryId")) ?>;
+<?php
+$request = Zend_Controller_Front::getInstance()->getRequest();
+?>
+var CLIENT_ID = <?php echo Zend_Json::encode($request->getParam("clientId")) ?>;
+var SUBSIDIARY_ID = <?php echo Zend_Json::encode($request->getParam("subsidiaryId", $request->getParam("subsidiary"))) ?>;
     </script>
 </head>
 
