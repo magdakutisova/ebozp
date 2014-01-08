@@ -625,6 +625,13 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// ziskani adapteru a start relace
 		$adapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$adapter->beginTransaction();
+        
+        // nacteni maximalniho id
+        $tableDeadlines = new Deadline_Model_Deadlines();
+        $nameDeadlines = $tableDeadlines->info("name");
+        
+        $sql = "select id from $nameDeadlines order by id desc limit 0,1";
+        $maxId = $adapter->query($sql)->fetchColumn();
 		
 		try {
 			// vytvoreni docasne tabulky pro ulozeni dat
@@ -712,6 +719,13 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			$adapter->rollBack();
 			return;
 		}
+        
+        // kontrola datumu deadline
+        $deadlines = $tableDeadlines->fetchAll(array("id > ?" => $maxId));
+        
+        foreach ($deadlines as $deadline) {
+            self::checkDeadlineDate($deadline);
+        }
 		
 		$adapter->commit();
 	}
@@ -794,6 +808,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id from tmp_emp_import";
 		
 		$adapter->query($sql);
+        
+        
 	}
 	
 	public static function setSubsidiaries(Zend_Form $form, $clientId) {
