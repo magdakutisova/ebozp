@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
 	<nav>
-		<home>
+		<contacts>
 			<label>Domů</label>
 			<route>home</route>
-		</home>
+		</contacts>
+        <about>
+			<label>O GUARDIANU</label>
+			<route>home</route>
+		</about>
 		<client>
 			<label>Klienti</label>
 			<route>clientList</route>
