@@ -1,7 +1,3 @@
 <?php
 $redirector = new Zend_Controller_Action_Helper_Redirector();
-$url = $this->url(array("clientId" => $this->doc->client_id, "TYPE" => $this->REQ_TYPE), "document-documentation-index");
-
-$url .= "?subId=" . $this->subId;
-
-$redirector->gotoUrlAndExit($url);
+$redirector->gotoUrlAndExit($_SERVER["HTTP_REFERER"]);
