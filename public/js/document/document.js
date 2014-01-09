@@ -214,5 +214,5 @@ $(function () {
 	
 	$(".dettach").click(generateConfirm("Skutečně odebrat z adresáře?")).button({ "icon-only" : true, icons : { primary : "ui-icon-close" }, "text" : false });
 	
-	$("select#documentation-name").change(replaceSelect);
+	$("select#documentation-name").change(replaceSelect).change();
 });
