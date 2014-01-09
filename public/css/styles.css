@@ -54,6 +54,8 @@ h1 { color: red; font-size: 22pt; font-weight: bold; }
 .subsidiary-list li { padding: 2px 5px; }
 .subsidiary-list li:nth-child(2n+1) { background-color: #e5ecf9;}
 
-.box { border-radius: 15px; border: 1px solid #000000; }
+.box, .floating-box { border-radius: 15px; border: 1px solid #000000; }
 .client-list, .client-list ul { list-style: none; font-size: 12pt; }
 .client-list>li>span { font-weight: bold; }
+
+#informations { width: 670px;}

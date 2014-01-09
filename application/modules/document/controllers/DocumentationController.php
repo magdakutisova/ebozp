@@ -232,7 +232,11 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		// nacteni informaci o suplicich
 		$clientId = $this->getRequest()->getParam("clientId", 0);
 		$subsidiaryId = $this->_request->getParam("subId", null);
-		$this->_request->setParam("subsidiaryId", $subsidiaryId);
+		
+        if (is_null($subsidiaryId))
+            $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        
+        $this->_request->setParam("subsidiaryId", $subsidiaryId);
 
 		// nacteni klienta a pobocky
 		$tableClients = new Application_Model_DbTable_Client();
@@ -246,7 +250,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		} else {
 			$this->_request->setParam("subsidiaryId", null);
 		}
-
+        
 		$tableDocumentations = $this->_tableItems;
 		
 		// pokud je dovoleno polozky dokumentace editovat, centralni dokumentace se nevypise
