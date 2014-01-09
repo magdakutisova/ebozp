@@ -63,7 +63,9 @@ $(function () {
 		// vybrani kategorie
 		var indexItem = objs[name][selectedVal];
         
-        if (indexItem === undefined) return;
+        if (indexItem === undefined) {
+            return;
+        }
 		
 		/**
 		 * prozatim predpokladame, ze kategorie existuje
@@ -125,6 +127,7 @@ $(function () {
 		
 		// zaloha puvodni hodnoty
 		var oldVal = obj.val();
+        var found = false;
 		
 		obj.children().remove();
 		for (var c in opts) {
@@ -135,7 +138,10 @@ $(function () {
 			var currVal = item.value ? item.value : item.name;
 			var opt = $("<option />").attr("value", currVal).text(item.name);
 			
-			if (currVal === oldVal) opt.attr("selected", "selected");
+			if (currVal === oldVal) {
+                opt.attr("selected", "selected");
+                found = true;
+            }
 			
 			obj.append(
 					opt
@@ -145,6 +151,10 @@ $(function () {
 		if (appendCustom) {
 			obj.append($("<option />").attr("value", boundary).text("- Jiné -"));
 		}
+        
+        if (!found) {
+            obj.parent().append($("<spam />").text(" (původně \"" + oldVal + "\")"));
+        }
 	}
 	
 	selects.change(changeSelects);

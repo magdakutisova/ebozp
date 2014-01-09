@@ -31,7 +31,8 @@ class Deadline_Form_Deadline extends Zend_Form {
 		
 		$elementDecorator = array(
 				'ViewHelper',
-				array('Errors'),
+                array("Description", array("tag" => "span")),
+				array('Errors'), 
 				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
 				array('Label', array('tag' => 'td')),
 				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
@@ -152,4 +153,14 @@ class Deadline_Form_Deadline extends Zend_Form {
 				));
 		
 	}
+    
+    public function checkKind($kind) {
+        $this->getElement("kind")->setDescription("(as)");
+    }
+    
+    protected function _checkValue(Zend_Form_Element_Select $select, $value) {
+        if (!in_array($value, $select->getMultiOptions())) {
+            $select->setDescription(" (" . $value . ")");
+        }
+    }
 }
