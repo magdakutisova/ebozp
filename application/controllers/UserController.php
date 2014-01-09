@@ -148,7 +148,6 @@ class UserController extends Zend_Controller_Action
     {
         $form = new Application_Form_Login();
         $this->view->form = $form;
-        $this->view->subtitle = 'Přihlášení';
         
         if ($this->getRequest()->isPost()){
         	$formData = $this->getRequest()->getPost();

@@ -25,7 +25,7 @@ class Application_Form_Login extends Zend_Form
        	$elementDecorator2 = array(
        		'ViewHelper',
        		array('Errors'),
-       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+       		array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element', 'colspan' => 2)),
        		array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
        	);
         

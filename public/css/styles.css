@@ -11,6 +11,14 @@
 #guardian-logo {float: left; }
 #logged-in-as { float: right; }
 
+#welcome { font-size: 12pt; font-style: italic; }
+form#login input[type='text'],form#login input[type='password'] { width: 300px; }
+form#login table tbody tr:nth-child(2n) td { background: none; }
+form#login table tbody tr td:first-child { text-align: right; }
+form#login table { font-size: 14pt; }
+form#login table td { margin: 15px; padding: 10px 20px; }
+form#login table tbody tr:last-child td { text-align: center; }
+
 h1 { color: red; font-size: 22pt; font-weight: bold; }
 .main-content { width: 950px; }
 
