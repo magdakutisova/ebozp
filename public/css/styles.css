@@ -11,6 +11,9 @@
 #guardian-logo {float: left; }
 #logged-in-as { float: right; }
 
+h1 { color: red; font-size: 22pt; font-weight: bold; }
+.main-content { width: 950px; }
+
 #client-menu { float: right; margin: 2px 15px; font-size: 11pt; }
 
 .redline { background: red; height: 3px; margin: 5px 0 25px 0; }
@@ -42,3 +45,7 @@
 .subsidiary-list { fonst-size: 14pt; list-style: none; }
 .subsidiary-list li { padding: 2px 5px; }
 .subsidiary-list li:nth-child(2n+1) { background-color: #e5ecf9;}
+
+.box { border-radius: 15px; border: 1px solid #000000; }
+.client-list, .client-list ul { list-style: none; font-size: 12pt; }
+.client-list>li>span { font-weight: bold; }

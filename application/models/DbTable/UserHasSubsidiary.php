@@ -81,7 +81,7 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 	}
 	
 	public function getByRoleAndUsername($role, $username){
-		$select = $this->select()->from('user_has_subsidiary')->join('user', 'user.id_user = user_has_subsidiary.id_user')->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->where('user.role = ?', $role)->where('user.username = ?', $username)->order('subsidiary.subsidiary_name');
+		$select = $this->select()->from('user_has_subsidiary')->join('user', 'user.id_user = user_has_subsidiary.id_user')->join('subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->where('user.role = ?', $role)->where('user.username = ?', $username)->order(array("subsidiary.hq desc", 'subsidiary.subsidiary_name'));
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->processByRole($result);

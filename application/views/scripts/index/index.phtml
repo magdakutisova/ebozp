@@ -1,18 +1,47 @@
-	<?php if ($this->subsidiaries){?>
+	<?php if ($this->subsidiaries){
+        echo "<h1>Vyberte pobočku</h1>";
+        
+        // reindexace dle klienta
+        $lastId = 0;
+        $subIndex = array();
+        
+        foreach ($this->subsidiaries as $subsidiary) {
+            $item = $subsidiary["subsidiary"];
+            $clientId = $item->getClientId();
+            
+            if (!isset($subIndex[$clientId])) {
+                $subIndex[$clientId] = array();
+            }
+            
+            $subIndex[$clientId][] = $item;
+        }
+        ?>
 	<div class="box">
-		<h2>Pobočky</h2>
-		<ul><?php foreach ($this->subsidiaries as $subsidiary){ 
-			$item = $subsidiary["subsidiary"];
-			
-			if ((int) $item->getHq()){
-			?>
-			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId()), 'clientIndex') ?>"><?php printf("%s, %s, %s (centrála)", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
-			<?php 
-			} else {
-			?>
-			<li><a href="<?php echo $this->url(array('clientId' => $item->getClientId(), 'subsidiary' => $item->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php printf("%s, %s %s", $item->getSubsidiaryName(), $item->getSubsidiaryTown(), $item->getSubsidiaryStreet()); ?></a></li>
-		<?php }
-		}?></ul>
+		<ul class="client-list"><?php 
+        // vypsani klientu a pobocek
+        foreach ($subIndex as $subList){ 
+            // vypsani jmena klienta
+			$hq = $subList[0];
+            
+            echo "<li><span>";
+            echo $hq->getSubsidiaryName();
+            echo "</span><ul>";
+            
+            foreach ($subList as $sub) {
+                if ($sub->getHq()) {?>
+                    <li><a href="<?php echo $this->url(array('clientId' => $sub->getClientId()), 'clientIndex') ?>"><?php printf("%s, %s, %s (centrála)", $sub->getSubsidiaryName(), $sub->getSubsidiaryTown(), $sub->getSubsidiaryStreet()); ?></a></li>
+                    <?php 
+                } else {
+                    ?>
+                    <li><a href="<?php echo $this->url(array('clientId' => $sub->getClientId(), 'subsidiary' => $sub->getIdSubsidiary()), 'subsidiaryIndex') ?>"><?php printf("%s, %s %s", $sub->getSubsidiaryName(), $sub->getSubsidiaryTown(), $sub->getSubsidiaryStreet()); ?></a></li>
+                    <?php
+                }
+            }
+            
+            echo "</ul>";
+            echo "</li>";
+		}
+        ?></ul>
 	</div>
 	<?php }
 	$user = Zend_Auth::getInstance()->getIdentity();
