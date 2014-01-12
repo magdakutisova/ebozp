@@ -479,6 +479,12 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nacitani dat a vygenerovani dotazu pro vlozeni
 		$insert = array();
 		$adapter = $tableSubsidiaries->getAdapter();
+        
+        // nacteni nejvyssiho id
+        $tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        $nameMistakes = $tableMistakes->info("name");
+        $sql = "SELECT id FROM " . $nameMistakes . " ORDER BY id DESC LIMIT 0,1";
+        $maxId = $adapter->query($sql)->fetchColumn();
 		
 		while(!feof($fp)) {
 			$item = fgetcsv($fp);
@@ -514,7 +520,6 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		}
 		
 		// smazani starych dat
-		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 		$tableMistakes->delete(array("subsidiary_id = ?" => $subsidiary->id_subsidiary, "audit_id is null"));
 		
 		// sestaveni zapisovaciho dotazu
@@ -522,7 +527,31 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$sql .= implode(",", $insert);
 		
 		$adapter->query($sql);
-		
+        
+        // vlozeni neshod do proverek a auditu
+        $select = new Zend_Db_Select($adapter);
+        $tableAudits = new Audit_Model_Audits();
+        $select->from(array("tm" => $nameMistakes), array("id"));
+        $select->joinInner(array("ta" => $tableAudits->info("name")), "ta.subsidiary_id = tm.subsidiary_id", array("id"));
+        $select->where("tm.id > ?", $maxId);
+        $select->where("!ta.is_closed")->where("!is_removed");
+        
+        $tableAuditsAssocs = new Audit_Model_AuditsMistakes();
+        $sql = "insert into " . $tableAuditsAssocs->info("name") . " (mistake_id, audit_id) " . $select;
+		$adapter->query($sql);
+        
+         // vlozeni neshod do dohlidek
+        $select = new Zend_Db_Select($adapter);
+        $tableWatches = new Audit_Model_Watches();
+        $select->from(array("tm" => $nameMistakes), array("id"));
+        $select->joinInner(array("tw" => $tableWatches->info("name")), "tw.subsidiary_id = tm.subsidiary_id", array("id"));
+        $select->where("tm.id > ?", $maxId);
+        $select->where("!tw.is_closed")->where("!is_removed");
+        
+        $tableWatchesAssocs = new Audit_Model_WatchesMistakes();
+        $sql = "insert into " . $tableWatchesAssocs->info("name") . " (mistake_id, watch_id) " . $select;
+		$adapter->query($sql);
+        
 		$this->_helper->FlashMessenger("Neshody importovány");
 		
 		$url = $this->view->url(array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId), "audit-mistakes-index-subs");
