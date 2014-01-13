@@ -21,6 +21,19 @@
             Úroveň rizika&nbsp;&nbsp;<span class="big"><?php echo $this->clientRisk() * 1; ?></span>
         </span>
         <div id="client-menu">
+            <?php
+            $request = Zend_Controller_Front::getInstance()->getRequest();
+            
+            $clientId = $request->getParam("clientId");
+            $subsidiaryId = $request->getParam("subsidiaryId", $request->getParam("subsidiary"));
+            
+            if ($subsidiaryId) {
+                $url = $this->url(array("clientId" => $clientId, "subsidiary" => $subsidiaryId), "subsidiaryGet");
+            } else {
+                $url = $this->url(array("clientId" => $clientId), "clientGet");
+            }
+            ?>
+            <a href="<?php echo $url; ?>">Další informace o pobočce</a><br />
             <a href="#" id="select-other-subsidiary">Vybrat jinou pobočku</a>
         </div>
     </div><br class="clear">

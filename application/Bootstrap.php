@@ -168,6 +168,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 											 array('controller' => 'client',
 											 	   'action' => 'index'))
 		);
+        
+        $router->addRoute(
+			'clientGet',
+			new Zend_Controller_Router_Route('klient/:clientId/detaily',
+											 array('controller' => 'client',
+											 	   'action' => 'get'))
+		);
 		
 		$router->addRoute(
 			'clientEdit',
@@ -223,6 +230,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary',
 											array('controller' => 'subsidiary',
 													'action' => 'index'))
+		);
+        
+        $router->addRoute(
+			'subsidiaryGet',
+			new Zend_Controller_Router_Route('klient/:clientId/pobocka/:subsidiary/detaily',
+											array('controller' => 'subsidiary',
+													'action' => 'get'))
 		);
 		
 		$router->addRoute(

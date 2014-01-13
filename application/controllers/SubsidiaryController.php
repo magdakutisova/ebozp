@@ -64,7 +64,7 @@ class SubsidiaryController extends Zend_Controller_Action {
 		}
 	}
 	
-	public function indexAction() {
+	public function getAction() {
 		$clients = new Application_Model_DbTable_Client();
 		$clientId = $this->_getParam ( 'clientId' );
 			
@@ -151,6 +151,38 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$invalidDeads = $tableDeadlines->findInvalids($clientId, $subsidiaryId);
 		$this->view->invalidDeadlines = $invalidDeads;
 	}
+    
+    public function indexAction() {
+        $clients = new Application_Model_DbTable_Client();
+		$clientId = $this->_getParam ( 'clientId' );
+			
+		$clients->openClient ( $clientId );
+		
+		$client = $clients->getClient($clientId);
+		$this->view->archived = $client->getArchived();
+		
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();		
+		
+		$subsidiaryId = $this->_getParam('subsidiary');
+		$subsidiary = $subsidiaries->getSubsidiaryWithDetails($subsidiaryId);
+		if($subsidiary['subsidiary']->getHq()){
+			$this->_helper->redirector->gotoRoute(array('clientId' => $clientId), 'clientIndex');
+		}
+		
+		$this->view->client = $client;
+		$this->view->subsidiary = $subsidiary;
+		$this->view->canViewPrivate = $this->_acl->isAllowed($this->_user, 'private');
+		$this->view->canViewHeadquarters = $this->_canViewHeadquarters;
+		
+		$userSubs = new Application_Model_DbTable_UserHasSubsidiary(); 
+		$this->view->technicians = $userSubs->getByRoleAndSubsidiary(My_Role::ROLE_TECHNICIAN, $subsidiary['subsidiary']->getIdSubsidiary());
+		
+		//bezpečnostní deník
+		$diary = new Application_Model_DbTable_Diary();
+		$messages = $diary->getDiaryBySubsidiary($subsidiaryId);
+		$this->_helper->diary($messages);
+		$this->_helper->diaryMessages();
+    }
 	
 	public function newAction() {
 		$this->view->subtitle = 'Nová pobočka';

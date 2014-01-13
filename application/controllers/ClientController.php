@@ -89,7 +89,7 @@ class ClientController extends Zend_Controller_Action
 		return false;
 	}
 
-	public function indexAction()
+	public function getAction()
 	{
 		$clients = new Application_Model_DbTable_Client();
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();
@@ -170,6 +170,28 @@ class ClientController extends Zend_Controller_Action
 		$invalidDeads = $tableDeadlines->findInvalids($clientId);
 		$this->view->invalidDeadlines = $invalidDeads;
 	}
+    
+    public function indexAction() {
+        $clients = new Application_Model_DbTable_Client();
+		$subsidiaries = new Application_Model_DbTable_Subsidiary();
+		$clientId = $this->_getParam ( 'clientId' );
+			
+		$clients->openClient ( $clientId );
+			
+		$client = $clients->getClient($clientId);
+		$headquarters = $subsidiaries->getHeadquartersWithDetails($clientId);
+		$subsidiary = $headquarters['subsidiary'];
+
+		$this->view->client = $client;
+		$this->view->subsidiary = $headquarters;
+		$this->view->archived = $client->getArchived();
+        
+        //bezpečnostní deník
+		$diary = new Application_Model_DbTable_Diary();
+		$messages = $diary->getDiaryByClient($clientId);
+		$this->_helper->diary($messages);
+		$this->_helper->diaryMessages();
+    }
 
 	public function listAction()
 	{

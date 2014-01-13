@@ -898,6 +898,7 @@ $(function(){
     }
     
     $("#select-other-subsidiary").click(displaySubsidiaryList);
+    $(".tabs").tabs();
 });
 
 /**
