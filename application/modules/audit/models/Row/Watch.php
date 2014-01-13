@@ -35,10 +35,10 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 		return $tableChanges->fetchAll(array("watch_id = ?" => $this->_data["id"]), "id");
 	}
 	
-	public function findOrders() {
-		$tableOrders = new Audit_Model_WatchesOrders();
+	public function findOrder() {
+		$tableOrders = new Audit_Model_Orders();
 	
-		return $tableOrders->fetchAll(array("watch_id = ?" => $this->_data["id"]), "id");
+		return $tableOrders->getOrCreateRow($this->id);
 	}
 	
 	public function findMistakes($disableRemoved = false) {

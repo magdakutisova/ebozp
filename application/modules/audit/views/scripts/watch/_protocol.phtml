@@ -109,9 +109,9 @@ if ($this->watch->outputs) {
     echo nl2br($this->watch->outputs);
 }
 
-if ($this->watch->orders) {
+if ($this->order->content) {
     echo "<h2>Objednávky u G U A R D 7, v.o.s.</h2>";
-    echo nl2br($this->watch->orders);
+    echo nl2br($this->order->content);
 }
 
 // pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty

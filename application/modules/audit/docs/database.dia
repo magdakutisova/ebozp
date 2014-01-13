@@ -5331,7 +5331,7 @@
         <dia:point val="27.4233,-19.6378"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="27.3733,-19.6878;45.2983,1.6122"/>
+        <dia:rectangle val="27.3733,-19.6878;45.2983,0.0122"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="27.4233,-19.6378"/>
@@ -5340,7 +5340,7 @@
         <dia:real val="17.824999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="21.200000000000006"/>
+        <dia:real val="19.600000000000005"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#audit_watches#</dia:string>
@@ -5879,52 +5879,6 @@
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#změny#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="visibility">
-            <dia:enum val="0"/>
-          </dia:attribute>
-          <dia:attribute name="abstract">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="class_scope">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-        </dia:composite>
-        <dia:composite type="umlattribute">
-          <dia:attribute name="name">
-            <dia:string>#orders#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="type">
-            <dia:string>#text#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="value">
-            <dia:string>#null#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="comment">
-            <dia:string>#objednávky#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="visibility">
-            <dia:enum val="0"/>
-          </dia:attribute>
-          <dia:attribute name="abstract">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="class_scope">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-        </dia:composite>
-        <dia:composite type="umlattribute">
-          <dia:attribute name="name">
-            <dia:string>#orders_finished#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="type">
-            <dia:string>#bool#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="value">
-            <dia:string>#not null default 0#</dia:string>
-          </dia:attribute>
-          <dia:attribute name="comment">
-            <dia:string>#přepínač splnění objednávky#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -6730,22 +6684,22 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O37">
       <dia:attribute name="obj_pos">
-        <dia:point val="53.2233,-28.2528"/>
+        <dia:point val="53.2233,-29.6028"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="53.1733,-28.3028;64.9383,-21.4028"/>
+        <dia:rectangle val="53.1733,-29.6528;76.4883,-21.9528"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="53.2233,-28.2528"/>
+        <dia:point val="53.2233,-29.6028"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="11.665000000000001"/>
+        <dia:real val="23.215"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="6.8000000000000007"/>
+        <dia:real val="7.5999999999999996"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#audit_watches_orders#</dia:string>
+        <dia:string>#audit_orders#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -6863,7 +6817,7 @@
             <dia:string>#int#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
-            <dia:string>#not null#</dia:string>
+            <dia:string>#null#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>#identifikační číslo dohlídky#</dia:string>
@@ -6970,6 +6924,29 @@
             <dia:boolean val="false"/>
           </dia:attribute>
         </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#created_at#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#timestamp#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>#not null DEFAULT CURRENT_TIMESTMAP#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>#TS vytvoření záznamu#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
       </dia:attribute>
       <dia:attribute name="operations"/>
       <dia:attribute name="template">
@@ -6979,14 +6956,14 @@
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O38">
       <dia:attribute name="obj_pos">
-        <dia:point val="53.2233,-26.3528"/>
+        <dia:point val="53.2233,-27.7028"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="45.1365,-26.6837;53.3351,-17.4069"/>
+        <dia:rectangle val="45.1365,-28.0337;53.3351,-17.4069"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="53.2233,-26.3528"/>
-        <dia:point val="49.2358,-26.3528"/>
+        <dia:point val="53.2233,-27.7028"/>
+        <dia:point val="49.2358,-27.7028"/>
         <dia:point val="49.2358,-17.7378"/>
         <dia:point val="45.2483,-17.7378"/>
       </dia:attribute>
@@ -6999,7 +6976,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="start_arrow">
-        <dia:enum val="29"/>
+        <dia:enum val="30"/>
       </dia:attribute>
       <dia:attribute name="start_arrow_length">
         <dia:real val="0.5"/>

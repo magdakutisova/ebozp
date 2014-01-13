@@ -166,13 +166,7 @@ foreach ($this->mistakes as $mistake) {
 }
 	?>
 	<div id="orders">
-		<ol>
-			<?php 
-			foreach ($this->orders as $item) {
-				echo "<li>$item->content</li>";
-			}
-			?>
-		</ol>
+        <div class="pre"><?php echo $this->order->content; ?></div>
 	</div>
 	<div id="outputs">
 		<div>

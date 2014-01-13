@@ -1,7 +1,7 @@
 <?php
-class Audit_Model_WatchesOrders extends Zend_Db_Table_Abstract {
+class Audit_Model_Orders extends Zend_Db_Table_Abstract {
 	
-	protected $_name = "audit_watches_orders";
+	protected $_name = "audit_orders";
 	
 	protected $_primary = array("id");
 	
@@ -48,6 +48,25 @@ class Audit_Model_WatchesOrders extends Zend_Db_Table_Abstract {
 				"rowClass" => $this->_rowClass
 				));
 	}
+    
+    /**
+     * pokusi se najit radek s obednavkou pro dohlidku
+     * pokud radek neexistuje, vytvori se novy
+     * 
+     * @param int $watchId identifikacni cislo dohlidky
+     * @return Zend_Db_Table_Row_Abstract
+     */
+    public function getOrCreateRow($watchId) {
+        $row = $this->fetchRow(array("watch_id = ?" => $watchId));
+        
+        if (!$row) {
+            $row = $this->createRow();
+            $row->watch_id = $watchId;
+            $row->save();
+        }
+        
+        return $row;
+    }
 	
 	public function prepareSelect() {
 		// sestaveni dotazu
@@ -65,7 +84,7 @@ class Audit_Model_WatchesOrders extends Zend_Db_Table_Abstract {
 		$select->from(array("o" => $this->_name));
 		
 		// napojeni dohlidky
-		$select->joinInner(array("w" => $nameWatches), "watch_id = w.id", array("watched_at"));
+		$select->joinLeft(array("w" => $nameWatches), "watch_id = w.id and w.is_closed", array("watched_at"));
 		
 		// napojeni pobocky
 		$select->joinInner(array("subs" => $nameSubsidiary), "subs.id_subsidiary = w.subsidiary_id", array(
@@ -84,8 +103,6 @@ class Audit_Model_WatchesOrders extends Zend_Db_Table_Abstract {
 
 		// napojeni uzivatele
 		$select->joinLeft(array("u" => $nameUser), "o.finished_by = u.id_user", array("login" => "username", "username" => "name"));
-		
-		$select->where("w.is_closed");
 		
 		return $select;
 	}

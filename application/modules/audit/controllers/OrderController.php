@@ -27,7 +27,7 @@ class Audit_OrderController extends Zend_Controller_Action {
 		$showFinished = $this->_request->getParam("showFinished", 0);
 		$showActual = $this->_request->getParam("showActive", 1);
 		
-		$tableOrders = new Audit_Model_WatchesOrders();
+		$tableOrders = new Audit_Model_Orders();
 		$orders = $tableOrders->findOrders($showFinished, $showActual);
 		
 		$this->view->orders = $orders;
@@ -66,7 +66,7 @@ class Audit_OrderController extends Zend_Controller_Action {
 	}
 	
 	public static function findOrder($orderId, $extended = true) {
-		$tableOrders = new Audit_Model_WatchesOrders();
+		$tableOrders = new Audit_Model_Orders();
 		
 		if ($extended) {
 			$order = $tableOrders->findOrder($orderId);

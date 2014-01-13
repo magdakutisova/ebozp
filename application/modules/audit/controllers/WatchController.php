@@ -195,7 +195,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$changes = $watch->findChanges();
 		
 		// nacteni objednavek
-		$orders = $watch->findOrders();
+		$order = $watch->findOrder();
 		
 		// pokud nebyl zaroven provaden audit/proverka, pak se nactou lhuty a neshody
 		if (!$watch->also_audit) {
@@ -221,7 +221,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->watch = $watch;
 		$this->view->discussed = $discussed;
 		$this->view->changes = $changes;
-		$this->view->orders = $orders;
+		$this->view->order = $order;
 		$this->view->workplaces = $workplaces;
 	}
 	
@@ -234,7 +234,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$user = $watch->findParentRow("Application_Model_DbTable_User", "user");
 		$changes = $watch->findChanges();
 		$discussed = $watch->findDiscussed();
-		$orders = $watch->findOrders();
+		$order = $watch->findOrder();
 		
 		// nacteni kontaktni osoby
 		if ($watch->contactperson_id) {
@@ -258,7 +258,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->watch = $watch;
 		$this->view->changes = $changes;
 		$this->view->discussed = $discussed;
-		$this->view->orders = $orders;
+		$this->view->order = $order;
 		$this->view->person = $person;
 	}
 	
@@ -414,14 +414,15 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = self::loadWatch($watchId);
 	
 		// nacteni dat
-        $orders = $this->_request->getParam("orders", null);
+        $orders = trim($this->_request->getParam("orders", null));
         
         if (!$orders) {
             $orders = null;
         }
         
-        $watch->orders = $orders;
-        $watch->save();
+        $order = $watch->findOrder();
+        $order->content = $orders;
+        $order->save();
         
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 	
@@ -565,7 +566,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$watch = self::loadWatch($watchId);
 		
 		$mistakes = $watch->findMistakes();
-		$orders = $watch->findOrders();
+		$order = $watch->findOrder();
 		$discussed = $watch->findDiscussed();
 		$changes = $watch->findChanges();
 		
@@ -588,7 +589,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
-		$this->view->orders = $orders;
+		$this->view->order = $order;
 		$this->view->discussed = $discussed;
 		$this->view->changes = $changes;
 		$this->view->client = $client;
@@ -776,7 +777,7 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 				$nameLogs, $nameDeadlinesAssocs, $watch->id);
 		
 		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
-		
+        
 		$this->view->watch = $watch;
 		
 		$this->_helper->FlashMessenger("Dohlídka uzavřena");

@@ -184,7 +184,7 @@ if (!$this->watch->also_audit) {
             <div>
                 <?php
                 echo $this->formLabel("orders", "Objednávky:") . "<br />";
-                echo $this->formTextarea("orders", $watch->orders);
+                echo $this->formTextarea("orders", $this->order->content);
                 ?>
             </div>
 			<div>
