@@ -1,0 +1,167 @@
+<?php 
+$mistake = $this->mistake;
+$today = (int) Zend_Date::now()->get("yMMdd");
+?>
+<h1>Detail neshody</h1>
+<table class="keyval-table">
+	<tbody>
+		<tr>
+			<td>
+			Kategorie
+			</td>
+			<td>
+			<?php echo $mistake->category; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Podkategorie
+			</td>
+			<td>
+			<?php echo $mistake->subcategory; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Upřesnění
+			</td>
+			<td>
+			<?php echo $mistake->concretisation; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Poprvé zjištěna
+			</td>
+			<td>
+			<?php echo $this->sqlDate($mistake->notified_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Kritická*
+			</td>
+			<td class="<?php echo $mistake->isMarked($today) ? "error" : ""; ?>">
+			<?php echo $mistake->isMarked($today) ? "Ano" : "Ne"; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Odstraněno
+			</td>
+			<td>
+			<?php echo $mistake->is_removed ? "Ano" : "Ne"; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Pracoviště
+			</td>
+			<td>
+			<?php echo $this->workplaceName; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Závažnost
+			</td>
+			<td>
+			<?php echo $mistake->weight; ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Neshoda
+			</td>
+			<td class="pre"><?php echo $mistake->mistake;?></td>
+		</tr>
+		<tr>
+			<td>
+			Návrh řešení
+			</td>
+			<td class="pre"><?php echo $mistake->suggestion; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Termín odstranění
+			</td>
+			<td>
+			<?php echo $this->sqlDate($mistake->will_be_removed_at); ?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Zodpovědná osoba
+			</td>
+			<td><?php echo $mistake->responsibile_name; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Komentář
+			</td>
+			<td class="pre"><?php echo $mistake->comment; ?></td>
+		</tr>
+		<tr>
+			<td>
+			Poznámka
+			</td>
+			<td class="pre"><?php echo $mistake->hidden_comment; ?></td>
+		</tr>
+	</tbody>
+</table>
+<em>*) Kritická neshoda je taková, která byla nalezena ve více než jednom auditu nebo prověrce</em>
+<?php 
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+?>
+<h2>Audity a prověrky</h2>
+<table>
+	<thead>
+		<tr>
+			<th>
+			&nbsp;
+			</th>
+			<th>
+			Datum
+			</th>
+			<th>
+			Technik
+			</th>
+			<th>
+			Zodpovědná osoba
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+<?php 
+foreach ($this->found as $item) {
+	if (isset($item["responsibiles"])) {
+		$type = "Prověrka";
+		$responsibiles = $item["responsibiles"];
+		$technic = $this->userIndex[$item["checker_id"]]->username;
+	} else {
+		$type = "Audit";
+		$responsibiles = $item["contact_name"];
+		$technic = $this->userIndex[$item["auditor_id"]]->username;
+	}
+	
+	?>
+		<tr>
+			<td>
+			<?php echo $type; ?>
+			</td>
+			<td>
+			<?php echo $this->sqlDate($item["done_at"]); ?>
+			</td>
+			<td>
+			<?php echo $technic; ?>
+			</td>
+			<td>
+			<?php echo $responsibiles; ?>
+			</td>
+		</tr>
+	<?php 
+}
+?>
+	</tbody>
+</table>

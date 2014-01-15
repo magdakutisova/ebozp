@@ -315,11 +315,38 @@ class Document_DocumentationController extends Zend_Controller_Action {
 			self::_saveFiles($form, $slot);
 			$slot->save();
 		}
-
+        
+        $subs = array();
+        
+        if (is_null($subsidiaryId)) {
+            $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+            $subList = $tableSubsidiaries->fetchAll("client_id = " . $slot->client_id);
+            
+            foreach ($subList as $item) {
+                $subs[] = $item->id_subsidiary;
+            }
+        } else {
+            $subs = array($subsidiaryId);
+        }
+        
+        foreach ($subs as $curSubId) {
+            $this->_helper->diaryRecord->insertMessage(
+                    "přidal " . ($this->_type == self::REQ_DOC ? "novou dokumentaci" : "nový záznam"),
+                    array(
+                        "clientId" => $slot->client_id,
+                        "subsidiaryId" => $curSubId,
+                        self::REQ_PARAM => $this->_type
+                    ),
+                    "document-documentation-index",
+                    $slot->name,
+                    $curSubId
+                    );
+        }
+        
 		$this->_helper->FlashMessenger("Nová dokumentace byla vytvořena");
 		
 		// presmerovani na seznam
-		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId")), "document-documentation-index");
+		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId"), self::REQ_PARAM => $this->_type, "subsidiaryId" => $subsidiaryId), "document-documentation-index");
 		$url = sprintf("%s?subId=%s", $url, $subsidiaryId);
 		
 		$this->_redirect($url);
@@ -353,6 +380,33 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
 
 		$doc->save();
+        
+        $subs = array();
+        
+        if (is_null($slot->subsidiary_id)) {
+            $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+            $subList = $tableSubsidiaries->fetchAll("client_id = " . $doc->client_id);
+            
+            foreach ($subList as $item) {
+                $subs[] = $item->id_subsidiary;
+            }
+        } else {
+            $subs = array($subsidiaryId);
+        }
+        
+        foreach ($subs as $curSubId) {
+            $this->_helper->diaryRecord->insertMessage(
+                    "aktualizoval " . ($this->_type == self::REQ_DOC ? "dokumentaci" : "záznam"),
+                    array(
+                        "clientId" => $doc->client_id,
+                        "subsidiaryId" => $curSubId,
+                        self::REQ_PARAM => $this->_type
+                    ),
+                    "document-documentation-index",
+                    $doc->name,
+                    $curSubId
+                    );
+        }
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 

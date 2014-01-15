@@ -274,7 +274,8 @@ class SubsidiaryController extends Zend_Controller_Action {
                         $username .= " (G7)";
                     }
                     
-					$this->_helper->diaryRecord($username, 'přidal novou pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+                    $type = $subsidiary->getHq() ? "centrálu" : "pobočku";
+					$this->_helper->diaryRecord($username, 'přidal novou ' . $type, array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . ", " . $subsidiary->getSubsidiaryStreet(), $subsidiaryId);
 					
 					//uložení transakce
 					$adapter->commit();
@@ -414,7 +415,8 @@ class SubsidiaryController extends Zend_Controller_Action {
                         $username .= " (G7)";
                     }
 					
-					$this->_helper->diaryRecord($username, 'upravil pobočku', array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown(), $subsidiaryId);
+                    $type = $subsidiary->getHq() ? "centrálu" : "pobočku";
+					$this->_helper->diaryRecord($username, 'upravil ' . $type, array ('clientId' => $clientId, 'subsidiary' => $subsidiaryId ), 'subsidiaryIndex', $subsidiary->getSubsidiaryName() . ', ' . $subsidiary->getSubsidiaryTown() . ", " . $subsidiary->getSubsidiaryStreet(), $subsidiaryId);
 					
 					//uložení transakce
 					$adapter->commit();
@@ -513,7 +515,8 @@ class SubsidiaryController extends Zend_Controller_Action {
                 $username .= " (G7)";
             }
             
-			$this->_helper->diaryRecord($username, 'smazal pobočku', null, null, $subsidiaryName . ', ' . $subsidiaryTown, $subsidiaryId);
+            $type = $subsidiary->getHq() ? "centrálu" : "pobočku";
+			$this->_helper->diaryRecord($username, 'smazal ' . $type, null, null, $subsidiaryName . ', ' . $subsidiaryTown . ", " . $subsidiary->getSubsidiaryStreet(), $subsidiaryId);
 			
 			$this->_helper->FlashMessenger ( 'Pobočka <strong>' . $subsidiaryName . ', ' . $subsidiaryTown . '</strong> smazána' );
 			$this->_helper->redirector->gotoRoute (array ('clientId' => $clientId ), 'clientAdmin' );

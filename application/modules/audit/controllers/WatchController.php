@@ -167,7 +167,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni dat
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
-		
+        
 		// kontrola uzavreni
 		if ($watch->is_closed) throw new Zend_Db_Table_Row_Exception("Watch is closed");
 		
@@ -779,6 +779,9 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
         
 		$this->view->watch = $watch;
+        
+        // zapis do denniku
+        $this->_helper->diaryRecord->insertMessage("provedl dohlídku na pracovišti", null, null, sprintf("<a href='/audit/watch/protocol.pdf?watchId=%d'>protokol</a>", $watch->id), $watch->subsidiary_id);
 		
 		$this->_helper->FlashMessenger("Dohlídka uzavřena");
 	}

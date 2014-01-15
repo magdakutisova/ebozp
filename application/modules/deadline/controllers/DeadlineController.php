@@ -43,6 +43,19 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	public function deleteAction() {
 		// nacteni lhuty
 		$deadline = self::loadDeadline($this->_request->getParam("deadlineId", 0));
+        
+        // zapis do denniku
+        if ($deadline->employee_id || $deadline->anonymous_obj_emp) {
+            $route = "deadline-employees";
+        } elseif ($deadline->employee_id || $deadline->anonymous_obj_emp) {
+            $route = "deadline-devices";
+        } else {
+            $route = "deadline-others";
+        }
+        
+        $this->_helper->diaryRecord->insertMessage("odstranil lhůtu", array("subsidiaryId" => $deadline->subsidiary_id, "clientId" => $deadline->client_id), $route, $deadline->name ? $deadline->name : "Jiná lhůta", $deadline->subsidiary_id);
+		
+        
 		$deadline->delete();
 		
 		$this->_helper->FlashMessenger("Lhůta byla smazána");
@@ -170,8 +183,20 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$row->updateAll($data);
         ///die(var_dump($row->toArray()));
 		$row->save();
+        
+        $ext = $tableDeadlines->findById($row->id);
 		
 		self::checkDeadlineDate($row);
+        
+        // zapis do denniku
+        if ($row->employee_id || $row->anonymous_obj_emp) {
+            $route = "deadline-employees";
+        } elseif ($row->employee_id || $row->anonymous_obj_emp) {
+            $route = "deadline-devices";
+        } else {
+            $route = "deadline-others";
+        }
+        $this->_helper->diaryRecord->insertMessage("přidal novou lhůtu", array("subsidiaryId" => $row->subsidiary_id, "clientId" => $row->client_id), $route, $ext->name ? $ext->name : "Jiná lhůta", $row->subsidiary_id);
 		
 		$this->view->row = $row;
 		$this->_helper->FlashMessenger("Lhůta byla vytvořena");
@@ -236,6 +261,20 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$deadline->save();
 		
 		self::checkDeadlineDate($deadline);
+        
+        $row = self::loadDeadline($deadline->id);
+        
+        // zapis do denniku
+        if ($row->employee_id || $row->anonymous_obj_emp) {
+            $route = "deadline-employees";
+        } elseif ($row->employee_id || $row->anonymous_obj_emp) {
+            $route = "deadline-devices";
+        } else {
+            $route = "deadline-others";
+        }
+        
+        $this->_helper->diaryRecord->insertMessage("upravil lhůtu", array("subsidiaryId" => $row->subsidiary_id, "clientId" => $row->client_id), $route, $row->name ? $row->name : "Jiná lhůta", $row->subsidiary_id);
+		
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 		$this->view->deadline = $deadline;

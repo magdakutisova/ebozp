@@ -930,8 +930,20 @@ class Audit_AuditController extends Zend_Controller_Action {
 			// odstraneni farplanu, ktere nejsou zaskrtle
 			$this->_helper->FlashMessenger("Audit uzavřen");
 			
-			// presmerovani na get
+			// presmerovani na get a zapis do denniku
 			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
+            
+            if ($this->_audit->is_check) {
+                $label = "provedl roční prověrku BOZP a PO";
+                $link = "zpráva o prověrce";
+            } else {
+                $label = "provedl audit BOZP a PO";
+                $link = "zpráva o auditu";
+            }
+            
+            $this->_helper->diaryRecord->insertMessage($label, null, null, sprintf("<a href='%s'>%s</a>", $url, $link), $this->_audit->subsidiary_id);
+
+            
 			$this->_redirect($url);
 			
 			return;

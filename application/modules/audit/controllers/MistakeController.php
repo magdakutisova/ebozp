@@ -272,9 +272,12 @@ class Audit_MistakeController extends Zend_Controller_Action {
 				
 			// nacteni aktivni asociace a zaznamu
 			$where = array(
-					"audit_id = " . $this->_audit->id,
-					"mistake_id = " . $mistake->id
+					"mistake_id = ?" => $mistake->id
 			);
+            
+            if ($this->_audit) {
+                $where["audit_id = ?"] = $this->_audit->id;
+            }
 			
 			$tableAssocs = new Audit_Model_AuditsMistakes();
 			$activeAssoc = $tableAssocs->fetchRow($where);
@@ -380,7 +383,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		// nastaveni zemenne routy formulare
 		$params = array(
 				"clientId" => $this->view->mistake->client_id,
-				"auditId" => $this->view->mistake->audit_id,
+				"auditId" => $this->_auditId,
 				"mistakeId" => $this->view->mistake->id
 		);
 
@@ -719,6 +722,20 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$mistakeId = $tableMistakes->insert($data);
 		
 		$this->_helper->FlashMessenger("Neshoda vytvořena");
+        
+        // zapis do denniku
+        if (is_null($this->_audit)) {
+            $this->_helper->diaryRecord->insertMessage(
+                    "přidal novou neshodu",
+                    array(
+                        "mistakeId" => $mistakeId,
+                        "clientId" => $clientId
+                    ),
+                    "audit-mistake-get",
+                    "neshoda",
+                    $form->getValue("subsidiary_id")
+                    );
+        }
 		
 		$this->view->clientId = $clientId;
 		$this->view->mistake = $data;
@@ -823,6 +840,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
 		if (!$data["record_id"]) $data["record_id"] = new Zend_Db_Expr("NULL");
 
+        $removedBuffer = $mistake->is_removed;
 		$mistake->setFromArray($data);
 
 		// prepis datumu
@@ -834,9 +852,39 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->_postCategoriesIfNotExists($mistake->category, $mistake->subcategory);
 
 		// presmerovani zpet na vypis
-		$params = array("clientId" => $mistake->client_id, "auditId" => $mistake->audit_id, "mistakeId" => $mistake->id);
+		$params = array("clientId" => $mistake->client_id, "auditId" => $this->_auditId, "mistakeId" => $mistake->id);
 
 		$this->_helper->FlashMessenger("Změny byly uloženy");
+        
+        // zapis do denniku
+        if (!$this->_audit) {
+            // vyhodnoceni, zda byla neshoda odstranena
+            if (!$removedBuffer && $mistake->is_removed) {
+                // doslo k odstraneni
+                $this->_helper->diaryRecord->insertMessage(
+                            "odstranil neshodu",
+                            array(
+                                "mistakeId" => $mistake->id,
+                                "clientId" => $mistake->client_id
+                            ),
+                            "audit-mistake-get",
+                            "neshoda",
+                            $mistake->subsidiary_id
+                            );
+            } else {
+                // pouha editace
+                $this->_helper->diaryRecord->insertMessage(
+                            "upravil neshodu",
+                            array(
+                                "mistakeId" => $mistake->id,
+                                "clientId" => $mistake->client_id
+                            ),
+                            "audit-mistake-get",
+                            "neshoda",
+                            $mistake->subsidiary_id
+                            );
+            }
+        }
 		
 		if ($redirect) $this->_redirect($this->view->url($params, "audit-mistake-edit"));
 

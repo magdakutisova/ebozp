@@ -46,6 +46,8 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
             
             if (in_array($identity->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN))) {
                 $username .= " (G7)";
+            } else {
+                $username .= " (klient)";
             }
             
     		$diary = new Application_Model_DbTable_Diary();
@@ -61,7 +63,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     			foreach($recipients as $recipient){
     				if ($recipient != 0){
     					$toSave = new Application_Model_Diary();
-    					$toSave->setMessage('Zpráva od uživatele ' . $username . ': "' . $message . '"');
+    					$toSave->setMessage($username . ' zaslal tuto zprávu: "' . $message . '"');
     					$toSave->setSubsidiaryId($recipient);
     					$toSave->setAuthor($username);
     					$diary->addMessage($toSave);

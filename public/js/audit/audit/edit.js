@@ -119,7 +119,7 @@ $(function () {
 	function editDeadline() {
 		var deadlineId = $(this).parent().find(":hidden").val();
 		
-		var url = "/deadline/deadline/edit?deadlineId=" + deadlineId + "&clientId=" + clientId;
+		var url = "/deadline/deadline/edit?deadlineId=" + deadlineId + "&clientId=" + clientId + "&inAudit=1";
 		
 		$.iframeDialog(url, 800, 400, "Lhůta", "refresh");
 	}

@@ -209,7 +209,7 @@ class WorkplaceController extends Zend_Controller_Action
             }
 			
 			$subsidiary = $subsidiaries->getSubsidiary($workplace->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($username, 'přidal pracoviště "' . $workplace->getName() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplace->getSubsidiaryId());
+	    	$this->_helper->diaryRecord->insertMessage('přidal pracoviště ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', $workplace->getName(), $workplace->getSubsidiaryId());
 	    	
 	    	$this->_helper->FlashMessenger('Pracoviště ' . $workplace->getName() . ' přidáno.');
 	    	unset($defaultNamespace->form);
@@ -618,8 +618,8 @@ class WorkplaceController extends Zend_Controller_Action
             }
             
     		$subsidiary = $subsidiaries->getSubsidiary($workplaceNew->getSubsidiaryId());
-	    	$this->_helper->diaryRecord($username, 'upravil pracoviště ' . $workplaceNew->getName() . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiary->getIdSubsidiary(), 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $workplaceNew->getSubsidiaryId());
-    		
+            $this->_helper->diaryRecord->insertMessage('upravil pracoviště ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', $workplaceNew->getName(), $workplaceNew->getSubsidiaryId());
+
     		$this->_helper->FlashMessenger('Pracoviště ' . $workplaceNew->getName() . ' upraveno.');
     		$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');
     	}
@@ -651,7 +651,7 @@ class WorkplaceController extends Zend_Controller_Action
                 $username .= " (G7)";
             }
             
-	    	$this->_helper->diaryRecord($username, ' smazal pracoviště ' . $name . ' pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', '(databáze pracovišť)', $subsidiaryId);
+            $this->_helper->diaryRecord->insertMessage('smazal pracoviště ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList', $workplace->getName(), $workplace->getSubsidiaryId());
     		
         	$this->_helper->FlashMessenger('Pracoviště <strong>' . $name . '</strong> bylo vymazáno.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'workplaceList');

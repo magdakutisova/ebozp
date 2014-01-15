@@ -245,7 +245,7 @@ class PositionController extends Zend_Controller_Action
     		foreach($positionIds as $positionId){
     			$position = $positions->getPosition($positionId);
     			$subsidiary = $subsidiaries->getSubsidiary($position->getSubsidiaryId());
-    			$this->_helper->diaryRecord($username, 'přidal pracovní pozici "' . $position->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $position->getSubsidiaryId());
+                $this->_helper->diaryRecord->insertMessage('přidal novou pracovní pozici ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', $position->getPosition(), $position->getSubsidiaryId());
     		}
     		$this->_helper->FlashMessenger('Pracovní pozice ' . $position->getPosition() . ' přidána.');
     		unset($defaultNamespace->form);
@@ -793,7 +793,7 @@ class PositionController extends Zend_Controller_Action
                 $username .= " (G7)";
             }
             
-        	$this->_helper->diaryRecord($username, 'upravil pracovní pozici "' . $positionNew->getPosition() . '" k pobočce ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $positionNew->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $positionNew->getSubsidiaryId());
+            $this->_helper->diaryRecord->insertMessage('upravil pracovní pozici ', array('clientId' => $this->_clientId, 'subsidiaryId' => $positionNew->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', $positionNew->getPosition(), $positionNew->getSubsidiaryId());
         	
         	$this->_helper->FlashMessenger('Pracovní pozice ' . $positionNew->getPosition() . ' upravena.');
         	unset($defaultNamespace->form);
@@ -830,7 +830,7 @@ class PositionController extends Zend_Controller_Action
                 $username .= " (G7)";
             }
             
-        	$this->_helper->diaryRecord($username, 'smazal pracovní pozici "' . $name . '" pobočky ' . $subsidiary->getSubsidiaryName() . ' ', array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList', '(databáze pracovních pozic)', $subsidiaryId);
+            $this->_helper->diaryRecord->insertMessage('smazal pracovní pozici ', array('clientId' => $this->_clientId, 'subsidiaryId' => $position->getSubsidiaryId(), 'filter' => 'vse'), 'positionList', $position->getPosition(), $position->getSubsidiaryId());
         	
         	$this->_helper->FlashMessenger('Pracovní pozice <strong>' . $name . '</strong> byla vymazána.');
         	$this->_helper->redirector->gotoRoute(array('clientId' => $this->_clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'vse'), 'positionList');
