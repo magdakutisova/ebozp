@@ -1,0 +1,21 @@
+<?php
+if ($this->order) {
+    $redirector = new Zend_Controller_Action_Helper_Redirector();
+    $redirector->gotoUrlAndExit($_SERVER["HTTP_REFERER"]);
+}
+?>
+<form method="post">
+    <div>
+        <?php echo $this->formLabel("order[content]", "Znění objednávky: "); ?>
+    </div>
+    <div>
+        <?php echo $this->formTextarea("order[content]", $this->content); ?>
+    </div>
+    <div>
+        <?php 
+        echo $this->formSubmit("order[submit]", "Odeslat");
+        echo $this->formHidden("subsidiaryId", $this->subsidiaryId);
+        echo $this->formHidden("clientId", $this->clientId);
+        ?>
+    </div>
+</form>

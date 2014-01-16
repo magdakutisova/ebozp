@@ -26,8 +26,12 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
 	public function direct($who, $what, $urlParams, $route, $anchor, $subsidiary){
 		if($route == null){
 			$message = $who . ' '
-				 . $what . ' ('
+				 . $what;
+            
+            if (!is_null($anchor)) {
+                $message .= ' ('
 				 . $anchor . ').';
+            }
 		}
 		else {
 			$message = $who . ' '

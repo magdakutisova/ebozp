@@ -40,6 +40,7 @@
 	</thead>
 <?php 
 foreach ($this->orders as $order) {
+    if (!$order->content) continue;
 	?>
 	<tbody>
 		<tr>
@@ -53,7 +54,7 @@ foreach ($this->orders as $order) {
 			<?php echo is_null($order->finished_at) ? "Ne" : "Ano"; ?>
 			</td>
 			<td>
-			<?php echo $this->sqlDate($order->watched_at); ?>
+			<?php echo $this->sqlDate($order->watched_at ? $order->watched_at : $order->created_at); ?>
 			</td>
 			<td>
 			<?php 

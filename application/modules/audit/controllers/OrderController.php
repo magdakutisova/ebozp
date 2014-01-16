@@ -33,6 +33,37 @@ class Audit_OrderController extends Zend_Controller_Action {
 		$this->view->orders = $orders;
 	}
 	
+    public function postAction() {
+        $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        $clientId = $this->_request->getParam("clientId");
+        
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getParam("order", array());
+            $data = array_merge(array("content" => null), $data);
+            
+            if ($data["content"]) {
+                $tableOrders = new Audit_Model_Orders();
+                $row = $tableOrders->createRow(array(
+                    "client_id" => $clientId,
+                    "subsidiary_id" => $subsidiaryId,
+                    "content" => $data["content"],
+                    "user_id" => Zend_Auth::getInstance()->getIdentity()->id_user
+                ));
+                
+                $row->save();
+                
+                $this->_helper->diaryRecord->insertMessage("provedl objednávku :" . $row->content, null, null, null, $subsidiaryId);
+                
+                $this->view->order = $row;
+                
+                $this->_helper->FlashMessenger("Objednávka odeslána");
+            }
+        }
+        
+        $this->view->clientId = $clientId;
+        $this->view->subsidiaryId = $subsidiaryId;
+    }
+    
 	public function putHtmlAction() {
 		// nacteni objednavky
 		$orderId = $this->_request->getParam("orderId", 0);

@@ -38,7 +38,7 @@ class Audit_Model_Row_Watch extends Zend_Db_Table_Row_Abstract {
 	public function findOrder() {
 		$tableOrders = new Audit_Model_Orders();
 	
-		return $tableOrders->getOrCreateRow($this->id);
+		return $tableOrders->getOrCreateRow($this->id, $this->client_id, $this->subsidiary_id);
 	}
 	
 	public function findMistakes($disableRemoved = false) {
