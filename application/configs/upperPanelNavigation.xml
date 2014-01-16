@@ -57,11 +57,7 @@
         </watches>
         <contacts>
             <label>Kontakty</label>
-            <route>home</route>
-            <resource>index</resource>
-            <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
+            <route>contacts</route>
         </contacts>
     </nav>
 </configdata>

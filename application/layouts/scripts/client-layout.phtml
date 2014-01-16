@@ -6,10 +6,34 @@
         $this->navigation()->findHelper("menu")->setUlClass("common-menu");
         echo $this->navigation()->menu()->renderMenu(Zend_Registry::get("UpperPanel"));
         $this->navigation()->findHelper("menu")->setUlClass("");
+        
+        $request = Zend_Controller_Front::getInstance()->getRequest();
+        
+        $clientId = $request->getParam("clientId");
+        $subsidiaryId = $request->getParam("subsidiaryId", $request->getParam("subsidiary"));
+        
+        if ($subsidiaryId) {
+            $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+            $subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+            
+            $inSubsidiary = !$subsidiary->hq;
+        } else {
+            $inSubsidiary = false;
+        }
+        
+        if ($inSubsidiary) {
+            $url = $this->url(array("clientId" => $clientId, "subsidiary" => $subsidiaryId), "subsidiaryGet");
+            $urlHome = $this->url(array("clientId" => $clientId, "subsidiary" => $subsidiaryId), "subsidiaryIndex");
+            $infoName = "pobočky";
+        } else {
+            $url = $this->url(array("clientId" => $clientId), "clientGet");
+            $urlHome = $this->url(array("clientId" => $clientId, "subsidiary" => $subsidiaryId), "clientIndex");
+            $infoName = "klienta";
+        }
         ?>
     </div>
     <span class="icon-home">
-        <a href="/" title="Go home"></a>
+        <a href="<?php echo $urlHome; ?>" title="Domů"></a>
     </span>
     <div id="cnt-identification">
         <?php 
@@ -21,19 +45,7 @@
             Úroveň rizika&nbsp;&nbsp;<span class="big"><?php echo $this->clientRisk() * 1; ?></span>
         </span>
         <div id="client-menu">
-            <?php
-            $request = Zend_Controller_Front::getInstance()->getRequest();
-            
-            $clientId = $request->getParam("clientId");
-            $subsidiaryId = $request->getParam("subsidiaryId", $request->getParam("subsidiary"));
-            
-            if ($subsidiaryId) {
-                $url = $this->url(array("clientId" => $clientId, "subsidiary" => $subsidiaryId), "subsidiaryGet");
-            } else {
-                $url = $this->url(array("clientId" => $clientId), "clientGet");
-            }
-            ?>
-            <a href="<?php echo $url; ?>">Další informace o pobočce</a><br />
+            <a href="<?php echo $url; ?>">Karta <?php echo $infoName; ?></a><br />
             <a href="#" id="select-other-subsidiary">Vybrat jinou pobočku</a>
         </div>
     </div><br class="clear">

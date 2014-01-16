@@ -76,7 +76,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
         $this->allow($guest, "index", array("about", "help", "contacts"));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
 		
-		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error'));
+		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error', "employee", "workplace", "position", "technical", "work"));
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, "audit:audit", array("list", "get", "index", "getdead.html"));
 		$this->allow($client, "audit:mistake");

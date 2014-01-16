@@ -63,12 +63,6 @@
             <resource>index</resource>
             <privilege>index</privilege>
         </contacts>
-        <about>
-            <label>O GUARDIANU</label>
-            <route>home</route>
-            <resource>index</resource>
-            <privilege>index</privilege>
-        </about>
         
         <!--
 		<print>
@@ -140,5 +134,11 @@
 			<clientId>clientId</clientId>
 			<subsidiaryId>subsidiaryId</subsidiaryId>
 		</employee>
+        <about>
+            <label>O GUARDIANU</label>
+            <route>about</route>
+            <resource>index</resource>
+            <privilege>about</privilege>
+        </about>
 	</nav>
 </configdata>

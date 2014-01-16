@@ -12,21 +12,14 @@ $user = Zend_Auth::getInstance()->getIdentity();
 <div class="box overflow span-11" id="informations">
 		<?php echo $this->subsidiary();?>
 	</div>
-<div class="span-5 floating-box"><h3 style="margin-top: 0px;" title="součet závažností všech neodstraněných neshod">Hodnota rizika u klienta</h3>
-<div><center><big><strong><?php echo $this->riskScore ? $this->riskScore : 0; ?></strong></big></center></div></div>
-
-<div class="span-5 floating-box"><h3 style="margin-top: 0px;">G U A R D 7, v.o.s.</h3>
-<strong>Adresa</strong>: Divišova 235. 530 03 Pardubice<br />
-<strong>Telefon</strong>: 466 535 700<br />
-<strong>Email</strong>: guardian@guard7.cz
-</div>
 <?php 
 // pokud se jedna pouze o sidlo, nebude se dal ve vypisech pokracovat
 if ($this->subsidiary['subsidiary']->getHqOnly()) return;
+
+if ($user->role != My_Role::ROLE_CLIENT) {
 ?>
 <div class="box clear">
 <?php 
-if ($user->role != My_Role::ROLE_CLIENT) {
 if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	?>
 	<a class="large" href="<?php echo $this->url(array('clientId' => $this->client->getIdClient()), 'clientAdmin')?>">Administrace</a>
@@ -36,7 +29,7 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
      | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "deadline-index"); ?>">Lhůty</a>
      | <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-mistakes-index-subs"); ?>">Neshody</a>
 	 | 
-	 <?php } ?>
+	 
 	 <a class='large' href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "audit-list"); ?>">Audity</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "subsidiaryId" => $this->subsidiary["subsidiary"]->getIdSubsidiary()), "audit-watch-index"); ?>">Dohlídky</a>
@@ -44,10 +37,11 @@ if(!$this->archived && $this->subsidiary['subsidiary']->getActive() ){
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "documentation", "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Dokumentace</a>
 	 |
 	 <a class="large" href="<?php echo $this->url(array("clientId" => $this->client->getIdClient(), "TYPE" => "record", "subsidiaryId" => $this->subsidiary['subsidiary']->getIdSubsidiary()), "document-documentation-index"); ?>">Záznamy</a>
-     
 </div>
 
 <?php 
+}
+
 // pokud se jedna o klienta, pak se zobrazi vypisy neshod a lhut
 if ($user->role == My_Role::ROLE_CLIENT) {
     $request = Zend_Controller_Front::getInstance()->getRequest();
