@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
 	<nav>
+        <cantlogin>
+            <label>Nemohu se přihlásit</label>
+            <target>_blank</target>
+            <route>cant-login</route>
+        </cantlogin>
 		<contacts>
-			<label>Domů</label>
-			<route>home</route>
+			<label>Kontakty</label>
+            <target>_blank</target>
+			<route>contacts</route>
 		</contacts>
         <about>
 			<label>O GUARDIANU</label>
-			<route>home</route>
+            <target>_blank</target>
+			<route>about</route>
 		</about>
 		<client>
 			<label>Klienti</label>

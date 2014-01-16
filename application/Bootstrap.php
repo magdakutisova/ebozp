@@ -70,6 +70,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 											 array('controller' => 'user',
 											 	   'action' => 'login'))
 		);
+        
+        $router->addRoute(
+			'contacts',
+			new Zend_Controller_Router_Route('kontakty',
+											 array('controller' => 'index',
+											 	   'action' => 'contacts'))
+		);
+        
+        $router->addRoute(
+			'cant-login',
+			new Zend_Controller_Router_Route('pomoc',
+											 array('controller' => 'index',
+											 	   'action' => 'help'))
+		);
+        
+        $router->addRoute(
+			'about',
+			new Zend_Controller_Router_Route('o-guardianu',
+											 array('controller' => 'index',
+											 	   'action' => 'about'))
+		);
 		
 		$router->addRoute(
 			'home',

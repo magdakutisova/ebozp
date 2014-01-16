@@ -73,6 +73,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->addRole(new Zend_Acl_Role($admin), $superadmin);
 		
 		$this->allow($guest, array('user', 'error'));
+        $this->allow($guest, "index", array("about", "help", "contacts"));
 		$this->deny($guest, 'user', array('register', 'rights', 'delete', 'revoke'));
 		
 		$this->allow($client, array('index', 'client', 'subsidiary', 'user', 'error'));

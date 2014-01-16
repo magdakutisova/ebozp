@@ -8,6 +8,18 @@ class IndexController extends Zend_Controller_Action
         $this->view->title = 'Index';
         $this->view->headTitle($this->view->title);
     }
+    
+    public function aboutAction() {
+        
+    }
+    
+    public function contactsAction() {
+        
+    }
+    
+    public function helpAction() {
+        
+    }
 
     public function indexAction()
     {
