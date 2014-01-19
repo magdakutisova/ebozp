@@ -56,6 +56,23 @@
 		echo $this->contactForm;
 		?>
 		</div>
+        <?php
+        if (!$watch->is_closed) {
+            ?>
+        <h2>Zrušit dohlídku</h2>
+        <form action="/audit/watch/delete" method="post" onsubmit="return confirm('Skutečně chcete zrušit dohlídku? Tuto akci již nelze vrátit zpět')">
+            <p>
+                <?php
+                echo $this->formHidden("clientId", $watch->client_id);
+                echo $this->formHidden("subsidiaryId", $watch->subsidiary_id);
+                echo $this->formHidden("watchId", $watch->id);
+                echo $this->formSubmit("submit", "Zrušit dohlídku");
+                ?>
+            </p>
+        </form>
+        <?php
+        }
+        ?>
 	</div>
 	<div id="tab-discuss">
 		<form action="/audit/watch/discuss" method="post" id="form-discuss">

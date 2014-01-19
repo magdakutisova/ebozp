@@ -63,7 +63,23 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 			<?php 
 			echo $this->submitForm;
 		}
+        
+        if (!$audit->is_closed) {
 		?>
+        <h3>Zrušit audit</h3>
+        <form action="/audit/audit/delete" onsubmit="return confirm('Skutečně chcete zrušit audit? Tuto akci již nelze vrátit zpět')" method="post">
+            <p>
+                <?php
+                echo $this->formHidden("clientId", $audit->client_id);
+                echo $this->formHidden("subsidiaryId", $audit->subsidiary_id);
+                echo $this->formHidden("auditId", $audit->id);
+                echo $this->formSubmit("submit", "Zrušit audit");
+                ?>
+            </p>
+        </form>
+        <?php
+        }
+        ?>
 	</div>
 	<div id="forms" class="tab">
 		<table>

@@ -339,6 +339,47 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 		$this->view->deadlines = $data;
 		$this->view->audit = $audit;
 	}
+    
+    public function deleteAction() {
+        // kontrola auditu
+        if (is_null($this->_audit)) {
+            throw new Zend_Db_Table_Row_Exception("Audit was not set");
+        }
+        
+        // kontrola opravneni audit smazat
+        $audit = $this->_audit;
+        
+        if ($audit->is_closed) {
+            throw new Zend_Db_Table_Row_Exception("Closed audit is forbidden for this action");
+        }
+        
+        $user = Zend_Auth::getInstance()->getIdentity();
+        
+        if ($audit->auditor_id != $user->id_user && !in_array($user->role, array(My_Role::ROLE_COORDINATOR, My_Role::ROLE_ADMIN, My_Role::ROLE_SUPERADMIN))) {
+            throw new Zend_Acl_Exception("You have not permision to delete this audit");
+        }
+        
+        // smazani pridruzenych radku
+        $tableRecords = new Audit_Model_AuditsRecords();
+        $tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        $tableForms = new Audit_Model_AuditsForms();
+        
+        $where = array("audit_id = ?" => $audit->id);
+        $tableMistakes->delete($where);
+        $tableRecords->delete($where);
+        $tableForms->delete($where);
+        
+        if (!is_null($audit->report_id)) {
+            $tableReports = new Audit_Model_AuditsReports();
+            $tableReports->delete(array("id = ?" => $audit->report_id));
+        }
+        
+        $this->view->clientId = $audit->client_id;
+        $this->view->subsidiaryId = $audit->subsidiary_id;
+        
+        $audit->delete();
+        $this->_helper->FlashMessenger("Audit byl smazán");
+    }
 	
 	public function editAction() {
 		$this->view->layout()->setLayout("client-layout");

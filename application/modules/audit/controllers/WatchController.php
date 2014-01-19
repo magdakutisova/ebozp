@@ -123,7 +123,32 @@ class Audit_WatchController extends Zend_Controller_Action {
 	}
 	
 	public function deleteAction() {
-		
+		$watch = self::loadWatch($this->_request->getParam("watchId"));
+        
+        // kontrola radku dohlidky
+        if (!$watch) {
+            throw new Zend_Db_Table_Exception("Watch not found");
+        }
+        
+        if ($watch->is_closed) {
+            throw new Zend_Db_Table_Row_Exception("Watch is closed");
+        }
+        
+        // kontrola opravneni
+        $user = Zend_Auth::getInstance()->getIdentity();
+        
+        if ($watch->user_id != $user->id_user && !in_array($user->role, array(My_Role::ROLE_COORDINATOR, My_Role::ROLE_ADMIN, My_Role::ROLE_SUPERADMIN))) {
+            throw new Zend_Acl_Exception("You have not permision to delete this audit");
+        }
+        
+        // smazani neshod
+        $tableMistakes = new Audit_Model_AuditsRecordsMistakes();
+        $tableMistakes->delete(array("watch_id = ?" => $watch->id));
+        
+        $this->view->clientId = $watch->client_id;
+        $this->view->subsidiaryId = $watch->subsidiary_id;
+        
+        $watch->delete();
 	}
 	
 	public function discussAction() {
