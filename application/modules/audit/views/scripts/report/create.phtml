@@ -12,14 +12,11 @@ $address = $client->headquarters_street . ", " . $client->headquarters_town . ",
 if ($audit->is_check) {
 	$name = "Zpráva o provedení roční prověrky bezpečnosti práce a požární ochrany";
 	$progresNoteCaption = "Cíl roční prověrky BOZP a PO";
-	$target = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a podle Zákona 262/2006 Sb. Zákoník práce, § 108, odst. 5.";
 	$progresCaption = "Průběh roční prověrky BOZP a PO";
 	
 } else {
 	$name = "Zpráva o provedení auditu bezpečnosti práce a požární ochrany";
 	$progresNoteCaption = "Cíl auditu BOZP a PO";
-	$target = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a jeho shody  s požadavky právních a dalších předpisů České republiky. 
-Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 	$progresCaption = "Průběh auditu BOZP a PO";
 	
 }
@@ -46,7 +43,7 @@ $opts = array(
 				"contact_name" => ($this->contact ? $this->contact->name : $audit->contact_name),
 				"progres_note_caption" => $progresNoteCaption,
 				"progres_caption" => $progresCaption,
-				"progres_note" => $target,
+				"progress_note" => $audit->progress_note,
 				"summary" => $audit->summary
 		),
 		

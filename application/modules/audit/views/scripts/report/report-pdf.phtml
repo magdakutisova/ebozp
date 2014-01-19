@@ -42,7 +42,7 @@ $pdf->AddPage("P", "A4");
 
 $this->pdf()->header($pdf, $report->progres_note_caption);
 $pdf->SetFont("dejavusans", 12, "");
-$pdf->MultiCell(180, 0, $report->progres_note, 0, "L");
+$pdf->MultiCell(180, 0, $audit->progress_note, 0, "L");
 
 $pdf->Ln(10);
 
@@ -69,7 +69,7 @@ $pdf->SetY($pdf->GetY() + 5);
 // popis auditu
 $this->pdf()->header($pdf, "Zjištení z $name");
 
-$pdf->MultiCell(180, 0, $report->summary, 0, "L");
+$pdf->MultiCell(180, 0, $audit->summary, 0, "L");
 
 // zapis systematicke casi
 $index = 0;

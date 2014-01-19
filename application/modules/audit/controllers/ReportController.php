@@ -168,7 +168,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 				"progres_note_caption" => "",
 				"progres_caption" => "",
 				"item" => array(),
-				"progres_note" => "",
+				"progress_note" => "",
 				"summary" => ""
 				), $data);
 		
@@ -182,8 +182,11 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		if ($audit->report_id == null) {
 			$audit->report_id = $report->id;
-			$audit->save();
 		}
+        
+        $audit->progress_note = $data["progress_note"];
+        $audit->summary = $data["summary"];
+		$audit->save();
 		
 		// zapis polozek cilu
 		$tableItems = new Audit_Model_AuditsProgresitems();
@@ -437,7 +440,8 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// hlavicky
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "From: $from \r\n";
-		$headers .= "To: $to \r\n";
+		$headers .= "To: $to\r\n";
+        $headers .= "Cc: podklady@guard7.cz\r\n";
 		$headers .= "Content-Type: multipart/mixed;boundary=" . $boundary . "\r\n";
 	
 		$message .= "\r\n\r\n--" . $boundary . "\r\n";

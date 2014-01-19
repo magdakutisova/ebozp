@@ -866,6 +866,7 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "From: $from \r\n";
 		$headers .= "To: $to \r\n";
+        $headers .= "Cc: podklady@guard7.cz\r\n";
 		$headers .= "Content-Type: multipart/mixed;boundary=" . $boundary . "\r\n";
 		
 		$message .= "\r\n\r\n--" . $boundary . "\r\n";

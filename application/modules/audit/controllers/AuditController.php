@@ -35,6 +35,11 @@ class Audit_AuditController extends Zend_Controller_Action {
 			"Zpracování registru neshod.",
 			"Návrh konkrétních opatření k dosažení požadované úrovně BOZP a PO."
     );
+    
+    protected $_targetCheck = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a podle Zákona 262/2006 Sb. Zákoník práce, § 108, odst. 5.";
+    
+    protected $_targetAudit = "Zhodnocení současného stavu bezpečnosti práce  (BOZP) a požární ochrany (PO) v organizaci a jeho shody  s požadavky právních a dalších předpisů České republiky. 
+Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 	
 	public function init() {
 		// zapsani helperu
@@ -671,6 +676,16 @@ class Audit_AuditController extends Zend_Controller_Action {
 		if (!$contactId) $contactId = null;
 		
 		$audit = $tableAudits->createAudit($auditor, $subsidiary, $doneAt, $form->getValue("is_check"), $contactId);
+        
+        if ($audit->is_check) {
+            $items = $this->_progresCheck;
+            $audit->progress_note = $this->_targetCheck;
+        } else {
+            $items = $this->_progresAudit;
+            $audit->progress_note = $this->_targetAudit;
+        }
+        
+        $audit->save();
 		
 		// prirazeni existujicich neshod
 		$tableAssocs = new Audit_Model_AuditsMistakes();
@@ -688,7 +703,6 @@ class Audit_AuditController extends Zend_Controller_Action {
         
         // zapis zaznamu prubehu
         $tableProgres = new Audit_Model_AuditsProgresitems();
-        $items = $audit->is_check ? $this->_progresCheck : $this->_progresAudit;
         
         foreach ($items as $item) {
             $tableProgres->insert(array(

@@ -44,7 +44,8 @@ $(function () {
         var dateObj = new Date();
         var today = dateObj.getFullYear() * 10000 + (dateObj.getUTCMonth() + 1) * 100 + dateObj.getUTCDate();
         
-        if (date < today) {
+        // nasledujici kontrola se provede pouze pokud se nejedna o editaci
+        if (date < today && $(this).attr("action").indexOf("put") == -1) {
             var row = $(this).find("input[name='mistake[will_be_removed_at]']").parents("tr:first");
             row.addClass("error");
             
