@@ -97,6 +97,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 	public function deleteAction() {
 		// nactei dat
 		$clientId = $this->_request->getParam("clientId", 0);
+        $subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+        $subId = $this->_request->getParam("subId", 0);
 		$docId = $this->_request->getParam("documentationId", 0);
 
 		$this->_tableItems->delete(array("id = ?" => $docId));
@@ -104,6 +106,8 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$this->_helper->FlashMessenger("Dokumentace byla smazána");
 		
 		$this->view->clientId = $clientId;
+        $this->view->subsidiaryId = $subsidiaryId;
+        $this->view->subId = $subId;
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
 	}
 
@@ -346,7 +350,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$this->_helper->FlashMessenger("Nová dokumentace byla vytvořena");
 		
 		// presmerovani na seznam
-		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId"), self::REQ_PARAM => $this->_type, "subsidiaryId" => $subsidiaryId), "document-documentation-index");
+		$url = $this->view->url(array("clientId" => $this->_request->getParam("clientId"), self::REQ_PARAM => $this->_type, "subsidiaryId" => $form->getValue("subsidiary_id")), "document-documentation-index");
 		$url = sprintf("%s?subId=%s", $url, $subsidiaryId);
 		
 		$this->_redirect($url);
