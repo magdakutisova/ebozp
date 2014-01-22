@@ -12,7 +12,7 @@ $audit = $this->audit;
 	<li><a href="#deadlines">Lhůty</a></li>
 	<li><a href="#save">Uložit</a></li>
 </menu>
-<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "auditId" => $this->audit->id), "audit-report-save"); ?>" method="post">
+<form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "subsidiaryId" => $this->audit->subsidiary_id, "auditId" => $this->audit->id), "audit-report-save"); ?>" method="post">
 	<fieldset>
 		<legend id="common">
 			<small>[<a href="#up-menu">Nahoru</a>]

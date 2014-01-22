@@ -27,13 +27,13 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 			// tady bude odkaz na editaci zpravy
 			echo "<fieldset><legend>Závěrečná zpráva</legend>";
 			
-			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-edit");
+			$url = $this->url(array("clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id, "auditId" => $audit->id), "audit-report-edit");
 			echo "<a href='$url'>Výstupní zpráva z auditu</a>";
 			
 			echo "</fieldset>";
 		} else {
 			// odkaz na vytvoreni zpravy
-			$url = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id), "audit-report-create");
+			$url = $this->url(array("clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id, "auditId" => $audit->id), "audit-report-create");
 			
 			echo "<p><big><strong>Zpráva ještě není vytvořena</strong> <a href='$url'>Vytvořit zprávu</a></big></p>";
 		}
@@ -127,7 +127,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 			echo "</form>";
 		?>
 		<h3>Neshody zahrnuté v <?php echo $this->audit->is_check ? "prověrce" : "auditu"; ?></h3>
-		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-mistake-detach"); ?>" method="post">
+		<form action="<?php echo $this->url(array("auditId" => $this->audit->id, "subsidiaryId" => $this->audit->subsidiary_id, "clientId" => $this->audit->client_id), "audit-mistake-detach"); ?>" method="post">
 		<table id="table-mistakes" class="multirow-table">
 			<?php 
 			$this->mistakeTable()->workIndex = $this->workIndex;

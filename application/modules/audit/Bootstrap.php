@@ -63,7 +63,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"audit-report-create",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/create",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/report/create",
 						array(
 								"module" => "audit",
 								"controller" => "report",
@@ -73,7 +73,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"audit-report-save",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/save",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/report/save",
 						array(
 								"module" => "audit",
 								"controller" => "report",
@@ -83,7 +83,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"audit-report-edit",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/edit",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/report/edit",
 						array(
 								"module" => "audit",
 								"controller" => "report",
@@ -93,7 +93,7 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		
 		$router->addRoute(
 				"audit-report-get",
-				new Zend_Controller_Router_Route("/klient/:clientId/audit/:auditId/report/get",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/audit/:auditId/report/get",
 						array(
 								"module" => "audit",
 								"controller" => "report",

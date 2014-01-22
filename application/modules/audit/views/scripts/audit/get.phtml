@@ -20,7 +20,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 	echo $this->partial("audit/_commonTable.phtml", $this);
 	
 	if ($this->audit->report_id)
-		printf("<div><a href='%s'>Výstupní zpráva</a></div>", $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id), "audit-report-get"));
+		printf("<div><a href='%s'>Výstupní zpráva</a></div>", $this->url(array("auditId" => $this->audit->id, "subsidiaryId" => $this->audit->subsidiary_id, "clientId" => $this->audit->client_id), "audit-report-get"));
 	?>
 	</div>
 	<div id="forms">

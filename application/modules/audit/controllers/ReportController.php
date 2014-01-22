@@ -202,7 +202,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->_helper->FlashMessenger("Zpráva byla uložena");
 		
 		// presmerovani na editaci zpravy
-		$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id), "audit-report-edit");
+		$url = $this->view->url(array("auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id, "clientId" => $audit->client_id), "audit-report-edit");
 		$this->_redirect($url);
 	}
 	
