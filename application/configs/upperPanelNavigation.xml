@@ -57,7 +57,9 @@
         </watches>
         <contacts>
             <label>Kontakty</label>
-            <route>contacts</route>
+            <route>contacts-client</route>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
         </contacts>
     </nav>
 </configdata>
