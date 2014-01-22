@@ -29,6 +29,8 @@ h1 { color: red; font-size: 22pt; font-weight: bold; }
 
 .redline { background: red; height: 3px; margin: 5px 0 25px 0; }
 
+#contact-table-main td, #contact-table-tech td { background: none; padding-bottom: 15px; font-size: 12pt; width: 50%; }
+
 #cnt-identification { background-color: #e3ecf6; border-radius: 10px; height: 50px; margin-left: 69px;}
 .icon-home { padding-right: 15px;  float: left; }
 .icon-home a { background: no-repeat url(/images/home.png); height: 50px; width: 54px; display: block; }
