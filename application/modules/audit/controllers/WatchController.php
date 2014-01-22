@@ -669,13 +669,14 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
 		
 		$msg = self::generateMail("Dobrý den,
-v příloze zasíláme závěrečnou zprávu o provedení auditu/roční prověrky BOZP a PO na Vašem pracovišti.
 
+v příloze zasíláme protokol z kontrolní dohlídky BOZP a PO na Vašem pracovišti.
 
 S pozdravem
+
 GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		
-		mail('', 'protokol', $msg["message"], $msg["headers"]);
+		mail('', '=?UTF-8?B?' . base64_encode("Protokol z kontrolní dohlídky") . '?=', $msg["message"], $msg["headers"]);
 		
 		$this->view->watch = $watch;
 		

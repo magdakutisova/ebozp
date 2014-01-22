@@ -228,14 +228,14 @@ class Audit_ReportController extends Zend_Controller_Action {
 		}
 	
 		$msg = self::generateMail("Dobrý den,
+
+v příloze zasíláme závěrečnáou zprávu o provedení roční prověrky bezpečnosti práce a požární ochrany.
+
+S pozdravem
+
+GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 	
-				v příloze zasíláme protokol z provedené " . ($audit->is_check ? "prověrky" : "auditu") . " BOZP a PO na Vašem pracovišti.
-	
-				S pozdravem
-	
-				GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
-	
-		mail('', 'protokol', $msg["message"], $msg["headers"]);
+		mail('', "=?UTF-8?B?" . base64_encode("Závěrečná zpráva o provedení roční prověrky BOZP a PO") . "?=", $msg["message"], $msg["headers"]);
 	
 		$this->view->audit = $audit;
 		

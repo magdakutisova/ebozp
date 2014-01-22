@@ -83,6 +83,8 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 		if ($closedOnly) {
 			$select->where("is_closed");
 		}
+        
+        $select->order("watched_at desc");
 		
 		// navrat dat
 		return new Audit_Model_Rowset_Watches(array("data" => $select->query()->fetchAll(), "rowClass" => $this->_rowClass, "table" => $this));
