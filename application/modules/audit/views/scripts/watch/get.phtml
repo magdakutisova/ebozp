@@ -5,18 +5,18 @@ $watch = $this->watch;
 <div id="watch-tabs">
 	<ul>
 		<li><a href="#overview">Přehled</a></li>
-		<li><a href="#discuss">Projednáno</a></li>
+        <?php if ($this->discussed->count()) { ?><li><a href="#discuss">Projednáno</a></li><?php } ?>
 		<?php 
 		if (!$this->watch->also_audit) {
 		?>
-		<li><a href="#mistakes">Neshody</a></li>
-		<li><a href="#deadlines">Lhůty</a></li>
+        <?php if ($this->mistakes->count()) { ?><li><a href="#mistakes">Neshody</a></li><?php } ?>
+        <?php if ($this->deadlines->count()) { ?><li><a href="#deadlines">Lhůty</a></li><?php } ?>
 		<?php 
 		}
 		?>
-		<li><a href="#changes">Změny</a></li>
-		<li><a href="#orders">Objednávky</a></li>
-		<li><a href="#outputs">Realizační výstup</a></li>
+		<?php if ($this->changes->count()) { ?><li><a href="#changes">Změny</a></li><?php } ?>
+		<?php if ($this->order->content) { ?><li><a href="#orders">Objednávky</a></li><?php } ?>
+        <?php if ($this->watch->outputs) { ?><li><a href="#outputs">Realizační výstup</a></li><?php } ?>
 	</ul>
 	<div id="overview">
 		<table border="1" cellpadding="5">
@@ -109,6 +109,9 @@ $watch = $this->watch;
 		echo "</form>";
 		?>
 	</div>
+    <?php
+    if ($this->discussed->count()) {
+    ?>
 	<div id="discuss">
 		<ol>
 		<?php 
@@ -118,6 +121,11 @@ $watch = $this->watch;
 		?>
 		</ol>
 	</div>
+    <?php
+    }
+    
+    if ($this->changes->count()) {
+    ?>
 	<div id="changes">
 		<ol>
 			<?php 
@@ -128,7 +136,10 @@ $watch = $this->watch;
 		</ol>
 	</div>
 <?php 
+    }
+    
 if (!$this->watch->also_audit) {
+    if ($this->mistakes->count()) {
 ?>
 	<div id="mistakes">
 <?php 
@@ -159,20 +170,35 @@ foreach ($this->mistakes as $mistake) {
 <h2>Neodstraněné neshody z minulých kontrol</h2>
 <?php echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění"))); ?>
 	</div>
+    <?php
+    }
+    
+    if ($this->deadlines->count()) {
+    ?>
 	<div id="deadlines">
 		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => array("show" => array("type" => "button", "caption" => "Zobrazit")))); ?>
 	</div>
 	<?php 
-}
+    }
+}   
+    if ($this->order->content) {
 	?>
 	<div id="orders">
         <div class="pre"><?php echo $this->order->content; ?></div>
 	</div>
+    <?php
+    }
+    
+    if ($this->watch->outputs) {
+    ?>
 	<div id="outputs">
 		<div>
 		<?php echo nl2br($this->watch->outputs); ?>
 		</div>
 	</div>
+    <?php
+    }
+    ?>
 </div>
 <?php 
 echo $this->formHidden("WATCHID", $this->watch->id);

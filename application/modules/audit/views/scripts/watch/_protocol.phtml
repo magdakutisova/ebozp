@@ -134,15 +134,17 @@ if (!$this->watch->also_audit) {
 	}
 	
 	// nove neshody
-	?>
-	<h2>Nově nalezené neshody</h2>
-	<?php 
-	
-	if ($new) {
-		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
-	} else {
-		echo "<div>-</div>";
-	}
+    if ($new) {
+        ?>
+        <h2>Nově nalezené neshody</h2>
+        <?php 
+
+        if ($new) {
+            echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+        } else {
+            echo "<div>-</div>";
+        }
+    }
 	
 	/*
 	 * odstranene neshody byly po dohode z protokolu odstraneny. 
@@ -158,7 +160,7 @@ if (!$this->watch->also_audit) {
 	*/
 	
 	// vyhodnoceni zobrazeni neodstranenych neshod
-	if ($watch->display_mistakes) {
+	if ($watch->display_mistakes && $marked) {
 		?>
 		<h2>Neodstraněné neshody z minulých kontrol</h2>
 		<?php 
