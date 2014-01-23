@@ -34,16 +34,19 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
             if (is_null($subsidiaryId)) {
                 $subsidiaryId = $request->getParam("subsidiary", $subsidiaryId);
             }
+            
+            $tableSubs = new Application_Model_DbTable_Subsidiary();
 			
             // pokud je id pobocky stale null, nacte se vychozi pobocka klienta
             if (is_null($subsidiaryId)) {
-                $tableSubs = new Application_Model_DbTable_Subsidiary();
                 $sub = $tableSubs->fetchRow(array(
                     "client_id = ?" => $clientId,
                     "hq"
                 ));
                 
                 $subsidiaryId = $sub->id_subsidiary;
+            } else {
+                $sub = $tableSubs->find($subsidiaryId);
             }
             
 			$pages = $clientNavigation->findAllBy('subsidiaryId', 'subsidiaryId');
@@ -78,6 +81,11 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
             $configUpper = new Zend_Config_Xml(APPLICATION_PATH . '/configs/upperPanelNavigation.xml', 'nav');		
             $navigationUpper = new Zend_Navigation($configUpper);
             Zend_Registry::set("UpperPanel", $navigationUpper);
+            
+            if ($sub["hq_only"]) {
+                $navigationUpper->removePage(5);
+                $navigationUpper->removePage(4);
+            }
             
             $pages = $navigationUpper->findAllBy("clientId", "clientId");
             $newParams = array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId, "subId" => $subsidiaryId);
