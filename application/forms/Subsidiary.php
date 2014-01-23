@@ -250,6 +250,19 @@ class Application_Form_Subsidiary extends Zend_Form
         ));
     }
     
+    /**
+     * odstrani nektere prvky formulare pro editaci klientem
+     */
+    public function clientEdit() {
+        $this->removeElement("active");
+        $this->removeElement("supervision_frequency");
+        $this->removeElement("difficulty");
+        
+        $this->addElement("hidden", "active");
+        $this->addElement("hidden", "supervision_frequency");
+        $this->addElement("hidden", "difficulty");
+    }
+    
     public function prevalidation(array $data, $responsibilityList, $employeeList){
     	$newContactPersons = array_filter(array_keys($data), array($this, 'findContactPersons'));
     	$newDoctors = array_filter(array_keys($data), array($this, 'findDoctors'));

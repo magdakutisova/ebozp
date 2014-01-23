@@ -303,6 +303,9 @@ class SubsidiaryController extends Zend_Controller_Action {
 		$defaultNamespace = new Zend_Session_Namespace();
 		$form = $this->loadOrCreateForm($defaultNamespace);
 		$form->save->setLabel ( 'Uložit' );
+        
+        if ($this->_user->getRole() == My_Role::ROLE_CLIENT)
+            $form->clientEdit();
 		
 		$form = $this->fillMultiselects($form);
 		$form->preValidation($this->getRequest()->getPost(), $this->_responsibilityList, $this->_employeeList);
