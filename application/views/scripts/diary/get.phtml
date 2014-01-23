@@ -1,0 +1,48 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+$message = $this->message;
+?>
+<table>
+    <tr>
+        <td><strong>Klient</strong></td>
+        <td><?php echo $message->company_name; ?></td>
+    </tr>
+    <tr>
+        <td><strong>Pobočka</strong></td>
+        <td><?php echo $message->subsidiary_town . ", " . $message->subsidiary_street; ?></td>
+    </tr>
+    <tr>
+        <td><strong>Odesilatel</strong></td>
+        <td><?php echo $message->author; ?></td>
+    </tr>
+    <tr>
+        <td><strong>Datum</strong></td>
+        <td><?php echo $message->created_at; ?></td>
+    </tr>
+    <tr>
+        <td><strong>Vyřízeno</strong></td>
+        <td><?php echo $message->is_closed ? "Ano" : "Ne"; ?></td>
+    </tr>
+    <tr>
+        <td><strong>Zpráva</strong></td>
+        <td><?php echo $message->message; ?></td>
+    </tr>
+</table>
+<h2>Odpovědět na zprávu</h2>
+<form action="/diary/send" method="post">
+    <p>
+        <?php echo $this->formLabel("reply", "Odpověď"); ?>
+    </p>
+    <p>
+        <?php echo $this->formTextarea("reply"); ?>
+    </p>
+    <p>
+        Pokud bude odpověď prázdná, zpráva se označí jako vyřízená, ale žádná odpověď se neodešle
+    </p>
+    <p>
+        <?php 
+        echo $this->formSubmit("submit", "Odeslat"); 
+        echo $this->formHidden("messageId", $message->id);
+        ?>
+    </p>
+</form>

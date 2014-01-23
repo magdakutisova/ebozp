@@ -20,6 +20,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('chemical'));
 		$this->add(new Zend_Acl_Resource('employee'));
 		$this->add(new Zend_Acl_Resource("task"));
+        $this->add(new Zend_Acl_Resource("diary"));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 

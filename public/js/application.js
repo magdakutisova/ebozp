@@ -897,6 +897,12 @@ $(function(){
         }
     }
     
+    $("#diary-messages-table a[name='show']").click(function () {
+        var url = "/diary/get?messageId=" + $(this).prev().val();
+        
+        $.iframeDialog(url, 800, 500, "Zpráva z denníku", "refresh");
+    })
+    
     $("#select-other-subsidiary").click(displaySubsidiaryList);
     $(".tabs").tabs();
 });

@@ -1,0 +1,54 @@
+<h1>Zprávy z bezpečnostního deníku</h1>
+<form>
+    <?php
+    echo $this->formCheckbox("showNew", 1, array("checked" => $this->showNew));
+    echo $this->formLabel("showNew", "Zobrazovat aktuální");
+    
+    echo $this->formCheckbox("showOld", 1, array("checked" => $this->showOld));
+    echo $this->formLabel("showOld", "Zobrazovat vyřízené");
+    echo $this->formSubmit("filter-mes", "Filtrovat");
+    ?>
+</form>
+<table clas="multirow-table" id="diary-messages-table">
+    <thead>
+        <tr>
+            <th colspan="2">Klient a pobočka</th>
+            <th>Autor</th>
+            <th>Datum</th>
+        </tr>
+        <tr>
+            <th colspan="3">Zpráva</th>
+            <th>Vyřízeno</th>
+        </tr>
+    </thead>
+    <?php
+    foreach ($this->messages as $message) {
+        ?>
+    <tbody>
+        <tr>
+            <td colspan="2">
+                <?php printf("%s - %s, %s", $message->company_name, $message->subsidiary_town, $message->subsidiary_street); ?>
+            </td>
+            <td><?php echo $message->author; ?></td>
+            <td><?php echo $message->created_at; ?></td>
+        </tr>
+        <tr>
+            <td colspan="3"><?php echo $message->message; ?></td>
+            <td>
+                <?php
+                if ($message->is_closed) {
+                    $cpt = "Ano";
+                } else {
+                    $cpt = "Ne";
+                }
+                
+                printf("<input type='hidden' name='messageId' value='%d' />", $message->id);
+                printf("<a href='#' name='show'>%s</a>", $cpt);
+                ?>
+            </td>
+        </tr>
+    </tbody>
+    <?php
+    }
+    ?>
+</table>

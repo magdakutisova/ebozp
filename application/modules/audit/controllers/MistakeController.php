@@ -931,8 +931,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$select->from($nameSubsidiaries, array("subsidiary_name"))
 					->joinInner($nameAssocs, "$nameAssocs.id_subsidiary = $nameSubsidiaries.id_subsidiary", array("id_subsidiary"))
 					->where("id_user = ?", $user->id_user);
-			die(var_dump($tableAssocs->getAdapter()->query($select)->fetch()));
-			if (!$tableAssocs->getAdapter()->query($select)->fetch()) throw new Zend_Exception("Invalid user");
+
+            if (!$tableAssocs->getAdapter()->query($select)->fetch()) throw new Zend_Exception("Invalid user");
 		}
 		die;
 	}

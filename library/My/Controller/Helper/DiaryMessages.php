@@ -60,6 +60,10 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     				$recipients[] = $this->request->getParam('subsidiary');
     			}
     			$message = $formData['message'];
+                
+                $tableMessages = new Application_Model_DbTable_DiaryMessage();
+                $clientId = $this->request->getParam("clientId");
+                
     			foreach($recipients as $recipient){
     				if ($recipient != 0){
     					$toSave = new Application_Model_Diary();
@@ -67,6 +71,8 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     					$toSave->setSubsidiaryId($recipient);
     					$toSave->setAuthor($username);
     					$diary->addMessage($toSave);
+                        
+                        $tableMessages->createMessage($clientId, $recipient, $message);
     				}
     			}
     			$this->sendEmails($recipients, $username, $message);

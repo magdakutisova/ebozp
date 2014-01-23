@@ -181,8 +181,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		
 		// nastaveni dat radku
 		$row->updateAll($data);
-        ///die(var_dump($row->toArray()));
-		$row->save();
+
+        $row->save();
         
         $ext = $tableDeadlines->findById($row->id);
 		
@@ -246,7 +246,6 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zapis dat z requestu a jejich validace
 		if (!$form->isValid($requestData)) {
 			// nejaka hodnota neni validni
-			var_dump($form->getMessages());
 			$this->_forward("edit");
 			return;
 		}

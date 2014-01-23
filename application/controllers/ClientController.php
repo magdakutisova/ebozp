@@ -520,7 +520,7 @@ class ClientController extends Zend_Controller_Action
 		$form->removeElement('contactPerson101');
 		$form->removeElement('doctor201');
 		$form->removeElement('responsibility301');
-			die(var_dump($this->_helper->diaryRecord));
+        
 		$this->view->formResponsibility = new Application_Form_Responsibility();
 		$this->view->formEmployee = new Application_Form_ResponsibleEmployee();
 		 
