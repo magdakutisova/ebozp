@@ -46,7 +46,7 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			->where('subsidiary.active = ?', $active)
 			->where ( 'subsidiary.deleted = 0' )
 			->where('user.role = ?', $role)
-			->order ( array('user.username', 'subsidiary.subsidiary_name'));
+			->order ( array('user.username', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
 		}
 		else{
 			$select = $this->select ()
@@ -57,7 +57,7 @@ class Application_Model_DbTable_UserHasSubsidiary extends Zend_Db_Table_Abstract
 			->where('client.archived = ?', $archived)
 			->where ( 'subsidiary.deleted = 0' )
 			->where('user.role = ?', $role)
-			->order ( array('user.username', 'subsidiary.subsidiary_name'));
+			->order ( array('user.username', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
 		}
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll ( $select );

@@ -89,25 +89,26 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 	 */
 	public function getSubsidiaries($clientId = 0, $userId = 0, $hq = 0) {
 		if ($clientId != 0 && $hq == 0){
-			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' )->order('subsidiary_town');
+			$select = $this->select ()->from ( 'subsidiary' )->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'client_id = ?', $clientId )->where ( 'hq = 0' )->where ( 'deleted = 0' );
 		}
 		elseif ($clientId != 0 && $hq == 1){
 			$select = $this->select()->from('subsidiary')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('client_id = ?', $clientId)->where('deleted = 0')->where('hq_only = 0')->order('hq DESC');
 		}
 		elseif($userId != 0){
-			$select = $this->select()->from('subsidiary')->join('user_has_subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('user_has_subsidiary.id_user = ?', $userId)->where ( 'subsidiary.deleted = 0' )->order(array('client.company_name', 'hq DESC'));
+			$select = $this->select()->from('subsidiary')->join('user_has_subsidiary', 'subsidiary.id_subsidiary = user_has_subsidiary.id_subsidiary')->join('client', 'subsidiary.client_id = client.id_client')->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town'))->where('user_has_subsidiary.id_user = ?', $userId)->where ( 'subsidiary.deleted = 0' )->order(array('hq DESC'));
 			$select->setIntegrityCheck(false);
 		}
 		else{
-			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array('client.company_name', 'hq DESC'));
+			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array('hq DESC'));
 			$select->setIntegrityCheck(false);
 		}
+        $select->order(array('subsidiary_name', 'subsidiary_town'));
 		$results = $this->fetchAll ( $select );
 		if (count ( $results ) > 0) {
 			$subsidiares = array ();
 			foreach ( $results as $result ) :
 				$key = $result->id_subsidiary;
-				$subsidiary = $result->subsidiary_name . ' - ' . $result->subsidiary_street . ', ' . $result->subsidiary_town;
+				$subsidiary = $result->subsidiary_name . ' - ' . $result->subsidiary_town . ', ' . $result->subsidiary_street;
 				if($result->hq){
 					$subsidiary .= ' (centrála)';
 				}
@@ -286,8 +287,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))
 			->where('subsidiary.deleted = 0')
 			->where('archived = ?', $archived)
-			->where('active = ?', $active)
-			->order(array('client.company_name', 'hq DESC', 'subsidiary.subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
+			->where('active = ?', $active);
 		}
 		else{
 			$select = $this->select()
@@ -295,9 +295,9 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			->join('client', 'subsidiary.client_id = client.id_client')
 			->columns(array('id_subsidiary', 'subsidiary_name', 'subsidiary_town', 'client_id', 'hq', 'client.company_name'))
 			->where('subsidiary.deleted = 0')
-			->where('archived = ?', $archived)
-			->order(array('client.company_name', 'hq DESC', 'subsidiary.subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
+			->where('archived = ?', $archived);
 		}
+        $select->order(array('client.company_name', 'hq DESC', 'subsidiary_name', 'subsidiary.subsidiary_town', 'subsidiary.subsidiary_street'));
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
 		return $this->process($result);

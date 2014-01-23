@@ -14,7 +14,7 @@
 	foreach ($this->subsidiaries as $subsidiary) :
 	if($subsidiary->getHq()){
 		$companyName = $subsidiary->getSubsidiaryName();
-		$companyAddress = $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+		$companyAddress = $subsidiary->getSubsidiaryTown() . ', ' . $subsidiary->getSubsidiaryStreet();
 		$allowed = $subsidiary->getAllowed();
 	}
 	if($subsidiary->getAllowed()){
@@ -34,14 +34,14 @@
 			echo '<li><a href="' . $this->url(array('clientId' => $clientId), 'clientIndex') . '">' . $companyName . ' - ' . $companyAddress . ' (centrála)</a>';
 			$allowed = ''; }
 			if(!$subsidiary->getHq()){?>
-			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+			<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryTown() . ', ' . $subsidiary->getSubsidiaryStreet();
 			if(!$subsidiary->getActive()){
 				echo ' (neaktivní)';
 			}
 			echo '</a>'?></li>
 		<?php }}
 		else{ ?>
-		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown();
+		<li><?php echo '<a href="' . $this->url(array('clientId' => $subsidiary->getClientId(), 'subsidiary' => $subsidiary->getIdSubsidiary()), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryName() . ' - ' . $subsidiary->getSubsidiaryTown() . ', ' . $subsidiary->getSubsidiaryStreet();
 			if(!$subsidiary->getActive()){
 				echo ' (neaktivní)';
 			}

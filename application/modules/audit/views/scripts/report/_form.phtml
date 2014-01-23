@@ -9,7 +9,7 @@ $audit = $this->audit;
 	<li><a href="#forms">Systematická část</a></li>
 	<li><a href="#workplaces">Vyhodnocení pracovišť</a></li>
 	<li><a href="#mistakes">Registr neshod</a></li>
-	<li><a href="#deadlines">Lhůty</a></li>
+    <?php if ($this->deadlines->count()) { ?><li><a href="#deadlines">Lhůty</a></li><?php } ?>
 	<li><a href="#save">Uložit</a></li>
 </menu>
 <form action="<?php echo $this->url(array("clientId" => $this->client->id_client, "subsidiaryId" => $this->audit->subsidiary_id, "auditId" => $this->audit->id), "audit-report-save"); ?>" method="post">
@@ -330,12 +330,14 @@ $audit = $this->audit;
 		}
 		?>
 	</fieldset>
+    <?php if ($this->deadlines->count()) { ?>
 	<fieldset>
 		<legend id="deadlines">Lhůty</legend>
 		<?php 
 		echo $this->deadlineTable($this->deadlines, array("noAction" => true));
 		?>
 	</fieldset>
+    <?php } ?>
 	<fieldset>
 		<legend id="save"><small>[<a href="#up-menu">Nahoru</a>] </small> Uložit</legend>
 		<p>

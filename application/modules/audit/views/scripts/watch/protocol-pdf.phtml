@@ -2,6 +2,8 @@
 // vypnuti layotu
 $this->layout()->disableLayout();
 
+// vypnuti odpisu
+$this->sign = true;
 $content = $this->partial("watch/_protocol.phtml", $this);
 
 $pdf = new My_Pdf();
@@ -11,6 +13,114 @@ $pdf->SetAutoPageBreak(true, 35);
 $pdf->SetFont("dejavusans", 12, "");
 $pdf->SetAutoPageBreak(true, 35);
 $pdf->writeHTML($content);
+
+$limit = 220;
+
+if ($this->discussed->count()) {
+    if ($pdf->GetY() > $limit) $pdf->AddPage ();
+    
+    $pdf->writeHTML($this->partial("watch/_item-list.phtml", array("caption" => "Provedeno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno")));
+}
+
+if ($this->watch->changes) {
+    if ($pdf->GetY() > $limit) $pdf->AddPage ();
+    
+    $html = "<h2>Změny v podniku</h2>\n";
+    $html .= nl2br($this->watch->changes) . "<br />";
+    $pdf->writeHTML($html);
+}
+
+if ($this->watch->outputs) {
+    if ($pdf->GetY() > $limit) $pdf->AddPage ();
+    
+    $html = "<h2>Realizační výstup</h2>";
+    $html .= nl2br($this->watch->outputs) . "<br />";;
+    $pdf->writeHTML($html);
+}
+
+if ($this->order->content) {
+    if ($pdf->GetY() > $limit) $pdf->AddPage ();
+    
+    $html = "<h2>Objednávky u G U A R D 7, v.o.s.</h2>";
+    $html .= nl2br($this->order->content) . "<br />";;
+    $pdf->writeHTML($html);
+}
+
+// pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty
+if (!$this->watch->also_audit) {
+	// rozrazeni neshod na nove, odstranene a neodstranene
+	$new = array();
+	$removed = array();
+	$marked = array();
+	$watch = $this->watch;
+	
+	foreach ($this->mistakes as $mistake) {
+		// vyhodnoceni neshody
+		if ($mistake->set_removed) {
+			$removed[] = $mistake;
+		} elseif ($mistake->watch_id == $watch->id) {
+			$new[] = $mistake;
+		} else {
+			$marked[] = $mistake;
+		}
+	}
+	
+	// nove neshody
+    if ($new) {
+        $html = "<h2>Nově nalezené neshody</h2>";
+        
+        if ($new) {
+            $html .= $this->partial("watch/_mistakes.phtml", array("mistakes" => $new, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "suggestion" => "Návrh opatření", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+        } else {
+            $html .= "<div>-</div>";
+        }
+        
+        if ($pdf->GetY() > $limit) $pdf->AddPage ();
+        $pdf->writeHTML($html);
+    }
+	
+	// vyhodnoceni zobrazeni neodstranenych neshod
+	if ($watch->display_mistakes && $marked) {
+		
+		$html = "<h2>Neodstraněné neshody z minulých kontrol</h2>";
+		
+		if ($marked) {
+			$html .= $this->partial("watch/_mistakes.phtml", array("mistakes" => $marked, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+		} else {
+			$html .= "<div>-</div>";
+		}
+        
+        if ($pdf->GetY() > $limit) $pdf->AddPage ();
+        $pdf->writeHTML($html);
+	}
+	
+	// vyhodnoceni zobrazeni lhut lhuty se zobrazi pokud je zobrazeni nastaveno a pokud jsou nejake lhuty k dispozici
+	if ($watch->display_deadlines && $this->deadlines->count()) {
+	
+        $html = "<h2>Propadlé lhůty</h2>
+	<table border=\"1\" cellpadding=\"2\">";
+		
+		$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
+		$html .= $this->deadlineTable()->header($config);
+		$html .= implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
+		
+        $html .= "</table>";
+	
+        if ($pdf->GetY() > $limit) $pdf->AddPage ();
+        $pdf->writeHTML($html);
+	}
+}
+
+// doplneni podpisu
+$sign = $this->partial("watch/protocol/sign.phtml", $this);
+
+// vyhodnoceni nove stranky
+if ($pdf->GetY() > $limit) {
+    $pdf->AddPage();
+    //$pdf->setPage($pdf->getNumPages());
+}
+
+$pdf->writeHTML($sign);
 
 $this->pdf()->footer($pdf, $this->logo, "Zpracoval:
 G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622

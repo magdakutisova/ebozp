@@ -1,0 +1,23 @@
+<div></div>
+<table style="padding: 40px 0 20px 0;">
+	<tr>
+		<td>
+		Za G U A R D 7, v.o.s. předal
+		</td>
+		<td align="right">
+		<?php 
+		echo $this->watch->guard_person; 
+		echo "<br />";
+		echo nl2br($this->user->cert_nums);
+		?>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<?php echo $this->watch->client_description; ?>
+		</td>
+		<td align="right">
+		<?php echo $this->person->name; ?>
+		</td>
+	</tr>
+</table>

@@ -96,24 +96,7 @@
 	?>
 </table>
 <?php 
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Provedeno", "items" => $this->discussed, "notFound" => "Nic nebylo projednáno"));
-echo $this->partial("watch/_item-list.phtml", array("caption" => "Změny v podniku", "items" => $this->changes, "notFound" => "Nic nebylo změněno"));
-
-if ($this->watch->changes) {
-    echo "<h2>Změny v podniku</h2>";
-    echo nl2br($this->watch->changes);
-}
-
-if ($this->watch->outputs) {
-    echo "<h2>Realizační výstup</h2>";
-    echo nl2br($this->watch->outputs);
-}
-
-if ($this->order->content) {
-    echo "<h2>Objednávky u G U A R D 7, v.o.s.</h2>";
-    echo nl2br($this->order->content);
-}
-
+return;
 // pokud nebyl soubezne proveden audit, pak se vypisi neshody a lhuty
 if (!$this->watch->also_audit) {
 	// rozrazeni neshod na nove, odstranene a neodstranene
@@ -146,19 +129,6 @@ if (!$this->watch->also_audit) {
         }
     }
 	
-	/*
-	 * odstranene neshody byly po dohode z protokolu odstraneny. 
-	 * Vzhledem k rychlosti zmeny zadani jsou zde pouze zakomentovane, aby sly posleze opet vratit zpet 
-	?>
-	<h2>Odstraněné neshody</h2>
-	<?php 
-	if ($removed) {
-		echo $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "notified_at" => "Datum zjištění", "responsibile_name" => "Odpovědná osoba", "weight" => "Závažnost")));
-	} else {
-		echo "<div>-</div>";
-	}
-	*/
-	
 	// vyhodnoceni zobrazeni neodstranenych neshod
 	if ($watch->display_mistakes && $marked) {
 		?>
@@ -186,26 +156,3 @@ if (!$this->watch->also_audit) {
 	}
 }
 ?>
-<div></div><div></div>
-<table style="padding: 40px 0 40px 0;">
-	<tr>
-		<td>
-		Za G U A R D 7, v.o.s. předal
-		</td>
-		<td align="right">
-		<?php 
-		echo $this->watch->guard_person; 
-		echo "<br />";
-		echo nl2br($this->user->cert_nums);
-		?>
-		</td>
-	</tr>
-	<tr>
-		<td>
-		<?php echo $this->watch->client_description; ?>
-		</td>
-		<td align="right">
-		<?php echo $this->person->name; ?>
-		</td>
-	</tr>
-</table>
