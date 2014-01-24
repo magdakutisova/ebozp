@@ -3,6 +3,8 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
 	
 	private $diary;
 	private $diaryDb;
+    
+    private $_messages = array();
 	
 	public function __construct(){
 		$this->diary = new Application_Model_Diary();
@@ -38,12 +40,32 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
 				 . $what . ' (<a href="'
 				 . Zend_Controller_Action_Helper_Url::url($urlParams, $route) . '">'
 				 . $anchor . '</a>).';
-		}		
-		
-		$this->diary->setMessage($message);
-		$this->diary->setSubsidiaryId($subsidiary);
-		$this->diary->setAuthor($who);
-		$this->diaryDb->addMessage($this->diary);
+		}
+        
+        $this->_messages[] = array(
+            "msg" => $message,
+            "subsidiaryId" => $subsidiary,
+            "author" => $who
+        );
+        
 	}
 	
+    public function postDispatch() {
+        parent::postDispatch();
+        
+        // pokud nejsou k dispozici zadne zpravy k ulozeni, nic se delat nebude
+        if (!$this->_messages) return;
+        
+        $sql = "insert into " . $this->diaryDb->info("name") . " (`message`, `subsidiary_id`, `author`) values ";
+        $adapter = Zend_Db_Table::getDefaultAdapter();
+        
+        $records = array();
+        
+        foreach ($this->_messages as $message) {
+            $records[] = sprintf("(%s, %d, %s)", $adapter->quote($message["msg"]), $message["subsidiaryId"], $adapter->quote($message["author"]));
+        }
+        
+        $sql .= implode(",", $records);
+        $adapter->query($sql);
+    }
 }

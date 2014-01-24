@@ -82,6 +82,10 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
             $navigationUpper = new Zend_Navigation($configUpper);
             Zend_Registry::set("UpperPanel", $navigationUpper);
             
+            if ($sub instanceof Zend_Db_Table_Rowset_Abstract) {
+                $sub = $sub->current();
+            }
+            
             if ($sub["hq_only"]) {
                 $navigationUpper->removePage(5);
                 $navigationUpper->removePage(4);

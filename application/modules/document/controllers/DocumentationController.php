@@ -387,7 +387,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
         
         $subs = array();
         
-        if (is_null($slot->subsidiary_id)) {
+        if (is_null($doc->subsidiary_id)) {
             $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
             $subList = $tableSubsidiaries->fetchAll("client_id = " . $doc->client_id);
             
@@ -395,7 +395,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
                 $subs[] = $item->id_subsidiary;
             }
         } else {
-            $subs = array($subsidiaryId);
+            $subs = array($doc->subsidiary_id);
         }
         
         foreach ($subs as $curSubId) {
@@ -411,7 +411,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
                     $curSubId
                     );
         }
-		
+        
 		$this->_helper->FlashMessenger("Změny byly uloženy");
 
 		$this->view->doc = $doc;
