@@ -49,7 +49,16 @@ $(function () {
 			break;
 		}
 	}
+    
+    function showNote(e) {
+        $(this).next().show();
+    }
+    
+    function hideNote() {
+        $(this).next().hide();
+    }
 	
 	$("#group-navi").change(switchGroup);
 	$("#filter-navi").change(switchAnswer);
+    $("#group-contents table tbody a.note").mouseover(showNote).mouseout(hideNote);
 });

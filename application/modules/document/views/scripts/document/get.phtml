@@ -51,7 +51,7 @@ if ($editable) $editButton = $this->formButton("rename-file", "Přejmenovat");
 		foreach ($this->documentations as $item) {
 			// zjisteni jmena pobocky a vygenerovani adresy na dokumentace
 			$subName = $item->subsidiary_name ? $item->subsidiary_name : "CENTRÁLNÍ";
-			$baseUrl = $this->url(array("clientId" => $item->client_id), "document-documentation-index");
+			$baseUrl = $this->url(array("clientId" => $item->client_id, "TYPE" => "documentation", "subsidiaryId" => $item->subsidiary_id), "document-documentation-index");
 			$url = sprintf("%s?subId=%s", $baseUrl, $item->subsidiary_id);
 			
 			$name = sprintf("<a href='%s'>%s</a>", $url, $subName);

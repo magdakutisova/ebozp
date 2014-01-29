@@ -80,7 +80,17 @@ $url = $this->url($params, $route);
 				?>
 				<tr class="<?php echo $class; ?>">
 					<td>
-					<?php echo $record->question; ?>
+					<?php 
+                    $note = trim($record->note);
+                    
+                    if ($note) {
+                        printf("<a href='#' class='note'>%s</a>", $record->question);
+                    } else {
+                        echo $record->question;
+                    }
+                    
+                    printf("<div class='hidden pre tooltip'>%s</div>", $record->note);
+                    ?>
 					</td>
 					<td>
 					<?php echo $record->weight; ?>

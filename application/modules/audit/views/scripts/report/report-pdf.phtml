@@ -143,31 +143,10 @@ if ($this->workplaces["workplaces"]) {
 }
 
 // neshody
-$pdf->AddPage("P", "A4");
-$this->pdf()->header($pdf, "Registr neshod");
-/*
-if (!$audit->is_check) {
-	foreach ($this->forms as $form) {
-		$this->pdf()->header($pdf, $form["name"], 18, "ib");
-	
-		// zpracovani skupin
-		$formId = $form["id"];
-		$groups = $this->formsGroups[$formId];
-			
-		for ($i = 0; $i < count($groups["groups"]); $i++) {
-			// vyhodnoceni jestli je nejaka neshoda v teto skupine
-			$group = $groups["groups"][$i];
-			$groupId = $group["id"];
-	
-			if (!isset($this->mistakes["forms"][$groupId])) continue;
-	
-			$this->pdf()->header($pdf, ($i + 1) . ". " . $group["name"], 16, 'b');
-			$this->pdf()->mistakes($pdf, $this->mistakes["forms"][$groupId]);
-		}
-	}
-}
-*/
 if (!empty($this->mistakes["others"])) {
+    $pdf->AddPage("P", "A4");
+    $this->pdf()->header($pdf, "Registr neshod");
+
     // rozrazeni neshod na nove a stavajici
     $news = array();
     $stays = array();
@@ -192,17 +171,19 @@ if (!empty($this->mistakes["others"])) {
 }
 
 // lhuty
-$pdf->AddPage("P", "A4");
-$this->pdf()->header($pdf, "Propadlé lhůty");
+if ($this->deadlines->count()) {
+    $pdf->AddPage("P", "A4");
+    $this->pdf()->header($pdf, "Propadlé lhůty");
 
-$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
+    $config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
 
-$deadHead = $this->deadlineTable()->header($config);
-$deadBody = $this->deadlineTable()->deadlines($this->deadlines, $config);
+    $deadHead = $this->deadlineTable()->header($config);
+    $deadBody = $this->deadlineTable()->deadlines($this->deadlines, $config);
 
-$deadAll = sprintf("<table cellpadding=\"2\" border=\"2\">%s%s</table>", $deadHead, implode("", $deadBody));
+    $deadAll = sprintf("<table cellpadding=\"2\" border=\"2\">%s%s</table>", $deadHead, implode("", $deadBody));
 
-$pdf->writeHTML($deadAll);
+    $pdf->writeHTML($deadAll);
+}
 
 $this->pdf()->footer($pdf, $this->logo, "Zpracoval:
 G U A R D 7, v.o.s. se sídlem Divišova 235, 530 03 Pardubice, IČO 48173622, DIČ CZ48173622
