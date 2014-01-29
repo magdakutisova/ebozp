@@ -106,7 +106,9 @@ if (!$this->watch->also_audit) {
 		
         $html .= "</table>";
 	
-        if ($pdf->GetY() > $limit) $pdf->AddPage ();
+        if ($pdf->GetY() > $limit) {
+            $pdf->AddPage();
+        }
         $pdf->writeHTML($html);
 	}
 }
@@ -114,10 +116,23 @@ if (!$this->watch->also_audit) {
 // doplneni podpisu
 $sign = $this->partial("watch/protocol/sign.phtml", $this);
 
+// vyhodnoceni jeho elikosti
+$tmpPdf = new My_Pdf();
+$tmpPdf->AddPage();
+$tmpPdf->SetMargins(15, 20);
+
+$oldY = $tmpPdf->GetY();
+$tmpPdf->writeHTML($sign);
+$newY = $tmpPdf->GetY();
+
+$delta = $newY - $oldY;
+
+$margins = $pdf->getMargins();
+$signLimit = $pdf->getPageHeight() - $margins["bottom"] - $delta - 10;
+
 // vyhodnoceni nove stranky
-if ($pdf->GetY() > $limit) {
+if ($pdf->GetY() > $signLimit) {
     $pdf->AddPage();
-    //$pdf->setPage($pdf->getNumPages());
 }
 
 $pdf->writeHTML($sign);

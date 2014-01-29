@@ -88,7 +88,7 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
     	}  
 	}
 	
-	private function sendEmails($recipients, $username, $message){
+	public function sendEmails($recipients, $username, $message){
 		//adresy příjemců
 		$addresses = array();
 		$subsidiaries = new Application_Model_DbTable_Subsidiary();

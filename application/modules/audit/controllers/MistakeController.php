@@ -736,6 +736,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
                     $form->getValue("subsidiary_id")
                     );
         }
+        
+        $this->attachNewMistake($mistakeId, $data["subsidiary_id"]);
 		
 		$this->view->clientId = $clientId;
 		$this->view->mistake = $data;
@@ -1285,6 +1287,46 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		
 		return $checked;
 	}
+    
+    /**
+     * pripoji nove vlozenou neshodu do otevrenych dohlidek a auditu
+     * 
+     * @param int $mistakeId id nove neshody
+     * @param int $subsidiaryId identifikacni cislo pobocky
+     */
+    public function attachNewMistake($mistakeId, $subsidiaryId) {
+        // obecne neshody neumime vkladat
+        if (!$subsidiaryId) return;
+        
+        $tableWatches = new Audit_Model_Watches();
+        $nameWatches = $tableWatches->info("name");
+        
+        $select = new Zend_Db_Select($tableWatches->getAdapter());
+        $select->from($nameWatches, array("id", new Zend_Db_Expr($mistakeId)));
+        $select->where("subsidiary_id = ?", $subsidiaryId)->where("!is_closed");
+        
+        $tableWAssocs = new Audit_Model_WatchesMistakes();
+        $sqlBase = "insert into %s (watch_id, mistake_id) %s";
+        $sql = sprintf($sqlBase, $tableWAssocs->info("name"), $select->assemble());
+        
+        $adapter = $tableWAssocs->getAdapter();
+        $adapter->query($sql);
+        
+        // zapis do auditu
+        $tableAudits = new Audit_Model_Audits();
+        $select = new Zend_Db_Select($adapter);
+        $select->from($tableAudits->info("name"), array(
+            "id",
+            new Zend_Db_Expr($mistakeId)
+        ));
+        
+        $select->where("subsidiary_id = ?", $subsidiaryId)->where("!is_closed");
+        
+        $tableAAssocs = new Audit_Model_AuditsMistakes();
+        $sqlBase = "insert into %s (audit_id, mistake_id) %s";
+        $sql = sprintf($sqlBase, $tableAAssocs->info("name"), $select->assemble());
+        $adapter->query($sql);
+    }
 
 	private static function SORT_CALLBACK ($item1, $item2) {
 		if ($item1["done_at_int"] == $item2["done_at_int"]) return 0;

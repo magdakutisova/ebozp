@@ -50,7 +50,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
             <ol id="progreslist">
                 <?php
             foreach ($this->progres as $progres) {
-                printf("<li><input type='text' name='item[]', value='%s'><input type='button' onclick=\"if (confirm('Skutečně odstranit?')) $(this).parent().remove();\" value='X'></li>", $progres->content);
+                printf("<li><input type='text' name='item[]', value='%s' style='width: 800px; height: 25px; '><input type='button' onclick=\"if (confirm('Skutečně odstranit?')) $(this).parent().remove();\" value='X'></li>", $progres->content);
             }
                 ?>
             </ol>

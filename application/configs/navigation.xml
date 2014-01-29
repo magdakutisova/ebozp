@@ -79,7 +79,7 @@
 			<priviledge>index</priviledge>
 		</orders>
 		<diary>
-			<label>Zprávy z denníku</label>
+			<label>Zprávy z deníku</label>
 			<uri>/diary/index</uri>
 			<resource>diary</resource>
 			<priviledge>index</priviledge>

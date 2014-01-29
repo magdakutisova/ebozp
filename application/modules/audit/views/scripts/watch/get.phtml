@@ -1,5 +1,6 @@
 <?php 
 $watch = $this->watch;
+$user = Zend_Auth::getInstance()->getIdentity();
 ?>
 <h2>Dohlídka</h2>
 <div id="watch-tabs">
@@ -97,16 +98,20 @@ $watch = $this->watch;
 				<?php 
 			}
 			
-			echo $this->tableLayout()->row("Zobrazení neshod v protokolu", $watch->display_mistakes ? "Ano" : "Ne");
-			echo $this->tableLayout()->row("Zobrazení lhůt v protokolu", $watch->display_deadlines ? "Ano" : "Ne");
+            if ($user->role != My_Role::ROLE_CLIENT) {
+                echo $this->tableLayout()->row("Zobrazení neshod v protokolu", $watch->display_mistakes ? "Ano" : "Ne");
+                echo $this->tableLayout()->row("Zobrazení lhůt v protokolu", $watch->display_deadlines ? "Ano" : "Ne");
+            }
 			?>
 		</table>
 		<?php
-		echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>";
-		echo $this->formHidden("watchId", $this->watch->id);
-		echo $this->formSubmit("protocol", "Stáhnout protokol");
-		echo $this->formSubmit("send", "Odeslat protokol emailem", array("onclick" => "if (confirm('Skutečně odeslat protokol?')) $(this).parent().attr('action', '/audit/watch/send').attr('target', '_self'); else return false;"));
-		echo "</form>";
+        if ($user->role != My_Role::ROLE_CLIENT) {
+            echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>";
+            echo $this->formHidden("watchId", $this->watch->id);
+            echo $this->formSubmit("protocol", "Stáhnout protokol");
+            echo $this->formSubmit("send", "Odeslat protokol emailem", array("onclick" => "if (confirm('Skutečně odeslat protokol?')) $(this).parent().attr('action', '/audit/watch/send').attr('target', '_self'); else return false;"));
+            echo "</form>";
+        }
 		?>
 	</div>
     <?php
@@ -174,9 +179,14 @@ foreach ($this->mistakes as $mistake) {
     }
     
     if ($this->deadlines->count()) {
+        if ($user->role == My_Role::ROLE_CLIENT) {
+            $buttons = array();
+        } else {
+            $buttons = array("show" => array("type" => "button", "caption" => "Zobrazit"));
+        }
     ?>
 	<div id="deadlines">
-		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => array("show" => array("type" => "button", "caption" => "Zobrazit")))); ?>
+		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => $buttons)); ?>
 	</div>
 	<?php 
     }

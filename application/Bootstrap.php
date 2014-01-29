@@ -93,6 +93,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		);
         
         $router->addRoute(
+			'about-client',
+			new Zend_Controller_Router_Route('o-guardianu/klient/:clientId/pobocka/:subsidiaryId',
+											 array('controller' => 'index',
+											 	   'action' => 'about'))
+		);
+        
+        $router->addRoute(
 			'about',
 			new Zend_Controller_Router_Route('o-guardianu',
 											 array('controller' => 'index',

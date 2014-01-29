@@ -130,15 +130,17 @@
 		</employee>
         <contacts>
             <label>Kontakty</label>
-            <route>home</route>
-            <resource>index</resource>
-            <privilege>index</privilege>
+            <route>contacts-client</route>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
         </contacts>
         <about>
             <label>O GUARDIANU</label>
-            <route>about</route>
+            <route>about-client</route>
             <resource>index</resource>
             <privilege>about</privilege>
+            <clientId>clientId</clientId>
+            <subsidiaryId>subsidiaryId</subsidiaryId>
         </about>
 	</nav>
 </configdata>

@@ -133,7 +133,7 @@ $(function() {
 	$("#add-output").click(addOutput);
 	$("#mistake-will_be_removed_at,#watch-watched_at").datepicker({
 		"dateFormat" : "dd. mm. yy",
-		"dayNamesMin" : ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+		"dayNamesMin" : ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
 		"monthNames" : ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
 	});
 	

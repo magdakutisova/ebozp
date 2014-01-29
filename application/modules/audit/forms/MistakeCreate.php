@@ -6,6 +6,8 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		$this->setName("mistake-post");
 		$this->setMethod(Zend_Form::METHOD_POST);
 		$this->setElementsBelongTo("mistake");
+        
+        $role = Zend_Auth::getInstance()->getIdentity()->role;
 	
 		// nastaveni dekoratoru
 		$this->setDecorators(array(
@@ -93,10 +95,12 @@ class Audit_Form_MistakeCreate extends Zend_Form {
 		));
 		
 		// skryty komentar
-		$this->addElement("textarea", "hidden_comment", array(
-				"label" => "Skrytý komentář",
-				"decorators" => $elementDecorator
-		));
+        if ($role != My_Role::ROLE_CLIENT) {
+            $this->addElement("textarea", "hidden_comment", array(
+                    "label" => "Skrytý komentář",
+                    "decorators" => $elementDecorator
+            ));
+        }
 		
 		// zodpovedna osoba
 		$this->addElement("text", "responsibile_name", array(

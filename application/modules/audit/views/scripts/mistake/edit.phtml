@@ -7,7 +7,15 @@
 echo $this->form;
 echo $this->dataList("categories", $this->categories);
 echo $this->dataList("subcategories", $this->subcategories);
+
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($acl->isAllowed($user->role, "audit:mistake", "delete")) {
 ?>
 <h3>Smazat neshodu</h3>
-<?php echo $this->formDelete; ?>
+<?php 
+    echo $this->formDelete; 
+}
+?>
 <script type="text/javascript" src="/js/audit/mistake/create.js"></script>

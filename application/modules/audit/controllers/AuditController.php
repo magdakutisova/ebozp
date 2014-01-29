@@ -998,8 +998,7 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
             
             $this->_helper->diaryRecord->insertMessage($label, null, null, sprintf("<a href='%s'>%s</a>", $url, $link), $this->_audit->subsidiary_id);
 
-            
-			$this->_redirect($url);
+			$this->_helper->redirector->gotoUrlAndExit($url);
 			
 			return;
 		}

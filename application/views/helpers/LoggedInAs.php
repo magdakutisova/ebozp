@@ -13,8 +13,7 @@ class Zend_View_Helper_LoggedInAs extends Zend_View_Helper_Abstract{
 			
 			return '<p class="no-margin"><span class="bold">Přihlášen: </span>' . $username
 				. '</p><p class="no-margin"><span class="bold">Práva: </span>' . $rolename
-				. '</p><p class="no-margin"><a href="' . $passwordUrl
-				. '">Změna hesla</a></p><p class="no-margin"><a href="' . $logoutUrl
+				. '</p><p class="no-margin"><a href="' . $logoutUrl
 				. '">Odhlásit se</a></p>';
 		}
 		

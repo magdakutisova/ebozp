@@ -9,7 +9,10 @@ echo $this->dataList("categories", $this->categories);
 echo $this->dataList("subcategories", $this->subcategories);
 
 // kontrola mazaciho formulare
-if ($this->deleteForm) {
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+
+if ($this->deleteForm && $acl->isAllowed($user->role, "audit:mistake", "delete")) {
 	echo "<h2>Smazat neshodu</h2>";
 	echo $this->deleteForm;
 }

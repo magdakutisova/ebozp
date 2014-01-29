@@ -1,3 +1,6 @@
+<?php
+if (Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")) $this->layout()->setLayout("client-layout");
+?>
 <h1>O GUARDIANU</h1>
 <p>
 GUARDIAN je informačním a komunikačním portálem bezpečnosti práce a požární ochrany.

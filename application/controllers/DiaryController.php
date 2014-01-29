@@ -58,6 +58,8 @@ class DiaryController extends Zend_Controller_Action {
             $toSave->setSubsidiaryId($message->subsidiary_id);
             $toSave->setAuthor($name);
             $diary->addMessage($toSave);
+            
+            $this->_helper->DiaryMessages->sendEmails(array($message->subsidiary_id), $name, $reply);
         }
         
         $this->view->message = $message;

@@ -1,7 +1,7 @@
 <?php 
 $audit = $this->audit;
 ?>
-<table>
+<table class="overview">
 	<tbody>
 		<tr>
 			<td>
@@ -55,7 +55,7 @@ $audit = $this->audit;
 			<td>
 			Poznámka o průběhu
 			</td>
-			<td style="white-space: pre;"><?php echo $audit->progress_note; ?></td>
+			<td style="white-space: pre-line;"><?php echo $audit->progress_note; ?></td>
 		</tr>
 		<tr>
 			<td>

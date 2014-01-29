@@ -99,7 +99,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 			$select->setIntegrityCheck(false);
 		}
 		else{
-			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array('hq DESC'));
+			$select = $this->select ()->from ( 'subsidiary' )->join('client', 'subsidiary.client_id = client.id_client')->columns ( array ('id_subsidiary', 'subsidiary_name', 'subsidiary_town' ) )->where ( 'subsidiary.deleted = 0' )->order(array("client.company_name", 'hq DESC'));
 			$select->setIntegrityCheck(false);
 		}
         $select->order(array('subsidiary_name', 'subsidiary_town'));
