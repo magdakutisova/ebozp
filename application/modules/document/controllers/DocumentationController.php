@@ -624,7 +624,9 @@ class Document_DocumentationController extends Zend_Controller_Action {
             $fileRow = $tableFiles->createFile($fileElement->getFileName(null, false), $fileElement->getMimeType(), $user->id_user);
         }
         
+        $fileRow->name = $fileElement->getFileName(null, false);
 		$fileRow->createVersionFromFile($fileElement->getFileName(), $fileElement->getMimeType());
+        $fileRow->save();
 
 		return $fileRow;
 	}
