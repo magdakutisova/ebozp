@@ -821,7 +821,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$nameAssocs = $tableAssocs->info("name");
 		
 		// vytvoreni dotazu
-		$baseSql = "update tmp_emp_import, %s, %s set obj_id = $nameDevices.id_technical_device where $nameAssocs.id_client = %s and $nameAssocs.id_technical_device = $nameDevices.id_technical_device and tmp_emp_import.`specific` like $nameDevices.sort and obj_id is null";
+		$baseSql = "update tmp_emp_import, %s, %s set obj_id = $nameDevices.id_technical_device where $nameAssocs.id_client = %s and $nameAssocs.id_technical_device = $nameDevices.id_technical_device and tmp_emp_import.`name1` like $nameDevices.sort and obj_id is null";
 		$sqlUpdate = sprintf($baseSql, $nameDevices, $nameAssocs, $this->_request->getParam("clientId"));
 		
 		$adapter->query($sqlUpdate);
@@ -831,19 +831,21 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$maxId = $adapter->query($sql)->fetchColumn();
 		
 		// ti zamestnanci, kteri nebyli nelezeni se vytvori
-		$sql = "insert into $nameDevices (`sort`) select `specific` from tmp_emp_import where obj_id is null group by `specific`";
+		$sql = "insert into $nameDevices (`sort`) select `name1` from tmp_emp_import where obj_id is null and LENGTH(TRIM(name1)) > 0 group by `name1`";
 		$adapter->query($sql);
 		
+        if (!$maxId) $maxId = 0;
+        
 		// prirazeni novych zarizeni klientovi
 		$sql = "insert into $nameAssocs (id_client, id_technical_device) select $clientId, id_technical_device from $nameDevices where id_technical_device > $maxId";
-		$adapter->query($sql);
+        $adapter->query($sql);
 		
 		// novy update dat
 		$adapter->query($sqlUpdate);
 		
 		// vlozeni lhut do tabulky lhut
-		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, technical_device_id) ";
-		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id from tmp_emp_import";
+		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, technical_device_id, anonymous_obj_tech) ";
+		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id, ISNULL(obj_id) from tmp_emp_import";
 		
 		$adapter->query($sql);
         

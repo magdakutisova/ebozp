@@ -96,7 +96,7 @@ $(function () {
 		var nextObj = selects.filter("#deadline-" + nextName);
 		objs[nextName] = indexItem.children;
 		
-		switchOptions(nextObj, indexItem.children, pairs[nextName] === undefined);
+		switchOptions(nextObj, indexItem.children, pairs[nextName] === undefined || nextName === "specific");
 		
 		doChange(nextName);
 	}
@@ -148,13 +148,18 @@ $(function () {
 			);
 		}
 		
+        if (appendCustom && !found) {
+            obj.append($("<option />").attr("selected", "selected").attr("value", oldVal).text(oldVal));
+        }
+        
 		if (appendCustom) {
 			obj.append($("<option />").attr("value", boundary).text("- Jiné -"));
 		}
-        
+        /*
         if (!found) {
             obj.parent().append($("<spam />").text(" (původně \"" + oldVal + "\")"));
         }
+        */
 	}
 	
 	selects.change(changeSelects);

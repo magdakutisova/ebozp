@@ -211,7 +211,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$tableEmployees = new Application_Model_DbTable_Employee();
 		$nameEmployees = $tableEmployees->info("name");
 		
-		$devName = "CONCAT($nameDevices.`sort`, ' (', $nameDevices.`type`, ')')";
+		$devName = "CONCAT($nameDevices.`sort`, IFNULL(CONCAT(' (', $nameDevices.`type`, ')'),''))";
 		$chemName = "chemical";
 		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
 		
@@ -277,7 +277,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
                     ->where("!anonymous_obj_chem")
                     ->where("!anonymous_obj_emp");
                 
-				$select->columns(array("name" => new Zend_Db_Expr("''")));
+				$select->columns(array("name" => new Zend_Db_Expr("")));
 				break;
             
             case Deadline_Form_Deadline::TARGET_ALL:

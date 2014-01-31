@@ -62,6 +62,9 @@ if (Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId")) $t
         </td>
     </tr>
 </table>
+<?php
+if (!Zend_Auth::getInstance()->getIdentity()) return;
+?>
 <h2>Bezpečnostní technici</h2>
 <table id="contact-table-tech">
     <tr>
