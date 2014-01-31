@@ -30,9 +30,10 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 	 * 
 	 * @param Audit_Model_Row_Audit $audit
 	 * @param Audit_Model_Row_Form $form
+     * @param bool $useTransaction prepinac pro vypnuti pouziti tansakce
 	 * @return Audit_Model_Row_AuditForm
 	 */
-	public function createForm(Audit_Model_Row_Audit $audit, Audit_Model_Row_Form $form) {
+	public function createForm(Audit_Model_Row_Audit $audit, Audit_Model_Row_Form $form, $useTransaction = true) {
 		// nacteni jmen
 		$tableRecords = new Audit_Model_AuditsRecords();
 		$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
@@ -49,7 +50,7 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 		// zacatek transakce a zjisteni id
 		$adapter = $this->getAdapter();
 		
-		$adapter->beginTransaction();
+		if ($useTransaction) $adapter->beginTransaction();
 		$adapter->query("set foreign_key_checks = 0;");
 		
 		$retVal = $this->createRow(array(
@@ -170,10 +171,10 @@ class Audit_Model_AuditsForms extends Zend_Db_Table_Abstract {
 				}
 			}
 			
-			$adapter->commit();
+			if ($useTransaction) $adapter->commit();
 		} catch (Zend_Exception $e) {
-			$adapter->rollBack();
-			die($e->__toString());
+			if ($useTransaction) $adapter->rollBack();
+			throw $e;
 		}
 		
 		$adapter->query("set foreign_key_checks = 1;");

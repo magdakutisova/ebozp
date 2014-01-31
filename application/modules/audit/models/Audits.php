@@ -127,7 +127,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
 		if ($closedOnly) $where[] = "is_closed";
 		
 		$select = $this->prepareSelect($where);
-		$select->order("done_at desc");
+		$select->order(array("is_closed DESC", "auditor_confirmed_at DESC", "done_at"));
 		
 		$data = $select->query()->fetchAll();
 		

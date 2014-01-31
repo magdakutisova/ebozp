@@ -106,4 +106,19 @@ class Audit_Form_Audit extends Zend_Form {
 		
 		$this->_elements["contactperson_id"]->setMultiOptions($items);
 	}
+    
+    public function enableCloning() {
+        $this->addElement("checkbox", "copy_old", array(
+            "label" => "Klonovat minulý audit/prověrku",
+            "value" => 0,
+            "order" => 3,
+            "decorators" => array(
+				'ViewHelper',
+				array('Errors'),
+				array(array('data' => 'HtmlTag'), array('tag' => 'td', 'class' => 'element')),
+				array('Label', array('tag' => 'td')),
+				array(array('row' => 'HtmlTag'), array('tag' => 'tr')),
+            )
+        ));
+    }
 }
