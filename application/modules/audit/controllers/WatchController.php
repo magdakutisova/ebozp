@@ -611,6 +611,17 @@ class Audit_WatchController extends Zend_Controller_Action {
 		
 		// nacteni lhut
 		$deadlines = $watch->findDeadlines(true, true);
+        
+        if ($watch->display_deadlines_close) {
+            $tableDeadlines = new Deadline_Model_Deadlines();
+            $select = $tableDeadlines->_prepareSelect();
+            $select->where("subsidiary_id = ?", $watch->subsidiary_id)->having("invalid_close");
+            
+            $data = $select->query()->fetchAll();
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
+        } else {
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
+        }
 		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
@@ -624,6 +635,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->deadlines = $deadlines;
 		$this->view->logo = __DIR__ . "/../resources/logo.png";
 		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
+        $this->view->deadlinesClose = $deadlinesClose;
 	}
 	
 	public function putAction() {

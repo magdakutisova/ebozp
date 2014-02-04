@@ -113,9 +113,19 @@ class Audit_Form_Watch extends Zend_Form {
 				"label" => "Stávající neshody v protokolu",
 				"decorators" => $elementDecorator
 		));
+        
+        $this->addElement("checkbox", "display_mistakes_removed", array(
+				"label" => "Odstraněné neshody v protokolu",
+				"decorators" => $elementDecorator
+		));
 		
 		// zobrazeni lhut
 		$this->addElement("checkbox", "display_deadlines", array(
+				"label" => "Propadlé hůlty v protokolu",
+				"decorators" => $elementDecorator
+		));
+        
+        $this->addElement("checkbox", "display_deadlines_close", array(
 				"label" => "Propadlé hůlty v protokolu",
 				"decorators" => $elementDecorator
 		));

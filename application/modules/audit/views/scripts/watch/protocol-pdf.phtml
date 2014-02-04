@@ -93,12 +93,43 @@ if (!$this->watch->also_audit) {
         if ($pdf->GetY() > $limit) $pdf->AddPage ();
         $pdf->writeHTML($html);
 	}
+    
+    // zobrazeni neshod ktere byly odebrany
+    if ($watch->display_mistakes_removed && $removed) {
+        $html = "<h2>Neshody odstraněné v této dohlídce</h2>";
+		
+		if ($removed) {
+			$html .= $this->partial("watch/_mistakes.phtml", array("mistakes" => $removed, "columns" => array("mistake" => "Neshoda", "weight" => "Závažnost", "notified_at" => "Datum zjištění", "suggestion" => "Návrh řešení", "responsibile_name" => "Odpovědná osoba", "will_be_removed_at" => "Navrhovaný termín odstranění")));
+		} else {
+			$html .= "<div>-</div>";
+		}
+        
+        if ($pdf->GetY() > $limit) $pdf->AddPage ();
+        $pdf->writeHTML($html);
+    }
 	
 	// vyhodnoceni zobrazeni lhut lhuty se zobrazi pokud je zobrazeni nastaveno a pokud jsou nejake lhuty k dispozici
 	if ($watch->display_deadlines && $this->deadlines->count()) {
 	
         $html = "<h2>Propadlé lhůty</h2>
-	<table border=\"1\" cellpadding=\"2\">";
+        <table border=\"1\" cellpadding=\"2\">";
+		
+		$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
+		$html .= $this->deadlineTable()->header($config);
+		$html .= implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
+		
+        $html .= "</table>";
+	
+        if ($pdf->GetY() > $limit) {
+            $pdf->AddPage();
+        }
+        $pdf->writeHTML($html);
+	}
+    
+    if ($watch->display_deadlines_close && $this->deadlinesClose->count()) {
+	
+        $html = "<h2>Lhůty před propadnutím</h2>
+        <table border=\"1\" cellpadding=\"2\">";
 		
 		$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
 		$html .= $this->deadlineTable()->header($config);
