@@ -100,8 +100,7 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 	public function getBySubsidiaryAndPositions($subsidiaryId){
 		$select = $this->select()
 			->from('employee')
-			->join('position', 'employee.position_id = position.id_position')
-			->where('position.subsidiary_id = ?', $subsidiaryId)
+			->join('position', 'employee.position_id = position.id_position')->where("employee.subsidiary_id = ?", $subsidiaryId)
 			->order(array('position.position', 'employee.surname'));
 		$select->setIntegrityCheck(false);
 		$result = $this->fetchAll($select);
@@ -122,12 +121,15 @@ class Application_Model_DbTable_Employee extends Zend_Db_Table_Abstract{
 		}
 	}
 	
-	public function getUnassignedEmployees($clientId){
+	public function getUnassignedEmployees($clientId, $subsidiaryId=null){
 		$select = $this->select()
 			->from('employee')
 			->where('client_id = ?', $clientId)
 			->where('position_id IS NULL')
 			->order('employee.surname');
+        
+        if ($subsidiaryId) $select->where("employee.subsidiary_id = ?", $subsidiaryId);
+        
 		$result = $this->fetchAll($select);
 		if(count($result) > 0){
 			return $this->process($result);

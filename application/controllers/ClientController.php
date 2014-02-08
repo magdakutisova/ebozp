@@ -669,6 +669,10 @@ class ClientController extends Zend_Controller_Action
 			$doctors = new Application_Model_DbTable_Doctor();
 			$responsibles = new Application_Model_DbTable_Responsible();
 			$responsibles->removeResponsibles($subsidiaryId);
+            
+            $contactIds = array(0);
+            $doctorIds = array(0);
+            $responsibleIds = array(0);
 			
 			foreach($formData as $key => $value){
 				if(preg_match('/contactPerson\d+/', $key) || preg_match('/newContactPerson\d+/', $key)){
@@ -678,6 +682,8 @@ class ClientController extends Zend_Controller_Action
 							$contactPerson = new Application_Model_ContactPerson($formData[$key]);
 							$contactPerson->setSubsidiaryId($subsidiaryId);
 							$contactPersons->updateContactPerson($contactPerson);
+                            
+                            $contactIds[] = $contactPerson->getIdContactPerson();
 						}
 					}
 					//create
@@ -685,7 +691,7 @@ class ClientController extends Zend_Controller_Action
 						if($formData[$key]['name'] != ''){
 							$contactPerson = new Application_Model_ContactPerson($formData[$key]);
 							$contactPerson->setSubsidiaryId($subsidiaryId);
-							$contactPersons->addContactPerson($contactPerson);
+							$contactIds[] = $contactPersons->addContactPerson($contactPerson);
 						}
 					}
 					
@@ -696,13 +702,15 @@ class ClientController extends Zend_Controller_Action
 							$doctor = new Application_Model_Doctor($formData[$key]);
 							$doctor->setSubsidiaryId($subsidiaryId);
 							$doctors->updateDoctor($doctor);
+                            
+                            $doctorIds[] = $doctor->getIdDoctor();
 						}
 					}
 					else{
 						if($formData[$key]['name'] != ''){
 							$doctor = new Application_Model_Doctor($formData[$key]);
 							$doctor->setSubsidiaryId($subsidiaryId);
-							$doctors->addDoctor($doctor);
+							$doctorIds[] = $doctors->addDoctor($doctor);
 						}
 					}					
 				}
@@ -713,7 +721,18 @@ class ClientController extends Zend_Controller_Action
 					}
 				}
 			}
-			
+            
+            // odstraneni dat z databaze
+            $contactPersons->update(array("is_deleted" => 1), array(
+                "id_contact_person not in (?)" => $contactIds,
+                "subsidiary_id = ?" => $subsidiaryId
+            ));
+
+            $doctors->update(array("is_deleted" => 1), array(
+                "id_doctor not in (?)" => $doctorIds,
+                "subsidiary_id = ?" => $subsidiaryId
+            ));
+            
             $identity = Zend_Auth::getInstance()->getIdentity();
             $username = $identity->name;
             

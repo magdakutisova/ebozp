@@ -171,7 +171,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 	public function deadlistHtmlAction() {
 		// nacteni dohlidky
 		$watch = self::loadWatch($this->_request->getParam("watchId"));
-		
+        
 		// selekce lhut, ktere jeste nejsou v dohlidce
 		$tableAssocs = new Audit_Model_WatchesDeadlines();
 		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
@@ -180,7 +180,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni lhut
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
-		$select->where("subsidiary_id = ?", $watch->subsidiary_id)->where("id not in (?)", new Zend_Db_Expr($subSelect));
+		$select->where("d.subsidiary_id = ?", $watch->subsidiary_id)->where("id not in (?)", new Zend_Db_Expr($subSelect));
 		
 		$data = $select->query()->fetchAll();
 		
@@ -589,8 +589,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 		// nacteni dat
 		$watchId = $this->_request->getParam("watchId", 0);
 		$watch = self::loadWatch($watchId);
-		
-		$mistakes = $watch->findMistakes();
+
+        $mistakes = $watch->findMistakes();
 		$order = $watch->findOrder();
 		$discussed = $watch->findDiscussed();
 		$changes = $watch->findChanges();
@@ -615,7 +615,7 @@ class Audit_WatchController extends Zend_Controller_Action {
         if ($watch->display_deadlines_close) {
             $tableDeadlines = new Deadline_Model_Deadlines();
             $select = $tableDeadlines->_prepareSelect();
-            $select->where("subsidiary_id = ?", $watch->subsidiary_id)->having("invalid_close");
+            $select->where("d.subsidiary_id = ?", $watch->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
             
             $data = $select->query()->fetchAll();
             $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
@@ -833,7 +833,7 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		
 		// nacteni kontaktnich osob
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
-		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $subsidiaryId));
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $subsidiaryId, "!is_deleted"));
 		$form->setContacts($contacts);
 		
 		return $form;

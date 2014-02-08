@@ -6,6 +6,18 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	public function init() {
 		$this->view->addHelperPath(APPLICATION_PATH . "/views/helpers");
 	}
+    
+    /**
+     * vycisti lhuty jedne pobocky
+     */
+    public function clearAction() {
+        $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        
+        $tableDeadlines = new Deadline_Model_Deadlines();
+        $tableDeadlines->delete(array(
+            "subsidiary_id = ?" => $subsidiaryId
+        ));
+    }
 	
 	/**
 	 * zobrazi formular pro vytvoreni nove lhuty
@@ -566,16 +578,13 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				case Deadline_Form_Deadline::TARGET_DEVICE:
 					// bylo vybráno technické zařízení
 					$tableDevs = new Application_Model_DbTable_TechnicalDevice();
-					$tableAssocs = new Application_Model_DbTable_ClientHasTechnicalDevice();
 					$nameDevs = $tableDevs->info("name");
-					$nameAssocs = $tableAssocs->info("name");
 					
 					$select = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 					
 					// zapis do selectu
-					$select->from($nameAssocs, array())->where("id_client = ?", $clientId)->order("name")->group("$nameDevs.id_technical_device");
-					$select->joinInner($nameDevs, "$nameAssocs.id_technical_device = $nameDevs.id_technical_device", array("id" => "id_technical_device", "name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' ', IFNULL(`type`, ''))")));
-					
+					$select->from($nameDevs, array("id" => "id_technical_device", "name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' ', IFNULL(`type`, ''))")));
+					$select->where("subsidiary_id = ?", $subsidiaryId);
 					break;
 					
 				case Deadline_Form_Deadline::TARGET_UNDEFINED:
@@ -675,8 +684,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			// vytvoreni docasne tabulky pro ulozeni dat
 			$columns = array(
 					"`id` int not null primary key auto_increment",
-					"`kind` varchar(128) not null",
-					"`specific` varchar(128) null",
+					"`kind` varchar(128) not null collate utf8_general_ci",
+					"`specific` varchar(128) null collate utf8_general_ci",
 					"`period` tinyint",
 					"`last_done` date",
 					"`responsible_name` varchar(128)",
@@ -684,7 +693,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 					"`name2` varchar(128)",
 					"`birth_date` date",
 					"`note` text",
-					"`obj_id` int"
+					"`obj_id` int",
+                    "`deadline_id` int"
 					);
 			
 			$colSpecs = implode(",", $columns);
@@ -774,33 +784,36 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$nameDeads = $tableDeads->info("name");
 		$clientId = $this->_request->getParam("clientId");
 		
-		$tableDeads->delete(array(
-				"subsidiary_id = ?" => $subsidiaryId,
-				"client_id = ?" => $clientId,
-				"employee_id is not null"));
-		
 		// v prvni fazi se najdou a oznaci ti pracovnici, kteri byli uz zaneseni do databaze
 		$tableEmployees = new Application_Model_DbTable_Employee();
 		$nameEmployees = $tableEmployees->info("name");
 		
 		// vytvoreni dotazu
-		$baseSql = "update tmp_emp_import, %s set obj_id = id_employee where client_id = %s and name1 like first_name and name2 like surname and obj_id is null";
+		$baseSql = "update tmp_emp_import, %s set obj_id = id_employee where client_id = %s and subsidiary_id = $subsidiaryId and name1 like first_name and name2 like surname and obj_id is null";
 		$sqlUpdate = sprintf($baseSql, $nameEmployees, $this->_request->getParam("clientId"));
 		
 		$adapter->query($sqlUpdate);
 		
 		// ti zamestnanci, kteri nebyli nelezeni se vytvori
-		$sql = "insert into $nameEmployees (client_id, first_name, surname, year_of_birth) select $clientId, name1, name2, birth_date from tmp_emp_import where obj_id is null group by concat(name1, ' ', name2)";
+		$sql = "insert into $nameEmployees (client_id, subsidiary_id, first_name, surname, year_of_birth) select $clientId, $subsidiaryId, name1, name2, birth_date from tmp_emp_import where obj_id is null and LENGTH(TRIM(CONCAT(name1, name2))) > 0 group by concat(name1, ' ', name2)";
 		$adapter->query($sql);
 		
 		// novy update dat
 		$adapter->query($sqlUpdate);
-		
+        
+        // pokus o synchronizaci lhut
+        $sql = "UPDATE $nameDeads AS d, tmp_emp_import AS t SET t.deadline_id = d.id WHERE d.subsidiary_id = $subsidiaryId and t.period = d.period and d.specific like t.specific and d.kind like t.kind and (obj_id = employee_id OR t.obj_id is null and d.anonymous_obj_emp)";
+        $adapter->query($sql);
+
 		// vlozeni lhut do tabulky lhut
-		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, employee_id) ";
-		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id from tmp_emp_import";
+		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, employee_id, anonymous_obj_emp) ";
+		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id, ISNULL(obj_id) from tmp_emp_import where deadline_id is null";
 		
 		$adapter->query($sql);
+        
+        // update existujicich lhut
+        $sql = "UPDATE tmp_emp_import AS t, $nameDeads AS d SET d.last_done = t.last_done, d.next_date = DATE_ADD(t.last_done, interval t.period month) where d.id = t.deadline_id";
+        $adapter->query($sql);
 	}
 	
 	protected function _importDevices(Zend_Db_Adapter_Abstract $adapter, $subsidiaryId) {
@@ -809,11 +822,6 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$nameDeads = $tableDeads->info("name");
 		$clientId = $this->_request->getParam("clientId");
 		
-		$tableDeads->delete(array(
-				"subsidiary_id = ?" => $subsidiaryId,
-				"client_id = ?" => $clientId,
-				"technical_device_id is not null"));
-		
 		// v prvni fazi se najdou a oznaci ta zarizeni, ktera byla uz zanesena do databaze
 		$tableDevices = new Application_Model_DbTable_TechnicalDevice();
 		$tableAssocs = new Application_Model_DbTable_ClientHasTechnicalDevice();
@@ -821,8 +829,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$nameAssocs = $tableAssocs->info("name");
 		
 		// vytvoreni dotazu
-		$baseSql = "update tmp_emp_import, %s, %s set obj_id = $nameDevices.id_technical_device where $nameAssocs.id_client = %s and $nameAssocs.id_technical_device = $nameDevices.id_technical_device and tmp_emp_import.`name1` like $nameDevices.sort and obj_id is null";
-		$sqlUpdate = sprintf($baseSql, $nameDevices, $nameAssocs, $this->_request->getParam("clientId"));
+		$baseSql = "update tmp_emp_import, %s set obj_id = $nameDevices.id_technical_device where  $nameDevices.subsidiary_id = $subsidiaryId and tmp_emp_import.`name1` like $nameDevices.sort and obj_id is null";
+		$sqlUpdate = sprintf($baseSql, $nameDevices);
 		
 		$adapter->query($sqlUpdate);
 		
@@ -831,25 +839,32 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$maxId = $adapter->query($sql)->fetchColumn();
 		
 		// ti zamestnanci, kteri nebyli nelezeni se vytvori
-		$sql = "insert into $nameDevices (`sort`) select `name1` from tmp_emp_import where obj_id is null and LENGTH(TRIM(name1)) > 0 group by `name1`";
+		$sql = "insert into $nameDevices (`sort`, subsidiary_id) select `name1`, $subsidiaryId from tmp_emp_import where obj_id is null and LENGTH(TRIM(name1)) > 0 group by `name1`";
 		$adapter->query($sql);
 		
         if (!$maxId) $maxId = 0;
         
 		// prirazeni novych zarizeni klientovi
-		$sql = "insert into $nameAssocs (id_client, id_technical_device) select $clientId, id_technical_device from $nameDevices where id_technical_device > $maxId";
+		$sql = "insert ignore into $nameAssocs (id_client, id_technical_device) select $clientId, id_technical_device from $nameDevices where id_technical_device in (select technical_device_id from $nameDeads where subsidiary_id = $subsidiaryId)";
         $adapter->query($sql);
 		
 		// novy update dat
 		$adapter->query($sqlUpdate);
+        
+        // sparovani s existujicimi lhutami (alespon pokus)
+        $sql = "UPDATE $nameDeads AS d, tmp_emp_import AS t SET t.deadline_id = d.id WHERE d.subsidiary_id = $subsidiaryId and t.period = d.period and d.specific like t.specific and d.kind like t.kind and (obj_id = technical_device_id OR t.obj_id is null and d.anonymous_obj_tech)";
+        $adapter->query($sql);
 		
 		// vlozeni lhut do tabulky lhut
 		$sql = "insert into $nameDeads (client_id, subsidiary_id, `kind`, `specific`, type, period, last_done, next_date, note, responsible_external_name, technical_device_id, anonymous_obj_tech) ";
-		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id, ISNULL(obj_id) from tmp_emp_import";
+		$sql .= "select $clientId, $subsidiaryId, `kind`, `specific`, " . Deadline_Form_Deadline::TYPE_OTHER . ", period, last_done, DATE_ADD(last_done, interval period month), note, responsible_name, obj_id, ISNULL(obj_id) from tmp_emp_import WHERE deadline_id IS NULL";
 		
 		$adapter->query($sql);
         
         
+        // update existujicich lhut
+        $sql = "UPDATE tmp_emp_import AS t, $nameDeads AS d SET d.last_done = t.last_done, d.next_date = DATE_ADD(t.last_done, interval t.period month) where d.id = t.deadline_id";
+        $adapter->query($sql);
 	}
 	
 	public static function setSubsidiaries(Zend_Form $form, $clientId) {

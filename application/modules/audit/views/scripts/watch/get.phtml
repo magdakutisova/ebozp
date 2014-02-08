@@ -108,7 +108,7 @@ $user = Zend_Auth::getInstance()->getIdentity();
         if ($user->role != My_Role::ROLE_CLIENT) {
             echo "<form action='/audit/watch/protocol.pdf' target='_blank' method='get'>";
             echo $this->formHidden("watchId", $this->watch->id);
-            echo $this->formSubmit("protocol", "Stáhnout protokol");
+            echo $this->formSubmit("protocol", "Otevřít protokol");
             echo $this->formSubmit("send", "Odeslat protokol emailem", array("onclick" => "if (confirm('Skutečně odeslat protokol?')) $(this).parent().attr('action', '/audit/watch/send').attr('target', '_self'); else return false;"));
             echo "</form>";
         }

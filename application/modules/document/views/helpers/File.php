@@ -10,7 +10,7 @@ class Document_View_Helper_File extends Zend_View_Helper_Abstract {
 			$name = $this->fileName($file);
 			$target = "_self";
 		} else {
-			$name = "Stáhnout";
+			$name = "Otevřít";
 			$target = "_blank";
 		}
 		

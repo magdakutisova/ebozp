@@ -49,10 +49,8 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
         );
         
 	}
-	
-    public function postDispatch() {
-        parent::postDispatch();
-        
+    
+    public function save() {
         // pokud nejsou k dispozici zadne zpravy k ulozeni, nic se delat nebude
         if (!$this->_messages) return;
         
@@ -67,5 +65,13 @@ class My_Controller_Helper_DiaryRecord extends Zend_Controller_Action_Helper_Abs
         
         $sql .= implode(",", $records);
         $adapter->query($sql);
+        
+        $this->_messages = array();
+    }
+	
+    public function postDispatch() {
+        parent::postDispatch();
+        
+        $this->save();
     }
 }

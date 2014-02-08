@@ -116,11 +116,31 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 		
 		// nacteni seznamu zodpovednych osob
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
-		$contacts = $diary->findDependentRowset($tableContacts, "Subsidiary", $tableContacts->select(false)->order("name"));
+		$contacts = $diary->findDependentRowset($tableContacts, "Subsidiary", $tableContacts->select(false)->where("!is_deleted")->order("name"));
 		
 		$form->setContacts($contacts);
 		
 		$this->view->form = $form;
+	}
+	
+	public function deadlistHtmlAction() {
+		// nacteni dohlidky
+		$audit = $this->_audit;
+        
+		// selekce lhut, ktere jeste nejsou v dohlidce
+		$tableAssocs = new Audit_Model_AuditsDeadlines();
+		$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
+		$subSelect->from($tableAssocs->info("name"), "deadline_id")->where("audit_id = ?", $audit->id);
+		
+		// nacteni lhut
+		$tableDeadlines = new Deadline_Model_Deadlines();
+		$select = $tableDeadlines->_prepareSelect();
+		$select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("id not in (?)", new Zend_Db_Expr($subSelect));
+		
+		$data = $select->query()->fetchAll();
+		
+		$this->view->deadlines = $data;
+		$this->view->audit = $audit;
 	}
 	
     public function deleteAction() {
@@ -183,7 +203,7 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 		
 		// nastaveni kontaktnich osob
 		$tableContacts = new Application_Model_DbTable_ContactPerson();
-		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_audit->subsidiary_id), "name");
+		$contacts = $tableContacts->fetchAll(array("subsidiary_id = ?" => $this->_audit->subsidiary_id, "!is_deleted"), "name");
 		$form->setContacts($contacts);
 		
 		$form->populate(array("audit" => $this->_audit->toArray()));
@@ -810,7 +830,8 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
             }
             
             $this->_helper->diaryRecord->insertMessage($label, null, null, sprintf("<a href='%s'>%s</a>", $url, $link), $this->_audit->subsidiary_id);
-
+            $this->_helper->diaryRecord->save();
+            
 			$this->_helper->redirector->gotoUrlAndExit($url);
 			
 			return;

@@ -20,7 +20,7 @@ form#login table td { margin: 15px; padding: 10px 20px; }
 form#login table tbody tr:last-child td { text-align: center; }
 
 form#search { float: right; }
-#diary-messages { padding: 15px; }
+#diary-messages { padding: 15px; background-color: white; }
 
 h1 { color: red; font-size: 22pt; font-weight: bold; }
 .main-content { width: 950px; }
@@ -59,10 +59,11 @@ h1 { color: red; font-size: 22pt; font-weight: bold; }
 .subsidiary-list li { padding: 2px 5px; }
 .subsidiary-list li:nth-child(2n+1) { background-color: #e5ecf9;}
 
-.box, .floating-box { border-radius: 15px; border: 1px solid #000000; background-color: #e3ecf6; }
+.box, .floating-box, #send-message, #send-order { border-radius: 15px; border: 1px solid #000000; background-color: #e3ecf6; }
 .client-list, .client-list ul { list-style: none; font-size: 12pt; }
 .client-list>li>span { font-weight: bold; }
 
+#send-message, #send-order { border-radius: 0 0 15px 15px; }
 #informations { width: 912px;}
 
 .ui-tabs .ui-widget-header { background: none; border: none; }
@@ -72,6 +73,8 @@ h1 { color: red; font-size: 22pt; font-weight: bold; }
 .ui-tabs .ui-tabs-nav li { border-color: #000000; border-radius: 0; margin: 0; border-left: 0; }
 .ui-tabs .ui-tabs-nav li:first-child {border-left: 1px solid black; }
 .element textarea { width: 100%; height: 10em; }
+
+#communiction.ui-tabs .ui-tabs-active { background: #e3ecf6; }
 
 .overview tbody tr td:first-child { min-width: 20%; }
 

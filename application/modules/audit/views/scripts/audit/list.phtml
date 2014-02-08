@@ -57,6 +57,12 @@ if ($role != My_Role::ROLE_CLIENT) echo "<em>PT - potvrzeno technikem</em>";
 		
 		$href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), $route);
 		$action = "<a href='$href'>$caption</a>";
+        
+        if ($audit->is_closed) {
+            // pridani primeho linku na protokol
+            $href = $this->url(array("clientId" => $audit->client_id, "auditId" => $audit->id, "subsidiaryId" => $audit->subsidiary_id), "audit-report-get") . "?__autodownload__=1";
+            $action .= " | <a href='$href'>Otevřít protokol<a/>";
+        }
 		?>
 		<tr>
 			<td><?php echo $this->sqlDate($audit->done_at); ?></td>

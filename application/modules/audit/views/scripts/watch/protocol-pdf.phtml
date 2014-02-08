@@ -133,7 +133,7 @@ if (!$this->watch->also_audit) {
 		
 		$config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
 		$html .= $this->deadlineTable()->header($config);
-		$html .= implode("", $this->deadlineTable()->deadlines($this->deadlines, $config));
+		$html .= implode("", $this->deadlineTable()->deadlines($this->deadlinesClose, $config));
 		
         $html .= "</table>";
 	

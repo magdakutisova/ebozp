@@ -106,7 +106,7 @@ class EmployeeController extends Zend_Controller_Action{
 			
 			//vypisování zaměstnanců
 			$employeeDb = new Application_Model_DbTable_Employee();
-			$unassignedEmployees = $employeeDb->getUnassignedEmployees($this->_clientId);
+			$unassignedEmployees = $employeeDb->getUnassignedEmployees($this->_clientId, $subsidiaryId);
 			$this->view->unassignedEmployees = $unassignedEmployees;
 			$employees = $employeeDb->getBySubsidiaryAndPositions($subsidiaryId);
 			$this->view->employees = $employees;

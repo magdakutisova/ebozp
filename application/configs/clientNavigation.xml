@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
 	<nav>
+		<home>
+			<label>Domů</label>
+			<route>clientIndex</route>
+			<resource>client</resource>
+			<privilege>index</privilege>
+            <clientId>clientId</clientId>
+		</home>
 		<client>
-			<label>Pobočky</label>
+			<label>Seznam poboček</label>
 			<route>home</route>
 			<resource>index</resource>
 			<privilege>index</privilege>

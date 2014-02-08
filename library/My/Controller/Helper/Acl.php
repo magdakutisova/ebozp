@@ -144,7 +144,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($technician, "task", array("comment", "comment.html", "complete", "complete.html", "list", "list.html", "comment", "get", "get.html", "index"));
 		$this->allow($technician, "audit:farplan");
 		
-		$this->allow($coordinator, "deadline:deadline", array("import"));
+		$this->allow($coordinator, "deadline:deadline", array("import", "clear"));
 		$this->allow($coordinator, 'client', array('new', 'delete'));
 		$this->allow($coordinator, 'subsidiary', array('new', 'delete'));
 		$this->allow($coordinator, "audit:mistake", array("create", "post", "submit", "submit.json", "unsubmit", "unsubmit.json", "submits.json", "import"));

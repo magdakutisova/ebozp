@@ -74,7 +74,7 @@ class Audit_Model_WatchesDeadlines extends Zend_Db_Table_Abstract {
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		$select = $tableDeadlines->_prepareSelect();
 		
-		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = deadline_deadlines.id and dt.watch_id = " . $watch->id, array(
+		$select->joinInner(array("dt" => $this->_name), "dt.deadline_id = d.id and dt.watch_id = " . $watch->id, array(
             "is_done",
             "last_done" => new Zend_Db_Expr("IFNULL(done_at, last_done)"),
             "next_date" => new Zend_Db_Expr("IFNULL(ADDDATE(done_at, INTERVAL period MONTH), next_date)")

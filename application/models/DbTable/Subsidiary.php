@@ -154,14 +154,14 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		$headquarters['subsidiary'] = $this->getHeadquarters($clientId);
 		
 		$contactPersons = $this->select()->from('subsidiary')
-			->joinLeft('contact_person', 'subsidiary.id_subsidiary = contact_person.subsidiary_id')
+			->joinLeft('contact_person', 'subsidiary.id_subsidiary = contact_person.subsidiary_id and !contact_person.is_deleted')
 			->where('subsidiary.client_id = ?', $clientId)
 			->where('subsidiary.hq = 1');
 		$contactPersons->setIntegrityCheck(false);
 		$contactPersonsResult = $this->fetchAll($contactPersons);
 		
 		$doctors = $this->select()->from('subsidiary')
-			->joinLeft('doctor', 'subsidiary.id_subsidiary = doctor.subsidiary_id')
+			->joinLeft('doctor', 'subsidiary.id_subsidiary = doctor.subsidiary_id and !doctor.is_deleted')
 			->where('subsidiary.client_id = ?', $clientId)
 			->where('subsidiary.hq = 1');
 		$doctors->setIntegrityCheck(false);
@@ -198,12 +198,12 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		$subsidiary['subsidiary'] = $this->getSubsidiary($subsidiaryId);
 	
 		$contactPersons = $this->select()->from('contact_person')
-			->where('subsidiary_id = ?', $subsidiaryId);
+			->where('!is_deleted and subsidiary_id = ?', $subsidiaryId);
 		$contactPersons->setIntegrityCheck(false);
 		$contactPersonsResult = $this->fetchAll($contactPersons);
 	
 		$doctors = $this->select()->from('doctor')
-			->where('subsidiary_id = ?', $subsidiaryId);
+			->where('!is_deleted and subsidiary_id = ?', $subsidiaryId);
 		$doctors->setIntegrityCheck(false);
 		$doctorsResult = $this->fetchAll($doctors);
 	

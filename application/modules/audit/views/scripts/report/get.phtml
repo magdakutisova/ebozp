@@ -25,7 +25,7 @@ $opts = array(
 printf("<h2>%s</h2>", $common["name"]);
 
 $url = $this->url(array("auditId" => $this->audit->id, "clientId" => $this->audit->client_id, "subsidiaryId" => $this->audit->subsidiary_id), "audit-report-download");
-echo "<div class='box' align='center'><form style='float: left;' action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Stáhnout ve formátu PDF'></form>";
+echo "<div class='box' align='center'><form style='float: left;' action='$url' method='post' target='_blank' id='download-form'><input type='submit' value='Otevřít ve formátu PDF'></form>";
 
 if (Zend_Auth::getInstance()->getIdentity()->role != My_Role::ROLE_CLIENT) {
     $url2 = sprintf("/audit/report/send?auditId=%s", $audit->id);

@@ -35,10 +35,30 @@ if ($acl->isAllowed($user->role, "deadline:deadline", "import")) {
 <fieldset>
     <legend>Import lhůt</legend>
     <div>
-        <?php echo $this->formButton("display-import-dead", "Zobrazit/skrát import lhůt", array("onclick" => "$('#deadline-impdiv').toggle()")); ?>
+        <?php echo $this->formButton("display-import-dead", "Zobrazit/skrýt import lhůt", array("onclick" => "$('#deadline-impdiv').toggle()")); ?>
     </div>
     <div id="deadline-impdiv" style="display: none; ">
         <?php echo $this->importForm; ?>
+    </div>
+</fieldset>
+<?php
+}
+
+if ($acl->isAllowed($user->role, "deadline:deadline", "clear")) {
+    ?>
+<fieldset>
+    <legend>Smazání lhůt</legend>
+    <div>
+        <?php echo $this->formButton("display-import-dead", "Zobrazit/skrýt vyčištení lhůt", array("onclick" => "$('#deadline-clear').toggle()")); ?>
+    </div>
+    <div id="deadline-clear" style="display: none; ">
+        <form action="/deadline/deadline/clear" method="post" onsubmit="return confirm('Skutečně chcete vymazat lhůty? Tato akce nelze vrátit zpět!')">
+            <div>
+            <?php 
+            echo $this->formSubmit("clear-submit", "Smazat lhůty");
+            echo $this->formHidden("subsidiaryId", $this->subsidiary->id_subsidiary);
+            ?></div>
+        </form>
     </div>
 </fieldset>
 <?php

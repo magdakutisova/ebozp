@@ -32,6 +32,14 @@ $(function () {
 			form.append($("<input type='hidden' name='chart[]' />").val(imgSrc));
 		});
 	}
+    
+    function downloadProtocol() {
+        $("#loader").remove();
+        var form = $("#download-form");
+        form.attr("target", "_self");
+        form.submit();
+        form.attr("target", "_blank");
+    }
 	
 	// razeni polozek seznamu prubehu
 	$("#progres-items").sortable({ axis : "y" });
@@ -85,4 +93,11 @@ $(function () {
 		
 		$.jqplot("chart-" + index, vals, opts);
 	});
+    /*
+    if (location.href.indexOf("__autodownload__=1") !== -1) {
+        var wrapper = $("<div id='loader' style='left: 0; top: 0; width: 100%; height: 100%; position: absolute; background: fixed rgba(0, 0, 0, 0.1);'>").appendTo("body");
+        
+        $("<div style='position: absolute; left: 40%; top: 45%; width: 20%; height: 10%; background: #ffffff url(/images/loader.gif) center no-repeat; border: 1px solid #acacac; padding: 5px; margin: 5px; text-align: center'>").text("Chvíli strpení prosím").appendTo(wrapper)
+        window.setTimeout(downloadProtocol, 1500);
+    }*/
 });

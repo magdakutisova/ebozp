@@ -193,7 +193,7 @@ $(function () {
 		var url = "/deadline/deadline/edit?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
-		$.iframeDialog(url, 800, 400, "Úprava lhůty");
+		$.iframeDialog(url, 800, 400, "Úprava lhůty", "refresh");
 	}
 	
 	function openGet() {

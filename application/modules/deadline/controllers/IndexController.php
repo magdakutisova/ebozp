@@ -277,7 +277,8 @@ class Deadline_IndexController extends Zend_Controller_Action {
                     ->where("!anonymous_obj_chem")
                     ->where("!anonymous_obj_emp");
                 
-				$select->columns(array("name" => new Zend_Db_Expr("")));
+				$select->columns(array("name" => new Zend_Db_Expr("''")));
+                
 				break;
             
             case Deadline_Form_Deadline::TARGET_ALL:

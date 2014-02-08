@@ -64,7 +64,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	public function findById($deadlineId, $extended= true) {
 		if ($extended) {
 			$select = $this->_prepareSelect();
-			$select->where("$this->_name.id = ?", $deadlineId);
+			$select->where("d.id = ?", $deadlineId);
 			
 			return new $this->_rowClass(array("data" => $select->query()->fetch(), "table" => $this));
 		} else {
@@ -82,14 +82,13 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 	public function findInvalids($clientId, $subsidiaryId = null) {
 		// vytvoreni selektu
 		$select = $this->_prepareSelect();
-		$thisName = $this->_name;
-		$select->where("$thisName.client_id = ?", $clientId);
+		$select->where("d.client_id = ?", $clientId);
         
 		if (!is_null($subsidiaryId)) {
-			$select->where("$thisName.subsidiary_id = ?", $subsidiaryId);
+			$select->where("d.subsidiary_id = ?", $subsidiaryId);
 		}
 		
-		$select->where("$thisName.next_date < ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)");
+		$select->where("d.next_date < ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)");
 		$data = $select->query()->fetchAll();
 		
 		return new Deadline_Model_Rowset_Deadlines(array("data" => $data, "table" => $this, "rowClass" => $this->_rowClass));
@@ -115,8 +114,8 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
 		
 		// zakladni select
-		$select->from($name, array(
-				new Zend_Db_Expr("$name.*"),
+		$select->from(array("d" => $name), array(
+				new Zend_Db_Expr("d.*"),
 				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() < next_date"),
 				"invalid_close" => new Zend_Db_Expr("ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH) > next_date"),
 				"responsible_name" => new Zend_Db_Expr("TRIM(CONCAT(IFNULL(respemp.first_name, ''), ' ', IFNULL(respemp.surname, ''), IFNULL(user.name, ''), IFNULL(responsible_external_name, '')))"),
@@ -135,7 +134,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
         // reference na pobocku
         $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
         $nameSubsidiaries = $tableSubsidiaries->info("name");
-        $select->joinInner($nameSubsidiaries, "id_subsidiary = subsidiary_id", array("subsidiary_street", "subsidiary_name", "subsidiary_town"));
+        $select->joinInner($nameSubsidiaries, "id_subsidiary = d.subsidiary_id", array("subsidiary_street", "subsidiary_name", "subsidiary_town"));
         
 		// pripojeni reference na zamestnance
 		$select->joinLeft($nameEmployees, "$nameEmployees.id_employee = employee_id", array("employee_name" => new Zend_Db_Expr("$nameEmployees.first_name, ' ', $nameEmployees.surname")));

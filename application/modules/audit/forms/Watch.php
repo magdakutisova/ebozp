@@ -126,7 +126,7 @@ class Audit_Form_Watch extends Zend_Form {
 		));
         
         $this->addElement("checkbox", "display_deadlines_close", array(
-				"label" => "Propadlé hůlty v protokolu",
+				"label" => "Lhůty před propadnutím v protokolu",
 				"decorators" => $elementDecorator
 		));
 		
