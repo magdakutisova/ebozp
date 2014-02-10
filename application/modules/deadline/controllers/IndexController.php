@@ -257,7 +257,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 			case Deadline_Form_Deadline::TARGET_DEVICE:
 				$select->where("(technical_device_id IS NOT NULL OR anonymous_obj_tech)");
 		
-				$select->joinLeft($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), ' (', IFNULL($nameDevices.`type`, '') , ')')")));
+				$select->joinLeft($nameDevices, "technical_device_id = id_technical_device", array("name" => new Zend_Db_Expr("CONCAT(IFNULL(`sort`, ''), IFNULL(CONCAT(' (', $nameDevices.`type`, ')'), ''))")));
 				break;
 		
 			case Deadline_Form_Deadline::TARGET_EMPLOYEE:
