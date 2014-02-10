@@ -1,0 +1,29 @@
+<?php
+$client = $this->client;
+?>
+<h1>Plánování</h1>
+<h2><?php echo $client->company_name, ", ", $client->headquarters_town, ", ", $client->headquarters_street; ?></h2>
+<table>
+    <thead>
+        <tr>
+            <th colspan="4">Pobočka</th>
+        </tr>
+        <tr>
+            <th>Provedené dohlídky</th>
+            <th>Naplánované dohlídky</th>
+            <th>Počet dohlídek</th>
+            <th>Prověrka</th>
+        </tr>
+    </thead>
+<?php
+foreach ($this->progress as $item) {
+    ?>
+    <tbody>
+        <tr>
+            <td><?php printf("%s, %s, %s", $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street); ?></td>
+        </tr>
+    </tbody>
+    <?php
+}
+?>
+</table>

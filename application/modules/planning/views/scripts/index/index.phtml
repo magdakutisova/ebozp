@@ -1,0 +1,25 @@
+<h1>Průběh dohlídek a prověrek</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Jméno klienta</th>
+            <th>Dohlídky</th>
+            <th>Prověrky</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        foreach ($this->progress as $item) {
+            $url = $this->url(array("clientId" => $item->id_client), "planning-client");
+            $caption = sprintf("<a href='%s'>%s</a>", $url, $item->company_name . " - " . $item->headquarters_town);
+            ?>
+        <tr>
+            <td><?php echo $caption; ?></td>
+            <td><?php printf("%d z %d", $item->watches_done, $item->watches_count); ?></td>
+            <td><?php printf("%d z %d", $item->audits_done, $item->audits_count); ?></td>
+        </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>

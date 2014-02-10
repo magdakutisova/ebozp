@@ -8,6 +8,34 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
 		'columns' => 'client_id',
 		'refTableClass' => 'Application_Model_DbTable_Client',
 		'refColumns' => 'id_client' ) );
+    
+    /**
+     * vyhleda informace o prubehu dohlidek u konkretniho klienta
+     * 
+     * @param type $clientId
+     * @return Zend_Db_Table_Rowset_Abstract
+     */
+    public function getProgress($clientId) {
+        // vygenerovani subselectu
+        $tableAudits = new Audit_Model_Audits();
+        $aSelect = $tableAudits->createCountSelect();
+        
+        $tableWatches = new Audit_Model_Watches();
+        $wSelect = $tableWatches->createCountSelect();
+        
+        $select = new Zend_Db_Select($this->getAdapter());
+        $select->from(array("s" => $this->_name), array(
+            "s.*",
+            "audits_count" => new Zend_Db_Expr("COUNT(s.id_subsidiary)"),
+            "audits_done" => new Zend_Db_Expr("(" . $aSelect->assemble() . ")"),
+            "watches_count" => new Zend_Db_Expr("SUM(s.supervision_frequency)"),
+            "watches_done" => new Zend_Db_Expr("(" . $wSelect->assemble() . ")")
+        ));
+        
+        $select->where("client_id = ?", $clientId)->group("id_subsidiary");
+        
+        return new Zend_Db_Table_Rowset(array("data" => $select->query()->fetchAll(), "stored" => true, "table" => $this));
+    }
 	
 	public function getSubsidiary($id, $every = false) {
 		$id = ( int ) $id;

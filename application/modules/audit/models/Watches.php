@@ -37,6 +37,22 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
 	
 	protected $_rowsetClass = "Audit_Model_Rowset_Watches";
 	
+    /**
+     * vytvori Select objekt pro vyhledani poctu dohlidek tento rok
+     * 
+     * @return \Zend_Db_Select
+     */
+    public function createCountSelect() {
+        $wSelect = new Zend_Db_Select($this->getAdapter());
+        
+        $wSelect->from(array("w" => $this->_name), array(new Zend_Db_Expr("COUNT(id)")))
+                ->where("w.subsidiary_id = s.id_subsidiary")
+                ->where("watched_at >= MAKEDATE(YEAR(CURRENT_DATE), 1)")
+                ->where("is_closed");
+        
+        return $wSelect;
+    }
+    
 	/**
 	 * nacte dohlidku dle id
 	 * @param int $id id dohldiky

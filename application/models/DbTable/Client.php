@@ -200,6 +200,46 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
 		$companyName = $this->fetchAll ( $this->select ()->from ( 'client' )->columns ( 'company_name' )->where ( 'id_client = ?', $clientId ) );
 		return $companyName->current ()->company_name;
 	}
+    
+    /**
+     * vraci prubeh auditu a dohlidek u klienta
+     */
+    public function getProgress(array $clientIds = null) {
+        // pripojeni tabulky s dohlidkami
+        $tableWatches = new Audit_Model_Watches();
+        $wSelect = $tableWatches->createCountSelect();
+        
+        // propojeni s audity/proverkami
+        $tableAudits = new Audit_Model_Audits();
+        $aSelect = $tableAudits->createCountSelect();
+        
+        // zakladni select
+        $select = new Zend_Db_Select($this->getAdapter());
+        $select->from(array("c" => $this->_name), array(
+            "c.*",
+            "audits_count" => new Zend_Db_Expr("COUNT(s.id_subsidiary)"),
+            "audits_done" => new Zend_Db_Expr("(" . $aSelect->assemble() . ")"),
+            "watches_count" => new Zend_Db_Expr("SUM(s.supervision_frequency)"),
+            "watches_done" => new Zend_Db_Expr("(" . $wSelect->assemble() . ")")
+        ));
+        
+        $select->group("c.id_client")->order(array("company_name", "headquarters_town"));
+        
+        // kontrola zuzeneho vyberu klientu
+        if (!is_null($clientIds)) {
+            $select->where("c.id_client in (?)", $clientIds);
+        }
+        
+        // pripojeni na pobocky
+        $tableSubs = new Application_Model_DbTable_Subsidiary();
+        $nameSubs = $tableSubs->info("name");
+        
+        $select->joinLeft(array("s" => $nameSubs), "s.client_id = c.id_client", array());
+        
+        $data = $select->query()->fetchAll();
+        
+        return new Zend_Db_Table_Rowset(array("data" => $data, "table" => $this, "stored" => true));
+    }
 	
 	public function openClient($clientId) {
 		$this->getClient($clientId);
