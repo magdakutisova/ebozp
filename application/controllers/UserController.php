@@ -26,15 +26,52 @@ class UserController extends Zend_Controller_Action
     	
     	if (!$user) throw new Zend_Db_Table_Exception("User not found");
     	
+        // pripojeni k elearningovemu serveru
+        $config = Zend_Controller_Front::getInstance()->getParam("bootstrap")->getApplication()->getOption("elearning");
+        $adapter = Zend_Db::factory($config["db"]["adapter"], $config["db"]["params"]);
+        
     	if (strtolower($this->_request->getMethod()) == "post") {
     		// kontrola validity
-    		if ($form->isValid($this->_request->getParams())) {
-    			// zapis dat
-    			$user->setFromArray($form->getValues(true));
-    			$user->save();
-    		}
+            try {
+                if ($form->isValid($this->_request->getParams())) {
+                    // nacteni dat
+                    $data = $form->getValues(true);
+
+                    // pokud je vyplneno prihlasovaci jmeno, kontrola existence v elearningu
+                    if ($data["elearning_user_login"]) {
+                        // nacteni radku
+                        $sql = sprintf("SELECT id FROM %s WHERE login like %s", $adapter->quoteIdentifier("users"), $adapter->quote($data["elearning_user_login"]));
+                        $userRow = $adapter->query($sql)->fetch();
+
+                        if (!$userRow) {
+                            $form->getElement("elearning_user_login")->setErrors(array("Uživatel " . $data["elearning_user_login"] . " nebyl nalezen"));
+                            throw new Zend_Db_Table_Row_Exception("User not found");
+                        }
+                        
+                        $data["elearning_user_id"] = $userRow["id"];
+                    }
+
+                    // zapis dat
+                    $user->setFromArray($data);
+                    $user->save();
+                }
+            } catch (Exception $e) {
+                
+            }
     	} else {
-    		$form->populate($user->toArray());
+            // separace dat a pripadne nacteni jmena uzivatele
+            $data = $user->toArray();
+            
+            if ($data["elearning_user_id"]) {
+                $sql = sprintf("select * from %s where id = %s", $adapter->quoteIdentifier("users"), $adapter->quote($data["elearning_user_id"]));
+                $userRow = $adapter->query($sql)->fetch();
+                
+                if ($userRow) {
+                    $data["elearning_user_login"] = $userRow["login"];
+                }
+            }
+            
+    		$form->populate($data);
     	}
     	
     	$this->view->form = $form;

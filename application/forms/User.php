@@ -22,6 +22,16 @@ class Application_Form_User extends Application_Form_Register {
 				"decorators" => $elementDecorator,
 				"order" => 2
 				));
+        
+        $this->addElement("text", "elearning_user_login", array(
+            "label" => "Přihlašovací jméno do elearningu",
+            "required" => false,
+            "decorators" => $elementDecorator,
+            "order" => 3,
+            "filters" => array(
+                new Zend_Filter_Null()
+            )
+        ));
 		
 		$this->getElement("create")->setLabel("Uložit");
 	}
