@@ -25,8 +25,29 @@ class Planning_IndexController extends Zend_Controller_Action {
         $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
         $progress = $tableSubsidiaries->getProgress($this->_request->getParam("clientId"));
         
+        // nacteni jmenoviteho seznamu dohlidek a indexace dle id pobocky
+        $tableWatches = new Audit_Model_Watches();
+        $watches = $tableWatches->fetchAll(array(
+            "client_id = ?" => $client->id_client,
+            "watched_at > MAKEDATE(YEAR(NOW()), 1)",
+            "is_closed"
+        ), array("subsidiary_id", "watched_at"));
+        
+        $watchIndex = array();
+        $lastId = 0;
+        
+        foreach ($watches as $item) {
+            if ($lastId != $item->subsidiary_id) {
+                $lastId = $item->subsidiary_id;
+                $watchIndex[$lastId] = array();
+            }
+            
+            $watchIndex[$lastId][] = $item;
+        }
+        
         $this->view->client = $client;
         $this->view->progress = $progress;
+        $this->view->watchIndex = $watchIndex;
     }
     
     public function indexAction() {

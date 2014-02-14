@@ -3,7 +3,7 @@ $client = $this->client;
 ?>
 <h1>Plánování</h1>
 <h2><?php echo $client->company_name, ", ", $client->headquarters_town, ", ", $client->headquarters_street; ?></h2>
-<table>
+<table class="multirow-table">
     <thead>
         <tr>
             <th colspan="4">Pobočka</th>
@@ -20,7 +20,26 @@ foreach ($this->progress as $item) {
     ?>
     <tbody>
         <tr>
-            <td><?php printf("%s, %s, %s", $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street); ?></td>
+            <td colspan="4"><?php printf("%s, %s, %s", $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street); ?></td>
+        </tr>
+        <tr>
+            <td>
+                <ol>
+                    <?php
+                    if (isset($this->watchIndex[$item->id_subsidiary])) {
+                        foreach ($this->watchIndex[$item->id_subsidiary] as $watch) {
+                            // vygenerovani URL
+                            $url = $this->url(array("clientId" => $watch->client_id, "subsidiaryId" => $watch->subsidiary_id, "watchId" => $watch->id), "audit-watch-get");
+
+                            printf("<li><a href='%s'>%s</a></li>", $url, $watch->watched_at);
+                        }
+                    }
+                    ?>
+                </ol>
+            </td>
+            <td>Zatím neimplementováno</td>
+            <td><?php echo $item->watches_done, "/", $item->watches_count; ?></td>
+            <td><?php echo $item->audits_done ? "Ano" : "Ne"; ?></td>
         </tr>
     </tbody>
     <?php
