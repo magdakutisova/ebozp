@@ -41,11 +41,6 @@ $helper = $this->tableLayout();
 	</tbody>
 </table>
 <?php 
-// zobrazeni historie
-if ($this->logs->count()) {
-	echo $this->partial("deadline/_logs.phtml", $this);
-}
-
 // pokud neni zodpovedna osoba G7, zobrazi se formular pro odeslani
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
