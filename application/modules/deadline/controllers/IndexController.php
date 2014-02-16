@@ -29,7 +29,8 @@ class Deadline_IndexController extends Zend_Controller_Action {
         }
         
 		$deadlines = self::filterDeadlines(Deadline_Form_Deadline::TARGET_ALL, $filter, $filterForm);
-	
+        
+        $this->view->subsidiaryRow = $filterForm->getValue("subsidiary_id") ? false : true;
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		$this->_prepareFilterForm($deadlines, $filterForm);

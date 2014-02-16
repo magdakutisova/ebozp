@@ -675,6 +675,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->view->client = $client;
         $this->view->subsidiary = $subsidiary;
         $this->view->subsidiaries = $subsidiaries;
+        $this->view->subsidiaryRow = $filterArr["subsidiary_id"] ? false : true;
 	}
 	
 	public function indexJsonAction() {

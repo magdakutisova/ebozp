@@ -96,7 +96,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 						$classes[] = "mistake-marked";
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
+					echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "subsidiaryRow" => false));
 				}
 				?>
 			</table>
@@ -119,7 +119,7 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 						$classes[] = "mistake-marked";
 					}
 					
-					echo $this->mistakeTable()->mistake($mistake, $actions, $classes);
+					echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "subsidiaryRow" => false));
 				}
 				?>
 			</table>
@@ -133,7 +133,8 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 							"caption" => "Zobrazit",
 							"type" => "button"
 					)
-			)
+			),
+        "subsidiaryRow" => false
 	);
 	
 	echo $this->deadlineTable($this->deadlines, $options); 

@@ -49,6 +49,8 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 			default:
 				$type = "Jiná";
 		}
+        
+        $rowspan = $config["subsidiaryRow"] ? 3 : 2;
 		
 		// vygenerovani prvniho radku
 		$buttons = $this->_generateButtons($deadline, $config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
@@ -68,7 +70,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
         }
 		
 		$row = array(
-				$this->wrap("td", $name . $this->_hidden("name", $name), array("rowspan" => 2)),
+				$this->wrap("td", $name . $this->_hidden("name", $name), array("rowspan" => $rowspan)),
 				$this->wrap("td", $deadline["kind"]. $this->_hidden("kind", $deadline["kind"])),
 				$this->wrap("td", $deadline["specific"] . $this->_hidden("specific", $deadline["specific"])),
 				$this->wrap("td", $type . $this->_hidden("type", $type)),
@@ -76,7 +78,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		);
 		
 		if (!$config["noAction"]) {
-			$row[] = $this->wrap("td", $buttons, array("rowspan" => 3));
+			$row[] = $this->wrap("td", $buttons, array("rowspan" => $rowspan));
 		}
 		
 		$rowStr1 = $this->wrap("tr", implode("", $row));

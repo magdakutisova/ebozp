@@ -134,7 +134,7 @@ if (!$this->watch->also_audit) {
 			<table class="multirow-table" id="mistakes">
 			<?php 
 			echo $this->mistakeTable()->header();
-			$params = array("selector" => true, "actions" => array("edit" => "Upravit", "get" => "Zobrazit"));
+			$params = array("selector" => true, "actions" => array("edit" => "Upravit", "get" => "Zobrazit"), "subsidiaryRow" => false);
 			
 			foreach ($this->mistakes as $mistake) {
 				// vyhodnoceni, zda je neshoda kriticka
@@ -178,7 +178,8 @@ if (!$this->watch->also_audit) {
 								"caption" => "Vybrat",
 								"type" => "checkbox"
 								)
-						)
+						),
+            "subsidiaryRow" => false
 				);
 		
 		$options["form"] = array(

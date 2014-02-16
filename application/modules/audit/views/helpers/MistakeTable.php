@@ -107,7 +107,7 @@ class Zend_View_Helper_MistakeTable extends Zend_View_Helper_Abstract {
 				$this->_wrapToTd($mistake->subcategory, "subcategory"),
 				$this->_wrapToTd($mistake->concretisation),
 				$this->_wrapToTd($workplaceName),
-				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => 3, "width" => "50px"))
+				$this->_wrapToTag($button . $semaphore, "td", array("rowspan" => $config["subsidiaryRow"] ? 3 : 2, "width" => "50px"))
 		);
 		
 		$row1 = $this->_wrapToTag(implode("", $columns), "tr", array());

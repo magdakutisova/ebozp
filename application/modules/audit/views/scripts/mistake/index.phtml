@@ -39,13 +39,7 @@ foreach ($this->mistakes as $mistake) {
 		$classes[] = "mistake-marked";
 	}
 	
-    if (!is_null($this->subsidiary) && !$this->subsidiary->hq) {
-        $subsidiaryRow = false;
-    } else {
-        $subsidiaryRow = true;
-    }
-    
-	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true, "subsidiaryRow" => $subsidiaryRow));
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true, "subsidiaryRow" => $this->subsidiaryRow));
 }
 ?>
 </table>

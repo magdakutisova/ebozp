@@ -334,7 +334,7 @@ $audit = $this->audit;
 	<fieldset>
 		<legend id="deadlines">Lhůty</legend>
 		<?php 
-		echo $this->deadlineTable($this->deadlines, array("noAction" => true));
+		echo $this->deadlineTable($this->deadlines, array("noAction" => true, "subsidiaryRow" => false));
 		?>
 	</fieldset>
     <?php } ?>
