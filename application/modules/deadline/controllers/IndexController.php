@@ -364,7 +364,9 @@ class Deadline_IndexController extends Zend_Controller_Action {
         // naplneni filtracniho formulare pobockami
         $user = Zend_Auth::getInstance()->getIdentity();
         $where = array(
-            "client_id = ?" => $this->_request->getParam("clientId", 0)
+            "client_id = ?" => $this->_request->getParam("clientId", 0),
+            "active",
+            "!deleted"
         );
         
         if ($user->role != My_Role::ROLE_ADMIN) {

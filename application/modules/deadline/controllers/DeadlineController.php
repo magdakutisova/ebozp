@@ -446,7 +446,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
                 
 				$users = $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
                 
-                $users[] = (object) array("id_user" => "0", "username" => "--NEZNÁMÝ--");
+                $users = (array((object) array("id_user" => "0", "username" => "--NEZNÁMÝ--"))) + $users;
                 
 			} else {
 				// nacteni zamestnancu
