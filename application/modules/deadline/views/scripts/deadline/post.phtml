@@ -1,23 +1,4 @@
 <?php
-$row = $this->row;
 $redirector = new Zend_Controller_Action_Helper_Redirector();
 
-// vyhodnoceni na kterou routu se bude smerovat
-$params = array("clientId" => $row->client_id, "subsidiaryId" => $row->subsidiary_id);
-
-if (!is_null($row->employee_id)) {
-	// lhuta se tyka zamestance - prehled lhut zamestnancu
-	$url = $this->url($params, "deadline-employees");
-} elseif (!is_null($row->chemical_id)) {
-	// lhuta se tyka chemicke latky - prehled lhut chem. latek
-	$url = $this->url($params, "deadline-chemicals");
-} elseif (!is_null($row->technical_device_id)) {
-	// lhuta se tyka zarizeni - prehled lhut zarizeni
-	$url = $this->url($params, "deadline-devices");
-} else {
-	
-	// lhuta se tyka neceho uplne jineho
-	$url = $this->url($params, "deadline-others");
-}
-
-$redirector->gotoUrlAndExit($url);
+$redirector->gotoUrlAndExit($_SERVER["HTTP_REFERER"]);

@@ -200,14 +200,6 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		
 		self::checkDeadlineDate($row);
         
-        // zapis do denniku
-        if ($row->employee_id || $row->anonymous_obj_emp) {
-            $route = "deadline-employees";
-        } elseif ($row->employee_id || $row->anonymous_obj_emp) {
-            $route = "deadline-devices";
-        } else {
-            $route = "deadline-others";
-        }
         $this->_helper->diaryRecord->insertMessage("přidal novou lhůtu", array("subsidiaryId" => $row->subsidiary_id, "clientId" => $row->client_id), $route, $ext->name ? $ext->name : "Jiná lhůta", $row->subsidiary_id);
 		
 		$this->view->row = $row;
