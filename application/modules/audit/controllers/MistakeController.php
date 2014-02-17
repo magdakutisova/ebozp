@@ -316,6 +316,11 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$form->setFilledCategory($mistake->category, $mistake->subcategory);
 		$form->populate(array("mistake" => $data));
 		$form->getElement("submit")->setLabel("Uložit");
+        
+        // vyhodnoceni, zda se ma skryt tlacitko "odstraneno"
+        if ($this->_request->getParam("__hideRemoved", 0)) {
+            $form->removeElement("is_removed");
+        }
 		
 		// vyhodnoceni auditu a parametru pro url
 		if ($this->_audit) {

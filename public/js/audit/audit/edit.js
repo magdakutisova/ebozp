@@ -22,7 +22,7 @@ $(function () {
 		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
 		
 		// sestaveni routy
-		var url = "/klient/" + clientId + "/audit/" + auditId + "/mistake/" + mistakeId + "/html";
+		var url = "/klient/" + clientId + "/audit/" + auditId + "/mistake/" + mistakeId + "/html?__hideRemoved=1";
 		
 		$.iframeDialog(url, 730, 400, "Neshoda", "refresh");
 	}

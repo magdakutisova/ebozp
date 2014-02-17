@@ -64,7 +64,7 @@ $(function() {
 	function openMistake() {
 		// nacteni id lhuty a sestaveni adresy
 		var mistakeId = $(this).parent().find(":hidden[name='mistakeId']").val();
-		var url = "/audit/mistake/" + $(this).attr("name") + ".html?clientId=" + clientId + "&mistakeId=" + mistakeId;
+		var url = "/audit/mistake/" + $(this).attr("name") + ".html?__hideRemoved=1&clientId=" + clientId + "&mistakeId=" + mistakeId;
 		
 		// otevreni iframe dialogu s editaci lhuty
 		$.iframeDialog(url, 800, 400, "Neshoda", "refresh");
