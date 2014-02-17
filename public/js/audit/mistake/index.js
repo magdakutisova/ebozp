@@ -36,7 +36,7 @@ $(function() {
 		else
 			url = "/klient/" + CLIENTID + "/mistake/" + mistakeId + "/edit-alone/html";
 
-		$.iframeDialog(url, 745, 500, "Neshoda");
+		$.iframeDialog(url, 745, 500, "Neshoda", "refresh");
 	}
 
 	function toggleFilter() {

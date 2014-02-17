@@ -347,7 +347,11 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		);
 
 		// nacteni podobnych neshod
-		$similars = $this->_loadSimilarMistakes($mistake);
+        if ($this->_audit) {
+            $similars = $this->_loadSimilarMistakes($mistake);
+        } else {
+            $similars = false;
+        }
 
 		// formular mazani
 		$formDelete = new Audit_Form_MistakeDelete();
