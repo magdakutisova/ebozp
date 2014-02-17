@@ -116,7 +116,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 		// zakladni select
 		$select->from(array("d" => $name), array(
 				new Zend_Db_Expr("d.*"),
-				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() < next_date"),
+				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() <= next_date"),
 				"invalid_close" => new Zend_Db_Expr("ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH) > next_date"),
 				"responsible_name" => new Zend_Db_Expr("TRIM(CONCAT(IFNULL(respemp.first_name, ''), ' ', IFNULL(respemp.surname, ''), IFNULL(user.name, ''), IFNULL(responsible_external_name, '')))"),
 				"name" => new Zend_Db_Expr("CONCAT(IFNULL($empName, ''), IFNULL($chemName, ''), IFNULL($devName, ''))")

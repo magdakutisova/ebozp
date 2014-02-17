@@ -218,7 +218,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$select->from($nameDead, array(
 				new Zend_Db_Expr("$nameDead.*"),
-				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() < next_date"),
+				"is_valid" => new Zend_Db_Expr("CURRENT_DATE() <= next_date"),
 				"responsible_name" => new Zend_Db_Expr("TRIM(CONCAT(IFNULL(respemp.first_name, ''), ' ', IFNULL(respemp.surname, ''), IFNULL(user.name, ''), IFNULL(responsible_external_name, '')))"),
 				"invalid_close" => new Zend_Db_Expr("ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH) > next_date"),
 		));
