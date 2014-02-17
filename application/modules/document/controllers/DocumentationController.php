@@ -404,9 +404,10 @@ class Document_DocumentationController extends Zend_Controller_Action {
                     array(
                         "clientId" => $doc->client_id,
                         "subsidiaryId" => $curSubId,
+                        "fileId" => $doc->file_id,
                         self::REQ_PARAM => $this->_type
                     ),
-                    "document-documentation-index",
+                    "document-version-download",
                     $doc->name,
                     $curSubId
                     );
