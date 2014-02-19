@@ -234,7 +234,7 @@ class Application_Model_DbTable_Client extends Zend_Db_Table_Abstract {
         $tableSubs = new Application_Model_DbTable_Subsidiary();
         $nameSubs = $tableSubs->info("name");
         
-        $select->joinLeft(array("s" => $nameSubs), "s.client_id = c.id_client", array());
+        $select->joinLeft(array("s" => $nameSubs), "s.client_id = c.id_client and s.active and !s.deleted", array());
         
         $data = $select->query()->fetchAll();
         

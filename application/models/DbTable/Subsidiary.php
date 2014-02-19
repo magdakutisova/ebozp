@@ -32,7 +32,7 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
             "watches_done" => new Zend_Db_Expr("(" . $wSelect->assemble() . ")")
         ));
         
-        $select->where("client_id = ?", $clientId)->group("id_subsidiary");
+        $select->where("client_id = ?", $clientId)->group("id_subsidiary")->where("s.active")->where("!s.deleted");
         
         return new Zend_Db_Table_Rowset(array("data" => $select->query()->fetchAll(), "stored" => true, "table" => $this));
     }
