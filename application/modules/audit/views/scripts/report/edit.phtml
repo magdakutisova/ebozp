@@ -14,6 +14,7 @@ echo "<form action='$url' method='post' target='_blank' id='download-form'><inpu
 <?php 
 $opts = array(
 		"deadlines" => $this->deadlines,
+    "deadlinesClose" => $this->deadlinesClose,
 		"common" => $this->report->toArray(),
 		
 		"forms" => array(

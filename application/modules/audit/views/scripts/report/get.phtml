@@ -296,41 +296,143 @@ if ($common["sub_hq"] != $common["org_hq"]) {
             <?php 
         }
     }
-    ?>
-    <h2>Ostatní neshody</h2>
-    <?php 
-    if (empty($this->mistakes["others"])) {
-        echo "<em>Nejsou žádné další neshody";
-    } else {
-    ?>
-    <table>
-        <thead>
-            <tr>
-                <th>Závažnost</th>
-                <th>Neshoda</th>
-                <th>Navrhované opatření</th>
-                <th>Komentář</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            foreach ($this->mistakes["others"] as $mistake) {
-                ?>
-                <tr>
-                    <td><?php echo $mistake["weight"]; ?></td>
-                    <td class="pre"><?php echo $mistake["mistake"]; ?></td>
-                    <td class="pre"><?php echo $mistake["suggestion"]; ?></td>
-                    <td class="pre"><?php echo $mistake["comment"]; ?></td>
-            </tr>
-                <?php 
+    // rozdeleni neshod dle stavu
+        $new = array();
+        $removed = array();
+        $old = array();
+        
+        foreach ($this->mistakes["others"] as $mistake) {
+            switch ($mistake["status"]) {
+                case 0:
+                    $old[] = $mistake;
+                    break;
+                    
+                case 1:
+                    $new[] = $mistake;
+                    break;
+                    
+                case 2:
+                    $removed[] = $mistake;
+                    break;
             }
+        }
+		?>
+		<h2>Ostatní neshody</h2>
+		<?php 
+		if (empty($this->mistakes["others"])) {
+			echo "<em>Nejsou žádné další neshody";
+		} else {
+            // nove neshody
+            if ($new) {
             ?>
-        </tbody>
-    </table>
-    <?php
-    }
-    ?>
+        <h3>Nové neshody</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Závažnost</th>
+                        <th>Neshoda</th>
+                        <th>Navrhované opatření</th>
+                        <th>Komentář</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    foreach ($new as $mistake) {
+                        ?>
+                        <tr>
+                            <td><?php echo $mistake["weight"]; ?></td>
+                            <td class="pre"><?php echo $mistake["mistake"]; ?></td>
+                            <td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+                            <td class="pre"><?php echo $mistake["comment"]; ?></td>
+                    </tr>
+                        <?php 
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <?php
+            }
+            
+            // stavajici neshody
+            if ($old) {
+            ?>
+        <h3>Stávající neodstraněné neshody</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Závažnost</th>
+                        <th>Neshoda</th>
+                        <th>Navrhované opatření</th>
+                        <th>Komentář</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    foreach ($old as $mistake) {
+                        ?>
+                        <tr>
+                            <td><?php echo $mistake["weight"]; ?></td>
+                            <td class="pre"><?php echo $mistake["mistake"]; ?></td>
+                            <td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+                            <td class="pre"><?php echo $mistake["comment"]; ?></td>
+                    </tr>
+                        <?php 
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <?php
+            }
+            
+            // nove neshody
+            if ($removed) {
+            ?>
+        <h3>Odstraněné neshody</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Závažnost</th>
+                        <th>Neshoda</th>
+                        <th>Navrhované opatření</th>
+                        <th>Komentář</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    foreach ($removed as $mistake) {
+                        ?>
+                        <tr>
+                            <td><?php echo $mistake["weight"]; ?></td>
+                            <td class="pre"><?php echo $mistake["mistake"]; ?></td>
+                            <td class="pre"><?php echo $mistake["suggestion"]; ?></td>
+                            <td class="pre"><?php echo $mistake["comment"]; ?></td>
+                    </tr>
+                        <?php 
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <?php
+            }
+		}
+		?>
 </fieldset>
+<?php if ($this->deadlines->count() || $this->deadlinesClose->count()) { ?>
+	<fieldset>
+		<legend id="deadlines">Lhůty</legend>
+		<?php 
+        if ($this->deadlines->count()) {
+            echo "<h2>Propadlé lhůty</h2>";
+            echo $this->deadlineTable($this->deadlines, array("noAction" => true, "subsidiaryRow" => false));
+        }
+        
+        if ($this->deadlinesClose->count()) {
+            echo "<h2>Lhůty před propadnutím</h2>";
+            echo $this->deadlineTable($this->deadlinesClose, array("noAction" => true, "subsidiaryRow" => false));
+        }
+		?>
+	</fieldset>
+    <?php } ?>
 <script type="text/javascript" src="/js/jquery.jqplot.min.js"></script>
 <script type="text/javascript" src="/js/jqplot.barRenderer.min.js"></script>
 <script type="text/javascript" src="/js/jqplot.toImage.js"></script>

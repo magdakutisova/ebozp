@@ -55,14 +55,36 @@ class Audit_Form_AuditFill extends Audit_Form_Audit {
 		
 		$this->getElement("close");
 		
+		$this->addElement("hidden", "content", array(
+				"decorators" => array(array("ViewHelper"))
+		));
+		
+		// zobrazeni neshod
+		$this->addElement("checkbox", "display_mistakes", array(
+				"label" => "Stávající neshody ve zprávě",
+				"decorators" => $elementDecorator
+		));
+        
+        $this->addElement("checkbox", "display_mistakes_removed", array(
+				"label" => "Odstraněné neshody ve zprávě",
+				"decorators" => $elementDecorator
+		));
+		
+		// zobrazeni lhut
+		$this->addElement("checkbox", "display_deadlines", array(
+				"label" => "Propadlé hůlty ve vzprávě",
+				"decorators" => $elementDecorator
+		));
+        
+        $this->addElement("checkbox", "display_deadlines_close", array(
+				"label" => "Lhůty před propadnutím ve zprávě",
+				"decorators" => $elementDecorator
+		));
+		
 		// skryte hodnoty
 		$this->addElement("hidden", "id", array(
 				"decorators" => $lastDecoratorOpen,
 				"requied" => true
-		));
-		
-		$this->addElement("hidden", "content", array(
-				"decorators" => array(array("ViewHelper"))
 		));
 		
 		// odeslani

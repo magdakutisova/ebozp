@@ -82,8 +82,20 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+        
+        if ($audit->display_deadlines_close) {
+            $tableDeadlines = new Deadline_Model_Deadlines();
+            $select = $tableDeadlines->_prepareSelect();
+            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
+            
+            $data = $select->query()->fetchAll();
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
+        } else {
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
+        }
 		
 		$this->view->deadlines = $deadlines;
+        $this->view->deadlinesClose = $deadlinesClose;
 		
 		$this->view->report = $report;
 		$this->view->audit = $audit;
@@ -134,6 +146,17 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+        
+        if ($audit->display_deadlines_close) {
+            $tableDeadlines = new Deadline_Model_Deadlines();
+            $select = $tableDeadlines->_prepareSelect();
+            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
+            
+            $data = $select->query()->fetchAll();
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
+        } else {
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
+        }
 		
 		$this->view->deadlines = $deadlines;
 		
@@ -150,6 +173,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->workplaces = $workplaces;
 		
 		$this->view->mistakes = $mistakes;
+        $this->view->deadlinesClose = $deadlinesClose;
 	}
 	
 	public function saveAction() {
@@ -398,14 +422,24 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		$nameAssocs = $tableAssocs->info("name");
 		
 		$subSelect = new Zend_Db_Select($tableMistakes->getAdapter());
-		$subSelect->from($nameAssocs, array("mistake_id"))->where("audit_id = ?", $audit->id)->where("status != 2");
-		
-		$other = $tableMistakes->fetchAll(array(
-				"id in (?)" => new Zend_Db_Expr($subSelect),
-				"(audit_id != $audit->id) OR (workplace_id IS NULL AND record_id IS NULL)"
-		));
-		
-		$retVal = array("forms" => $mistakeIndex, "others" => $other->toArray());
+        
+        // vyhodnoceni, ktere neshody zobrazit
+        $statusList = array("status = 1");
+        
+        if ($audit->display_mistakes) {
+            $statusList[] = "status = 0";
+        }
+        
+        if ($audit->display_mistakes_removed) {
+            $statusList[] = "status = 2";
+        }
+        
+		$subSelect->from(array("a" => $nameAssocs), array("status"))->where("a.audit_id = ?", $audit->id)->where("(" . implode(" or ", $statusList) . ")");
+		$subSelect->where("a.record_id IS NULL");
+        
+        $subSelect->joinInner(array("m" => $nameMistakes), "m.id = a.mistake_id");
+        
+		$retVal = array("forms" => $mistakeIndex, "others" => $subSelect->query()->fetchAll());
 		
 		return $retVal;
 	}

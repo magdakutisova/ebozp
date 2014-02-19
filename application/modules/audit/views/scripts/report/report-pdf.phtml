@@ -147,26 +147,42 @@ if (!empty($this->mistakes["others"])) {
     $pdf->AddPage("P", "A4");
     $this->pdf()->header($pdf, "Registr neshod");
 
-    // rozrazeni neshod na nove a stavajici
-    $news = array();
-    $stays = array();
-    
+    $new = array();
+    $removed = array();
+    $old = array();
+
     foreach ($this->mistakes["others"] as $mistake) {
-        if ($mistake["audit_id"] == $audit->id) {
-            $news[] = $mistake;
-        } else {
-            $stays[] = $mistake;
+        switch ($mistake["status"]) {
+            case 0:
+                $old[] = $mistake;
+                break;
+
+            case 1:
+                $new[] = $mistake;
+                break;
+
+            case 2:
+                $removed[] = $mistake;
+                break;
         }
     }
-    
-    if ($news){
-        $this->pdf()->header($pdf, "Ostatní neshody", 18, "ib");
-        $this->pdf()->mistakes($pdf, $news);
+
+    if ($new){
+        $this->pdf()->header($pdf, "Nové neshody", 18, "ib");
+        $pdf->SetLeftMargin(20);
+        $this->pdf()->mistakes($pdf, $new);
     }
     
-    if ($stays){
+    if ($old){
         $this->pdf()->header($pdf, "Stávající neodstraněné neshody", 18, "ib");
-        $this->pdf()->mistakes($pdf, $stays);
+        $pdf->SetLeftMargin(20);
+        $this->pdf()->mistakes($pdf, $old);
+    }
+    
+    if ($removed){
+        $this->pdf()->header($pdf, "Odstraněné neshody", 18, "ib");
+        $pdf->SetLeftMargin(20);
+        $this->pdf()->mistakes($pdf, $removed);
     }
 }
 
@@ -179,6 +195,20 @@ if ($this->deadlines->count()) {
 
     $deadHead = $this->deadlineTable()->header($config);
     $deadBody = $this->deadlineTable()->deadlines($this->deadlines, $config);
+
+    $deadAll = sprintf("<table cellpadding=\"2\" border=\"2\">%s%s</table>", $deadHead, implode("", $deadBody));
+
+    $pdf->writeHTML($deadAll);
+}
+
+if ($this->deadlinesClose->count()) {
+    $pdf->AddPage("P", "A4");
+    $this->pdf()->header($pdf, "Lhůty blízko k propadnutí");
+
+    $config = array("noAction" => true, "headBg" => "#c6c6c6", "subsidiaryRow" => false);
+
+    $deadHead = $this->deadlineTable()->header($config);
+    $deadBody = $this->deadlineTable()->deadlines($this->deadlinesClose, $config);
 
     $deadAll = sprintf("<table cellpadding=\"2\" border=\"2\">%s%s</table>", $deadHead, implode("", $deadBody));
 
