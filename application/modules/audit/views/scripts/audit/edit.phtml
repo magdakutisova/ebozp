@@ -149,7 +149,7 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 				}
 				
 				// nastaveni tlacitek editovat a zobrazit
-				$actions = array("edit-mistake" => "Upravit", "get-mistake" => "Zobrazit");
+				$actions = array("edit-mistake" => "Editovat", "get-mistake" => "Zobrazit");
 				
 				echo $this->mistakeTable()->mistake($mistake, array("classes" => $classes, "actions" => $actions, "selector" => $selector, "subsidiaryRow" => false));
 			}
@@ -182,8 +182,8 @@ printf("<h2>%s</h2>", $this->audit->is_check ? "Prověrka" : "Audit");
 							"caption" => "Vybrat"
 							)
 					),
-        "subsidiaryRow" => false
-			);
+        "subsidiaryRow" => false,
+			"nameFilter" => true);
 	
 	$options["form"] = array("action" => "/audit/audit/subdead?auditId=" . $audit->id);
 	

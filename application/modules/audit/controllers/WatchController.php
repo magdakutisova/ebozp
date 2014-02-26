@@ -686,7 +686,7 @@ v příloze zasíláme protokol z kontrolní dohlídky BOZP a PO na Vašem praco
 
 S pozdravem
 
-GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
+GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $watch->getSubsidiary(), $watch);
 		
 		mail('', '=?UTF-8?B?' . base64_encode("Protokol z kontrolní dohlídky") . '?=', $msg["message"], $msg["headers"]);
 		
@@ -895,10 +895,15 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		}
 	}
 	
-	private static function generateMail($messageContent, $pdf, $from, $to) {
+	private static function generateMail($messageContent, $pdf, $from, $to, $subsidiary, $watch) {
 		// vygenerovani hranice
 		$boundary = uniqid('np');
 		$boundary2 = $boundary . "2";
+        
+        // vygenerovani jmena souboru
+        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $watch->watched_at);
+        $nameHeader = "=protokol.pdf";
+        $nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
 		
 		// hlavicky
 		$headers = "MIME-Version: 1.0\r\n";
@@ -915,8 +920,8 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 
 		$message .= "\r\n\r\n--$boundary\r\n";
 		$message .= "Content-Transfer-Encoding: base64\r\n";
-		$message .= "Content-Disposition: attachment; filename=protokol.pdf\r\n";
-		$message .= "Content-type: application/pdf; name=protokol.pdf\r\n\r\n";
+		$message .= "Content-Disposition: attachment; filename$nameHeader\r\n";
+		$message .= "Content-type: application/pdf; name$nameHeader\r\n\r\n";
 		
 		$message .= base64_encode($pdf);
 		$message .= "\r\n\r\n--" . $boundary . "--";

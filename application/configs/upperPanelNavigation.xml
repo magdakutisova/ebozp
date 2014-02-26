@@ -1,65 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configdata>
     <nav>
-        <mistakes>
-            <label>Neshody</label>
-            <route>audit-mistakes-index-subs</route>
-            <resource>document:documentation</resource>
+        <home>
+            <label>Hlavní strana</label>
+            <route>home</route>
+            <resource>index</resource>
             <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
-        </mistakes>
-        <deadlines>
-            <label>Lhůtníky</label>
-            <route>deadline-index</route>
-            <resource>deadline:index</resource>
-            <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
-        </deadlines>
-        <documents>
-            <label>Dokumentace</label>
-            <route>document-documentation-index</route>
-            <resource>document:documentation</resource>
-            <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
-            <params>
-                <TYPE>documentation</TYPE>
-            </params>
-        </documents>
-        <records>
-            <label>Záznamy</label>
-            <route>document-documentation-index</route>
-            <resource>document:documentation</resource>
-            <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
-            <params>
-                <TYPE>record</TYPE>
-            </params>
-        </records>
-        <audits>
-            <label>Audity a prověrky</label>
-            <route>audit-list</route>
+        </home>
+        <elearning>
+            <label>E-learning</label>
+            <uri>elearning</uri>
+            <target>_blank</target>
+        </elearning>
+        <legislative>
+            <label>Legislativa</label>
+            <uri>http://www.guard7.cz/zakony</uri>
+            <target>_blank</target>
+        </legislative>
+        <lexicon>
+            <label>Lexikon BOZP a PO</label>
+            <uri>http://www.guard7.cz/lexikon</uri>
+            <target>_blank</target>
+        </lexicon><!--
+        <help>
+            <label>Co dělat když</label>
+            <route>cant-login</route>
             <resource>audit:audit</resource>
             <privilege>index</privilege>
             <clientId>clientId</clientId>
             <subsidiaryId>subsidiaryId</subsidiaryId>
-        </audits>
-        <watches>
-            <label>Protokoly</label>
-            <route>audit-watch-index</route>
-            <resource>audit:watch</resource>
-            <privilege>index</privilege>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
-        </watches>
+        </help> -->
         <contacts>
             <label>Kontakty</label>
-            <route>contacts-client</route>
-            <clientId>clientId</clientId>
-            <subsidiaryId>subsidiaryId</subsidiaryId>
+            <route>contacts</route>
         </contacts>
     </nav>
 </configdata>

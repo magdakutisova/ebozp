@@ -15,13 +15,13 @@ if (!$this->disableReturnLink)
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
-$options = array("name" => $this->caption, "subsidiaryRow" => $this->subsidiaryRow);
+$options = array("name" => $this->caption, "subsidiaryRow" => $this->subsidiaryRow, "nameFilter" => true);
 $clientId = Zend_Controller_Front::getInstance()->getRequest()->getParam("clientId", 0);
 
 $options["buttons"] = array("get" => array("type" => "button", "caption" => "Zobrazit"));
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "put")) {
-	$options["buttons"]["edit"] = array("type" => "button", "caption" => "Upravit");
+	$options["buttons"]["edit"] = array("type" => "button", "caption" => "Editovat");
     $options["form"] = array("action" => "/deadline/deadline/submits?clientId=" . $clientId);
 
     $options["buttons"]["selected[]"] = array("caption" => "Vybrat", "type" => "checkbox");

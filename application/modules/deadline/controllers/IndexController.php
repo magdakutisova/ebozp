@@ -214,7 +214,7 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$devName = "CONCAT($nameDevices.`sort`, IFNULL(CONCAT(' (', $nameDevices.`type`, ')'),''))";
 		$chemName = "chemical";
-		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
+		$empName = "CONCAT($nameEmployees.surname, ' ', $nameEmployees.first_name)";
 		
 		$select->from($nameDead, array(
 				new Zend_Db_Expr("$nameDead.*"),
@@ -243,6 +243,15 @@ class Deadline_IndexController extends Zend_Controller_Action {
             "subsidiary_town",
             "subsidiary_street"
         ));
+        
+        // uvaleni omezeni na pobocky, pokud uzivatel neni admin nebo koordinator
+        $user = Zend_Auth::getInstance()->getIdentity();
+        if (!in_array($user->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR))) {
+            $tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+            $nameAssocs = $tableAssocs->info("name");
+            
+            $select->where("$nameSubsidiary.id_subsidiary in (select id_subsidiary from $nameAssocs where id_user = ?)", $user->id_user);
+        }
         
 		// vyfiltrovani typu
 		switch ($objType) {

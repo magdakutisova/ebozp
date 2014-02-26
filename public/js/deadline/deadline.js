@@ -193,7 +193,7 @@ $(function () {
 		var url = "/deadline/deadline/edit?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
-		$.iframeDialog(url, 800, 400, "Úprava lhůty", "refresh");
+		$.iframeDialog(url, 900, 700, "Úprava lhůty", "refresh");
 	}
 	
 	function openGet() {
@@ -202,7 +202,7 @@ $(function () {
 		var url = "/deadline/deadline/get?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
-		$.iframeDialog(url, 800, 400, "Úprava lhůty");
+		$.iframeDialog(url, 800, 400, "Úprava lhůty", "refresh");
 	}
     
     function sendNewObject() {
@@ -301,6 +301,22 @@ $(function () {
         $.iframeDialog(url, 700, 500, "Nová lhůta", "refresh")
     }
     
+    function filterDeadlines() {
+        var items = $("#deadlinetable tbody");
+        items.show();
+        
+        // skryti dat
+        var selName = $(this).val();
+        
+        if (selName.length) {
+            items.each(function () {
+                var e = $(this);
+                
+                if (e.find(":hidden[name='name']").val() != selName) e.hide();
+            })
+        }
+    }
+    
     $("button#new-deadline").click(openNewDeadlineForm);
 	$("#deadline-is_period").click(togglePeriodic);
 	$("#deadline-resp_type").change(toggleGuard);
@@ -314,5 +330,5 @@ $(function () {
 		"firstDay" : 1
 	});
 	
-    $("#deadline-object_id").change(newObject);
+    $("#deadline-filter-obj_name").change(filterDeadlines);
 });

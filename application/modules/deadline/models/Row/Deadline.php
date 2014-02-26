@@ -119,8 +119,8 @@ class Deadline_Model_Row_Deadline extends Zend_Db_Table_Row_Abstract {
 	public function updateResponsible(array $data) {
 		// priprava dat
 		$defaults = array(
-				"resp_from_guard" => 0,
-				"responsible_id" => null
+				"resp_type" => Deadline_Form_Deadline::RESP_GUARD,
+				"responsible_id" => 0
 				);
 		
 		$data = array_merge($defaults, $data);

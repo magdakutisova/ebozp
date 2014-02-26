@@ -305,6 +305,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 				$form->getValue("done_at"));
 		$deadline->save();
 		
+        self::checkDeadlineDate($deadline);
+        
 		$this->view->deadline = $deadline;
 		$this->_helper->FlashMessenger("Lhůta byla označena jako splněná");
 	}
@@ -420,25 +422,31 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 			$form->removeElement("responsible_id");
 		} else {
 			if ($respType == Deadline_Form_Deadline::RESP_GUARD) {
-				// nacteni pracovniku G7
-				$tableUsers = new Application_Model_DbTable_User();
-                $select = $tableUsers->select(true);
+                // pokud prihlaseny uzivatel neni klient, nactou se data
+                $role = Zend_Auth::getInstance()->getIdentity()->role;
                 
-                $select->reset(Zend_Db_Table_Select::COLUMNS);
-                $select->columns(array(
-                    "id_user",
-                    "username" => new Zend_Db_Expr("name")
-                ));
-                
-                $select->where("role in (?)", array(
-						My_Role::ROLE_ADMIN, 
-						My_Role::ROLE_COORDINATOR, 
-						My_Role::ROLE_TECHNICIAN
-						));
-                
-				$users = $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
-                
-                $users = (array((object) array("id_user" => "0", "username" => "--NEZNÁMÝ--"))) + $users;
+                if ($role != my_role::ROLE_CLIENT) {
+                    // nacteni pracovniku G7
+                    $tableUsers = new Application_Model_DbTable_User();
+                    $select = $tableUsers->select(true);
+
+                    $select->reset(Zend_Db_Table_Select::COLUMNS);
+                    $select->columns(array(
+                        "id_user",
+                        "username" => new Zend_Db_Expr("name")
+                    ));
+
+                    $select->where("role in (?)", array(
+                            My_Role::ROLE_ADMIN, 
+                            My_Role::ROLE_COORDINATOR, 
+                            My_Role::ROLE_TECHNICIAN
+                            ));
+
+                    $users = $select->query()->fetchAll(Zend_Db::FETCH_OBJ);
+                } else {
+                    $users = array();
+                }
+                $users = (array((object) array("id_user" => "0", "username" => "NEURČENÝ PRACOVNÍK G U A R D 7"))) + $users;
                 
 			} else {
 				// nacteni zamestnancu

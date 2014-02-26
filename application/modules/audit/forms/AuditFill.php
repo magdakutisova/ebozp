@@ -72,7 +72,7 @@ class Audit_Form_AuditFill extends Audit_Form_Audit {
 		
 		// zobrazeni lhut
 		$this->addElement("checkbox", "display_deadlines", array(
-				"label" => "Propadlé hůlty ve vzprávě",
+				"label" => "Propadlé lhůty ve vzprávě",
 				"decorators" => $elementDecorator
 		));
         

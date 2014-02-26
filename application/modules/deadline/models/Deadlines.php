@@ -111,7 +111,7 @@ class Deadline_Model_Deadlines extends Zend_Db_Table_Abstract {
 		
 		$devName = "CONCAT(IFNULL($nameDevices.`sort`, ''), IFNULL(CONCAT(' (', $nameDevices.`type`, ')'), ''))";
 		$chemName = "chemical";
-		$empName = "CONCAT($nameEmployees.first_name, ' ', $nameEmployees.surname)";
+		$empName = "CONCAT($nameEmployees.surname, ' ', $nameEmployees.first_name)";
 		
 		// zakladni select
 		$select->from(array("d" => $name), array(

@@ -53,8 +53,21 @@ class Audit_ReportController extends Zend_Controller_Action {
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
 		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+        
+        if ($audit->display_deadlines_close) {
+            $tableDeadlines = new Deadline_Model_Deadlines();
+            $select = $tableDeadlines->_prepareSelect();
+            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
+            
+            $data = $select->query()->fetchAll();
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
+        } else {
+            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
+        }
 		
 		$this->view->deadlines = $deadlines;
+        $this->view->deadlinesClose = $deadlinesClose;
+        
 		$this->view->audit = $audit;
 		$this->view->client = $client;
 		$this->view->auditor = $auditor;
@@ -233,6 +246,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 	public function sendAction() {
 		// kontrolni nacteni
 		$audit = self::loadAudit($this->_request->getParam("auditId"));
+        $subsidiary = $audit->getSubsidiary();
 	
 		if (!$audit->is_closed) throw new Zend_Exception("Audit #$audit->id must be closed for send protocol");
 	
@@ -253,12 +267,12 @@ class Audit_ReportController extends Zend_Controller_Action {
 	
 		$msg = self::generateMail("Dobrý den,
 
-v příloze zasíláme závěrečnáou zprávu o provedení roční prověrky bezpečnosti práce a požární ochrany.
+v příloze zasíláme závěrečnou zprávu o provedení roční prověrky bezpečnosti práce a požární ochrany.
 
 S pozdravem
 
-GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
-	
+GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $subsidiary, $audit);
+
 		mail('', "=?UTF-8?B?" . base64_encode("Závěrečná zpráva o provedení roční prověrky BOZP a PO") . "?=", $msg["message"], $msg["headers"]);
 	
 		$this->view->audit = $audit;
@@ -466,11 +480,16 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 		return $retVal;
 	}
 	
-	private static function generateMail($messageContent, $pdf, $from, $to) {
+	private static function generateMail($messageContent, $pdf, $from, $to, $subsidiary, $audit) {
 		// vygenerovani hranice
 		$boundary = uniqid('np');
 		$boundary2 = $boundary . "2";
-	
+        
+        // vygenerovani jmena souboru
+        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $audit->done_at);
+        $nameHeader = "=protokol.pdf";
+        $nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
+        
 		// hlavicky
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "From: $from \r\n";
@@ -486,8 +505,8 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email);
 	
 		$message .= "\r\n\r\n--$boundary\r\n";
 		$message .= "Content-Transfer-Encoding: base64\r\n";
-		$message .= "Content-Disposition: attachment; filename=protokol.pdf\r\n";
-		$message .= "Content-type: application/pdf; name=protokol.pdf\r\n\r\n";
+		$message .= "Content-Disposition: attachment; filename$nameHeader\r\n";
+		$message .= "Content-type: application/pdf; name$nameHeader\r\n\r\n";
 	
 		$message .= base64_encode($pdf);
 		$message .= "\r\n\r\n--" . $boundary . "--";

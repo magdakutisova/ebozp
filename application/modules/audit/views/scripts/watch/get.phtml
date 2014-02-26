@@ -186,7 +186,7 @@ foreach ($this->mistakes as $mistake) {
         }
     ?>
 	<div id="deadlines">
-		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => $buttons, "subsidiaryRow" => false)); ?>
+		<?php echo $this->deadlineTable($this->deadlines, array("buttons" => $buttons, "subsidiaryRow" => false, "nameFilter" => true)); ?>
 	</div>
 	<?php 
     }

@@ -85,7 +85,7 @@ class Audit_Form_Watch extends Zend_Form {
 		));
 		
 		// pole pro jmeno dohlizitele
-		$this->addElement("textarea", "guard_person", array(
+		$this->addElement("text", "guard_person", array(
 				"label" => "Technik",
 				"decorators" => $elementDecorator
 		));
@@ -99,13 +99,15 @@ class Audit_Form_Watch extends Zend_Form {
 		// další zástupce guardu
 		$this->addElement("textarea", "other_guard", array(
 				"label" => "Další zástupce G U A R D 7, v.o.s.",
-				"decorators" => $elementDecorator
+				"decorators" => $elementDecorator,
+                "style" => "height: 3em; "
 		));
 		
 		// další zástupce klienta
 		$this->addElement("textarea", "other_client", array(
 				"label" => "Další zástupce klienta",
-				"decorators" => $elementDecorator
+				"decorators" => $elementDecorator,
+                "style" => "height: 3em; "
 		));
 		
 		// zobrazeni neshod
@@ -121,7 +123,7 @@ class Audit_Form_Watch extends Zend_Form {
 		
 		// zobrazeni lhut
 		$this->addElement("checkbox", "display_deadlines", array(
-				"label" => "Propadlé hůlty v protokolu",
+				"label" => "Propadlé lhůty v protokolu",
 				"decorators" => $elementDecorator
 		));
         

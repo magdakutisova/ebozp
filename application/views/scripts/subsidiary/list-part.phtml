@@ -6,6 +6,8 @@ $this->layout()->disableLayout();
     $rows = array();
     
     foreach ($this->subsidiaries as $sub) {
+        if (!$sub->getActive()) continue;
+        
         $hq = "";
 
         if ($sub->getHqOnly()) {

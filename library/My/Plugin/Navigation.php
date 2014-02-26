@@ -20,7 +20,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
         if ($identity && $identity->role != My_Role::ROLE_GUEST) {
             $navigation->removePage(0);     // HOVNO KOD - AZ BUDE CAS, TAK PRDELAT
         }
-
+        
 		if($clientId != null){
 			$subs = $clientNavigation->findOneBy('label', 'Pobočky');
 			$username = Zend_Auth::getInstance()->getIdentity()->username;
@@ -77,27 +77,58 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
                 "subId" => $subsidiaryId
             ));
             
-            // nacteni upper panelu
-            $configUpper = new Zend_Config_Xml(APPLICATION_PATH . '/configs/upperPanelNavigation.xml', 'nav');		
-            $navigationUpper = new Zend_Navigation($configUpper);
-            Zend_Registry::set("UpperPanel", $navigationUpper);
-            
+		}
+        
+        // nacteni upper panelu
+        $configUpper = new Zend_Config_Xml(APPLICATION_PATH . '/configs/upperPanelNavigation.xml', 'nav');
+        $navigationUpper = new Zend_Navigation($configUpper);
+        Zend_Registry::set("UpperPanel", $navigationUpper);
+        
+        if ($clientId) {
             if ($sub instanceof Zend_Db_Table_Rowset_Abstract) {
                 $sub = $sub->current();
             }
-            
-            if ($sub["hq_only"]) {
-                $navigationUpper->removePage(5);
-                $navigationUpper->removePage(4);
-            }
-            
+
             $pages = $navigationUpper->findAllBy("clientId", "clientId");
             $newParams = array("clientId" => $clientId, "subsidiaryId" => $subsidiaryId, "subId" => $subsidiaryId);
-            
+
             foreach ($pages as $page) {
                 $page->setParams(array_merge($page->getParams(), $newParams));
             }
-		}
+        }
+        
+        // nastaveni odkazu na elearning
+        $elearningElement = $navigationUpper->findOneBy("uri", "elearning");
+        $elearningConfig = Zend_Controller_Front::getInstance()->getParam("bootstrap")->getApplication()->getOption("elearning");
+        $url = $elearningConfig["baseUri"];
+        
+        if ($identity && $identity->elearning_user_id) {
+            try {
+            $url .= "/user/dsign?key=";
+            $adapter = Zend_Db::factory($elearningConfig["db"]["adapter"], $elearningConfig["db"]["params"]);
+            
+            $sql = sprintf("SELECT * FROM users WHERE id = %d", $identity->elearning_user_id);
+            $user = $adapter->query($sql)->fetch(Zend_Db::FETCH_OBJ);
+            
+            // vytvoreni klice pro prihlasovaci link
+            $firstPart = sha1($user->salt . $user->password);
+
+            // druha cast klice - login prevedeny do hexadecimalni podoby
+            $secondPart = "";
+
+            for ($i = 0; $i < strlen($user->login); $i++) {
+                $secondPart .= dechex(ord($user->login[$i]));
+            }
+
+            $key = $firstPart . $secondPart;
+            
+            $url .= $key;
+            } catch (Zend_Exception $e) {
+                // nic se zde nedela
+            }
+        }
+        
+        $elearningElement->setUri($url);
 		
 		Zend_Registry::set('ClientNavigation', $clientNavigation);
 		

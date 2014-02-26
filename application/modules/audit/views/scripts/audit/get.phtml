@@ -134,7 +134,8 @@ $today = (int) Zend_Date::now()->get("yMMdd");
 							"type" => "button"
 					)
 			),
-        "subsidiaryRow" => false
+        "subsidiaryRow" => false,
+        "nameFilter" => true
 	);
 	
 	echo $this->deadlineTable($this->deadlines, $options); 

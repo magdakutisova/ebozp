@@ -12,17 +12,28 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
 		$header = $this->header($configs);
 		
 		// vygenerovani tela
-		$deadlines = $this->deadlines($deadlines, $configs);
+		$body = $this->deadlines($deadlines, $configs);
 		
-		$content = $header . implode("", $deadlines);
+		$content = $header . implode("", $body);
 		
 		$retVal = $this->wrap($this->_wrapper, $content, array("class" => "multirow-table", "id" => "deadlinetable"));
 		
-		$configs = array_merge(array("form" => array()), $configs);
+		$configs = array_merge(array("form" => array(), "nameFilter" => false), $configs);
 		
 		if ($configs["form"]) {
 			$retVal = $this->deadlineForm($retVal, $configs["form"]);
 		}
+        
+        if ($configs["nameFilter"]) {
+            $items = array("" => "Vše", "-" => "Anonymní");
+            
+            foreach ($deadlines as $deadline) {
+                if ($deadline->name)
+                    $items[$deadline->name] =  $deadline->name;
+            }
+            
+            $retVal = "Fitlrace dle jména: " . $this->view->formSelect("deadline-filter-obj_name", "", array(), $items) . $retVal;
+        }
 		
 		return $retVal;
 	}

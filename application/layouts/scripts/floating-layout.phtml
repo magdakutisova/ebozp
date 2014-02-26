@@ -31,6 +31,13 @@ $this->headScript()->exchangeArray(array());
 <?php echo $this->headLink()?>
 <?php echo $this->headScript()?>
 <?php echo $jsScripts; ?>
+    <script type="text/javascript">
+<?php
+$request = Zend_Controller_Front::getInstance()->getRequest();
+?>
+var CLIENT_ID = <?php echo Zend_Json::encode($request->getParam("clientId")) ?>;
+var SUBSIDIARY_ID = <?php echo Zend_Json::encode($request->getParam("subsidiaryId", $request->getParam("subsidiary"))) ?>;
+    </script>
 </head>
 
 <body>

@@ -398,19 +398,21 @@ class Document_DocumentationController extends Zend_Controller_Action {
             $subs = array($doc->subsidiary_id);
         }
         
-        foreach ($subs as $curSubId) {
-            $this->_helper->diaryRecord->insertMessage(
-                    "aktualizoval " . ($this->_type == self::REQ_DOC ? "dokumentaci" : "záznam"),
-                    array(
-                        "clientId" => $doc->client_id,
-                        "subsidiaryId" => $curSubId,
-                        "fileId" => $doc->file_id,
-                        self::REQ_PARAM => $this->_type
-                    ),
-                    "document-version-download",
-                    $doc->name,
-                    $curSubId
-                    );
+        if ($doc->file_id) {
+            foreach ($subs as $curSubId) {
+                $this->_helper->diaryRecord->insertMessage(
+                        "aktualizoval " . ($this->_type == self::REQ_DOC ? "dokumentaci" : "záznam"),
+                        array(
+                            "clientId" => $doc->client_id,
+                            "subsidiaryId" => $curSubId,
+                            "fileId" => $doc->file_id,
+                            self::REQ_PARAM => $this->_type
+                        ),
+                        "document-version-download",
+                        $doc->name,
+                        $curSubId
+                        );
+            }
         }
         
 		$this->_helper->FlashMessenger("Změny byly uloženy");

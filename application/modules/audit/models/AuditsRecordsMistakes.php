@@ -335,6 +335,15 @@ class Audit_Model_AuditsRecordsMistakes extends Zend_Db_Table_Abstract {
 				$select->where($cond, $val);
 			}
 		}
+        
+        // zarazeni podminky pro vyhledani pobocek, ke kterym ma uzivatel pristup
+        $user = Zend_Auth::getInstance()->getIdentity();
+        
+        if (!in_array($user->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR))) {
+            $tableAssocs = new Application_Model_DbTable_UserHasSubsidiary();
+            $nameAssocs = $tableAssocs->info("name");
+            $select->where("$nameSubsidiary.id_subsidiary in (select id_subsidiary from $nameAssocs where id_user = ?)", $user->id_user);
+        }
 		
 		// spojeni s pracovisti
 		$tableWorkplaces = new Application_Model_DbTable_Workplace();
