@@ -21,18 +21,24 @@ class Zend_View_Helper_ClientInfo extends Zend_View_Helper_Abstract{
 		if(isset($params['subsidiary'])){
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiary']);
-			$info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
-			if(!$subsidiary->getActive()){
-				$info .= ' (neaktivní pobočka) ';
-			}
+            
+            if (!$subsidiary->getHq()) {
+                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+                if(!$subsidiary->getActive()){
+                    $info .= ' (neaktivní pobočka) ';
+                }
+            }
 		}
 		if(isset($params['subsidiaryId'])){
 			$subsidiaries = new Application_Model_DbTable_Subsidiary();
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiaryId']);
-			$info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiaryId']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
-			if(!$subsidiary->getActive()){
-				$info .= ' (neaktivní pobočka) ';
-			}
+			
+            if (!$subsidiary->getHq()) {
+                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+                if(!$subsidiary->getActive()){
+                    $info .= ' (neaktivní pobočka) ';
+                }
+            }
 		}
 		return $info;
 	}

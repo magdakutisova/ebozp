@@ -49,6 +49,18 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
                 $sub = $tableSubs->find($subsidiaryId);
             }
             
+            // pokud je pobocka pouze sidlo, pak se skryji nektere prcky navigace
+            if ($sub instanceof Zend_Db_Table_Rowset_Abstract) {
+                $subsidiary = $sub->current();
+            } else {
+                $subsidiary = $sub;
+            }
+            
+            if ($subsidiary->hq_only) {
+                $clientNavigation->removePage(2);
+                $clientNavigation->removePage(3);
+            }
+            
 			$pages = $clientNavigation->findAllBy('subsidiaryId', 'subsidiaryId');
 			foreach ($pages as $page){
 				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subsidiaryId));
