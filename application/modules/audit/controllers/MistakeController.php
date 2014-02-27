@@ -869,36 +869,37 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		$this->_helper->FlashMessenger("Změny byly uloženy");
         
         // zapis do denniku
-        if (!$this->_audit) {
-            // vyhodnoceni, zda byla neshoda odstranena
-            if (!$removedBuffer && $mistake->is_removed) {
-                // doslo k odstraneni
-                $this->_helper->diaryRecord->insertMessage(
-                            "odstranil neshodu",
-                            array(
-                                "mistakeId" => $mistake->id,
-                                "clientId" => $mistake->client_id
-                            ),
-                            "audit-mistake-get",
-                            "neshoda",
-                            $mistake->subsidiary_id
-                            );
-            } else {
-                // pouha editace
-                $this->_helper->diaryRecord->insertMessage(
-                            "upravil neshodu",
-                            array(
-                                "mistakeId" => $mistake->id,
-                                "clientId" => $mistake->client_id
-                            ),
-                            "audit-mistake-get",
-                            "neshoda",
-                            $mistake->subsidiary_id
-                            );
-            }
+        // vyhodnoceni, zda byla neshoda odstranena
+        if (!$removedBuffer && $mistake->is_removed) {
+            // doslo k odstraneni
+            $this->_helper->diaryRecord->insertMessage(
+                        "odstranil neshodu",
+                        array(
+                            "mistakeId" => $mistake->id,
+                            "clientId" => $mistake->client_id
+                        ),
+                        "audit-mistake-get",
+                        "neshoda",
+                        $mistake->subsidiary_id
+                        );
+        } else {
+            // pouha editace
+            $this->_helper->diaryRecord->insertMessage(
+                        "upravil neshodu",
+                        array(
+                            "mistakeId" => $mistake->id,
+                            "clientId" => $mistake->client_id
+                        ),
+                        "audit-mistake-get",
+                        "neshoda",
+                        $mistake->subsidiary_id
+                        );
         }
-		
-		if ($redirect) $this->_redirect($this->view->url($params, "audit-mistake-edit"));
+        
+		if ($redirect) {
+            $this->view->params = $params;
+            $this->_redirect();
+        }
 
 		return $params;
 	}
@@ -910,7 +911,7 @@ class Audit_MistakeController extends Zend_Controller_Action {
 		if (!$params) return;
 
 		// redirect na spravnou adresu
-		$this->_redirect($this->view->url($params, "audit-mistake-edit-html"));
+		$this->view->params = $params;
 	}
 	
 	public function removeAction() {
