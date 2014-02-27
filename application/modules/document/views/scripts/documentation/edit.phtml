@@ -9,7 +9,7 @@ echo $this->form;
 $request = Zend_Controller_Front::getInstance()->getRequest();
 
 echo "<h2>Smazat</h2>";
-echo "<form action='/document/documentation/delete?TYPE=" . $this->REQ_TYPE . "' onsubmit='return confirm(\"Skutečně smazat?\")'>";
+echo "<form action='/document/documentation/delete?TYPE=" . $this->REQ_TYPE . "' onsubmit='return confirm(\"Skutečně smazat?\")' method='post'>";
 echo $this->formHidden("documentationId", $this->documentation->id);
 echo $this->formHidden("clientId", $this->documentation->client_id);
 echo $this->formHidden("subsidiaryId", $request->getParam("subsidiaryId"));

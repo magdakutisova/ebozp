@@ -101,7 +101,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
         $subId = $this->_request->getParam("subId", 0);
 		$docId = $this->_request->getParam("documentationId", 0);
 
-		$this->_tableItems->delete(array("id = ?" => $docId));
+		echo $this->_tableItems->delete(array("id = ?" => $docId));
 		
 		$this->_helper->FlashMessenger("Dokumentace byla smazána");
 		
