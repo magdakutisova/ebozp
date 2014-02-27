@@ -25,7 +25,7 @@
 		<documentation>
 			<label>Dokumentace</label>
 			<route>document-documentation-index</route>
-			<resource>document:index</resource>
+			<resource>document:documentation</resource>
 			<privilege>index</privilege>
 			<clientId>clientId</clientId>
             <subsidiaryId>subsidiaryId</subsidiaryId>
@@ -42,7 +42,7 @@
         <records>
 			<label>Záznamy</label>
 			<route>document-documentation-index</route>
-			<resource>document:index</resource>
+			<resource>document:documentation</resource>
 			<privilege>index</privilege>
 			<clientId>clientId</clientId>
             <subsidiaryId>subsidiaryId</subsidiaryId>
