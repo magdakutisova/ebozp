@@ -331,4 +331,5 @@ $(function () {
 	});
 	
     $("#deadline-filter-obj_name").change(filterDeadlines);
+    $("#deadline-object_id").change(newObject);
 });

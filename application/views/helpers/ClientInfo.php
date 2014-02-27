@@ -23,7 +23,7 @@ class Zend_View_Helper_ClientInfo extends Zend_View_Helper_Abstract{
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiary']);
             
             if (!$subsidiary->getHq()) {
-                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary'], 'subsidiaryId' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
                 if(!$subsidiary->getActive()){
                     $info .= ' (neaktivní pobočka) ';
                 }
@@ -34,7 +34,7 @@ class Zend_View_Helper_ClientInfo extends Zend_View_Helper_Abstract{
 			$subsidiary = $subsidiaries->getSubsidiary($params['subsidiaryId']);
 			
             if (!$subsidiary->getHq()) {
-                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiary' => $params['subsidiary']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
+                $info .= ', Pobočka: <a href="' . $this->view->url(array('clientId' => $params['clientId'], 'subsidiaryId' => $params['subsidiaryId'], 'subsidiary' => $params['subsidiaryId']), 'subsidiaryIndex') . '">' . $subsidiary->getSubsidiaryStreet() . ', ' . $subsidiary->getSubsidiaryTown() . '</a>';
                 if(!$subsidiary->getActive()){
                     $info .= ' (neaktivní pobočka) ';
                 }
