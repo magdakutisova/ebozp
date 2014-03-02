@@ -1,5 +1,5 @@
 <?php
-class Zend_View_Helper_LoggedInAs extends Zend_View_Helper_Abstract{
+class My_View_Helper_LoggedInAs extends Zend_View_Helper_Abstract{
 	
 	public function loggedInAs(){
 		$auth = Zend_Auth::getInstance();
