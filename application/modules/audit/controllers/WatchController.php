@@ -679,17 +679,33 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$email = $watch->contact_email;
 			$name = $watch->contact_name;
 		}
-		
-		$msg = self::generateMail("Dobrý den,
+        
+        $subsidiary = $watch->getSubsidiary();
+        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $watch->watched_at);
+
+        $mailer = new Zend_Mail("UTF-8");
+        $mailer->setSubject('=?UTF-8?B?' . base64_encode("Protokol z kontrolní dohlídky") . '?=');
+        $mailer->setBodyText("Dobrý den,
 
 v příloze zasíláme protokol z kontrolní dohlídky BOZP a PO na Vašem pracovišti.
 
 S pozdravem
 
-GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $watch->getSubsidiary(), $watch);
-		
-		mail('', '=?UTF-8?B?' . base64_encode("Protokol z kontrolní dohlídky") . '?=', $msg["message"], $msg["headers"]);
-		
+GUARD7, v.o.s.");
+        
+        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", null, $fileName);
+        
+        $transport = new Zend_Mail_Transport_Smtp("smtp.gmail.com", array(
+				'ssl' => 'ssl',
+				'port' => 465,
+				'auth' => 'login',
+				'username' => 'guardian@guard7.cz',
+				'password' => 'guardianG7',
+				));
+        
+        $mailer->addTo($email, $name);
+        $mailer->send($transport);
+        
 		$this->view->watch = $watch;
 		
 		$this->_helper->FlashMessenger("Protokol odeslán");
@@ -903,7 +919,7 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $watch->getSubsidiary()
         // vygenerovani jmena souboru
         $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $watch->watched_at);
         $nameHeader = "=protokol.pdf";
-        $nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
+        //$nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
 		
 		// hlavicky
 		$headers = "MIME-Version: 1.0\r\n";

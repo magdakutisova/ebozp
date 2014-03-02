@@ -264,17 +264,32 @@ class Audit_ReportController extends Zend_Controller_Action {
 			$email = $audit->contact_email;
 			$name = $audit->contact_name;
 		}
-	
-		$msg = self::generateMail("Dobrý den,
+        
+        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $audit->done_at);
+
+        $mailer = new Zend_Mail("UTF-8");
+        $mailer->setSubject('=?UTF-8?B?' . base64_encode("Závěrečná zpráva o provedení roční prověrky BOZP a PO") . '?=');
+        $mailer->setBodyText("Dobrý den,
 
 v příloze zasíláme závěrečnou zprávu o provedení roční prověrky bezpečnosti práce a požární ochrany.
 
 S pozdravem
 
-GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $subsidiary, $audit);
-
-		mail('', "=?UTF-8?B?" . base64_encode("Závěrečná zpráva o provedení roční prověrky BOZP a PO") . "?=", $msg["message"], $msg["headers"]);
-	
+GUARD7, v.o.s.");
+        
+        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", null, $fileName);
+        
+        $transport = new Zend_Mail_Transport_Smtp("smtp.gmail.com", array(
+				'ssl' => 'ssl',
+				'port' => 465,
+				'auth' => 'login',
+				'username' => 'guardian@guard7.cz',
+				'password' => 'guardianG7',
+				));
+        
+        $mailer->addTo($email, $name);
+        $mailer->send($transport);
+        
 		$this->view->audit = $audit;
 		
 		$this->_helper->FlashMessenger("Protokol byl odeslán");
@@ -488,7 +503,7 @@ GUARD7, v.o.s.", $pdfProt, "guardian@guard7.cz", $email, $subsidiary, $audit);
         // vygenerovani jmena souboru
         $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $audit->done_at);
         $nameHeader = "=protokol.pdf";
-        $nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
+        //$nameHeader = "*=UTF-8''" . str_replace("+", "%20", urlencode($fileName));
         
 		// hlavicky
 		$headers = "MIME-Version: 1.0\r\n";
