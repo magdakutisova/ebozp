@@ -61,6 +61,12 @@ class My_Controller_Helper_Acl extends Zend_Acl{
          * ZDROJE PLANOVACIHO MODULU
          */
         $this->add(new Zend_Acl_Resource("planning:index"));
+        
+        /*
+         * ZDROJE MODULU DOTAZNIKU
+         */
+        $this->add(new Zend_Acl_Resource("questionary:admin"));
+        $this->add(new Zend_Acl_Resource("questionary:client"));
 		
 		$preventist = My_Role::ROLE_PREVENTIST;
 		$guest = My_Role::ROLE_GUEST;
