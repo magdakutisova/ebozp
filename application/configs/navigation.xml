@@ -58,6 +58,12 @@
 			<resource>user</resource>
 			<privilege>rights</privilege>
 		</userAdmin>
+		<questionaries>
+			<label>Správa dotazníků</label>
+			<route>questionaries</route>
+			<resource>questionary:admin</resource>
+			<privilege>index</privilege>
+        </questionaries>
 		<utility>
 			<label>Nástroje pro superadmina</label>
 			<route>utility</route>
