@@ -31,3 +31,7 @@ span.questionary-item-valuelist-item {width: 40px; text-align: center; display: 
 
 /* SELECT */
 select.questionary-item-select { width: 100%; }
+
+/* GRIDVIEW */
+div.questionary-item-gw-label, div.questionary-item-gw-content { width: auto; float: none; }
+.questionary-item-gw-delcol { width: 60px; }
