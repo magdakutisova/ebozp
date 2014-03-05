@@ -681,7 +681,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
         
         $subsidiary = $watch->getSubsidiary();
-        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $watch->watched_at);
+        $fileName = sprintf("%s, %s, %s - %s.pdf", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $watch->watched_at);
 
         $mailer = new Zend_Mail("UTF-8");
         $mailer->setSubject('=?UTF-8?B?' . base64_encode("Protokol z kontrolní dohlídky") . '?=');
@@ -693,7 +693,7 @@ S pozdravem
 
 GUARD7, v.o.s.");
         
-        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", null, $fileName);
+        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", Zend_Mime::ENCODING_BASE64, $fileName);
         
         $transport = new Zend_Mail_Transport_Smtp("smtp.gmail.com", array(
 				'ssl' => 'ssl',

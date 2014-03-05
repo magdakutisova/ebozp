@@ -265,7 +265,7 @@ class Audit_ReportController extends Zend_Controller_Action {
 			$name = $audit->contact_name;
 		}
         
-        $fileName = sprintf("%s, %s, %s - %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $audit->done_at);
+        $fileName = sprintf("%s, %s, %s - %s.pdf", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street, $audit->done_at);
 
         $mailer = new Zend_Mail("UTF-8");
         $mailer->setSubject('=?UTF-8?B?' . base64_encode("Závěrečná zpráva o provedení roční prověrky BOZP a PO") . '?=');
@@ -277,7 +277,7 @@ S pozdravem
 
 GUARD7, v.o.s.");
         
-        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", null, $fileName);
+        $mailer->createAttachment($pdfProt, "application/pdf", "attachment", Zend_Mime::ENCODING_BASE64, $fileName);
         
         $transport = new Zend_Mail_Transport_Smtp("smtp.gmail.com", array(
 				'ssl' => 'ssl',
