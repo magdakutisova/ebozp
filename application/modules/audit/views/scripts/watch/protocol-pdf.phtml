@@ -107,9 +107,21 @@ if (!$this->watch->also_audit) {
         if ($pdf->GetY() > $limit) $pdf->AddPage ();
         $pdf->writeHTML($html);
     }
+    
+    // roztrideni lhut
+    $invalid = array();
+    $close = array();
+
+    foreach ($this->deadlines as $deadline) {
+        if ($deadline->invalid_close && $deadline->is_valid) {
+            $close[] = $deadline;
+        } else {
+            $invalid[] = $deadline;
+        }
+    }
 	
 	// vyhodnoceni zobrazeni lhut lhuty se zobrazi pokud je zobrazeni nastaveno a pokud jsou nejake lhuty k dispozici
-	if ($watch->display_deadlines && $this->deadlines->count()) {
+	if ($watch->display_deadlines && $invalid) {
 	
         $html = "<h2>Propadlé lhůty</h2>
         <table border=\"1\" cellpadding=\"2\">";
@@ -126,7 +138,7 @@ if (!$this->watch->also_audit) {
         $pdf->writeHTML($html);
 	}
     
-    if ($watch->display_deadlines_close && $this->deadlinesClose->count()) {
+    if ($watch->display_deadlines_close && $close) {
 	
         $html = "<h2>Lhůty před propadnutím</h2>
         <table border=\"1\" cellpadding=\"2\">";

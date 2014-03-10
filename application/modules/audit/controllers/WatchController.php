@@ -228,7 +228,8 @@ class Audit_WatchController extends Zend_Controller_Action {
 			$mistakes = $watch->findMistakes();
 			
 			// nacteni lhut
-			$deadlines = $watch->findDeadlines();
+            $tableDeadlines = new Audit_Model_WatchesDeadlines();
+			$deadlines = $tableDeadlines->findExtendedByWatch($watch, true, false);
 			
 			$this->view->deadlines = $deadlines;
 			$this->view->mistakes = $mistakes;
@@ -272,7 +273,7 @@ class Audit_WatchController extends Zend_Controller_Action {
 		if (!$watch->also_audit) {
 			// nacteni lhut
 			$tableDeadlines = new Audit_Model_WatchesDeadlines();
-			$deadlines = $tableDeadlines->findExtendedByWatch($watch);
+			$deadlines = $tableDeadlines->findExtendedByWatch($watch, true, false);
 			$mistakes = $watch->findMistakes(true);
 			
 			$this->view->deadlines = $deadlines;
@@ -610,19 +611,9 @@ class Audit_WatchController extends Zend_Controller_Action {
 		}
 		
 		// nacteni lhut
-		$deadlines = $watch->findDeadlines(true, true);
+        $tableDeadlines = new Audit_Model_WatchesDeadlines();
+		$deadlines = $tableDeadlines->findExtendedByWatch($watch, true, $watch->display_deadlines_close);
         
-        if ($watch->display_deadlines_close) {
-            $tableDeadlines = new Deadline_Model_Deadlines();
-            $select = $tableDeadlines->_prepareSelect();
-            $select->where("d.subsidiary_id = ?", $watch->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
-            
-            $data = $select->query()->fetchAll();
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
-        } else {
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
-        }
-		
 		$this->view->watch = $watch;
 		$this->view->mistakes = $mistakes;
 		$this->view->order = $order;
@@ -635,7 +626,6 @@ class Audit_WatchController extends Zend_Controller_Action {
 		$this->view->deadlines = $deadlines;
 		$this->view->logo = __DIR__ . "/../resources/logo.png";
 		$this->view->disableHeaders = $this->_request->getParam("disableHeaders", 0);
-        $this->view->deadlinesClose = $deadlinesClose;
 	}
 	
 	public function putAction() {

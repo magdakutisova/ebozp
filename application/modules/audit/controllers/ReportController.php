@@ -52,21 +52,9 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
-		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true, $audit->display_deadlines_close);
         
-        if ($audit->display_deadlines_close) {
-            $tableDeadlines = new Deadline_Model_Deadlines();
-            $select = $tableDeadlines->_prepareSelect();
-            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
-            
-            $data = $select->query()->fetchAll();
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
-        } else {
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
-        }
-		
 		$this->view->deadlines = $deadlines;
-        $this->view->deadlinesClose = $deadlinesClose;
         
 		$this->view->audit = $audit;
 		$this->view->client = $client;
@@ -94,21 +82,9 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
-		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
-        
-        if ($audit->display_deadlines_close) {
-            $tableDeadlines = new Deadline_Model_Deadlines();
-            $select = $tableDeadlines->_prepareSelect();
-            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
-            
-            $data = $select->query()->fetchAll();
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
-        } else {
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
-        }
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true, $audit->display_deadlines_close);
 		
 		$this->view->deadlines = $deadlines;
-        $this->view->deadlinesClose = $deadlinesClose;
 		
 		$this->view->report = $report;
 		$this->view->audit = $audit;
@@ -158,19 +134,8 @@ class Audit_ReportController extends Zend_Controller_Action {
 		
 		// nacteni lhut
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
-		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true);
+		$deadlines = $tableDeadlines->findExtendedByAudit($audit, true, $audit->display_deadlines_close);
         
-        if ($audit->display_deadlines_close) {
-            $tableDeadlines = new Deadline_Model_Deadlines();
-            $select = $tableDeadlines->_prepareSelect();
-            $select->where("d.subsidiary_id = ?", $audit->subsidiary_id)->where("next_date > NOW()")->having("invalid_close");
-            
-            $data = $select->query()->fetchAll();
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => $data, "table" => $tableDeadlines, "stored" => true));
-        } else {
-            $deadlinesClose = new Zend_Db_Table_Rowset(array("data" => array()));
-        }
-		
 		$this->view->deadlines = $deadlines;
 		
 		$this->view->audit = $audit;
@@ -186,7 +151,6 @@ class Audit_ReportController extends Zend_Controller_Action {
 		$this->view->workplaces = $workplaces;
 		
 		$this->view->mistakes = $mistakes;
-        $this->view->deadlinesClose = $deadlinesClose;
 	}
 	
 	public function saveAction() {

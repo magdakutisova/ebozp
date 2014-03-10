@@ -417,18 +417,30 @@ $audit = $this->audit;
 		}
 		?>
 	</fieldset>
-    <?php if ($this->deadlines->count() || $this->deadlinesClose->count()) { ?>
+    <?php if ($this->deadlines->count()) { ?>
 	<fieldset>
 		<legend id="deadlines">Lhůty</legend>
 		<?php 
-        if ($this->deadlines->count()) {
-            echo "<h2>Propadlé lhůty</h2>";
-            echo $this->deadlineTable($this->deadlines, array("noAction" => true, "subsidiaryRow" => false));
+        // roztrideni lhut
+        $invalid = array();
+        $close = array();
+        
+        foreach ($this->deadlines as $deadline) {
+            if ($deadline->invalid_close && $deadline->is_valid) {
+                $close[] = $deadline;
+            } else {
+                $invalid[] = $deadline;
+            }
         }
         
-        if ($this->deadlinesClose->count()) {
+        if ($invalid && $audit->display_deadlines) {
+            echo "<h2>Propadlé lhůty</h2>";
+            echo $this->deadlineTable($invalid, array("noAction" => true, "subsidiaryRow" => false));
+        }
+        
+        if ($close && $audit->display_deadlines_close) {
             echo "<h2>Lhůty před propadnutím</h2>";
-            echo $this->deadlineTable($this->deadlinesClose, array("noAction" => true, "subsidiaryRow" => false));
+            echo $this->deadlineTable($close, array("noAction" => true, "subsidiaryRow" => false));
         }
 		?>
 	</fieldset>

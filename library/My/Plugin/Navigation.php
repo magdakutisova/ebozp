@@ -56,7 +56,7 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
                 $subsidiary = $sub;
             }
             
-            if ($subsidiary->hq_only) {
+            if ($subsidiary && $subsidiary->hq_only) {
                 $clientNavigation->removePage(2);
                 $clientNavigation->removePage(3);
             }

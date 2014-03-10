@@ -885,6 +885,8 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// kontrola datumu propadnuti
 		$validTo = new Zend_Date($deadline->next_date, "y-MM-dd");
 		$reserve = new Zend_Date($validTo);
+        
+        $reserve->subMonth(1);
 		
 		$tableWatches = new Audit_Model_Watches();
 		$tableAudits = new Audit_Model_Audits();

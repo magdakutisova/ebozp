@@ -295,7 +295,7 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 		
 		// nacteni dat o lhutach z databaze
 		$tableDeadlines = new Audit_Model_AuditsDeadlines();
-		$deadlines = $tableDeadlines->findExtendedByAudit($this->_audit);
+		$deadlines = $tableDeadlines->findExtendedByAudit($this->_audit, true, false);
         
         // nactnei polozek prubehu
         $progres = $this->_audit->getProgres();
