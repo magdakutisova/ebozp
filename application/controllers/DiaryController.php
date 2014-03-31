@@ -12,6 +12,24 @@
  */
 class DiaryController extends Zend_Controller_Action {
     
+    public function clearAction() {
+        // nacteni parametru
+        $subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+        $clientId = $this->_request->getParam("clientId", 0);
+
+        // nacteni pobocky
+        $talbeSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        $subsidiary = $talbeSubsidiaries->find($subsidiaryId)->current();
+
+        if (!$subsidiary) throw new Zend_Exception("Invalid id of subsidiary");
+
+        $tableDiary = new Application_Model_DbTable_Diary();
+        $tableDiary->delete(array("subsidiary_id = ?" => $subsidiaryId));
+
+        $this->view->subsidiaryId = $subsidiaryId;
+        $this->view->subsidiary = $subsidiary;
+    }
+
     public function getAction() {
         $id = $this->_request->getParam("messageId");
         $tableMessages = new Application_Model_DbTable_DiaryMessage();

@@ -6,6 +6,10 @@ class Application_Model_Diary{
 	private $message;
 	private $subsidiaryId;
 	private $author;
+	private $subsidiaryName;
+	private $subsidiaryTown;
+	private $subsidiaryStreet;
+	private $subsidiaryCode;
 	
 	public function __construct ($options = array()){
 		if (!empty($options)){
@@ -69,6 +73,22 @@ class Application_Model_Diary{
 		$this->subsidiaryId = $subsidiaryId;
 	}
 
+	public function getSubsidiaryName() {
+		return $this->subsidiaryName;
+	}
+
+	public function getSubsidiaryTown() {
+		return $this->subsidiaryTown;
+	}
+
+	public function getSubsidiaryStreet() {
+		return $this->subsidiaryStreet;
+	}
+
+	public function getSubsidiaryCode() {
+		return $this->subsidiaryCode;
+	}
+
 	/**
 	 * @return the $author
 	 */
@@ -89,6 +109,10 @@ class Application_Model_Diary{
 		$this->message = isSet($data['message']) ? $data['message'] : null;
 		$this->subsidiaryId = isSet($data['subsidiary_id']) ? $data['subsidiary_id'] : null;
 		$this->author = isSet($data['author']) ? $data['author'] : null; 
+		$this->subsidiaryName = isSet($data['subsidiary_name']) ? $data['subsidiary_name'] : null; 
+		$this->subsidiaryTown = isSet($data['subsidiary_town']) ? $data['subsidiary_town'] : null; 
+		$this->subsidiaryStreet = isSet($data['subsidiary_street']) ? $data['subsidiary_street'] : null; 
+		$this->subsidiaryCode = isSet($data['subsidiary_code']) ? $data['subsidiary_code'] : null; 
 		
 		return $this;
 	}

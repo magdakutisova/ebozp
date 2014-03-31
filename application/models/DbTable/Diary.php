@@ -88,7 +88,9 @@ class Application_Model_DbTable_Diary extends Zend_Db_Table_Abstract
     		->from('diary')	
     		->columns(array('date', 'message'))	
     		->where('subsidiary_id = ?', $id)
+            ->joinLeft("subsidiary", "subsidiary.id_subsidiary = diary.subsidiary_id")
   			->order('date DESC');
+        $select->setIntegrityCheck(false);
     	$result = $this->fetchAll($select);
     	return $this->process($result);
     }
