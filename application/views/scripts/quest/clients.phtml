@@ -1,0 +1,10 @@
+<a href="/quest/admin">Zpět na správu dotazníků</a>
+<h1>Seznam klientů</h1>
+<ul>
+	<?php
+foreach ($this->clients as $client) {
+	$url = "/quest/client?clientId=" . $client->id_client;
+	printf("<li><a href=\"%s\">%s - %s, %s</a></li>", $url, $client->company_name, $client->headquarters_town, $client->headquarters_street);
+}
+	?>
+</ul>

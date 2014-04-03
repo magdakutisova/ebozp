@@ -476,6 +476,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 						array('controller' => 'utility',
 								'action' => 'clientimport'))
 				);
+
+		$router->addRoute(
+				'client-questionaries',
+				new Zend_Controller_Router_Route('/klient/:clientId/questionaries',
+						array('controller' => 'quest',
+								'action' => 'index'))
+				);
 		
 	}
 

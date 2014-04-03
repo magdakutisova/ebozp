@@ -1,0 +1,111 @@
+<h1>Dotazníky pobočky <?php echo $this->subsidiary->subsidiary_name; ?></h1>
+<?php printf("<a href='%s'>Zpět na dotazníky klienta</a>", "/quest/index?clientId=" . $this->client->id_client); ?>
+<h2>Třetí fáze - pobočka (zaměstanci a pracoviště)</h2>
+<h3>Zaměstnanci</h3>
+<ul>
+<?php
+// indexace vyplnenych dotazniku
+$empIndex = array();
+$filleds = $this->filleds;
+
+if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_EMPLOYEE])) {
+	foreach ($filleds[Application_Model_DbTable_QuestAssignments::TYPE_EMPLOYEE] as $emp) {
+		$empIndex[$emp->employee_id] = $emp;
+	}
+}
+
+// priprava spolecnych parametru
+$baseParams = "&params[clientId]=" . $this->client->id_client . "&params[subsidiaryId]=" . $this->subsidiary->id_subsidiary;
+
+$qId = $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_EMPLOYEE]->questionary_id;
+
+foreach ($this->employees as $employee) {
+	echo "<li>" . $employee->surname . " " . $employee->first_name;
+
+	// doplneni dalsi dat
+	$params = $baseParams . "&params[employeeId]=" . $employee->id_employee;
+
+	// kontrola, jestli je dotaznik vyplnen
+	if (isset($empIndex[$employee->id_employee])) {
+		// dotaznik je vyplnen
+		$url = "/questionary/client/fill?filled[id]=" . $empIndex[$employee->id_employee]->filled_id . $params;
+
+		printf(" <a href='%s'>Upravit informace</a>", $url);
+	} else {
+		// dotaznik neni vyplnen
+		$url = "/questionary/client/get?questionary[id]=" . $qId . $params;
+
+		printf(" <a href='%s'>Vytvořit dotazník</a>", $url);
+	}
+
+	echo "</li>";
+}
+?>
+</ul>
+<h3>Pracoviště</h3>
+<ul>
+<?php
+// indexace vyplnenych dotazniku
+$workIndex = array();
+$filleds = $this->filleds;
+
+if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_WORKPLACE])) {
+	foreach ($filleds[Application_Model_DbTable_QuestAssignments::TYPE_WORKPLACE] as $work) {
+		$workIndex[$work->workplace_id] = $work;
+	}
+}
+
+$qId = $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_WORKPLACE]->questionary_id;
+
+foreach ($this->workplaces as $workplace) {
+	echo "<li>" . $workplace->name;
+
+	$params = $baseParams . "&params[workplaceId]=" . $workplace->id_workplace;
+
+	// kontrola, jestli je vyplnen dotaznik
+	if (isset($filleds[$workplace->id_workplace])) {
+		// byl nalezen vyplneny dotaznik
+	} else {
+		// nebyl vyplnen dotaznik
+		$url = "/questionary/client/get?questionary[id]=" . $qId . $params;
+		printf(" <a href='%s'>Vytvořit dotaznik</a>", $url);
+	}
+
+	echo "</li>";
+}
+?>
+</ul>
+<h2>Čtvrtá fáze - pracovní pozice</h2>
+<ul>
+<?php
+// nacteni tech pozic, ketere uz maji dotaznik vytvoreny
+// indexace vyplnenych dotazniku
+$posIndex = array();
+$filleds = $this->filleds;
+
+if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_POSITION])) {
+	foreach ($filleds[Application_Model_DbTable_QuestAssignments::TYPE_POSITION] as $position) {
+		$posIndex[$position->position_id] = $position;
+	}
+}
+
+$qId = $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_POSITION]->questionary_id;
+
+
+foreach ($this->positions as $position) {
+	echo "<li>" . $position->position;
+
+	if (isset($filleds[$position->id_position])) {
+
+	} else {
+		// dotaznik neni jeste vytvoren
+		$params = $baseParams . "&params[positionId]=" . $position->id_position;
+
+		$url = "/questionary/client/get?questionary[id]=" . $qId . $params;
+		printf(" <a href='%s'>Vytvořit dotaznik</a>", $url);
+	}
+
+	echo "</li>";
+}
+?>
+</ul>

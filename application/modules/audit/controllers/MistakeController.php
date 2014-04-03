@@ -947,7 +947,6 @@ class Audit_MistakeController extends Zend_Controller_Action {
 
             if (!$tableAssocs->getAdapter()->query($select)->fetch()) throw new Zend_Exception("Invalid user");
 		}
-		die;
 	}
 	
 	public function removeHtmlAction() {
@@ -1013,7 +1012,21 @@ class Audit_MistakeController extends Zend_Controller_Action {
     public function submitsAction() {
         // nacteni dat
         $clientId = $this->_request->getParam("clientId", 0);
+        $tableClients = new Application_Model_DbTable_Client();
+        $client = $tableClients->find($clientId)->current();
+
         $data = (array) $this->_request->getParam("mistake", array());
+
+        // nacteni pobocky
+        $subsidiaryId = $this->_request->getParam("subsidiaryId", 0);
+        $tableSubsidiaries = new Application_Model_DbTable_Subsidiary();
+        
+        // pokud pobocka nebyla nactena, nacte se centrala
+        if ($subsidiaryId) {
+        	$subsidiary = $tableSubsidiaries->find($subsidiaryId)->current();
+        } else {
+        	$subsidiary = $tableSubsidiaries->fetchRow(array("client_id = ?" => $clientId, "hq"));
+        }
         
         // pokud zadna data nebyla odeslana, pak se nic delat nebude
         if (!$data) return;
@@ -1038,7 +1051,23 @@ class Audit_MistakeController extends Zend_Controller_Action {
             "removed_at" => new Zend_Db_Expr("NOW()"),
             "is_removed" => 1
         );
-        
+
+        // zapis do bezpecnostniho denniku
+        $mistakes = $tableMistakes->find($mistakeIds);
+
+        foreach ($mistakes as $mistake) {
+        	$this->_helper->diaryRecord->insertMessage(
+                        "odstranil neshodu",
+                        array(
+                            "mistakeId" => $mistake->id,
+                            "clientId" => $mistake->client_id
+                        ),
+                        "audit-mistake-get",
+                        "neshoda",
+                        $mistake->subsidiary_id
+                        );
+        }
+
         $tableMistakes->update($updateData,  $where);
     }
 	

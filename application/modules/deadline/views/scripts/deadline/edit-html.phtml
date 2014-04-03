@@ -1,0 +1,17 @@
+<?php
+$this->layout()->setLayout("floating-layout");
+echo $this->form;
+
+if (!$this->deadline->is_valid) {
+	echo "<h2>Označit termín jako splněný</h2>";
+	echo $this->formSubmit;
+}
+
+echo "<h2>Smazat lhůtu</h2>";
+echo $this->deleteForm;
+
+?>
+<script type="text/javascript" src="/js/deadline/deadline.js"></script>
+<script type="text/javascript">
+var DEADLINE_CATEGORIES = <?php echo Zend_Json::encode($this->categories); ?>
+</script>

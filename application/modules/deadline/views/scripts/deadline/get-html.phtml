@@ -1,35 +1,35 @@
-<?php
+<?php 
 $this->layout()->setLayout("floating-layout");
+
+$deadline = $this->deadline;
+$helper = $this->tableLayout();
 ?>
-<h1>Lhůta</h1>
+<h2>Přehled lhůty</h2>
 <table>
 	<tbody>
 		<?php
-		$deadline = $this->deadline;
-		$helper = $this->tableLayout();
-		
 		$params = array(
 				"first" => array(
 						"class" => "strong"
-				)
-		);
-
+						)
+				);
+		
 		// vyhodnoceni typu
 		switch ($deadline->type) {
 			case Deadline_Form_Deadline::TYPE_ELEARNING:
 				$type = "E-learning";
 				break;
-
+				
 			case Deadline_Form_Deadline::TYPE_PRESENT:
 				$type = "Prezenční";
 				break;
-
+				
 			default:
 				$type = "Jiná";
 		}
-
+		
 		echo $helper->row("Jméno / Zařízení", $deadline->name, $params);
-		echo $helper->row("Druh", $deadline->kind, $params);
+		echo $helper->row("Druh", $deadline->kind, $params); 
 		echo $helper->row("Specifikace", $deadline->specific, $params);
 		echo $helper->row("Forma", $type, $params);
 		echo $helper->row("Perioda (měsíců)", $deadline->period, $params);
@@ -41,21 +41,13 @@ $this->layout()->setLayout("floating-layout");
 	</tbody>
 </table>
 <?php 
-// pokud je uzivatel opravnen, pak se vypise odkaz pro editaci lhuty
+// pokud neni zodpovedna osoba G7, zobrazi se formular pro odeslani
 $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
-if ($acl->isAllowed($user->role, "deadline:deadline", "edit")) {
-	$url = sprintf("/deadline/deadline/edit.html?deadlineId=%s&clientId=%s", $deadline->id, $deadline->client_id);
-	
-	printf("<a href='%s'>Editovat</a>", $url);
-}
-
-if ($this->formDone) {
-?>
-<h2>Označit termín jako splněný</h2>
-<?php 
-	echo $this->formDone; 
+if ($acl->isAllowed($user->role, "deadline:deadline", "submit")) {
+	echo "<h2>Splnit lhůtu</h2>";
+	echo $this->formSubmit;
 }
 ?>
-<script type="text/javascript" src="/js/audit/watch.js"></script>
+<script type="text/javascript" src="/js/deadline/deadline.js"></script>

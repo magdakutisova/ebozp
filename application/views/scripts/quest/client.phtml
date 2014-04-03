@@ -1,0 +1,51 @@
+<a href="/quest/clients">Zpět na seznam klientů</a>
+<?php 
+$c = $this->client;
+?>
+<h1>Nastavení a přehled dotazníků klienta</h1>
+<table>
+	<tr>
+		<td>Jméno:</td>
+		<td><?php echo $c->company_name; ?></td>
+	</tr>
+	<tr>
+		<td>Město</td>
+		<td><?php echo $c->headquarters_town; ?></td>
+	</tr>
+	<tr>
+		<td>Ulice</td>
+		<td><?php echo $c->headquarters_street; ?></td>
+	</tr>
+	<tr>
+		<td>PSČ</td>
+		<td><?php echo $c->headquarters_code; ?></td>
+	</tr>
+</table>
+<h2>Dotazník</h2>
+<?php
+$selects = array(
+	Application_Model_DbTable_QuestAssignments::TYPE_UNUSED => "Nepoužitý", 
+	Application_Model_DbTable_QuestAssignments::TYPE_CLIENT => "Klient", 
+	Application_Model_DbTable_QuestAssignments::TYPE_SUBSIDIARY => "Pobočka",
+	Application_Model_DbTable_QuestAssignments::TYPE_EMPLOYEE => "Zaměstnanec",
+	Application_Model_DbTable_QuestAssignments::TYPE_WORKPLACE => "Pracoviště", 
+	Application_Model_DbTable_QuestAssignments::TYPE_POSITION => "Pracovní pozice");
+?>
+<form action="<?php echo "/quest/assign?clientId=" . $c->id_client; ?>" method="post">
+<table>
+<?php
+foreach ($this->assignments as $assign) {
+	?>
+	<tr>
+		<td><?php echo $assign->name; ?></td>
+		<td><?php echo $this->formSelect(sprintf("questionary[%d]", $assign->questionary_id), $assign->assign_type, null, $selects); ?></td>
+	</tr>
+	<?php
+}
+?>
+</table>
+<div>
+	<?php echo $this->formSubmit("submit", "Uložit nastavení"); ?>
+</div>
+</form>
+<h2>Vyplněné dotazníky</h2>

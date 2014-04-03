@@ -1,0 +1,65 @@
+<h1>Dotazníky</h1>
+<?php
+// kontrola, zda byl vyplnen hlavni dotaznik klienta
+$filleds = $this->filleds;
+
+if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT])) {
+?>
+<h2>První fáze - informace o společnosti</h2>
+<a href="/questionary/client/fill?filled[id]=<?php echo $filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT][0]->filled_id . "&params[clientId]=" . $this->clientId; ?>">Upravid vyplněné údaje</a>
+<?php
+} else {
+	// zakladni dotaznik jeste nebyl vyplnen
+	$qcId = $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT]->questionary_id;
+?>
+Žádný dotazník zatím není vyplněn.
+<form action="/questionary/client/get" method="post">
+<input type="hidden" name="params[clientId]" value="<?php echo $this->clientId; ?>">
+<input type="hidden" name="questionary[id]" value="<?php echo $qcId; ?>" />
+<input type="submit" value="Začít" />
+</form>
+<?php
+	return;
+}
+?>
+<h2>Druhá fáze - informace o pobočkách</h2>
+<ul>
+<?php
+// indexace vyplnenych dotazniku
+$subIndex = array();
+
+if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_SUBSIDIARY])) {
+	foreach ($filleds[Application_Model_DbTable_QuestAssignments::TYPE_SUBSIDIARY] as $sub) {
+		$subIndex[$sub->subsidiary_id] = $sub;
+	}
+}
+
+foreach ($this->subsidiaries as $subsidiary) {
+	?>
+<li>
+	<?php 
+	printf ("%s - %s, %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street);
+
+	$params = "&params[subsidiaryId]=" . $subsidiary->id_subsidiary . "&params[clientId]=" . $this->clientId;
+
+	// vyhodnoceni, zda pobocka uz ma vyplneny zaznam
+	if (isset($subIndex[$subsidiary->id_subsidiary])) {
+		// pobocka ma vyplneny dotaznik
+		$url = "/questionary/client/fill?filled[id]=" . $subIndex[$subsidiary->id_subsidiary]->filled_id . $params;
+
+		// vygenerovani odkazu na dalsi dotazniky
+		$subParams = "?clientId=" . $this->clientId . "&subsidiaryId=" . $subsidiary->id_subsidiary;
+		$subUrl = "/quest/subsidiary" . $subParams;
+
+		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Podrobnosti</a>", $url, $subUrl);
+	} else {
+		// pobocka nema vyplneny dotaznik
+		$url = "/questionary/client/get?questionary[id]=" . $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_SUBSIDIARY]->questionary_id . $params;
+		printf(" <a href='%s'>Vytvořit dotazník</a>", $url);
+	}
+	?>
+</li>
+	<?php
+}
+?>
+</ul>

@@ -5,6 +5,13 @@
         <?php echo $this->formFilter;?>
     </div>
 	<div class="overflow box" id="diary-messages"><?php echo $this->diary();?></div>
+<?php
+$acl = new My_Controller_Helper_Acl();
+$user = Zend_Auth::getInstance()->getIdentity();
+if ($acl->isAllowed($user->role, "diary", "clear")) {
+    printf("<a href='/diary/clear?subsidiaryId=%s&clientId=%s' onclick='return confirm(\"Skutečně promazat deník?\")'>Vymazat bezpečnostní deník pobočky</a>'", $this->subsidiary["subsidiary"]->getIdSubsidiary(), $this->client->getIdClient());
+}
+?>
 	<hr/>
     <div class="tabs" id="communiction">
         <ul>

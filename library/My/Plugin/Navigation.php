@@ -89,6 +89,13 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
                 "subId" => $subsidiaryId
             ));
             
+            // kontrola, jestli je klientovi prirazen nejaky dotaznik
+            $tableQuests = new Application_Model_DbTable_QuestAssignments();
+
+            if ($tableQuests->fetchRow(array("client_id = ?" => $clientId)) == null) {
+                $page = $clientNavigation->findOneBy("route", "client-questionaries");
+                $clientNavigation->removePage($page);
+            }
 		}
         
         // nacteni upper panelu

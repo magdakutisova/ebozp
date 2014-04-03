@@ -694,6 +694,7 @@ GUARD7, v.o.s.");
 				));
         
         $mailer->addTo($email, $name);
+        $mailer->addTo("podklady@guard7.cz");
         $mailer->send($transport);
         
 		$this->view->watch = $watch;

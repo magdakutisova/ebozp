@@ -8,6 +8,11 @@
 			<privilege>index</privilege>
             <clientId>clientId</clientId>
 		</home>
+		<questionaries>
+			<label>Dotazníky</label>
+			<route>client-questionaries</route>
+			<clientId>clientId</clientId>
+		</questionaries>
 		<client>
 			<label>Seznam poboček</label>
 			<route>home</route>

@@ -21,6 +21,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->add(new Zend_Acl_Resource('employee'));
 		$this->add(new Zend_Acl_Resource("task"));
         $this->add(new Zend_Acl_Resource("diary"));
+        $this->add(new Zend_Acl_Resource("quest"));
 		
 		/*
 		 * ZDROJE MODULU AUDIT 
@@ -92,7 +93,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
 		$this->allow($client, 'subs', null, new My_Controller_Helper_UserOwned());
 		$this->allow($client, "audit:audit", array("list", "get", "index", "getdead.html"));
 		$this->allow($client, "audit:mistake");
-        $this->deny($client, "audit:mistake", array("import", "delete", "delete.html"));
+        $this->deny($client, "audit:mistake", array("import", "delete", "delete.html", "edit", "edit.html", "submit", "submits"));
 		$this->allow($client, "audit:report", array("get", "preview.pdf", "report.pdf", "send"));
 		$this->allow($client, "audit:form", array("get"));
 		$this->deny($client, "document:directory", array("editother", "showall", "post", "delete"));				// pomocne akce - editother umoznuje editovat cizi adresare a show all umoznuje pristup k cizim adresarum

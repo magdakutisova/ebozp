@@ -1,0 +1,14 @@
+<?php
+$redirector = new Zend_Controller_Action_Helper_Redirector();
+
+// kotnrola, jeslti je pobocka centralou nebo ne
+if ($this->subsidiary->hq) {
+	// pobocka je centralou
+	$url = $this->url(array("clientId" => $this->subsidiary->client_id), "clientIndex");
+} else {
+	$url = $this->url(array("clientId" => $this->subsidiary->client_id, "subsidiaryId" => $this->subsidiary->id_subsidiary));
+}
+
+// presmerovani
+$redirector->gotoUrlAndExit($url);
+?>

@@ -76,7 +76,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 	/**
 	 * zobrazi lhutu pro editaci
 	 */
-	public function editAction() {
+	public function editHtmlAction() {
 		// nacteni lhuty
 		$deadline = self::loadDeadline($this->_request->getParam("deadlineId"))->extendData();
 		
@@ -116,11 +116,18 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		$this->view->deleteForm = $deleteForm;
         $this->view->categories = $tableCategories->findAll();
 	}
-	
+
 	/**
 	 * zobrazi lhutu pro cteni
 	 */
 	public function getAction() {
+		$this->getHtmlAction();
+	}
+	
+	/**
+	 * zobrazi lhutu pro cteni v plovoucim okne
+	 */
+	public function getHtmlAction() {
 		// nacteni lhuty
 		$tableDeadlines = new Deadline_Model_Deadlines();
 		
@@ -250,7 +257,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zapis dat z requestu a jejich validace
 		if (!$form->isValid($requestData)) {
 			// nejaka hodnota neni validni
-			$this->_forward("edit");
+			$this->_forward("edit.html");
 			return;
 		}
 		
@@ -267,16 +274,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
         
         $row = self::loadDeadline($deadline->id);
         
-        // zapis do denniku
-        if ($row->employee_id || $row->anonymous_obj_emp) {
-            $route = "deadline-employees";
-        } elseif ($row->employee_id || $row->anonymous_obj_emp) {
-            $route = "deadline-devices";
-        } else {
-            $route = "deadline-others";
-        }
-        
-        $this->_helper->diaryRecord->insertMessage("upravil lhůtu", array("subsidiaryId" => $row->subsidiary_id, "clientId" => $row->client_id), $route, $row->name ? $row->name : "Jiná lhůta", $row->subsidiary_id);
+        $this->_helper->diaryRecord->insertMessage("upravil lhůtu", array("deadlineId" => $row->id, "clientId" => $row->client_id), "deadline-get", $row->name ? $row->name : "Jiná lhůta", $row->subsidiary_id);
 		
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");

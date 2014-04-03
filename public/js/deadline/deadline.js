@@ -190,7 +190,7 @@ $(function () {
 	function openEdit() {
 		// nacteni id lhuty a sestaveni adresy
 		var deadId = $(this).parent().find(":hidden").val();
-		var url = "/deadline/deadline/edit?clientId=" + clientId + "&deadlineId=" + deadId;
+		var url = "/deadline/deadline/edit.html?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
 		$.iframeDialog(url, 900, 700, "Úprava lhůty", "refresh");
@@ -199,7 +199,7 @@ $(function () {
 	function openGet() {
 		// nacteni id lhuty a sestaveni adresy
 		var deadId = $(this).parent().find(":hidden").val();
-		var url = "/deadline/deadline/get?clientId=" + clientId + "&deadlineId=" + deadId;
+		var url = "/deadline/deadline/get.html?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
 		$.iframeDialog(url, 800, 400, "Úprava lhůty", "refresh");

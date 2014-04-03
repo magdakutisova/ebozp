@@ -27,6 +27,8 @@ if ($acl->isAllowed($user->role, "audit:mistake", "edit")) {
 	$actions["edit-mistake"] = "Editovat";
 }
 
+$selector = $acl->isAllowed($user->role, "audit:mistake", "submits");
+
 $today = (int) Zend_Date::now()->get("yMMdd");
 
 foreach ($this->mistakes as $mistake) {
@@ -39,7 +41,7 @@ foreach ($this->mistakes as $mistake) {
 		$classes[] = "mistake-marked";
 	}
 	
-	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => true, "subsidiaryRow" => $this->subsidiaryRow));
+	echo $this->mistakeTable()->mistake($mistake, array("actions" => $actions, "classes" => $classes, "selector" => $selector, "subsidiaryRow" => $this->subsidiaryRow));
 }
 ?>
 </table>

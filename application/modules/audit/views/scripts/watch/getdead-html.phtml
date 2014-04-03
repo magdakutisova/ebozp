@@ -46,7 +46,7 @@ $acl = new My_Controller_Helper_Acl();
 $user = Zend_Auth::getInstance()->getIdentity();
 
 if ($acl->isAllowed($user->role, "deadline:deadline", "edit")) {
-	$url = sprintf("/deadline/deadline/edit?deadlineId=%s&clientId=%s", $deadline->id, $deadline->client_id);
+	$url = sprintf("/deadline/deadline/edit.html?deadlineId=%s&clientId=%s", $deadline->id, $deadline->client_id);
 	
 	printf("<a href='%s'>Editovat</a>", $url);
 }
