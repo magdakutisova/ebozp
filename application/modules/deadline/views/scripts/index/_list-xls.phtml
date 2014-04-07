@@ -1,0 +1,78 @@
+<?php
+// vypnuti layoutu
+$this->layout()->disableLayout();
+
+$document = new PHPExcel();
+
+// ziskani sheetu
+$document->setActiveSheetIndex(0);
+$sheet = $document->getActiveSheet();
+
+// zapis hlavicky
+$sheet->setCellValue('A1', 'Pobočka');
+$sheet->setCellValue('B1', 'Jméno / Název');
+$sheet->setCellValue('C1', 'Druh');
+$sheet->setCellValue('D1', 'Specifikace');
+$sheet->setCellValue('E1', 'Forma');
+$sheet->setCellValue('F1', 'Perioda');
+$sheet->setCellValue('G1', 'Naposledy provedeno');
+$sheet->setCellValue('H1', 'Další provedení');
+$sheet->setCellValue('I1', 'Poznámka');
+$sheet->setCellValue('J1', 'Provádí');
+
+foreach (range("A", "J") as $c) $sheet->getColumnDimension($c)->setAutoSize(true);
+
+// zapis dat
+$i = 2;
+
+foreach($this->deadlines as $deadline) {
+	// vyhodnoceni typu
+	switch ($deadline->type) {
+		case Deadline_Form_Deadline::TYPE_ELEARNING:
+			$type = "Elearning";
+			break;
+				
+		case Deadline_Form_Deadline::TYPE_PRESENT:
+			$type = "Prezenční";
+			break;
+				
+		default:
+			$type = "Jiná";
+	}
+
+	// vyhodnoceni zodpovedne osoby
+    if ($deadline->anonymous_employee) {
+        $resp = "Neurčený zaměstnanec";
+    } elseif ($deadline->anonymous_guard) {
+        $resp = "GUARD7";
+    } else {
+        $resp = $deadline->responsible_name;
+    }
+
+	$sheet->setCellValue('A' . $i, $deadline->subsidiary_name);
+	$sheet->setCellValue('B' . $i, $deadline->name ? $deadline->name : "-");
+	$sheet->setCellValue('C' . $i, $deadline->kind);
+	$sheet->setCellValue('D' . $i, $deadline->specific);
+	$sheet->setCellValue('E' . $i, $type);
+	$sheet->setCellValue('F' . $i, $deadline->period);
+	$sheet->setCellValue('G' . $i, $this->sqlDate($deadline->last_done));
+	$sheet->setCellValue('H' . $i, $this->sqlDate($deadline->next_date));
+	$sheet->setCellValue('I' . $i, $deadline->note);
+	$sheet->setCellValue('J' . $i, $resp);
+
+	$i++;
+} 
+
+// Redirect output to a client’s web browser (Excel5)
+header('Content-Type: application/vnd.ms-excel');
+header('Content-Disposition: attachment;filename="neshody.xls"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+
+$objWriter = PHPExcel_IOFactory::createWriter($document, 'Excel2007');
+$objWriter->save('php://output');

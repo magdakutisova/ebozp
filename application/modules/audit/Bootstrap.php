@@ -247,6 +247,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"controller" => "mistake",
 								"action" => "index"))
 		);
+
+		// stazeni vypiusu neshod ve formatu xls
+		$router->addRoute(
+				"audit-mistakes-index-xls",
+				new Zend_Controller_Router_Route("/klient/:clientId/mistakes.xls",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "index.xls"))
+		);
 		
 		// zobrazeni vypisu neshod pouze jedne pobocky
 		$router->addRoute(
@@ -255,6 +264,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 						array("module" => "audit",
 								"controller" => "mistake",
 								"action" => "index"))
+		);
+
+		// zobrazeni vypisu neshod pouze jedne pobocky
+		$router->addRoute(
+				"audit-mistakes-index-subs-xls",
+				new Zend_Controller_Router_Route("/klient/:clientId/pobocka/:subsidiaryId/mistakes.xls",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "index.xls"))
 		);
 		
 		// zobrazit jednu neshodu

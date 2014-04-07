@@ -694,6 +694,10 @@ class Audit_MistakeController extends Zend_Controller_Action {
 	public function indexXmlAction() {
 		$this->indexAction();
 	}
+
+	public function indexXlsAction() {
+		$this->indexAction();
+	}
 	
 	public function postAction() {
 		// priprava dat

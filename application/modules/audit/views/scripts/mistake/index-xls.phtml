@@ -1,0 +1,65 @@
+<?php
+// vypnuti layoutu
+$this->layout()->disableLayout();
+
+// indexace dat pobocek
+$subsidiaryIndex = array();
+
+foreach ($this->subsidiaries as $subsidiary) {
+	$subsidiaryIndex[$subsidiary->id_subsidiary] = sprintf("%s - %s, %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street);
+}
+
+$document = new PHPExcel();
+
+// ziskani sheetu
+$document->setActiveSheetIndex(0);
+$sheet = $document->getActiveSheet();
+
+// zapis hlavicky
+$sheet->setCellValue('A1', 'Pobočka');
+$sheet->setCellValue('B1', 'Kategorie');
+$sheet->setCellValue('C1', 'Podkategorie');
+$sheet->setCellValue('D1', 'Upřesnění');
+$sheet->setCellValue('E1', 'Závažnost');
+$sheet->setCellValue('F1', 'Odstraněno');
+$sheet->setCellValue('G1', 'Poprvé zjištěna');
+$sheet->setCellValue('H1', 'Neshoda');
+$sheet->setCellValue('I1', 'Návrh řešení');
+$sheet->setCellValue('J1', 'Navrhovaný termín odstranění');
+$sheet->setCellValue('K1', 'Zodpovědná osoba');
+$sheet->setCellValue('L1', 'Komentář');
+
+foreach (range("A", "M") as $c) $sheet->getColumnDimension($c)->setAutoSize(true);
+
+// zapis dat
+$i = 2;
+foreach($this->mistakes as $mistake) {
+	$sheet->setCellValue('A' . $i, isset($subsidiaryIndex[$mistake->subsidiary_id]) ? $subsidiaryIndex[$mistake->subsidiary_id] : "-");
+	$sheet->setCellValue('B' . $i, $mistake->category);
+	$sheet->setCellValue('C' . $i, $mistake->subcategory);
+	$sheet->setCellValue('D' . $i, $mistake->concretisation);
+	$sheet->setCellValue('E' . $i, $mistake->weight);
+	$sheet->setCellValue('F' . $i, $mistake->is_removed ? "Ano" : "Ne");
+	$sheet->setCellValue('G' . $i, $this->sqlDate($mistake->notified_at));
+	$sheet->setCellValue('H' . $i, $mistake->mistake);
+	$sheet->setCellValue('I' . $i, $mistake->suggestion);
+	$sheet->setCellValue('J' . $i, $this->sqlDate($mistake->will_be_removed_at));
+	$sheet->setCellValue('K' . $i, $mistake->responsibile_name);
+	$sheet->setCellValue('L' . $i, $mistake->comment);
+
+	$i++;
+} 
+
+// Redirect output to a client’s web browser (Excel5)
+header('Content-Type: application/vnd.ms-excel');
+header('Content-Disposition: attachment;filename="neshody.xls"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+
+$objWriter = PHPExcel_IOFactory::createWriter($document, 'Excel2007');
+$objWriter->save('php://output');

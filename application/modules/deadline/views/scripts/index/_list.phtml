@@ -33,6 +33,14 @@ $this->filterForm->setAction("#deadlines");
 
 echo $this->showHidePanel($this->filterForm, "Filtrace", "Zobrazit/skrýt filtraci", true);
 
+if (in_array($user->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR))) {
+    // vygenerovani tlacitka pro odkaz na XLS
+    $params = $_SERVER["QUERY_STRING"];
+    $xlsUrl = "/deadline/index/$this->xlsAction.xls?clientId=" . $request->getParam("clientId") . "&subsidiaryId=" . $request->getParam("subsidiaryId") . "&" . $params;
+
+    printf("<p><form action='%s' target='_blank' method='post'><input type='submit' value='Stáhnout ve formátu MS Excel (beta)'></form></p>", $xlsUrl);
+}
+
 // nastaveni formulare - mozna pozdeji osetrit pravy
 
 // nacteni ACL a vyhodnoceni akci

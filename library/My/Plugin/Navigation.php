@@ -75,19 +75,25 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 				$page->setParams(array('clientId' => $clientId, 'subsidiaryId' => $subsidiaryId, 'filter' => 'podle-pracovist'));
 			}
             
-            $page = $clientNavigation->findBy("TYPE", "documentation")->setParams(array(
-                "clientId" => $clientId,
-                "subsidiaryId" => $subsidiaryId,
-                "TYPE" => "documentation",
-                "subId" => $subsidiaryId
-            ));
+            $page = $clientNavigation->findBy("TYPE", "documentation");
+
+            if ($page)
+                $page->setParams(array(
+                    "clientId" => $clientId,
+                    "subsidiaryId" => $subsidiaryId,
+                    "TYPE" => "documentation",
+                    "subId" => $subsidiaryId
+                ));
             
-            $page = $clientNavigation->findBy("TYPE", "record")->setParams(array(
-                "clientId" => $clientId,
-                "subsidiaryId" => $subsidiaryId,
-                "TYPE" => "record",
-                "subId" => $subsidiaryId
-            ));
+            $page = $clientNavigation->findBy("TYPE", "record");
+
+            if ($page)
+                $page->setParams(array(
+                    "clientId" => $clientId,
+                    "subsidiaryId" => $subsidiaryId,
+                    "TYPE" => "record",
+                    "subId" => $subsidiaryId
+                ));
             
             // kontrola, jestli je klientovi prirazen nejaky dotaznik
             $tableQuests = new Application_Model_DbTable_QuestAssignments();

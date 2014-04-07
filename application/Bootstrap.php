@@ -13,6 +13,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
         $loader = Zend_Loader_Autoloader::getInstance();
         $loader->registerNamespace('My_');
         Zend_Controller_Action_HelperBroker::addPrefix('My_Controller_Helper');
+
+		Zend_Loader_Autoloader::getInstance()->pushAutoloader(new PHPExcel_ZendLoader())->suppressNotFoundWarnings(true);
     }
     
     protected function _initSession(){

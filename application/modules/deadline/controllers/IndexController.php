@@ -35,6 +35,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		$this->_prepareFilterForm($deadlines, $filterForm);
     }
+
+    public function allXlsAction() {
+    	$this->allAction();
+    }
 	
 	public function deviceAction() {
 		// nacteni dat
@@ -54,6 +58,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		$this->_prepareFilterForm($deadlines, $filterForm);
+	}
+
+	public function deviceXlsAction() {
+		$this->deviceAction();
 	}
 	
 	/**
@@ -79,6 +87,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		
 		$this->_prepareFilterForm($deadlines, $filterForm);
 	}
+
+	public function employeeXlsAction() {
+		$this->employeeAction();
+	}
 	
 	public function chemicalAction() {
 		// nacteni dat
@@ -98,6 +110,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		$this->_prepareFilterForm($deadlines, $filterForm);
+	}
+
+	public function chemicalXlsAction() {
+		$this->chemicalAction();
 	}
 	
 	/**
@@ -135,6 +151,10 @@ class Deadline_IndexController extends Zend_Controller_Action {
 		$this->view->deadlines = $deadlines;
 		$this->view->filterSet = $this->_request->getParam("filter", array());
 		$this->_prepareFilterForm($deadlines, $filterForm);
+	}
+
+	public function otherXlsAction() {
+		$this->otherAction();
 	}
 	
 	/**

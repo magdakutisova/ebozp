@@ -15,6 +15,16 @@ if ($acl->isAllowed($user->role, "audit:mistake", "post")) {
 $this->formFilter->setAction("#mistakes");
 
 echo $this->showHidePanel($this->formFilter, "Filtrace", "Zobrazit/skrýt filtraci", true);
+
+if (in_array($user->role, array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR))) {
+    // vygenerovani tlacitka pro odkaz na XLS
+    $parts = explode("?", $_SERVER["REQUEST_URI"]);
+    $parts[0] .= ".xls";
+
+    $xlsUrl = implode("?", $parts);
+
+    printf("<p><form action='%s' target='_blank' method='post'><input type='submit' value='Stáhnout ve formátu MS Excel (beta)'></form></p>", $xlsUrl);
+}
 ?>
 <?php printf("<form action='/audit/mistake/submits?clientId=%s' method='post' onsubmit='return confirm(\"Provedené změny již nepůjdou vrátit zpět. Skutečně pokračovat?\")'>", $clientId); ?>
 <table id="mistake-list" class="multirow-table">
