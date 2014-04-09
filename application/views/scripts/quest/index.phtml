@@ -4,9 +4,10 @@
 $filleds = $this->filleds;
 
 if (isset($filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT])) {
+	$deleteUrl = "/questionary/client/delete?filled[id]=" . $filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT][0]->filled_id;
 ?>
 <h2>První fáze - informace o společnosti</h2>
-<a href="/questionary/client/fill?filled[id]=<?php echo $filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT][0]->filled_id . "&params[clientId]=" . $this->clientId; ?>">Upravid vyplněné údaje</a>
+<a href="/questionary/client/fill?filled[id]=<?php echo $filleds[Application_Model_DbTable_QuestAssignments::TYPE_CLIENT][0]->filled_id . "&params[clientId]=" . $this->clientId; ?>">Upravid vyplněné údaje</a>, <a href="<?php echo $deleteUrl; ?>" onclick="return confirm('Skutečně chcete resetovat dotazník? Vyplněné informace budou ztraceny')">Resetovat dotazník</a>
 <?php
 } else {
 	// zakladni dotaznik jeste nebyl vyplnen
@@ -50,8 +51,9 @@ foreach ($this->subsidiaries as $subsidiary) {
 		// vygenerovani odkazu na dalsi dotazniky
 		$subParams = "?clientId=" . $this->clientId . "&subsidiaryId=" . $subsidiary->id_subsidiary;
 		$subUrl = "/quest/subsidiary" . $subParams;
+		$deleteUrl = "/questionary/client/delete?filled[id]=" . $subIndex[$subsidiary->id_subsidiary]->filled_id;
 
-		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Podrobnosti</a>", $url, $subUrl);
+		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Podrobnosti</a> <a href='%s' onclick='return confirm(\"Skutečně chcete resetovat dotazník? Vyplněné informace budou ztraceny\")'>Resetovat dotazník</a>", $url, $subUrl, $deleteUrl);
 	} else {
 		// pobocka nema vyplneny dotaznik
 		$url = "/questionary/client/get?questionary[id]=" . $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_SUBSIDIARY]->questionary_id . $params;

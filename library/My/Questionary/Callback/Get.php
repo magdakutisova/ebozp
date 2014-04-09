@@ -270,6 +270,10 @@ class My_Questionary_Callback_Get extends My_Questionary_Callback_Abstract {
 			$data["employee_id"] = $objId;
 			break;
 
+		case Application_Model_DbTable_QuestAssignments::TYPE_WORKPLACE:
+			$data["workplace_id"] = $objId;
+			break;
+
 		case Application_Model_DbTable_QuestAssignments::TYPE_POSITION:
 			$data["position_id"] = $objId;
 			break;

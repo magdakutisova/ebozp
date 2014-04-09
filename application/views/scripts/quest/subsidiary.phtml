@@ -28,9 +28,10 @@ foreach ($this->employees as $employee) {
 	// kontrola, jestli je dotaznik vyplnen
 	if (isset($empIndex[$employee->id_employee])) {
 		// dotaznik je vyplnen
+		$deleteUrl = "/questionary/client/delete?filled[id]=" . $empIndex[$employee->id_employee]->filled_id;
 		$url = "/questionary/client/fill?filled[id]=" . $empIndex[$employee->id_employee]->filled_id . $params;
 
-		printf(" <a href='%s'>Upravit informace</a>", $url);
+		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Resetovat dotazník</a>", $url, $deleteUrl);
 	} else {
 		// dotaznik neni vyplnen
 		$url = "/questionary/client/get?questionary[id]=" . $qId . $params;
@@ -63,8 +64,12 @@ foreach ($this->workplaces as $workplace) {
 	$params = $baseParams . "&params[workplaceId]=" . $workplace->id_workplace;
 
 	// kontrola, jestli je vyplnen dotaznik
-	if (isset($filleds[$workplace->id_workplace])) {
-		// byl nalezen vyplneny dotaznik
+	if (isset($workIndex[$workplace->id_workplace])) {
+		// dotaznik je vyplnen
+		$deleteUrl = "/questionary/client/delete?filled[id]=" . $workIndex[$workplace->id_workplace]->filled_id;
+		$url = "/questionary/client/fill?filled[id]=" . $workIndex[$workplace->id_workplace]->filled_id . $params;
+
+		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Resetovat dotazník</a>", $url, $deleteUrl);
 	} else {
 		// nebyl vyplnen dotaznik
 		$url = "/questionary/client/get?questionary[id]=" . $qId . $params;
@@ -95,8 +100,12 @@ $qId = $this->assigned[Application_Model_DbTable_QuestAssignments::TYPE_POSITION
 foreach ($this->positions as $position) {
 	echo "<li>" . $position->position;
 
-	if (isset($filleds[$position->id_position])) {
+	if (isset($posIndex[$position->id_position])) {
+		// dotaznik je vyplnen
+		$deleteUrl = "/questionary/client/delete?filled[id]=" . $posIndex[$position->id_position]->filled_id;
+		$url = "/questionary/client/fill?filled[id]=" . $posIndex[$position->id_position]->filled_id . $params;
 
+		printf(" <a href='%s'>Upravit informace</a>, <a href='%s'>Resetovat dotazník</a>", $url, $deleteUrl);
 	} else {
 		// dotaznik neni jeste vytvoren
 		$params = $baseParams . "&params[positionId]=" . $position->id_position;
