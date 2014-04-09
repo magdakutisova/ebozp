@@ -14,12 +14,21 @@ class My_Plugin_Navigation extends Zend_Controller_Plugin_Abstract{
 		foreach ($pages as $page){
 			$page->setParams(array('clientId' => $clientId));
 		}
-        
+
         $identity = Zend_Auth::getInstance()->getIdentity();
         
         if ($identity && $identity->role != My_Role::ROLE_GUEST) {
             $navigation->removePage(0);     // HOVNO KOD - AZ BUDE CAS, TAK PRDELAT
         }
+
+        // nacteni identitity a kontrola, jeslti je uzivatel opravnen pristupovat k celemu vypisu uzivatelu
+        $user = Zend_Auth::getInstance()->getIdentity();
+
+        if ($user && $user->role != My_Role::ROLE_CLIENT) {
+            $page = $clientNavigation->findOneBy("route", "home");
+            $page->setRoute("clientList");
+        }
+        
         
 		if($clientId != null){
 			$subs = $clientNavigation->findOneBy('label', 'Pobočky');

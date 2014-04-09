@@ -1,6 +1,10 @@
 <?php
 class QuestController extends Zend_Controller_Action {
 
+	public function init() {
+		$this->view->layout()->setLayout("client-layout");
+	}
+
 	/*
 	 * seznam dotazniku pro editaci a podobne
 	 */
