@@ -57,7 +57,7 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		$select->from(array("doc" => $this->_name));
 		
 		$select->where("doc.client_id = ?", $clientId)
-						->order("doc.name");
+						->order(array(new Zend_Db_Expr("doc.subsidiary_id IS NULL DESC"), "doc.name"));
 		
 		if (!is_null($subsidiaryId)) {
 			// vyhodnoceni subid
