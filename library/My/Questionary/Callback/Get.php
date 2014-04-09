@@ -123,6 +123,45 @@ class My_Questionary_Callback_Get extends My_Questionary_Callback_Abstract {
 
 			$item->setValue($val);
 		}
+
+		// nacteni pracovnich pozic, ktere se vazi k pobocce
+		$tablePositions = new Application_Model_DbTable_Position();
+		$positions = $tablePositions->fetchAll(array("subsidiary_id = ?" => $subsidiary->id_subsidiary));
+
+		// priprava dat
+		$posData = array();
+
+		foreach ($positions as $position) {
+			$posData[] = array("position" => $position->position, "id_position" => $position->id_position);
+		}
+
+		$questionary->getByName("positions")->setValue($posData);
+
+		// nacteni zamestnancu, kteri se vazi k pobocce
+		$tableEmployees = new Application_Model_DbTable_Employee();
+		$employees = $tableEmployees->fetchAll(array("subsidiary_id = ?" => $subsidiary->id_subsidiary));
+
+		// priprava dat
+		$empData = array();
+
+		foreach ($employees as $employee) {
+			$empData[] = array("first_name" => $employee->first_name, "surname" => $employee->surname, "id_employee" => $employee->id_employee);
+		}
+
+		$questionary->getByName("employees")->setValue($empData);
+
+		// nacteni pracovist, kteri se vazi k pobocce
+		$tableWorkplaces = new Application_Model_DbTable_Workplace();
+		$workplaces = $tableWorkplaces->fetchAll(array("subsidiary_id = ?" => $subsidiary->id_subsidiary));
+
+		// priprava dat
+		$workData = array();
+
+		foreach ($workplaces as $workplace) {
+			$workData[] = array("name" => $workplace->name, "id_workplace" => $workplace->id_workplace);
+		}
+
+		$questionary->getByName("workplaces")->setValue($workData);
 	}
 
 	/**
