@@ -206,8 +206,25 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
         $ext = $tableDeadlines->findById($row->id);
 		
 		self::checkDeadlineDate($row);
+
+        // vygenerovani odkazu na lhutu
+        $href = $this->view->url(array("clientId" => $row->client_id, "deadlineId" => $row->id), "deadline-get");
+
+        // vyhodnoceni jmena a tak dale
+        if ($ext->name) {
+            $name = $ext->name;
+        } elseif ($ext->anonymous_obj_emp) {
+            $name = "Obecná lhůta zaměstnance";
+        } elseif ($ext->anonymous_obj_tech) {
+            $name = "Obencá lhůta technického zařízení";
+        } else {
+            $name = "Obecná lhůta";
+        }
+
+        // sestaveni celeho linku
+        $link = sprintf("<a href='%s'>%s</a>", $href, $name);
         
-        $this->_helper->diaryRecord->insertMessage("přidal novou lhůtu", array("subsidiaryId" => $row->subsidiary_id, "clientId" => $row->client_id), $route, $ext->name ? $ext->name : "Jiná lhůta", $row->subsidiary_id);
+        $this->_helper->diaryRecord->insertMessage("přidal novou lhůtu", null, null, $link, $row->subsidiary_id);
 		
 		$this->view->row = $row;
 		$this->_helper->FlashMessenger("Lhůta byla vytvořena");

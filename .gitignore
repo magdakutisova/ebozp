@@ -11,5 +11,8 @@ library/Zend
 application/modules/document/files
 application/searchIndex
 library/My/Tcpdf/cache
+library/Questionary
+library/PHPExcel
 /nbproject/private/
 /nbproject
+application/modules/questionary
