@@ -210,16 +210,12 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
         // vygenerovani odkazu na lhutu
         $href = $this->view->url(array("clientId" => $row->client_id, "deadlineId" => $row->id), "deadline-get");
 
+        $name = $ext->specific;
+
         // vyhodnoceni jmena a tak dale
         if ($ext->name) {
-            $name = $ext->name;
-        } elseif ($ext->anonymous_obj_emp) {
-            $name = "Obecná lhůta zaměstnance";
-        } elseif ($ext->anonymous_obj_tech) {
-            $name = "Obencá lhůta technického zařízení";
-        } else {
-            $name = "Obecná lhůta";
-        }
+            $name .=  ", " . $ext->name;
+		}
 
         // sestaveni celeho linku
         $link = sprintf("<a href='%s'>%s</a>", $href, $name);
