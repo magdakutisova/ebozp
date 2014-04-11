@@ -755,14 +755,14 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 		// provedeni akci dle typu uzivatele, ktery odeslal audit
 		if ($audit->auditor_confirmed_at == "0000-00-00 00:00:00") {
 			// odeslal to technik - jen se to podepise jinak se nic nedeje
-			$this->_audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
+			$audit->auditor_confirmed_at = new Zend_Db_Expr("NOW()");
 			
 			// odstrani se neshody, ktere nakonec nebyly pouzity
 			$tableMistakes = new Audit_Model_AuditsRecordsMistakes();
 			$tableAssocs = new Audit_Model_AuditsMistakes();
 			$nameMistakes = $tableMistakes->info("name");
 			$nameAssocs = $tableAssocs->info("name");
-			$auditId = $this->_audit->id;
+			$auditId = $audit->id;
 				
 			$where = array(
 					"audit_id = $auditId",
@@ -788,10 +788,21 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 				
 			// nastaveni odeslani neshod v asociacni tabulce auditu
 			$tableAssocs->update(array("is_submited" => 1), array("audit_id = ?" => $auditId));
+
+			// nahrazeni kontaktni osoby
+			if ($audit->contactperson_id) {
+				$tableContacts = new Application_Model_DbTable_ContactPerson();
+
+				$contact = $tableContacts->find($audit->contactperson_id)->current();
+				$audit->contactperson_id = null;
+				$audit->contact_name = $contact->name;
+				$audit->contact_phone = $contact->phone;
+				$audit->contact_email = $contact->email;
+			}
 				
 			// potvrdi se audit
-			$this->_audit->is_closed = 1;
-			$this->_audit->save();
+			$audit->is_closed = 1;
+			$audit->save();
 			
 			// oznaceni lhut, ktere byly vybrany jako splnenych
 			$tableDeadlinesAssocs = new Audit_Model_AuditsDeadlines();
@@ -810,8 +821,8 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 			$tableLogs = new Deadline_Model_Logs();
 			$nameLogs = $tableLogs->info("name");
 			
-			$sql = sprintf("insert into %s (deadline_id, done_at, note) select deadline_id, done_at, note from %s where is_done and audit_id = %s",
-					$nameLogs, $nameDeadlinesAssocs, $audit->id);
+			$sql = sprintf("insert into %s (deadline_id, done_at, note, user_id) select deadline_id, done_at, note, %s from %s where is_done and audit_id = %s",
+					$nameLogs, $userId, $nameDeadlinesAssocs, $audit->id);
 			
 			Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
 			
@@ -819,9 +830,9 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
 			$this->_helper->FlashMessenger("Audit uzavřen");
 			
 			// presmerovani na get a zapis do denniku
-			$url = $this->view->url(array("auditId" => $this->_audit->id, "clientId" => $this->_audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
+			$url = $this->view->url(array("auditId" => $audit->id, "clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id), "audit-get");
             
-            if ($this->_audit->is_check) {
+            if ($audit->is_check) {
                 $label = "provedl roční prověrku BOZP a PO";
                 $link = "zpráva o prověrce";
             } else {
@@ -829,7 +840,7 @@ Audit byl proveden podle ISO 19011 auditory G U A R D 7, v.o.s.";
                 $link = "zpráva o auditu";
             }
             
-            $this->_helper->diaryRecord->insertMessage($label, null, null, sprintf("<a href='%s'>%s</a>", $url, $link), $this->_audit->subsidiary_id);
+            $this->_helper->diaryRecord->insertMessage($label, null, null, sprintf("<a href='%s'>%s</a>", $url, $link), $audit->subsidiary_id);
             $this->_helper->diaryRecord->save();
             
 			$this->_helper->redirector->gotoUrlAndExit($url);

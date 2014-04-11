@@ -782,6 +782,17 @@ GUARD7, v.o.s.");
 		}
 		
 		if ($watch->is_closed) throw new Zend_Db_Table_Row_Exception("Watch #$watch->id is closed");
+
+		// kontrola kontaktni osoby
+		if ($watch->contactperson_id) {
+			$tableContacts = new Application_Model_DbTable_ContactPerson();
+
+			$contact = $tableContacts->find($watch->contactperson_id)->current();
+			$watch->contactperson_id = null;
+			$watch->contact_name = $contact->name;
+			$watch->contact_phone = $contact->phone;
+			$watch->contact_email = $contact->email;
+		}
 		
 		$watch->is_closed = 1;
 		$watch->save();
@@ -818,8 +829,8 @@ GUARD7, v.o.s.");
 		$tableLogs = new Deadline_Model_Logs();
 		$nameLogs = $tableLogs->info("name");
 		
-		$sql = sprintf("insert into %s (deadline_id, done_at, note) select deadline_id, done_at, note from %s where is_done and watch_id = %s", 
-				$nameLogs, $nameDeadlinesAssocs, $watch->id);
+		$sql = sprintf("insert into %s (deadline_id, done_at, note, user_id) select deadline_id, done_at, note, %s from %s where is_done and watch_id = %s", 
+				$nameLogs, $user->id_user, $nameDeadlinesAssocs, $watch->id);
 		
 		Zend_Db_Table_Abstract::getDefaultAdapter()->query($sql);
         
