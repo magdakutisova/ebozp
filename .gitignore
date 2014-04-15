@@ -16,4 +16,5 @@ library/PHPExcel
 /nbproject/private/
 /nbproject
 application/modules/questionary
+public/js/questionary
 *sublime*
