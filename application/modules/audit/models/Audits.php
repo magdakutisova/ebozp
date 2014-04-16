@@ -76,10 +76,10 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
      * vytvori select objekt pro vyhledani poctu auditu na pobocce za tento rok
      * @return Zend_Db_Select
      */
-    public function createCountSelect() {
+    public function createCountSelect($clientIdCondition = "c.id_client") {
         $aSelect = new Zend_Db_Select($this->getAdapter());
         $aSelect->from(array("a" => $this->_name), array(new Zend_Db_Expr("COUNT(id)")))
-                ->where("a.client_id = c.id_client")
+                ->where("a.client_id = ?", new Zend_Db_Expr($clientIdCondition))
                 ->where("a.done_at >= MAKEDATE(YEAR(CURRENT_DATE), 1)")
                 ->where("is_closed");
         

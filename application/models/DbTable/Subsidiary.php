@@ -18,10 +18,10 @@ class Application_Model_DbTable_Subsidiary extends Zend_Db_Table_Abstract {
     public function getProgress($clientId) {
         // vygenerovani subselectu
         $tableAudits = new Audit_Model_Audits();
-        $aSelect = $tableAudits->createCountSelect();
+        $aSelect = $tableAudits->createCountSelect("s.client_id");
         
         $tableWatches = new Audit_Model_Watches();
-        $wSelect = $tableWatches->createCountSelect();
+        $wSelect = $tableWatches->createCountSelect("s.client_id");
         
         $select = new Zend_Db_Select($this->getAdapter());
         $select->from(array("s" => $this->_name), array(
