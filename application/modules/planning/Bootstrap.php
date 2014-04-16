@@ -17,6 +17,16 @@ class Planning_Bootstrap extends Zend_Application_Module_Bootstrap {
         $this->bootstrap('FrontController');
 		$frontController = $this->getResource('FrontController');
 		$router = $frontController->getRouter();
+
+		$router->addRoute(
+				"planning-index",
+				new Zend_Controller_Router_Route("/planning/clients",
+						array(
+								"module" => "planning",
+								"controller" => "index",
+								"action" => "index"
+						))
+		);
 		
 		// index - presmerovava na domosvsky adresar
 		$router->addRoute(

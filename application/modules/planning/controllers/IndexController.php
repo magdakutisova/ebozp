@@ -44,10 +44,25 @@ class Planning_IndexController extends Zend_Controller_Action {
             
             $watchIndex[$lastId][] = $item;
         }
+
+        // nacteni auditu a proverek, ktere byly za tento rok provedeny
+        $tableAudits = new Audit_Model_Audits();
+        $audits = $tableAudits->fetchAll(array(
+            "client_id = ?" => $client->id_client,
+            "done_at >= MAKEDATE(YEAR(CURRENT_DATE), 1)"
+            ), "id");
+
+        // vytvoreni seznamu auditu dle identifikacniho cisla pobocky
+        $auditIndex = array();
+
+        foreach ($audits as $audit) {
+            $auditIndex[$audit->subsidiary_id] = $audit;
+        }
         
         $this->view->client = $client;
         $this->view->progress = $progress;
         $this->view->watchIndex = $watchIndex;
+        $this->view->auditIndex = $auditIndex;
     }
     
     public function indexAction() {

@@ -46,7 +46,7 @@ class Audit_Model_Watches extends Zend_Db_Table_Abstract {
         $wSelect = new Zend_Db_Select($this->getAdapter());
         
         $wSelect->from(array("w" => $this->_name), array(new Zend_Db_Expr("COUNT(id)")))
-                ->where("w.subsidiary_id = s.id_subsidiary")
+                ->where("w.client_id = c.id_client")
                 ->where("watched_at >= MAKEDATE(YEAR(CURRENT_DATE), 1)")
                 ->where("is_closed");
         

@@ -84,6 +84,12 @@
 			<resource>audit:order</resource>
 			<priviledge>index</priviledge>
 		</orders>
+		<planning>
+			<label>Plánování a přehledy (alfa)</label>
+			<route>planning-index</route>
+			<resource>planning:index</resource>
+			<priviledge>index</priviledge>
+		</planning>
 		<diary>
 			<label>Zprávy z deníku</label>
 			<uri>/diary/index</uri>

@@ -79,7 +79,7 @@ class Audit_Model_Audits extends Zend_Db_Table_Abstract {
     public function createCountSelect() {
         $aSelect = new Zend_Db_Select($this->getAdapter());
         $aSelect->from(array("a" => $this->_name), array(new Zend_Db_Expr("COUNT(id)")))
-                ->where("a.subsidiary_id = s.id_subsidiary")
+                ->where("a.client_id = c.id_client")
                 ->where("a.done_at >= MAKEDATE(YEAR(CURRENT_DATE), 1)")
                 ->where("is_closed");
         

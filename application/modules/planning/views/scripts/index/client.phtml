@@ -38,8 +38,24 @@ foreach ($this->progress as $item) {
                 </ol>
             </td>
             <td>Zatím neimplementováno</td>
-            <td><?php echo $item->watches_done, "/", $item->watches_count; ?></td>
-            <td><?php echo $item->audits_done ? "Ano" : "Ne"; ?></td>
+            <td><?php echo $item->watches_done, "/", $item->watches_count ? $item->watches_count : "0"; ?></td>
+            <td><?php 
+            // vyhodnoceni, zda je proveden audit nebo proverka
+            if ($item->audits_done) {
+                $isDone = "Ano";
+
+                // pokud je k dispozici zaznam o auditu nebo proverce, pak se vytvori odkaz (logicky by k dispozici mel byt, ale jen pro jistotu)
+                if (isset($this->auditIndex[$item->id_subsidiary])) {
+                    $audit = $this->auditIndex[$item->id_subsidiary];
+                    $url = $this->url(array("clientId" => $audit->client_id, "subsidiaryId" => $audit->subsidiary_id, "auditId" => $audit->id), "audit-get");
+
+                    $isDone = sprintf("<a href='%s'>Ano</a>", $url);
+                }
+            } else {
+                $isDone = "Ne";
+            }
+            echo $isDone; 
+            ?></td>
         </tr>
     </tbody>
     <?php
