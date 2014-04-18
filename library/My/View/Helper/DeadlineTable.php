@@ -64,7 +64,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
         $rowspan = $config["subsidiaryRow"] ? 3 : 2;
 		
 		// vygenerovani prvniho radku
-		$buttons = $this->_generateButtons($deadline, $config) . sprintf("<input type='hidden' name='hiddenId' value='%s'>", $deadline["id"]);
+		$buttons = $this->_generateButtons($deadline, $config);
 		$w = $this->view;
         
         // vygenerovani jmena
@@ -187,7 +187,7 @@ class My_View_Helper_DeadlineTable extends Zend_View_Helper_Abstract {
                         $c["url"] = $url;
                     }
                     
-					$btnList[] = sprintf("<button type='%s' name='%s' g7:url='%s'>%s</button>", $c["type"], $name, $c["url"], $c["caption"]);
+					$btnList[] = sprintf("<button type='%s' name='%s' g7:url='%s' g7:deadlineId='%s'>%s</button>", $c["type"], $name, $c["url"], $deadline["id"], $c["caption"]);
 			}
 		}
 		

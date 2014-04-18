@@ -103,13 +103,13 @@ $(function () {
 	function openDeadList() {
 		var deadlineId = $(this).parent().find(":hidden").val();
 		
-		var url = "/audit/audit/deadlist.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
+		var url = "/audit/audit/deadlist.html?auditId=" + auditId;
 		
 		$.iframeDialog(url, 800, 400, "Vyberte lhůty", "refresh");
 	}
 	
 	function openDeadline() {
-		var deadlineId = $(this).parent().find(":hidden").val();
+		var deadlineId = $(this).attr("g7:deadlineId");
 		
 		var url = "/audit/audit/getdead.html?deadlineId=" + deadlineId + "&auditId=" + auditId;
 		
@@ -117,7 +117,7 @@ $(function () {
 	}
 	
 	function editDeadline() {
-		var deadlineId = $(this).parent().find(":hidden").val();
+		var deadlineId = $(this).attr("g7:deadlineId");
 		
 		var url = "/deadline/deadline/edit.html?deadlineId=" + deadlineId + "&clientId=" + clientId + "&inAudit=1";
 		

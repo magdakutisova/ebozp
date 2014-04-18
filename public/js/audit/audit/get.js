@@ -34,7 +34,7 @@ $(function () {
 	}
 	
 	function openDeadline() {
-		var deadlineId = $(this).parent().find(":hidden").val();
+		var deadlineId = $(this).attr("g7:deadlineId");
 		
 		var url = "/audit/audit/getdead.html?deadlineId=" + deadlineId + "&auditId=" + AUDIT_ID;
 		

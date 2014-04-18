@@ -189,7 +189,7 @@ $(function () {
 	
 	function openEdit() {
 		// nacteni id lhuty a sestaveni adresy
-		var deadId = $(this).parent().find(":hidden").val();
+		var deadId = $(this).attr("g7:deadlineId");
 		var url = "/deadline/deadline/edit.html?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty
@@ -198,7 +198,7 @@ $(function () {
 	
 	function openGet() {
 		// nacteni id lhuty a sestaveni adresy
-		var deadId = $(this).parent().find(":hidden").val();
+		var deadId = $(this).attr("g7:deadlineId");
 		var url = "/deadline/deadline/get.html?clientId=" + clientId + "&deadlineId=" + deadId;
 		
 		// otevreni iframe dialogu s editaci lhuty

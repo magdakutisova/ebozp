@@ -71,7 +71,7 @@ $(function() {
 	}
 	
 	function openDeadline() {
-		var deadlineId = $(this).parent().find(":hidden").val();
+		var deadlineId = $(this).attr("g7:deadlineId")
 		
 		var url = "/audit/watch/getdead.html?deadlineId=" + deadlineId + "&watchId=" + watchId;
 		
@@ -83,7 +83,7 @@ $(function() {
 	}
 	
 	function editDeadline() {
-		var deadlineId = $(this).parent().find(":hidden").val();
+		var deadlineId = $(this).attr("g7:deadlineId");
 		
 		var url = "/deadline/deadline/edit.html?deadlineId=" + deadlineId + "&clientId=" + clientId;
 		
@@ -91,9 +91,7 @@ $(function() {
 	}
 	
 	function openDeadList() {
-		var deadlineId = $(this).parent().find(":hidden").val();
-		
-		var url = "/audit/watch/deadlist.html?deadlineId=" + deadlineId + "&watchId=" + watchId;
+		var url = "/audit/watch/deadlist.html?watchId=" + watchId;
 		
 		$.iframeDialog(url, 800, 400, "Vyberte lhůty", "refresh");
 	}
