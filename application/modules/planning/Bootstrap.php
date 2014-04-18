@@ -39,6 +39,18 @@ class Planning_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
         
+		
+		// index - presmerovava na domosvsky adresar
+		$router->addRoute(
+				"planning-subsidiary",
+				new Zend_Controller_Router_Route("/planning/client/:clientId/subsidiary/:subsidiaryId/detail",
+						array(
+								"module" => "planning",
+								"controller" => "subsidiary",
+								"action" => "index"
+						))
+		);
+        
     }
 }
 

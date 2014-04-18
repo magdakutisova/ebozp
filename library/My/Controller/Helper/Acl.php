@@ -62,6 +62,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
          * ZDROJE PLANOVACIHO MODULU
          */
         $this->add(new Zend_Acl_Resource("planning:index"));
+        $this->add(new Zend_Acl_Resource("planning:subsidiary"));
         
         /*
          * ZDROJE MODULU DOTAZNIKU

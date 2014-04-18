@@ -20,7 +20,11 @@ foreach ($this->progress as $item) {
     ?>
     <tbody>
         <tr>
-            <td colspan="4"><?php printf("%s, %s, %s", $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street); ?></td>
+            <td colspan="4"><?php 
+            // vytvoreni url a vypsani jmena pobocky
+            $url = $this->url(array("clientId" => $client->id_client, "subsidiaryId" => $item->id_subsidiary), "planning-subsidiary");
+            printf("<a href='%s'>%s, %s, %s</a>", $url, $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street); 
+            ?></td>
         </tr>
         <tr>
             <td>
