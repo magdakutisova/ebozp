@@ -14,6 +14,11 @@ class Planning_SubsidiaryController extends Zend_Controller_Action {
 
         // formular pro vytvoreni nove polozky
         $createForm = new Planning_Form_Item();
+        $createForm->setUsersFromTable();
+
+        // nastaveni routy
+        $url = $this->view->url($this->_request->getParams(), "planning-task-post");
+        $createForm->setAction($url);
 
         $this->view->subsidiary = $subsidiary;
         $this->view->createForm = $createForm;

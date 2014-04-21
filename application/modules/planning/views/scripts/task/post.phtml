@@ -1,0 +1,17 @@
+<?php
+// pokud byl nastaven radek, tak byl ukol vytvoren a premseruje se na editaci
+if ($this->row) {
+    // vytvoreni url pro editaci ukolu
+    $row = $this->row;
+    $url = $this->url(array("clientId" => $this->clientId, "subsidiaryId" => $this->subsidiaryId, "itemId" => $row->id), "planning-task-put");
+    $redirector = new Zend_Controller_Action_Helper_Redirector();
+    $redirector->gotoUrlAndExit($url);
+}
+
+// navratova adresa
+$url = $this->url(array("subsidiaryId" => $this->subsidiaryId, "clientId" => $this->clientId), "planning-subsidiary");
+printf("<a href='%s'>Zpět na přehled pobočky</a>", $url);
+?>
+<h1>Nový úkol</h1>
+<?php
+echo $this->form;

@@ -51,6 +51,28 @@ class Planning_Bootstrap extends Zend_Application_Module_Bootstrap {
 						))
 		);
         
+		// index - presmerovava na domosvsky adresar
+		$router->addRoute(
+				"planning-task-post",
+				new Zend_Controller_Router_Route("/planning/client/:clientId/subsidiary/:subsidiaryId/create-task",
+						array(
+								"module" => "planning",
+								"controller" => "task",
+								"action" => "post"
+						))
+		);
+        
+		// index - presmerovava na domosvsky adresar
+		$router->addRoute(
+				"planning-task-put",
+				new Zend_Controller_Router_Route("/planning/client/:clientId/subsidiary/:subsidiaryId/task/:itemId/edit",
+						array(
+								"module" => "planning",
+								"controller" => "task",
+								"action" => "put"
+						))
+		);
+        
     }
 }
 

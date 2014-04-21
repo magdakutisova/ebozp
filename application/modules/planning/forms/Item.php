@@ -44,15 +44,17 @@ class Planning_Form_Item extends Zend_Form {
 
         $this->addElement("select", "task_type", array(
             "label" => "Typ úkolu",
-            "multiOptions" => array("" => "-- VYBERTE --"),
+            "multiOptions" => Planning_Model_Items::getTaskTypes(),
             "required" => true,
             "decorators" => $elementDecorator,
             "filters" => array(new Zend_Filter_Null())
             ));
 
-        $this->addElement("select". "user_id", array(
+        $this->addElement("select", "user_id", array(
             "label" => "Přiřazeno uživateli:",
-            "filters" => array(new Zend_Filter_Null())
+            "filters" => array(new Zend_Filter_Null()),
+            "decorators" => $elementDecorator,
+            "multiOptions" => array("" => "-- VYBERTE --")
             ));
 
         $this->addElement("textarea", "description", array(
@@ -63,23 +65,66 @@ class Planning_Form_Item extends Zend_Form {
         $this->addElement("text", "planned_on", array(
             "label" => "Naplánováno na",
             "decorators" => $elementDecorator,
-            "pattern" => self::DATE_PATTERN
+            "pattern" => self::DATE_PATTERN,
+            "filters" => array(new Zend_Filter_Null())
             ));
 
         $this->addElement("text", "planned_from", array(
             "label" => "Provést od",
             "decorators" => $elementDecorator,
-            "pattern" => self::DATE_PATTERN
+            "pattern" => self::DATE_PATTERN,
+            "filters" => array(new Zend_Filter_Null())
             ));
 
         $this->addElement("text", "planned_to", array(
             "label" => "Provést do",
             "decorators" => $elementDecorator,
-            "pattern" => self::DATE_PATTERN
+            "pattern" => self::DATE_PATTERN,
+            "filters" => array(new Zend_Filter_Null())
             ));
 
         $this->addElement("submit", "submit", array(
             "label" => "Uložit",
             "decorators" => $submitDecorator));
+    }
+
+    /**
+     * nastavi seznam uzivatelu
+     * seznam muze byt zadan jako asociativni pole nebo jako rowset z tabulky Applicaion_Model_DbTable_User
+     *
+     * @param array|Zend_Db_Table_Rowset_Abstract $users seznam uzivatelu
+     * @param bool $addEmpty pokud je True, vlozi moznost vyberu prazdne hodnoty
+     */
+    public function setTargetUsers($users, $addEmpty = true) {
+        // vyhodnoceni typu parametru
+        $data = array("" => "-- VYBERTE --");
+
+        if ($users instanceof Zend_Db_Table_Rowset_Abstract) {
+            foreach ($users as $user) {
+                $data[$user->id_user] = $user->name;
+            }
+        } else {
+            $data = $users;
+        }
+
+        // vyhodnoceni, zda se ma pridat defaultni uzivatel
+        if (!$addEmpty) {
+            array_shift($data);
+        }
+
+        $this->_elements["user_id"]->setMultiOptions($data);
+    }
+
+    /**
+     * vlozi seznam cilovych uzivatelu do vyberu
+     * @param array $roles seznam roli uzivatelu, ktere budou k dispozici ve vyberu
+     * @param bool $addEmpty prepinac, zda se ma vlozit moznost prazdneho uzivatele
+     */
+    public function setUsersFromTable(array $roles = array(My_Role::ROLE_ADMIN, My_Role::ROLE_COORDINATOR, My_Role::ROLE_TECHNICIAN), $addEmpty = true) {
+        // nacteni dat z databaze
+        $tableUsers = new Application_Model_DbTable_User();
+        $users = $tableUsers->fetchAll(array("role in (?)" => $roles), "name");
+
+        $this->setTargetUsers($users, $addEmpty);
     }
 }
