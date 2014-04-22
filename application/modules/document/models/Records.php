@@ -51,13 +51,20 @@ class Document_Model_Records extends Zend_Db_Table_Abstract {
 		return $retVal;
 	}
 	
-	public function getDocumentation($clientId, $subsidiaryId = null, $withCentral = false) {
+	public function getDocumentation($clientId, $subsidiaryId = null, $withCentral = false, $categoryId = null) {
 		// sestaveni zakladniho dotazu
 		$select = new Zend_Db_Select($this->getAdapter());
 		$select->from(array("rec" => $this->_name));
 		
 		$select->where("rec.client_id = ?", $clientId)
 						->order("rec.name");
+
+		if (is_null($categoryId)) {
+			$select->where("category_id is null");
+		} else {
+			$select->where("category_id = ?", $categoryId);
+		}
+
 		
 		if (!is_null($subsidiaryId)) {
 			// vyhodnoceni subid

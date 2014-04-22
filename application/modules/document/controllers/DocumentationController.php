@@ -13,6 +13,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
      * @var Document_Model_Documentations
      */
     protected $_tableItems;
+
+    /**
+    * 
+    * @var Document_Model_DocumentationsCategories
+    */
+    protected $_tableCategories;
     
     /**
      * typ dotazu
@@ -30,10 +36,12 @@ class Document_DocumentationController extends Zend_Controller_Action {
         switch ($reqType) {
             case self::REQ_DOC:
                 $this->_tableItems = new Document_Model_Documentations();
+                $this->_tableCategories = new Document_Model_DocumentationsCategories();
                 break;
             
             case self::REQ_REC:
                 $this->_tableItems = new Document_Model_Records();
+                $this->_tableCategories = new Document_Model_RecordsCategories();
                 break;
         }
         
@@ -125,6 +133,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$form->setAction($url);
 		$form->isValidPartial($this->_request->getParams());
 		$form->getElement("subsidiary_id")->setAttrib("disabled", "disabled");
+        $this->_insertCategories($form, $clientId);
 
 		// nacteni adresarove struktury pro vyber souboru
 		$tableDirectories = new Document_Model_Directories();
@@ -236,6 +245,21 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		// nacteni informaci o suplicich
 		$clientId = $this->getRequest()->getParam("clientId", 0);
 		$subsidiaryId = $this->_request->getParam("subId", null);
+
+        // nacteni id kategorie a pripadne nacteni dat
+        $categoryId = $this->_request->getParam("categoryId", null);
+        $tableCategories = $this->_tableCategories;
+        $this->view->categoryId = $categoryId;
+
+        if ($categoryId) {
+            $category = $tableCategories->find($categoryId)->current();
+
+            $this->view->category = $category;
+        } else {
+            $categories = $tableCategories->findByClient($clientId);
+
+            $this->view->categories = $categories;
+        }
 		
         if (is_null($subsidiaryId))
             $subsidiaryId = $this->_request->getParam("subsidiaryId");
@@ -262,7 +286,7 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$acl = new My_Controller_Helper_Acl();
 		$withCentral = !$acl->isAllowed($role, "document:documentation", "put");
         
-		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId, $withCentral);
+		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId, $withCentral, $categoryId);
 
 		// formular pridani noveho supliku
 		$addForm = new Document_Form_Documentation();
@@ -289,15 +313,20 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 	public function postAction() {
 		// kontrola dat
+        $clientId = $this->_request->getParam("clientId");
 		$form = new Document_Form_Documentation();
 		
-		self::insertSubs($form, $this->_request->getParam("clientId"));
+		self::insertSubs($form, $clientId);
 		self::prepareNames($form, $_REQUEST["documentation"]["name"], $this->_type);
+        $this->_insertCategories($form, $clientId);
 		
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("index");
 			return;
 		}
+
+        // kontrola kategorie
+        $this->_setCategory($form, $clientId);
 
 		// vyhodnoceni pobocky
 		$subsidiaryId = $form->getValue("subsidiary_id");
@@ -366,11 +395,15 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$form = new Document_Form_Documentation();
 		self::insertSubs($form, $clientId);
 		self::prepareNames($form, $_REQUEST["documentation"]["name"], $this->_type);
+        $this->_insertCategories($form, $clientId);
 
 		if (!$form->isValidPartial($this->_request->getParams())) {
 			$this->_forward("edit");
 			return;
 		}
+
+        // kontrola kategorie
+        $this->_setCategory($form, $clientId);
 
 		$data = $form->getValues(true);
 		unset($data["subsidiary_id"]);
@@ -633,4 +666,34 @@ class Document_DocumentationController extends Zend_Controller_Action {
 
 		return $fileRow;
 	}
+
+    private function _insertCategories($form, $clientId) {
+        $categories = $this->_tableCategories->fetchAll(array("client_id = ?" => $clientId), "name");
+        $index = array();
+
+        foreach ($categories as $category) {
+            $index[$category->id] = $category->name;
+        }
+
+        $form->setCategories($index);
+    }
+
+    private function _setCategory($form, $clientId) {
+        // kontrola, zda bylo nastaveno jmeno
+        $name = $form->getValue("category_name");
+
+        if (!is_null($name)) {
+            // jmeno bylo nastaveno - kontrola, jestli uz nejaka kategorie s timto jmenem existuje
+            $tableCategories = $this->_tableCategories;
+            $category = $tableCategories->fetchRow(array("name like ?" => $name));
+
+            if (!$category) {
+                // kategorie neexistuje
+                $category = $tableCategories->createRow(array("client_id" => $clientId, "name" => $name));
+                $category->save();
+            }
+
+            $form->getElement("category_id")->setValue($category->id);
+        }
+    }
 }

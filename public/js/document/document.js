@@ -192,6 +192,7 @@ $(function () {
 			loadDirectoryAndFiles(rootId);
 
 			response.find("select[name='documentation[name]']").change(replaceSelect);
+			response.find("#documentation-category_id").change(changeCategory);
 			
 			createDialog(response, 800, "Editace dokumentace");
 		});
@@ -200,7 +201,19 @@ $(function () {
 	function replaceSelect() {
 		var src = $(this); //$("select#documentation-name");
 		if (src.val() == "")
-			src.replaceWith($("<input type='text' id='documentation-name', name='documentation[name]' required='true' />"));
+			src.replaceWith($("<input type='text' id='documentation-name' name='documentation[name]' required='true' />"));
+	}
+
+	function changeCategory() {
+		// pokud je hodnota prazdny retezec, tak se nahradi select textovym polem
+		var context = $(this);
+		var id = context.val();
+
+		if (id == "0") {
+			var replacer = $("<input type='text'>").attr("name", "documentation[category_name]");
+
+			context.replaceWith(replacer);
+		}
 	}
 	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });

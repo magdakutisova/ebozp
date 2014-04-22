@@ -34,7 +34,7 @@ $subsidiaryId = Zend_Controller_Front::getInstance()->getRequest()->getParam("su
 // vyhodnoceni, jestli uzivatel muze dokumentaci upravovat
 $editable = $acl->isAllowed($user->role, "document:documentation", "put");
 ?>
-<h2><?php echo $mainHeader; ?></h2>
+<h2><?php echo $mainHeader . ($this->category ? " - " . $this->category->name : ""); ?></h2>
 <?php 
 if ($editable) {
 ?>
@@ -47,6 +47,11 @@ if ($editable) {
 		foreach ($mo as $k => $v) $subList[$k] = $v;
 		
 		echo $this->formSelect("subId", $this->subsidiaryId, array(), $subList);
+
+        if ($this->categoryId) {
+            echo $this->formHidden("categoryId", $this->categoryId);
+        }
+
 		echo $this->formSubmit("filter-submit", "Filtrovat");
 		?>
 	</form>
@@ -66,6 +71,25 @@ echo  implode(" | ", $links);
 ?>
 </div>
 <?php 
+}
+
+// vypsani kategorii
+if ($this->categories) {
+    echo "<h2>Kategorie</h2><ul>";
+    $baseUrl = $_SERVER["REQUEST_URI"];
+
+    if (strpos($baseUrl, "?") !== false) {
+        $baseUrl .= "&categoryId=";
+    } else {
+        $baseUrl .= "?categoryId=";
+    }
+
+    foreach ($this->categories as $category) {
+        // vygenerovani url
+        echo "<li><a href='" . $baseUrl . $category->id . "'>" . $category->name . "</a> (" . $category->cnt . ")</li>";
+    }
+
+    echo "</ul>";
 }
 ?>
 <table id="docs-table" class="multirow-table">

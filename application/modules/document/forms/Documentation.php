@@ -46,6 +46,16 @@ class Document_Form_Documentation extends Zend_Form {
 				"decorators" => $elementDecorator,
 				"label" => "Jméno"
 		));
+
+		$this->addElement("hidden", "category_name", array("filters" => array(new Zend_Filter_Null())));
+
+		$this->addElement("select", "category_id", array(
+			"required" => false,
+			"filters" => array(new Zend_Filter_Null()),
+			"label" => "Kategorie",
+			"multiOptions" => array("" => "-- ŽÁDNÁ KATEGORIE --", "0" => "-- JINÁ KATEGORIE --"),
+			"decorators" => $elementDecorator
+		));
 		
 		$this->addElement("text", "comment", array(
 				"required" => false,
@@ -81,6 +91,13 @@ class Document_Form_Documentation extends Zend_Form {
 				"label" => "Uložit",
 				"decorators" => $submitDecorator
 		));
+	}
+
+	public function setCategories(array $data) {
+		// doplneni dat
+		$data = array((string)"" => "-- ŽÁDNÁ KATEGORIE --") + $data + array((string) "0" => "-- JINÁ KATEGORIE --");
+
+		$this->_elements["category_id"]->setMultiOptions($data);
 	}
 	
 	public function setSubsidiaries(array $data) {
