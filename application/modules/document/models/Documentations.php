@@ -83,8 +83,7 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 						$subSelect = new Zend_Db_Select(Zend_Db_Table_Abstract::getDefaultAdapter());
 						
 						// zapis podminky pobocky a centralni
-						$subSelect->where("doc.subsidiary_id = ?", $subsidiaryId)
-									->orWhere("doc.subsidiary_id IS NULL");
+						$subSelect->where("doc.subsidiary_id IS NULL OR doc.subsidiary_id = ?", $subsidiaryId);
 						
 						// zapis do puvodniho selectu
 						$select->where(implode(" ", $subSelect->getPart(Zend_Db_Select::WHERE)));
@@ -110,7 +109,6 @@ class Document_Model_Documentations extends Zend_Db_Table_Abstract {
 		// propojeni asociaci na soubory
 		$select->joinLeft(array("file" => $nameFiles), "file.id = doc.file_id", array("filename" => "name", "fileid" => "id"));
 		$select->joinLeft(array("file2" => $nameFiles), "file2.id = internal_file_id", array("i_filename" => "name", "i_fileid" => "id"));
-		
 		$result = $this->getAdapter()->query($select);
 		
 		return new Document_Model_Rowset_Documentations(array("data" => $result->fetchAll(), "table" => $this));

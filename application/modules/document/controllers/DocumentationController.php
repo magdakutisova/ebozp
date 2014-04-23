@@ -102,6 +102,19 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$this->view->subsidiaries = $subList;
 	}
 
+    public function delcatAction() {
+        $category = $this->_tableCategories->find($this->_request->getParam("categoryId"))->current();
+
+        try {
+            $category->delete();
+        } catch (Zend_Exception $e) {
+
+        }
+
+        // hnus - predelat na korektni ukonceni az bude cas
+        exit();
+    }
+
 	public function deleteAction() {
 		// nactei dat
 		$clientId = $this->_request->getParam("clientId", 0);
@@ -246,25 +259,30 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$clientId = $this->getRequest()->getParam("clientId", 0);
 		$subsidiaryId = $this->_request->getParam("subId", null);
 
+        // pokud je dovoleno polozky dokumentace editovat, centralni dokumentace se nevypise
+        $role = Zend_Auth::getInstance()->getIdentity()->role;
+        $acl = new My_Controller_Helper_Acl();
+        $withCentral = !$acl->isAllowed($role, "document:documentation", "put");
+
         // nacteni id kategorie a pripadne nacteni dat
         $categoryId = $this->_request->getParam("categoryId", null);
         $tableCategories = $this->_tableCategories;
         $this->view->categoryId = $categoryId;
+		
+        if (is_null($subsidiaryId))
+            $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        
+        $this->_request->setParam("subsidiaryId", $subsidiaryId);
 
         if ($categoryId) {
             $category = $tableCategories->find($categoryId)->current();
 
             $this->view->category = $category;
         } else {
-            $categories = $tableCategories->findByClient($clientId);
+            $categories = $tableCategories->findByClient($clientId, $subsidiaryId, $withCentral);
 
             $this->view->categories = $categories;
         }
-		
-        if (is_null($subsidiaryId))
-            $subsidiaryId = $this->_request->getParam("subsidiaryId");
-        
-        $this->_request->setParam("subsidiaryId", $subsidiaryId);
 
 		// nacteni klienta a pobocky
 		$tableClients = new Application_Model_DbTable_Client();
@@ -280,17 +298,13 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		}
         
 		$tableDocumentations = $this->_tableItems;
-		
-		// pokud je dovoleno polozky dokumentace editovat, centralni dokumentace se nevypise
-		$role = Zend_Auth::getInstance()->getIdentity()->role;
-		$acl = new My_Controller_Helper_Acl();
-		$withCentral = !$acl->isAllowed($role, "document:documentation", "put");
         
 		$documentations = $tableDocumentations->getDocumentation($clientId, $subsidiaryId, $withCentral, $categoryId);
 
 		// formular pridani noveho supliku
 		$addForm = new Document_Form_Documentation();
 		self::insertSubs($addForm, $clientId);
+        $this->_insertCategories($addForm, $clientId);
 
 		// nastaveni akce
 		$url = $this->view->url(array("clientId" => $client->id_client, "TYPE" => $this->_type), "document-documentation-post");
@@ -453,6 +467,24 @@ class Document_DocumentationController extends Zend_Controller_Action {
 		$this->view->doc = $doc;
 		$this->view->subId = self::getFilterSubId($_SERVER["HTTP_REFERER"]);
 	}
+
+    public function recatAction() {
+        // nacteni dat z databaze
+        $category = $this->_tableCategories->find($this->_request->getParam("categoryId"))->current();
+        $name = $this->_request->getParam("name", null);
+
+        try {
+            if (empty($name)) throw new Zend_Exception();
+
+            $category->name = $name;
+            $category->save();
+        } catch (Zend_Exception $e) {
+
+        }
+
+        // hnus - predelat na korektni ukonceni az bude cas
+        exit();
+    }
 
 	public function resetAction() {
 		// nacteni klienta

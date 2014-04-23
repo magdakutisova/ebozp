@@ -73,9 +73,24 @@ echo  implode(" | ", $links);
 <?php 
 }
 
+// vyhodnoceni akci pro kategorie
+$categoryActions = array();
+
+if ($acl->isAllowed($user->role, "document:documentation", "recat")) {
+    // uzivatel je opravnen smazat kategorii
+    $categoryActions[] = "<button type='button' name='rename' value='%s'>Přejmenovat</a>";
+}
+
+if ($acl->isAllowed($user->role, "document:documentation", "delcat")) {
+    // uzivatel je opravnen smazat kategorii
+    $categoryActions[] = "<button type='button' name='delete' value='%s'>Smazat</a>";
+}
+
+$categoryActionStr = implode(" ", $categoryActions);
+
 // vypsani kategorii
 if ($this->categories) {
-    echo "<h2>Kategorie</h2><ul>";
+    echo "<h2>Kategorie</h2><ul id='docats'>";
     $baseUrl = $_SERVER["REQUEST_URI"];
 
     if (strpos($baseUrl, "?") !== false) {
@@ -84,9 +99,13 @@ if ($this->categories) {
         $baseUrl .= "?categoryId=";
     }
 
+    // vyhodnoceni akci
+
     foreach ($this->categories as $category) {
         // vygenerovani url
-        echo "<li><a href='" . $baseUrl . $category->id . "'>" . $category->name . "</a> (" . $category->cnt . ")</li>";
+        echo "<li><a href='" . $baseUrl . $category->id . "'>" . $category->name . "</a> (" . $category->cnt . ") ";
+        printf($categoryActionStr, $category->id, $category->id);
+        echo "</li>";
     }
 
     echo "</ul>";

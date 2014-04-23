@@ -215,6 +215,31 @@ $(function () {
 			context.replaceWith(replacer);
 		}
 	}
+
+	function deleteCategory() {
+		if (!confirm("Skutečně smazat kategorii?")) return;
+
+		var id = $(this).val();
+
+		var url = "/document/documentation/delcat";
+
+		$.get(url, {categoryId : id}, function () {
+			location.reload();
+		})
+	}
+
+	function renameCategory() {
+		var id = $(this).val();
+
+		var url = "/document/documentation/recat";
+		var oldName = $(this).parent().find("a").text();
+
+		var newName = prompt("Nové jméno", oldName);
+
+		$.get(url, {categoryId : id, name : newName}, function () {
+			location.reload();
+		})
+	}
 	
 	$("#rename-file").click(openRenameForm).button({ "icon-only" : true, icons : { primary : "ui-icon-pencil" }, "text" : false });
 	$("#edit-directory").click(openEditDirForm).button( { "icon-only" : true, icons : { primary : "ui-icon-pencil"}, "text" : false});
@@ -228,4 +253,6 @@ $(function () {
 	$(".dettach").click(generateConfirm("Skutečně odebrat z adresáře?")).button({ "icon-only" : true, icons : { primary : "ui-icon-close" }, "text" : false });
 	
 	$("select#documentation-name").change(replaceSelect).change();
+	$("#documentation-category_id").change(changeCategory);
+	$("#docats button").filter("[name='rename']").click(renameCategory).end().filter("[name='delete']").click(deleteCategory);
 });
