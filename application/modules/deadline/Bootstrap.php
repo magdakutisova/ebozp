@@ -31,6 +31,17 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// zobrazeni lhuty
 		$router->addRoute(
 				"deadline-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/deadline/:deadlineId/get",
+						array(
+								"module" => "deadline",
+								"controller" => "deadline",
+								"action" => "get"
+						))
+		);
+		
+		// zobrazeni lhuty
+		$router->addRoute(
+				"deadline-get-old",
 				new Zend_Controller_Router_Route("/klient/:clientId/deadline/:deadlineId/get",
 						array(
 								"module" => "deadline",
@@ -60,7 +71,7 @@ class Deadline_Bootstrap extends Zend_Application_Module_Bootstrap {
 								"action" => "employee"
 						))
 		);
-		
+
 		// seznam lhut chemikalii
 		$router->addRoute(
 				"deadline-chemicals",

@@ -419,6 +419,11 @@ class Audit_MistakeController extends Zend_Controller_Action {
 			$this->view->workplaceName = "-";
 		}
 
+		// kontrola odeslani subsidiary id a pripadne nastaven ilayoutu
+		if ($this->_request->getParam("subsidiaryId")) {
+			$this->view->layout()->setLayout("client-layout");
+		}
+
 		// nacteni rodicovskeho auditu nebo proverky
 		$tableAudits = new Audit_Model_Audits();
 
@@ -743,7 +748,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
                     "přidal novou neshodu",
                     array(
                         "mistakeId" => $mistakeId,
-                        "clientId" => $clientId
+                        "clientId" => $clientId,
+                        "subsidiaryId" => $data["subsidiary_id"]
                     ),
                     "audit-mistake-get",
                     "neshoda",
@@ -880,7 +886,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
                         "odstranil neshodu",
                         array(
                             "mistakeId" => $mistake->id,
-                            "clientId" => $mistake->client_id
+                            "clientId" => $mistake->client_id,
+                            "subsidiaryId" => $mistake->subsidiary_id
                         ),
                         "audit-mistake-get",
                         "neshoda",
@@ -892,7 +899,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
                         "upravil neshodu",
                         array(
                             "mistakeId" => $mistake->id,
-                            "clientId" => $mistake->client_id
+                            "clientId" => $mistake->client_id,
+                            "subsidiaryId" => $mistake->subsidiary_id
                         ),
                         "audit-mistake-get",
                         "neshoda",
@@ -1064,7 +1072,8 @@ class Audit_MistakeController extends Zend_Controller_Action {
                         "odstranil neshodu",
                         array(
                             "mistakeId" => $mistake->id,
-                            "clientId" => $mistake->client_id
+                            "clientId" => $mistake->client_id,
+                            "subsidiaryId" => $mistake->subsidiary_id
                         ),
                         "audit-mistake-get",
                         "neshoda",

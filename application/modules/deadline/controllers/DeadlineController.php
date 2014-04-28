@@ -65,7 +65,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
             $route = "deadline-others";
         }
         
-        $this->_helper->diaryRecord->insertMessage("odstranil lhůtu", array("subsidiaryId" => $deadline->subsidiary_id, "clientId" => $deadline->client_id), $route, $deadline->name ? $deadline->name : "Jiná lhůta", $deadline->subsidiary_id);
+        $this->_helper->diaryRecord->insertMessage("odstranil lhůtu", array("subsidiaryId" => $deadline->subsidiary_id, "clientId" => $deadline->client_id, "subsidiaryId" => $deadline->subsidiary_id), $route, $deadline->name ? $deadline->name : "Jiná lhůta", $deadline->subsidiary_id);
 		
         
 		$deadline->delete();
@@ -208,7 +208,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		self::checkDeadlineDate($row);
 
         // vygenerovani odkazu na lhutu
-        $href = $this->view->url(array("clientId" => $row->client_id, "deadlineId" => $row->id), "deadline-get");
+        $href = $this->view->url(array("clientId" => $row->client_id, "deadlineId" => $row->id, "subsidiaryId" => $row->subsidiary_id), "deadline-get");
 
         $name = $ext->specific;
 
@@ -270,6 +270,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
 		// zapis dat z requestu a jejich validace
 		if (!$form->isValid($requestData)) {
 			// nejaka hodnota neni validni
+            var_dump($form->getErrors());
 			$this->_forward("edit.html");
 			return;
 		}
@@ -287,7 +288,7 @@ class Deadline_DeadlineController extends Zend_Controller_Action {
         
         $row = self::loadDeadline($deadline->id);
         
-        $this->_helper->diaryRecord->insertMessage("upravil lhůtu", array("deadlineId" => $row->id, "clientId" => $row->client_id), "deadline-get", $row->name ? $row->name : "Jiná lhůta", $row->subsidiary_id);
+        $this->_helper->diaryRecord->insertMessage("upravil lhůtu", array("deadlineId" => $row->id, "clientId" => $row->client_id, "subsidiaryId" => $deadline->subsidiary_id), "deadline-get", $row->name ? $row->name : "Jiná lhůta", $row->subsidiary_id);
 		
 		
 		$this->_helper->FlashMessenger("Změny byly uloženy");

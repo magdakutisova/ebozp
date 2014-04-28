@@ -278,6 +278,15 @@ class Audit_Bootstrap extends Zend_Application_Module_Bootstrap {
 		// zobrazit jednu neshodu
 		$router->addRoute(
 				"audit-mistake-get",
+				new Zend_Controller_Router_Route("/klient/:clientId/subsidiary/:subsidiaryId/mistake/:mistakeId",
+						array("module" => "audit",
+								"controller" => "mistake",
+								"action" => "get"))
+		);
+		
+		// zobrazit jednu neshodu
+		$router->addRoute(
+				"audit-mistake-get-old",
 				new Zend_Controller_Router_Route("/klient/:clientId/mistake/:mistakeId",
 						array("module" => "audit",
 								"controller" => "mistake",
