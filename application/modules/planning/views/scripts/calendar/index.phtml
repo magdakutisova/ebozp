@@ -1,0 +1,17 @@
+<?php
+echo $this->partial("_menu.phtml");
+?>
+<table>
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <?php
+foreach ($this->users as $user) {
+    if ($user["user_id"])
+        printf("<th>%s</th>", $user["name"]);
+}
+            ?>
+            <th>Nepřiřazeno</th>
+        </tr>
+    </thead>
+</table>

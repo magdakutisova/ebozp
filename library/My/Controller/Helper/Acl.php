@@ -64,6 +64,7 @@ class My_Controller_Helper_Acl extends Zend_Acl{
         $this->add(new Zend_Acl_Resource("planning:index"));
         $this->add(new Zend_Acl_Resource("planning:subsidiary"));
         $this->add(new Zend_Acl_Resource("planning:task"));
+        $this->add(new Zend_Acl_Resource("planning:calendar"));
         
         /*
          * ZDROJE MODULU DOTAZNIKU
