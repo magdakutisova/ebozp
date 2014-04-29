@@ -43,6 +43,13 @@ class Planning_Model_Items extends Zend_Db_Table_Abstract {
         return new $this->_rowClass(array("data" => $select->query()->fetch(), "stored" => true));
     }
 
+    public function findBySubsidiary($subsidiaryId) {
+        $select = $this->prepareSelect();
+        $select->where("t.subsidiary_id = ?", $subsidiaryId)->order("planned_on");
+
+        return new $this->_rowsetClass(array("data" => $select->query()->fetchAll(), "stored" => true));
+    }
+
     public function getItems() {
         $select = $this->prepareSelect();
         $select->columns(array("planned_on" => new Zend_Db_Expr("IFNULL(planned_on, planned_from)")));

@@ -1,0 +1,15 @@
+<?php
+// pokud byl radek ulozen, pak se presmeruje na puvodni stranku
+if ($this->saved) {
+	$redirector = new Zend_Controller_Action_Helper_Redirector();
+	$redirector->gotoUrlAndExit($_SERVER["HTTP_REFERER"]);
+}
+
+$item = $this->item;
+
+echo $this->partial("_menu.phtml");
+?>
+<h1>Úprava úkolu <?php echo $item->name; ?></h1>
+<?php
+echo $this->form;
+?>

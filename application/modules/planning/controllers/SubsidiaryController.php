@@ -20,7 +20,12 @@ class Planning_SubsidiaryController extends Zend_Controller_Action {
         $url = $this->view->url($this->_request->getParams(), "planning-task-post");
         $createForm->setAction($url);
 
+        // nacteni ukolu pro pobocku
+        $tableItems = new Planning_Model_Items();
+        $items = $tableItems->findBySubsidiary($subsidiaryId);
+
         $this->view->subsidiary = $subsidiary;
         $this->view->createForm = $createForm;
+        $this->view->items = $items;
     }
 }

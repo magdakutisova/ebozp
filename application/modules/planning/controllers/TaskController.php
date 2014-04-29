@@ -74,6 +74,24 @@ class Planning_TaskController extends Zend_Controller_Action {
      * zobrazi formular pro upravu ukolu nebo upravi ukol
      */
     public function putAction() {
+        // nacteni prvku
+        $tableItems = new Planning_Model_Items();
+        $itemId = $this->_request->getParam("itemId");
 
+        $item = $tableItems->find($itemId)->current();
+
+        $form = new Planning_Form_Item();
+        $form->setUsersFromTable();
+        $form->populate($item->toArray());
+
+        // vyhodnoceni a ulozeni
+        if ($this->_request->isPost() && $form->isValid($this->_request->getParams())) {
+            $item->setFromArray($form->getValues(true));
+            $item->save();
+            $this->view->saved = true;
+        }
+
+        $this->view->form = $form;
+        $this->view->item = $item;
     }
 }

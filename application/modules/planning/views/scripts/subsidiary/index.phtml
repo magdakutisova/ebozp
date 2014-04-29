@@ -3,7 +3,40 @@ $subsidiary = $this->subsidiary;
 ?>
 <h1>Přehled a olánování pobočky <?php printf("%s - %s, %s", $subsidiary->subsidiary_name, $subsidiary->subsidiary_town, $subsidiary->subsidiary_street) ?></h1>
 <table>
-    
+    <thead>
+    	<tr>
+    		<th>Název</th>
+    		<th>Přiděleno</th>
+    		<th>Naplánováno</th>
+    		<th>Akce</th>
+    	</tr>
+    </thead>
+    <tbody>
+<?php
+$actionsTemplates = array(
+	"Upravit" => "/planning/task/put?itemId=%s",
+	"Zobrazit" => "/planning/task/get?itemId=%s"
+);
+
+foreach ($this->items as $item) {
+	echo "<tr>";
+
+	$actions = array();
+
+	foreach ($actionsTemplates as $caption => $urlTemplate) {
+		$url = sprintf($urlTemplate, $item->id);
+		$actions[] = sprintf("<a href='%s'>%s<a/>", $url, $caption);
+	}
+
+	printf("<td>%s</td>", $item->name);
+	printf("<td>%s</td>", $item->realname);
+	printf("<td>%s</td>", $item->planned_on);
+	printf("<td>%s</td>", implode(" | ", $actions));
+
+	echo "</tr>";
+}
+?>
+    </tbody>
 </table>
 <h2>Nový úkol</h2>
 <?php echo $this->createForm; ?>
