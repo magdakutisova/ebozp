@@ -2,12 +2,29 @@
 
 class Planning_TaskController extends Zend_Controller_Action {
 
+    public function getAction() {
+        // nacteni informaci
+        $itemId = $this->_request->getParam("itemId", 0);
+        $tableItems = new Planning_Model_Items();
+
+        $item = $tableItems->findById($itemId);
+
+        // TODO: dodelat nacitani specifickych informaci pro ruzne typy ukolu
+
+        $this->view->item = $item;
+    }
+
+    public function getHtmlAction() {
+        $this->getAction();
+    }
+
     /**
      * vytvori novy ukol
      */
     public function postAction() {
         // vytovreni formulare a nstaveni hodnot
         $form = new Planning_Form_Item();
+        $form->setUsersFromTable();
         $clientId = $this->_request->getParam("clientId");
         $subsidiaryId = $this->_request->getParam("subsidiaryId");
 

@@ -1,0 +1,20 @@
+<?php
+$item = $this->item;
+
+echo $this->partial("_menu.phtml");
+?>
+<h1>Přehled úkolu <?php echo $item->name; ?></h1>
+<table>
+<?php
+echo $this->tableLayout()->row("Jméno", $item->name);
+echo $this->tableLayout()->row("Podrobnosti", $item->description);
+echo $this->tableLayout()->row("Typ úkolu", $this->plannedItem()->type($item->task_type));
+echo $this->tableLayout()->row("Přiřazeno", $item->realname);
+echo $this->tableLayout()->row("Klient", $item->company_name);
+echo $this->tableLayout()->row("Pobočka", sprintf("%s - %s, %s", $item->subsidiary_name, $item->subsidiary_town, $item->subsidiary_street));
+echo $this->tableLayout()->row("Vytvořil", $item->creatorname);
+echo $this->tableLayout()->row("Vytvořeno", $item->created_at);
+echo $this->tableLayout()->row("Naplánováno na", $item->planned_on);
+echo $this->tableLayout()->row("Splněno", $item->done_at ? $item->done_at : "Ne");
+?>
+</table>

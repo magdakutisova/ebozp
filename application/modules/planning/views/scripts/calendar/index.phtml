@@ -1,5 +1,8 @@
 <?php
 echo $this->partial("_menu.phtml");
+
+// vygenerovani prazdneho radku
+$emptyRow = "<td></td>";
 ?>
 <table>
     <thead>
@@ -7,11 +10,92 @@ echo $this->partial("_menu.phtml");
             <th>Datum</th>
             <?php
 foreach ($this->users as $user) {
-    if ($user["user_id"])
-        printf("<th>%s</th>", $user["name"]);
+    if ($user["user_id"]) {
+        $emptyRow .= "<td></td>";
+        printf("<th>%s</th>", $user["realname"]);
+    }
 }
             ?>
             <th>Nepřiřazeno</th>
         </tr>
     </thead>
+    <tbody>
+<?php
+// pokud je nejaky zaznam k dispozici, vygeneruje se kalendar
+if ($this->tasks->count()) {
+    // datum naposledy zpracovaneho prvku
+    $sorted = array();
+    $tasks = $this->tasks;
+
+    // rozrazeni dle uzivatelu podle data
+    foreach ($tasks as $task) {
+        //vyhodnoceni data
+        list($date, $time) = explode(" ", $task->planned_on);
+
+        if (!isset($sorted[$date])) {
+            $sorted[$date] = array();
+        }
+
+        // zapis do slotu uzivatele
+        if (is_null($task->user_id)) {
+            // zadny uzivatel neni nastaven
+            if (!isset($sorted[$date][0])) $sorted[$date][0] = array();
+            $sorted[$date][0][] = $task;
+        } else {
+            // kontrola uzivatele
+            if (!isset($sorted[$date][$task->user_id])) $sorted[$date][$task->user_id] = array();
+            $sorted[$date][$task->user_id][] = $task;
+        }
+    }
+
+    // vypisovani rozrazenych dat
+    $lastDate = null;
+
+    foreach ($sorted as $date => $people) {
+        // doplneni rozmezi datumu
+        if (!is_null($lastDate)) {
+            // prevedeni datumu na Zend_Date
+            $zDate1 = new Zend_Date($lastDate, "y-MM-dd");
+            $zDate2 = new Zend_Date($date, "y-MM-dd");
+
+            while ($zDate1->isEarlier($zDate2)) {
+                printf("<tr class='calendar-empty-row'><td>%s</td>%s</tr>", $zDate1->get("y-MM-dd"), $emptyRow);
+                $zDate1->addDay(1);
+            }
+        }
+
+        // aktualizace posledniho datumu
+        $lastDate = $date;
+
+        echo "<tr>";
+
+        // vypsani data
+        printf("<td>%s</td>", $date);
+
+        // iterace nad lidmi
+        foreach ($this->users as $user) {
+            if (!$user->user_id) continue;
+            
+            echo "<td>";
+
+            // pokud je vytvoren klic, vypisi se data
+            if (isset($people[$user->user_id])) {
+                echo $this->plannedItem()->items($people[$user->user_id]);
+            }
+
+            echo "</td>";
+        }
+
+        // vypis neprirazenych
+        echo "<td>";
+
+        if (isset($people[0])) {
+            echo $this->plannedItem()->items($people[0]);
+        }
+
+        echo "</td></tr>";
+    }
+}
+?>
+    </tbody>
 </table>
