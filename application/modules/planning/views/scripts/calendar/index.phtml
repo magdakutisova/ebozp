@@ -1,17 +1,13 @@
 <?php
 echo $this->partial("_menu.phtml");
-
-// vygenerovani prazdneho radku
-$emptyRow = "<td></td>";
 ?>
-<table>
+<table class="planning-calendar">
     <thead>
         <tr>
             <th>Datum</th>
             <?php
 foreach ($this->users as $user) {
     if ($user["user_id"]) {
-        $emptyRow .= "<td></td>";
         printf("<th>%s</th>", $user["realname"]);
     }
 }
@@ -59,7 +55,7 @@ if ($this->tasks->count()) {
             $zDate2 = new Zend_Date($date, "y-MM-dd");
 
             while ($zDate1->isEarlier($zDate2)) {
-                printf("<tr class='calendar-empty-row'><td>%s</td>%s</tr>", $zDate1->get("y-MM-dd"), $emptyRow);
+                echo $this->plannedItem()->emptyRow($zDate1->get("y-MM-dd"), $this->users);
                 $zDate1->addDay(1);
             }
         }
@@ -80,7 +76,9 @@ if ($this->tasks->count()) {
 
             // pokud je vytvoren klic, vypisi se data
             if (isset($people[$user->user_id])) {
-                echo $this->plannedItem()->items($people[$user->user_id]);
+                echo $this->plannedItem()->items($people[$user->user_id], $date, $user->user_id);
+            } else {
+                echo $this->plannedItem()->createButton($date, $user->user_id);
             }
 
             echo "</td>";
@@ -90,8 +88,10 @@ if ($this->tasks->count()) {
         echo "<td>";
 
         if (isset($people[0])) {
-            echo $this->plannedItem()->items($people[0]);
-        }
+            echo $this->plannedItem()->items($people[0], $date, 0);
+        } else {
+                echo $this->plannedItem()->createButton($date, $user->user_id);
+            }
 
         echo "</td></tr>";
     }

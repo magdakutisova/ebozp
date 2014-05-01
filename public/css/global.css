@@ -256,3 +256,10 @@ span.directory, span.document { padding-left : 16px; background: url(/images/ui-
 span.directory { background-position: 0 -96px; }
 span.document { background-position: -32px -96px; }
 tbody.deadline-yellow tr td { background-color: #f9e93b !important; }
+
+/*
+ * planovani
+ */
+
+.planning-calendar td button { visibility: hidden; }
+.planning-calendar td:hover button {visibility: visible; }

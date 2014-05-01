@@ -27,6 +27,7 @@ class Planning_TaskController extends Zend_Controller_Action {
         $form->setUsersFromTable();
         $clientId = $this->_request->getParam("clientId");
         $subsidiaryId = $this->_request->getParam("subsidiaryId");
+        $form->isValidPartial($this->_request->getParams());
 
         if ($this->_request->isPost()) {
             if ($form->isValid($this->_request->getParams())) {
@@ -68,6 +69,10 @@ class Planning_TaskController extends Zend_Controller_Action {
         $this->view->form = $form;
         $this->view->clientId = $clientId;
         $this->view->subsidiaryId = $subsidiaryId;
+    }
+
+    public function postHtmlAction() {
+        $this->postAction();
     }
 
     /**

@@ -2,11 +2,28 @@
 
 class Planning_View_Helper_PlannedItem extends Zend_View_Helper_Abstract {
 	
+	public function createButton($date, $userId) {
+		return sprintf("<button name='add-item' g7:date='%s' g7:user='%s'>Nový ukol</a>", $date, $userId);
+	}
+
+	/**
+	 * vygeneruje prazdny radek
+	 */
+	public function emptyRow($date, $users) {
+		$retVal = "<tr class='calendar-empty-row'><td>" . $date . "</td>";
+
+		foreach ($users as $user) {
+			$retVal .= "<td>" . $this->createButton($date, $user->user_id) . "</td>";
+		}
+
+		return $retVal;
+	}
+
 	/**
 	 * vypise seznam polozek
 	 * @return string
 	 */
-	public function items($items) {
+	public function items($items, $date, $userId) {
 		$retVal = "<ol>";
 
 		foreach ($items as $item) {
@@ -14,6 +31,9 @@ class Planning_View_Helper_PlannedItem extends Zend_View_Helper_Abstract {
 		}
 
 		$retVal .= "</ol>";
+
+		// pripojeni tlacitka pro pridani noveho ukolo
+		$retVal .= $this->createButton($date, $userId);
 
 		return $retVal;
 	}
@@ -28,7 +48,7 @@ class Planning_View_Helper_PlannedItem extends Zend_View_Helper_Abstract {
 
 		// vygenerovani radku
 		list($date, $time) = explode(" ", $item->planned_on);
-		$retVal = sprintf("<li>%s - <a href='%s' g7:itemId='%s' g7:type='planning-item'>%s</a>", $time, $url, $item->id, $item->name);
+		$retVal = sprintf("<li>%s - <a href='%s' g7:itemId='%s' g7:type='planning-item'>%s</a><br />%s - %s</li>", $time, $url, $item->id, $item->name, $item->company_name, $item->subsidiary_town);
 
 		return $retVal;
 	}
