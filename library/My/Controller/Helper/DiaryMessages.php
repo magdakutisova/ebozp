@@ -4,11 +4,15 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 	private $request;
 	private $view;
 	private $controllerName;
+    private $diaryDb;
+
+    private $_messages = array();
 	
 	public function __construct(){
 		$this->request = Zend_Controller_Front::getInstance()->getRequest();
 		$this->view = Zend_Layout::getMvcInstance()->getView();
 		$this->controllerName = $this->request->getControllerName();
+        $this->diaryDb = new Application_Model_DbTable_Diary();
 	}
 	
 	public function direct(){
@@ -66,15 +70,18 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
                 
     			foreach($recipients as $recipient){
     				if ($recipient != 0){
-    					$toSave = new Application_Model_Diary();
-    					$toSave->setMessage($username . ' zaslal tuto zprávu: "' . $message . '"');
-    					$toSave->setSubsidiaryId($recipient);
-    					$toSave->setAuthor($username);
-    					$diary->addMessage($toSave);
+                        $msg = $username . ' zaslal tuto zprávu: "' . $message . '"';
+                        $this->_messages[] = array(
+                            "msg" => $msg, 
+                            "subsidiaryId" => $recipient, 
+                            "author" => $username
+                            );
                         
-                        $tableMessages->createMessage($clientId, $recipient, $message);
+                        if ($clientId) $tableMessages->createMessage($clientId, $recipient, $message);
     				}
     			}
+                $this->save();
+
     			$this->sendEmails($recipients, $username, $message);
     			$flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
     			$flashMessenger->addMessage('Zpráva odeslána');
@@ -85,8 +92,33 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 				$params = $this->request->getParams();
 				$redirector->gotoSimple($action, $controller, $module, $params);
     		}
-    	}  
+    	}
 	}
+    
+    public function save() {
+        // pokud nejsou k dispozici zadne zpravy k ulozeni, nic se delat nebude
+        if (!$this->_messages) return;
+        
+        $sql = "insert into " . $this->diaryDb->info("name") . " (`message`, `subsidiary_id`, `author`) values ";
+        $adapter = Zend_Db_Table::getDefaultAdapter();
+
+        $records = array();
+        
+        foreach ($this->_messages as $message) {
+            $records[] = sprintf("(%s, %d, %s)", $adapter->quote($message["msg"]), $message["subsidiaryId"], $adapter->quote($message["author"]));
+        }
+        
+        $sql .= implode(",", $records);
+        $adapter->query($sql);
+        
+        $this->_messages = array();
+    }
+    
+    public function postDispatch() {
+        parent::postDispatch();
+        
+        $this->save();
+    }
 	
 	public function sendEmails($recipients, $username, $message){
 		//adresy příjemců
@@ -108,15 +140,18 @@ class My_Controller_Helper_DiaryMessages extends Zend_Controller_Action_Helper_A
 				);
 		$transport = new Zend_Mail_Transport_Smtp('smtp.gmail.com', $settings);
 		
+
+        $mail = new Zend_Mail('utf-8');
+        $mail->setFrom('guardian@guard7.cz', 'Guardian');
+
 		foreach($addresses as $to){
-			$mail = new Zend_Mail('utf-8');
-			$mail->setFrom('guardian@guard7.cz', 'Guardian');
 			$mail->addTo($to);
-			$mail->setSubject('Guardian: Nová zpráva v bezpečnostním deníku');
-			$mail->setBodyHtml('Uživatel ' . $username . ' zaslal následující zprávu do bezpečnostního deníku:<br/><br/>'
-					. $message);
-			$mail->send($transport);
 		}
+
+        $mail->setSubject('Guardian: Nová zpráva v bezpečnostním deníku');
+        $mail->setBodyHtml('Uživatel ' . $username . ' zaslal následující zprávu do bezpečnostního deníku:<br/><br/>'
+                . $message);
+        $mail->send($transport);
 	}
 	
 }
